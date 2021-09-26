@@ -161,7 +161,7 @@ object EntryPoint {
 
 
     // Tick
-    for (i <- 0 until 20) {
+    for (i <- 0 until 1000) {
       envKitchen.tick()
     }
 
@@ -185,7 +185,7 @@ object EntryPoint {
      */
 
 
-    logger.exportDOTHTML("export/")
+    //logger.exportDOTHTML("export/")
   }
 
 }
