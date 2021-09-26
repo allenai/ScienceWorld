@@ -1,6 +1,6 @@
 package scienceworld.struct
 
-import scienceworld.Properties.{EdibilityProperties, MaterialProperties}
+import scienceworld.Properties.{ContainerProperties, EdibilityProperties, MaterialProperties}
 import util.UniqueIdentifier
 
 import scala.collection.mutable
@@ -20,8 +20,9 @@ class EnvObject(var name:String, var objType:String) {
   val uuid = UniqueIdentifier.getNextID()
 
   // Properties
-  var material:Option[MaterialProperties] = None
-  var edibility:Option[EdibilityProperties] = None
+  var propMaterial:Option[MaterialProperties] = None
+  var propEdibility:Option[EdibilityProperties] = None
+  var propContainer:Option[ContainerProperties] = None
 
 
   /*
