@@ -16,6 +16,10 @@ class Apple extends Food {
 
   var color = "red"
 
+  override def getReferents(): Set[String] = {
+    Set("apple", this.color + " apple", this.name)
+  }
+
   override def getDescription(): String = {
     return "a " + this.color + " apple"
   }
