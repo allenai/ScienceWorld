@@ -15,7 +15,7 @@ trait MaterialProperties {
 }
 
 
-class Air extends MaterialProperties {
+class AirProp extends MaterialProperties {
   substanceName                   = "air"
   color                           = "clear"
   // Thermal
@@ -33,7 +33,7 @@ class Air extends MaterialProperties {
 /*
  * Metals
  */
-class Metal extends MaterialProperties {
+class MetalProp extends MaterialProperties {
   substanceName                   = "metal"
   color                           = "grey"
   // Thermal
@@ -47,7 +47,7 @@ class Metal extends MaterialProperties {
   electricallyConductive          = true
 }
 
-class Steel extends Metal {
+class SteelProp extends MetalProp {
   substanceName                   = "steel"
   color                           = "grey"
   // Thermal
@@ -66,7 +66,7 @@ class Steel extends Metal {
 /*
  * Glass
  */
-class Glass extends MaterialProperties {
+class GlassProp extends MaterialProperties {
   substanceName                   = "glass"
   color                           = "clear"
   // Thermal
@@ -85,7 +85,7 @@ class Glass extends MaterialProperties {
 /*
  * Plastic
  */
-class Plastic extends MaterialProperties {
+class PlasticProp extends MaterialProperties {
   substanceName                   = "plastic"
   color                           = "white"
   // Thermal
@@ -104,7 +104,7 @@ class Plastic extends MaterialProperties {
 /*
  * Liquids
  */
-class Water extends MaterialProperties {
+class WaterProp extends MaterialProperties {
   substanceName                   = "water"
   color                           = "clear"
   // Thermal

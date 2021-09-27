@@ -1,6 +1,6 @@
 package scienceworld.struct
 
-import scienceworld.Properties.{ContainerProperties, DeviceProperties, EdibilityProperties, HeatSourceProperties, MaterialProperties}
+import scienceworld.Properties.{ContainerProperties, DeviceProperties, EdibilityProperties, HeatSourceProperties, MaterialProperties, PortalProperties}
 import util.UniqueIdentifier
 
 import scala.collection.mutable
@@ -25,6 +25,7 @@ class EnvObject(var name:String, var objType:String) {
   var propContainer:Option[ContainerProperties] = None
   var propDevice:Option[DeviceProperties] = None
   var propHeatSource:Option[HeatSourceProperties] = None
+  var propPortal:Option[PortalProperties] = None
 
 
   /*

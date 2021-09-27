@@ -1,6 +1,6 @@
 package scienceworld.Objects.devices
 
-import scienceworld.Properties.{IsActivableDevice, IsContainer, Steel}
+import scienceworld.Properties.{IsActivableDevice, IsContainer, SteelProp}
 import scienceworld.struct.EnvObject
 
 class Device extends EnvObject {
@@ -23,7 +23,7 @@ class Device extends EnvObject {
 class Sink extends Device {
   this.name = "sink"
 
-  this.propMaterial = Some(new Steel())
+  this.propMaterial = Some(new SteelProp())
 
   val container = new IsContainer()
   container.isClosable = false

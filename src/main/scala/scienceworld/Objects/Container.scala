@@ -1,6 +1,6 @@
 package scienceworld.Objects
 
-import scienceworld.Properties.{Glass, IsContainer, Steel}
+import scienceworld.Properties.{GlassProp, IsContainer, SteelProp}
 import scienceworld.struct.EnvObject
 
 class Container extends EnvObject {
@@ -21,7 +21,7 @@ class Container extends EnvObject {
 class MetalPot extends Container {
   this.name = "metal pot"
   this.propContainer = Some(new IsContainer())
-  this.propMaterial = Some(new Steel())
+  this.propMaterial = Some(new SteelProp())
 
   override def getReferents(): Set[String] = {
     Set("pot", "metal pot", this.name)
@@ -36,7 +36,7 @@ class MetalPot extends Container {
 class GlassCup extends Container {
   this.name = "glass cup"
   this.propContainer = Some(new IsContainer())
-  this.propMaterial = Some(new Glass())
+  this.propMaterial = Some(new GlassProp())
 
   override def getReferents(): Set[String] = {
     Set("cup", "glass cup", this.name)

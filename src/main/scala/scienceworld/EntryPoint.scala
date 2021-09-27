@@ -1,7 +1,9 @@
 package scienceworld
 
-import scienceworld.Objects.devices.Sink
-import scienceworld.struct.EnvObject
+import scienceworld.Objects.{Apple, MetalPot, Water}
+import scienceworld.Objects.devices.{Sink, Stove}
+import scienceworld.Objects.location.{Location, Room, Universe}
+import scienceworld.Objects.portal.Door
 
 class EntryPoint {
 
@@ -9,17 +11,66 @@ class EntryPoint {
 
 object EntryPoint {
 
+  /*
+   * Helper functions
+   */
+  def mkDoor(location1:Location, location2:Location, isOpen:Boolean = false) {
+    val door1 = new Door(isOpen, location1, location2)
+    location1.addObject(door1)
+
+    val door2 = new Door(isOpen, location2, location1)
+    location2.addObject(door2)
+  }
+
+
+
   def main(args:Array[String]) = {
     println("Initializing... ")
 
-    val obj = new EnvObject()
+    // Universe (object tree root)
+    val universe = new Universe()
 
-    println(obj.toString())
+    // Rooms
+    val roomKitchen = new Room("Kitchen")
+    universe.addObject(roomKitchen)
 
+    val roomLivingRoom = new Room("Living Room")
+    universe.addObject(roomLivingRoom)
+
+    val roomHallway = new Room("Hallway")
+    universe.addObject(roomHallway)
+
+    // Doors
+    mkDoor(roomKitchen, roomHallway)
+    mkDoor(roomLivingRoom, roomHallway)
+
+
+    // Objects
+    val apple = new Apple()
+    roomHallway.addObject(apple)
+
+
+    val metalPot = new MetalPot
+    roomKitchen.addObject(metalPot)
 
     val sink = new Sink()
+    roomKitchen.addObject(sink)
 
-    println(sink.getDescription())
+    val stove = new Stove()
+    roomKitchen.addObject(stove)
+
+
+
+    val water = new Water()
+    metalPot.addObject(water)
+
+    stove.addObject(metalPot)
+
+    stove.propDevice.get.isActivated = true
+
+
+    //
+    println(universe.getDescription())
 
   }
 
