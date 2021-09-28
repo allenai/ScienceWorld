@@ -1,9 +1,13 @@
 package scienceworld
 
+import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
+import language.runtime.runners.ActionRunner
+import scienceworld.Objects.agent.Agent
 import scienceworld.Objects.{Apple, MetalPot, Water}
 import scienceworld.Objects.devices.{Sink, Stove}
 import scienceworld.Objects.location.{Location, Room, Universe}
 import scienceworld.Objects.portal.Door
+import scienceworld.input.{ActionHandler, InputParser}
 
 class EntryPoint {
 
@@ -22,7 +26,33 @@ object EntryPoint {
     location2.addObject(door2)
   }
 
+  /*
+   * Processing user input
+   */
+  /*
+  def processUserInput(inputStr:String):(Boolean, String) = {   // (Success, statusString)
 
+    val (successVisible, visibleObjects) = this.getAgentVisibleObjects()      // TODO: Currently just a reference to the container (current room), rather than a list
+    if (!successVisible) throw new RuntimeException("ERROR: Agent is not in container.")
+
+    //val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, interpreter.objectTreeRoot, agent)
+    val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, visibleObjects, agent)
+    if (!successUserInput) {
+      println("ERROR: " + errStr)
+    } else {
+      println(userStr)
+    }
+
+    return (successUserInput, userStr)
+  }
+
+   */
+
+
+
+  /*
+   * Main
+   */
 
   def main(args:Array[String]) = {
     println("Initializing... ")
@@ -60,7 +90,7 @@ object EntryPoint {
     roomKitchen.addObject(stove)
 
 
-
+    // Add water to pot, place it on the stove, and turn on the stove.
     val water = new Water()
     metalPot.addObject(water)
 
@@ -69,12 +99,22 @@ object EntryPoint {
     stove.propDevice.get.isActivated = true
 
 
+    // Agent
+    val agent = new Agent()
+    roomKitchen.addObject(agent)
 
 
     println(universe.getDescription())
 
+    // Turn on the heat of the stove.
     stove.propDevice.get.isActivated = true
     stove.propHeatSource.get.setOnMax()
+
+
+
+
+    val startTime = System.currentTimeMillis()
+    var numIterations:Int = 0
 
     for (i <- 0 until 30) {
       println ("-----------------------------")
@@ -85,9 +125,41 @@ object EntryPoint {
 
       println("metal pot: " + metalPot.propMaterial.get.temperatureC)
       println("water: " + water.propMaterial.get.temperatureC)
+
+      numIterations += 1
     }
+    println("")
+
+    val deltaTime = System.currentTimeMillis() - startTime
+    println("Total execution time: " + deltaTime + " msec for " + numIterations + " iterations (" + (numIterations / (deltaTime.toDouble/1000.0f)) + " iterations/sec)")
+
+
+
+    /*
+    val possibleActions = program.actions.getOrElse(List.empty[ActionRequestDef]).toArray
+    val actionRunner = new ActionRunner(possibleActions, program.taxonomy)
+     */
+
 
     println ("Completed")
+
+    val actionHandler = new ActionHandler()
+
+    val triggerPhrase = new ActionTrigger(List(
+      new ActionExprOR(List("eat", "consume")),
+      new ActionExprIdentifier("food")
+    ))
+    actionHandler.addAction("eat", List(triggerPhrase))
+
+    println (actionHandler.actions.toList)
+
+    val inputParser = new InputParser(actionHandler.getActions())
+    val result = inputParser.parse("eat apple", universe, agent)
+    println(result)
+
+
+    println ("")
+    println ("Exiting...")
 
   }
 
