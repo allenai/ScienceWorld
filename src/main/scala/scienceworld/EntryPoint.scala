@@ -69,8 +69,25 @@ object EntryPoint {
     stove.propDevice.get.isActivated = true
 
 
-    //
+
+
     println(universe.getDescription())
+
+    stove.propDevice.get.isActivated = true
+    stove.propHeatSource.get.setOnMax()
+
+    for (i <- 0 until 10) {
+      println ("-----------------------------")
+      println ("  Iteration " + i)
+      println ("-----------------------------")
+
+      universe.tick()
+
+      println("metal pot: " + metalPot.propMaterial.get.temperatureC)
+      println("water: " + water.propMaterial.get.temperatureC)
+    }
+
+    println ("Completed")
 
   }
 

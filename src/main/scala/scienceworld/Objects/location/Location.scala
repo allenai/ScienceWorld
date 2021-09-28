@@ -1,5 +1,6 @@
 package scienceworld.Objects.location
 
+import scienceworld.Objects.Air
 import scienceworld.struct.EnvObject
 
 class Location extends EnvObject {
@@ -49,6 +50,12 @@ class Room(_name:String) extends Location {
   def this() = this(_name = "room")
 
   this.name = _name
+
+  // Add air
+  val air = new Air()
+  air.propMaterial.get.temperatureC = 25.0f
+  this.addObject( air )
+
 
   override def getReferents(): Set[String] = {
     Set("room", this.name)

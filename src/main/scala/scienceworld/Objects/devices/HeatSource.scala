@@ -1,11 +1,23 @@
 package scienceworld.Objects.devices
 
 import scienceworld.Properties.{HeatSourceProperties, HeatSourcePropertiesStove}
+import scienceworld.processes.HeatTransfer
 
 class HeatSource extends Device {
   this.name = "heat source"
 
   this.propHeatSource = Some(new HeatSourcePropertiesStove())
+
+  override def tick():Boolean = {
+
+    // Step 1: Heat transfer between this heat source and all contained objects
+    for (containedObj <- this.getContainedObjects()) {
+      HeatTransfer.heatTransferHeatSource(this, containedObj)
+    }
+
+    // Step 2: Tick
+    super.tick()
+  }
 
 }
 

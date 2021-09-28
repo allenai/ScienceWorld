@@ -1,6 +1,7 @@
 package scienceworld.struct
 
 import scienceworld.Properties.{ContainerProperties, DeviceProperties, EdibilityProperties, HeatSourceProperties, MaterialProperties, PortalProperties}
+import scienceworld.processes.HeatTransfer
 import util.UniqueIdentifier
 
 import scala.collection.mutable
@@ -93,6 +94,33 @@ class EnvObject(var name:String, var objType:String) {
   /*
    * Text-based simulation methods
    */
+  def tick():Boolean = {
+    // Heat transfer: Conductive heat transfer between this container and all objects in the container (container to obj)
+    for (containedObj <- this.getContainedObjects()) {
+      HeatTransfer.heatTransferTouchingObjects(this, containedObj)
+    }
+
+
+    // Heat transfer: Conductive heat transfer between all objects in this container (obj to obj)
+    val containedObjs = this.getContainedObjects().toArray
+    for (i <- 0 until containedObjs.length) {
+      for (j <- 0 until i) {
+        if (i != j) {
+          HeatTransfer.heatTransferTouchingObjects(containedObjs(i), containedObjs(j) )
+        }
+      }
+    }
+
+
+    // Run tick for all objects further down in the object tree
+    for (containedObj <- this.getContainedObjects()) {
+      containedObj.tick()
+    }
+
+    // Return
+    true
+  }
+
   def getReferents():Set[String] = {
     val out = mutable.Set[String]()
     out.add("object")
