@@ -1,6 +1,6 @@
 package scienceworld.Objects.devices
 
-import scienceworld.Properties.{IsActivableDevice, IsContainer, SteelProp}
+import scienceworld.Properties.{IsActivableDevice, IsContainer, IsOpenUnclosableContainer, MoveableProperties, SteelProp}
 import scienceworld.struct.EnvObject
 
 class Device extends EnvObject {
@@ -24,13 +24,9 @@ class Sink extends Device {
   this.name = "sink"
 
   this.propMaterial = Some(new SteelProp())
-
-  val container = new IsContainer()
-  container.isClosable = false
-  container.isOpen = true
-  this.propContainer = Some(container)
-
+  this.propContainer = Some( new IsOpenUnclosableContainer() )
   this.propDevice = Some(new IsActivableDevice())
+  this.propMoveable = Some(new MoveableProperties(isMovable = false))
 
 
   override def getReferents(): Set[String] = {

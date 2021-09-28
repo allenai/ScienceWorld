@@ -11,7 +11,26 @@ import scienceworld.struct.EnvObject
 class ActionEat(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
   override def runAction(): String = {
-    return "You eat the thing."
+    val agent = assignments("agent")
+    val food = assignments("food")
+
+    // Case 1: Food is not edible
+    if ((food.propEdibility.isEmpty) || (food.propEdibility.get.isEdible == false)) {
+      return "The " + food.name + " is not edible."
+    }
+
+    // Case 2: Poisonous?
+    if (food.propEdibility.get.isPoisonous) {
+      food.removeAndResetContainer()
+      return "You don't feel well."
+      //TODO: Health?
+    }
+
+    // Case 3: Food is edible
+    food.removeAndResetContainer()
+    return "The " + food.name + " was delicious."
+    // TODO: Increase health/nutrients/etc
+
   }
 
 }

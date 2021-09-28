@@ -1,6 +1,6 @@
 package scienceworld.input
 
-import scienceworld.actions.{Action, ActionActivate, ActionCloseDoor, ActionDeactivate, ActionEat, ActionLookAround, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor}
+import scienceworld.actions.{Action, ActionActivate, ActionCloseDoor, ActionDeactivate, ActionEat, ActionLookAround, ActionLookAt, ActionLookIn, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor}
 
 object ActionTypecaster {
 
@@ -13,6 +13,8 @@ object ActionTypecaster {
       case ActionCloseDoor.ACTION_NAME => new ActionCloseDoor(action, assignments)
       case ActionMoveThroughDoor.ACTION_NAME => new ActionMoveThroughDoor(action, assignments)
       case ActionLookAround.ACTION_NAME => new ActionLookAround(action, assignments)
+      case ActionLookAt.ACTION_NAME => new ActionLookAt(action, assignments)
+      case ActionLookIn.ACTION_NAME => new ActionLookIn(action, assignments)
       case ActionActivate.ACTION_NAME => new ActionActivate(action, assignments)
       case ActionDeactivate.ACTION_NAME => new ActionDeactivate(action, assignments)
       case ActionEat.ACTION_NAME => new ActionEat(action, assignments)

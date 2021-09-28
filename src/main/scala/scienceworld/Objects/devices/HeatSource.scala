@@ -1,6 +1,6 @@
 package scienceworld.Objects.devices
 
-import scienceworld.Properties.{HeatSourceProperties, HeatSourcePropertiesStove}
+import scienceworld.Properties.{HeatSourceProperties, HeatSourcePropertiesStove, IsOpenUnclosableContainer, MoveableProperties}
 import scienceworld.processes.HeatTransfer
 
 class HeatSource extends Device {
@@ -28,7 +28,8 @@ class Stove extends HeatSource {
   this.name = "stove"
 
   this.propHeatSource = Some(new HeatSourcePropertiesStove)
-
+  this.propContainer = Some( new IsOpenUnclosableContainer() )
+  this.propMoveable = Some(new MoveableProperties(isMovable = false))
 
   override def getReferents():Set[String] = {
     Set("stove", this.name)

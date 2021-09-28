@@ -138,6 +138,7 @@ object EntryPoint {
 
         // Process step in environment
         val description = agentInterface.step(userInputString)
+        println("")
         println("Description: ")
         println(description)
 

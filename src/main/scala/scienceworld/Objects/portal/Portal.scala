@@ -1,6 +1,6 @@
 package scienceworld.Objects.portal
 
-import scienceworld.Properties.PortalProperties
+import scienceworld.Properties.{IsContainer, MoveableProperties, PortalProperties}
 import scienceworld.struct.EnvObject
 
 
@@ -15,7 +15,9 @@ class Door(isOpen:Boolean, connectsFrom:EnvObject, connectsTo:EnvObject) extends
 
   this.name = "door"
 
-  val portalProp = new PortalProperties(isOpen=isOpen, connectsFrom=connectsFrom, connectsTo=connectsTo)
+  propPortal = Some( new PortalProperties(isOpen=isOpen, connectsFrom=connectsFrom, connectsTo=connectsTo) )
+  propMoveable = Some( new MoveableProperties(isMovable = false) )
+
 
   override def getReferents(): Set[String] = {
     Set("door", "door to " + connectsTo.name, connectsTo.name + " door")

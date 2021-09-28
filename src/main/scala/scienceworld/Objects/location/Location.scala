@@ -1,10 +1,14 @@
 package scienceworld.Objects.location
 
 import scienceworld.Objects.Air
+import scienceworld.Properties.{ContainerProperties, IsContainer, IsOpenUnclosableContainer, MoveableProperties}
 import scienceworld.struct.EnvObject
 
 class Location extends EnvObject {
   this.name = "location"
+
+  propMoveable = Some( new MoveableProperties(isMovable = false) )
+  propContainer = Some( new IsOpenUnclosableContainer() )
 
   override def getReferents(): Set[String] = {
     Set("location", this.name)
