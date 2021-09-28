@@ -1,7 +1,7 @@
 package scienceworld.struct
 
 import scienceworld.Properties.{ContainerProperties, DeviceProperties, EdibilityProperties, HeatSourceProperties, MaterialProperties, PortalProperties}
-import scienceworld.processes.HeatTransfer
+import scienceworld.processes.{HeatTransfer, StateOfMatter}
 import util.UniqueIdentifier
 
 import scala.collection.mutable
@@ -100,7 +100,6 @@ class EnvObject(var name:String, var objType:String) {
       HeatTransfer.heatTransferTouchingObjects(this, containedObj)
     }
 
-
     // Heat transfer: Conductive heat transfer between all objects in this container (obj to obj)
     val containedObjs = this.getContainedObjects().toArray
     for (i <- 0 until containedObjs.length) {
@@ -111,6 +110,8 @@ class EnvObject(var name:String, var objType:String) {
       }
     }
 
+    // State of matter: Change state of matter based on temperature
+    StateOfMatter.ChangeOfState(this)
 
     // Run tick for all objects further down in the object tree
     for (containedObj <- this.getContainedObjects()) {

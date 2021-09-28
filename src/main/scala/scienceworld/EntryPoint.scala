@@ -76,7 +76,7 @@ object EntryPoint {
     stove.propDevice.get.isActivated = true
     stove.propHeatSource.get.setOnMax()
 
-    for (i <- 0 until 10) {
+    for (i <- 0 until 30) {
       println ("-----------------------------")
       println ("  Iteration " + i)
       println ("-----------------------------")
