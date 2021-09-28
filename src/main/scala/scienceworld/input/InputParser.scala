@@ -12,6 +12,16 @@ import scala.util.control.Breaks.{break, breakable}
 class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   val stopWords = Array("a", "the")
 
+  // Get a list of all referents
+  def getAllReferents(objTreeRoot:EnvObject):Array[String] = {
+    val out = mutable.Set[String]()
+    val allObjs = InputParser.collectObjects(objTreeRoot).toArray
+    for (obj <- allObjs) {
+      out ++= obj.getReferents()
+    }
+
+    out.toArray.map(_.toLowerCase).sorted
+  }
 
   // Main entry point
   def parse(inputStr:String, objTreeRoot:EnvObject, agent:EnvObject): (Boolean, String, String, Option[InputMatch]) = {      // (Success, errorMessage, userString)
@@ -306,7 +316,7 @@ object InputParser {
   }
 
   def getObjectReferents(obj:EnvObject):Array[String] = {
-    return obj.getReferents().toArray
+    return obj.getReferents().map(_.toLowerCase).toArray
   }
 
 

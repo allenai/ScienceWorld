@@ -16,6 +16,9 @@ class ActionHandler {
     actions(actionName) = new ActionRequestDef(actionName, new ParamSigList(List.empty[ParamSig]), triggerPhrase)
   }
 
+  def addAction(actionDef:ActionRequestDef): Unit = {
+    actions(actionDef.name) = actionDef
+  }
 
 
 

@@ -7,7 +7,7 @@ import scienceworld.Objects.{Apple, MetalPot, Water}
 import scienceworld.Objects.devices.{Sink, Stove}
 import scienceworld.Objects.location.{Location, Room, Universe}
 import scienceworld.Objects.portal.Door
-import scienceworld.input.{ActionHandler, InputParser}
+import scienceworld.input.{ActionDefinitions, ActionHandler, InputParser}
 
 class EntryPoint {
 
@@ -142,20 +142,21 @@ object EntryPoint {
 
 
     println ("Completed")
+    val actionHandler = ActionDefinitions.mkActionDefinitions()
 
-    val actionHandler = new ActionHandler()
-
-    val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("eat", "consume")),
-      new ActionExprIdentifier("food")
-    ))
-    actionHandler.addAction("eat", List(triggerPhrase))
-
-    println (actionHandler.actions.toList)
 
     val inputParser = new InputParser(actionHandler.getActions())
-    val result = inputParser.parse("eat apple", universe, agent)
-    println(result)
+
+    println ("Referents: " + inputParser.getAllReferents(universe).mkString(", "))
+
+    val result1 = inputParser.parse("eat apple", universe, agent)
+    println(result1)
+    val result2 = inputParser.parse("move stove to kitchen", universe, agent)
+    println(result2)
+    val result3 = inputParser.parse("open door to kitchen", roomKitchen, agent)
+    println(result3)
+    val result4 = inputParser.parse("open door", universe, agent)
+    println(result4)
 
 
     println ("")
