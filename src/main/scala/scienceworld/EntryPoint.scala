@@ -1,13 +1,15 @@
 package scienceworld
 
-import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
-import language.runtime.runners.ActionRunner
 import scienceworld.Objects.agent.Agent
 import scienceworld.Objects.{Apple, MetalPot, Water}
 import scienceworld.Objects.devices.{Sink, Stove}
 import scienceworld.Objects.location.{Location, Room, Universe}
 import scienceworld.Objects.portal.Door
 import scienceworld.input.{ActionDefinitions, ActionHandler, InputParser}
+import scienceworld.runtime.AgentInterface
+
+import scala.io.StdIn.readLine
+import scala.util.control.Breaks.{break, breakable}
 
 class EntryPoint {
 
@@ -25,6 +27,9 @@ object EntryPoint {
     val door2 = new Door(isOpen, location2, location1)
     location2.addObject(door2)
   }
+
+
+
 
   /*
    * Processing user input
@@ -56,6 +61,10 @@ object EntryPoint {
 
   def main(args:Array[String]) = {
     println("Initializing... ")
+
+    val actionHandler = ActionDefinitions.mkActionDefinitions()
+    val inputParser = new InputParser(actionHandler.getActions())
+
 
     // Universe (object tree root)
     val universe = new Universe()
@@ -114,24 +123,51 @@ object EntryPoint {
 
 
     val startTime = System.currentTimeMillis()
-    var numIterations:Int = 0
 
-    for (i <- 0 until 30) {
-      println ("-----------------------------")
-      println ("  Iteration " + i)
-      println ("-----------------------------")
+    val agentInterface = new AgentInterface(universe, agent, actionHandler)
+    var curIter = 0
 
-      universe.tick()
+    breakable {
+      var userInputString:String = "look around"
+      while (true) {
+        println("")
+        println("---------------------------------------")
+        println(" Iteration " + curIter)
+        println("---------------------------------------")
+        println("")
 
-      println("metal pot: " + metalPot.propMaterial.get.temperatureC)
-      println("water: " + water.propMaterial.get.temperatureC)
+        // Process step in environment
+        val description = agentInterface.step(userInputString)
+        println("Description: ")
+        println(description)
 
-      numIterations += 1
+        // DEBUG
+        val referents = agentInterface.inputParser.getAllReferents(agentInterface.getAgentVisibleObjects()._2)
+        println("Possible referents: " + referents.mkString(", "))
+
+        // Get (and process) next user action
+        var validInput:Boolean = false
+        while (!validInput) {
+          userInputString = agentInterface.getUserInput()
+
+          if (userInputString == "debug") {
+            //agentInterface.printDebugDisplay()
+          } else {
+            validInput = true
+          }
+        }
+
+        if ((userInputString.trim.toLowerCase == "quit") || (userInputString.trim.toLowerCase == "exit")) break()
+        curIter += 1
+
+        println("metal pot: " + metalPot.propMaterial.get.temperatureC)
+        println("water: " + water.propMaterial.get.temperatureC)
+
+      }
     }
-    println("")
 
     val deltaTime = System.currentTimeMillis() - startTime
-    println("Total execution time: " + deltaTime + " msec for " + numIterations + " iterations (" + (numIterations / (deltaTime.toDouble/1000.0f)) + " iterations/sec)")
+    println("Total execution time: " + deltaTime + " msec for " + curIter + " iterations (" + (curIter / (deltaTime.toDouble/1000.0f)) + " iterations/sec)")
 
 
 
@@ -142,10 +178,6 @@ object EntryPoint {
 
 
     println ("Completed")
-    val actionHandler = ActionDefinitions.mkActionDefinitions()
-
-
-    val inputParser = new InputParser(actionHandler.getActions())
 
     println ("Referents: " + inputParser.getAllReferents(universe).mkString(", "))
 
@@ -157,6 +189,7 @@ object EntryPoint {
     println(result3)
     val result4 = inputParser.parse("open door", universe, agent)
     println(result4)
+
 
 
     println ("")
