@@ -30,31 +30,6 @@ object EntryPoint {
 
 
 
-
-  /*
-   * Processing user input
-   */
-  /*
-  def processUserInput(inputStr:String):(Boolean, String) = {   // (Success, statusString)
-
-    val (successVisible, visibleObjects) = this.getAgentVisibleObjects()      // TODO: Currently just a reference to the container (current room), rather than a list
-    if (!successVisible) throw new RuntimeException("ERROR: Agent is not in container.")
-
-    //val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, interpreter.objectTreeRoot, agent)
-    val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, visibleObjects, agent)
-    if (!successUserInput) {
-      println("ERROR: " + errStr)
-    } else {
-      println(userStr)
-    }
-
-    return (successUserInput, userStr)
-  }
-
-   */
-
-
-
   /*
    * Main
    */
@@ -169,29 +144,6 @@ object EntryPoint {
 
     val deltaTime = System.currentTimeMillis() - startTime
     println("Total execution time: " + deltaTime + " msec for " + curIter + " iterations (" + (curIter / (deltaTime.toDouble/1000.0f)) + " iterations/sec)")
-
-
-
-    /*
-    val possibleActions = program.actions.getOrElse(List.empty[ActionRequestDef]).toArray
-    val actionRunner = new ActionRunner(possibleActions, program.taxonomy)
-     */
-
-
-    println ("Completed")
-
-    println ("Referents: " + inputParser.getAllReferents(universe).mkString(", "))
-
-    val result1 = inputParser.parse("eat apple", universe, agent)
-    println(result1)
-    val result2 = inputParser.parse("move stove to kitchen", universe, agent)
-    println(result2)
-    val result3 = inputParser.parse("open door to kitchen", roomKitchen, agent)
-    println(result3)
-    val result4 = inputParser.parse("open door", universe, agent)
-    println(result4)
-
-
 
     println ("")
     println ("Exiting...")

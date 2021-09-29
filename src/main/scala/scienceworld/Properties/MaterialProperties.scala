@@ -47,6 +47,141 @@ class MetalProp extends MaterialProperties {
   electricallyConductive          = true
 }
 
+class AluminumProp extends MetalProp {
+  substanceName                   = "aluminum"
+  color                           = "grey"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 2470.0f
+  meltingPoint                    = 660.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
+class BrassProp extends MetalProp {
+  substanceName                   = "brass"
+  color                           = "brown"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 1100.0f
+  meltingPoint                    = 900.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
+class BronzeProp extends MetalProp {
+  substanceName                   = "bronze"
+  color                           = "brown"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 2300.0f
+  meltingPoint                    = 910.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
+class CopperProp extends MetalProp {
+  substanceName                   = "copper"
+  color                           = "brown"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 2500.0f
+  meltingPoint                    = 1083.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
+class GoldProp extends MetalProp {
+  substanceName                   = "gold"
+  color                           = "brown"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 2700.0f
+  meltingPoint                    = 1063.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
+class IronProp extends MetalProp {
+  substanceName                   = "iron"
+  color                           = "grey"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 2862.0f
+  meltingPoint                    = 1538.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
+class LeadProp extends MetalProp {
+  substanceName                   = "lead"
+  color                           = "grey"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 1740.0f
+  meltingPoint                    = 327.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
+class PlatinumProp extends MetalProp {
+  substanceName                   = "platinum"
+  color                           = "grey"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 4400.0f
+  meltingPoint                    = 1770.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
+class SiliconProp extends MetalProp {
+  substanceName                   = "silicon"
+  color                           = "grey"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 2600.0f
+  meltingPoint                    = 1420.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
 class SteelProp extends MetalProp {
   substanceName                   = "steel"
   color                           = "grey"
@@ -62,6 +197,50 @@ class SteelProp extends MetalProp {
 
 }
 
+class TinProp extends MetalProp {
+  substanceName                   = "tin"
+  color                           = "grey"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 2602.0f
+  meltingPoint                    = 232.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
+class TitaniumProp extends MetalProp {
+  substanceName                   = "titanium"
+  color                           = "grey"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 3200.0f
+  meltingPoint                    = 1670.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
+class ZincProp extends MetalProp {
+  substanceName                   = "zinc"
+  color                           = "brown"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 906.0f
+  meltingPoint                    = 419.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
 
 /*
  * Glass
