@@ -1,12 +1,12 @@
 package scienceworld.Objects.devices
 
-import scienceworld.Properties.{IsActivableDevice, IsContainer, IsOpenUnclosableContainer, MoveableProperties, SteelProp}
+import scienceworld.Properties.{IsActivableDeviceOff, IsOpenUnclosableContainer, MoveableProperties, SteelProp}
 import scienceworld.struct.EnvObject
 
 class Device extends EnvObject {
   this.name = "device"
 
-  this.propDevice = Some(new IsActivableDevice())
+  this.propDevice = Some(new IsActivableDeviceOff())
 
   override def getDescription(): String = {
     val os = new StringBuilder
@@ -25,7 +25,7 @@ class Sink extends Device {
 
   this.propMaterial = Some(new SteelProp())
   this.propContainer = Some( new IsOpenUnclosableContainer() )
-  this.propDevice = Some(new IsActivableDevice())
+  this.propDevice = Some(new IsActivableDeviceOff())
   this.propMoveable = Some(new MoveableProperties(isMovable = false))
 
 

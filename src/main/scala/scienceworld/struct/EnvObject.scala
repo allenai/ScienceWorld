@@ -1,6 +1,6 @@
 package scienceworld.struct
 
-import scienceworld.Properties.{ContainerProperties, DeviceProperties, EdibilityProperties, HeatSourceProperties, MaterialProperties, MoveableProperties, PortalProperties}
+import scienceworld.Properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, HeatSourceProperties, MaterialProperties, MoveableProperties, PortalProperties}
 import scienceworld.processes.{HeatTransfer, StateOfMatter}
 import util.UniqueIdentifier
 
@@ -26,6 +26,7 @@ class EnvObject(var name:String, var objType:String) {
   var propContainer:Option[ContainerProperties] = None
   var propDevice:Option[DeviceProperties] = None
   var propHeatSource:Option[HeatSourceProperties] = None
+  var propCoolingSource:Option[CoolingSourceProperties] = None
   var propPortal:Option[PortalProperties] = None
   var propMoveable:Option[MoveableProperties] = Some( new MoveableProperties(isMovable = true) )
 

@@ -2,7 +2,7 @@ package scienceworld
 
 import scienceworld.Objects.agent.Agent
 import scienceworld.Objects.{Apple, MetalPot, Water}
-import scienceworld.Objects.devices.{Sink, Stove}
+import scienceworld.Objects.devices.{Freezer, Fridge, Sink, Stove}
 import scienceworld.Objects.location.{Location, Room, Universe}
 import scienceworld.Objects.portal.Door
 import scienceworld.input.{ActionDefinitions, ActionHandler, InputParser}
@@ -73,6 +73,12 @@ object EntryPoint {
     val stove = new Stove()
     roomKitchen.addObject(stove)
 
+    val fridge = new Fridge()
+    roomKitchen.addObject(fridge)
+
+    val freezer = new Freezer()
+    roomKitchen.addObject(freezer)
+
 
     // Add water to pot, place it on the stove, and turn on the stove.
     val water = new Water()
@@ -117,6 +123,11 @@ object EntryPoint {
         println("Description: ")
         println(description)
 
+        println("")
+        println("metal pot: " + metalPot.propMaterial.get.temperatureC)
+        println("water: " + water.propMaterial.get.temperatureC)
+
+
         // DEBUG
         val referents = agentInterface.inputParser.getAllReferents(agentInterface.getAgentVisibleObjects()._2)
         println("Possible referents: " + referents.mkString(", "))
@@ -135,9 +146,6 @@ object EntryPoint {
 
         if ((userInputString.trim.toLowerCase == "quit") || (userInputString.trim.toLowerCase == "exit")) break()
         curIter += 1
-
-        println("metal pot: " + metalPot.propMaterial.get.temperatureC)
-        println("water: " + water.propMaterial.get.temperatureC)
 
       }
     }

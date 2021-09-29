@@ -34,6 +34,32 @@ object HeatTransfer {
   }
 
 
+  // Heat transfer between a heat source, and an object being heated by it
+  def heatTransferCoolingSource(coolingSource: EnvObject, cooledObj: EnvObject): Unit = {
+    // If this heat source is an activated device, continue.  Or, if it's not a device, we assume always on.
+    if ((coolingSource.propDevice.isEmpty) || (coolingSource.propDevice.isDefined && coolingSource.propDevice.get.isActivated == true)) {
+
+      // If the heat source is on (signified by having a set temperature)
+      if (coolingSource.propCoolingSource.get.curSetTemp.isDefined) {
+        val coolerTemp = coolingSource.propCoolingSource.get.curSetTemp.get
+
+        if (cooledObj.propMaterial.isDefined) { // Only continue if the object has physical properties defined
+          val objTemp = cooledObj.propMaterial.get.temperatureC
+          if (objTemp > coolerTemp) {
+            val deltaTemp = coolerTemp - objTemp
+            var increment = deltaTemp * 0.10
+            cooledObj.propMaterial.get.temperatureC += increment
+
+            println("Heat transfer: Object (" + cooledObj.name + ") tempererature now " + cooledObj.propMaterial.get.temperatureC)
+          }
+        }
+
+      }
+    }
+
+  }
+
+
   // Conductive heat transfer between two touching objects
   def heatTransferTouchingObjects(obj1:EnvObject, obj2:EnvObject): Unit = {
     // Make sure object material properties are defined, or we can't calculate heat transfer

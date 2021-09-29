@@ -33,10 +33,10 @@ class ActionOpenDoor(action:ActionRequestDef, assignments:Map[String, EnvObject]
       }
 
       // Open
-      if (obj.propPortal.get.isOpen) {
+      if (obj.propContainer.get.isOpen) {
         return "The " + obj.name + " is already open."
       } else {
-        obj.propPortal.get.isOpen = true
+        obj.propContainer.get.isOpen = true
         return "The " + obj.name + " is now open."
       }
     }
