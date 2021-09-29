@@ -256,7 +256,7 @@ class GlassProp extends MaterialProperties {
   meltingPoint                    = 1400.0f
   combustionPoint                 = 100000.0f
   // Electrical
-  electricallyConductive          = true
+  electricallyConductive          = false
 
 }
 
@@ -275,7 +275,61 @@ class PlasticProp extends MaterialProperties {
   meltingPoint                    = 200.0f
   combustionPoint                 = 100000.0f
   // Electrical
-  electricallyConductive          = true
+  electricallyConductive          = false
+
+}
+
+/*
+ * Ceramic
+ */
+class CeramicProp extends MaterialProperties {
+  substanceName                   = "ceramic"
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 2000.0f
+  combustionPoint                 = 10000.0f
+  // Electrical
+  electricallyConductive          = false
+
+}
+
+
+
+/*
+ * Wood/Paper
+ */
+class WoodProp extends MaterialProperties {
+  substanceName                   = "wood"
+  color                           = "brown"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 350.0f
+  // Electrical
+  electricallyConductive          = false
+
+}
+
+
+class PaperProp extends MaterialProperties {
+  substanceName                   = "paper"
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 210.0f
+  // Electrical
+  electricallyConductive          = false
 
 }
 
@@ -294,6 +348,6 @@ class WaterProp extends MaterialProperties {
   meltingPoint                    = 0.0f
   combustionPoint                 = 100000.0f
   // Electrical
-  electricallyConductive          = true
+  electricallyConductive          = false
 
 }
