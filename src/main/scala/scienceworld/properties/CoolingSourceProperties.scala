@@ -1,4 +1,4 @@
-package scienceworld.Properties
+package scienceworld.properties
 
 
 class CoolingSourceProperties(var minTemp:Double, var curSetTemp:Option[Double]) {

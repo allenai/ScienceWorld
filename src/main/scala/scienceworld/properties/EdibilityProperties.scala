@@ -1,4 +1,4 @@
-package scienceworld.Properties
+package scienceworld.properties
 
 trait EdibilityProperties {
   var isEdible:Boolean            = true

@@ -1,10 +1,10 @@
 package scienceworld
 
-import scienceworld.Objects.agent.Agent
-import scienceworld.Objects.{Apple, MetalPot, Water}
-import scienceworld.Objects.devices.{Freezer, Fridge, Sink, Stove}
-import scienceworld.Objects.location.{Location, Room, Universe}
-import scienceworld.Objects.portal.Door
+import scienceworld.objects.agent.Agent
+import scienceworld.objects.{Apple, MetalPot, Water}
+import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove}
+import scienceworld.objects.location.{Location, Room, Universe}
+import scienceworld.objects.portal.Door
 import scienceworld.input.{ActionDefinitions, ActionHandler, InputParser}
 import scienceworld.runtime.AgentInterface
 

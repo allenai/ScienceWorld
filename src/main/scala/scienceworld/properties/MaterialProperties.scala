@@ -1,4 +1,4 @@
-package scienceworld.Properties
+package scienceworld.properties
 
 trait MaterialProperties {
   var substanceName:String            = "none"

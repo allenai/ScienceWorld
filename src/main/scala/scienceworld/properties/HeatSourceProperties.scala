@@ -1,4 +1,4 @@
-package scienceworld.Properties
+package scienceworld.properties
 
 
 class HeatSourceProperties(var maxTemp:Double, var curSetTemp:Option[Double]) {

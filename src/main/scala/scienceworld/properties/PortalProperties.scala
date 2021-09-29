@@ -1,4 +1,4 @@
-package scienceworld.Properties
+package scienceworld.properties
 
 import scienceworld.struct.EnvObject
 

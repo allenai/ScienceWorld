@@ -1,6 +1,6 @@
-package scienceworld.Objects
+package scienceworld.objects
 
-import scienceworld.Properties.{AirProp, WaterProp}
+import scienceworld.properties.{AirProp, WaterProp}
 import scienceworld.struct.EnvObject
 
 class Substance extends EnvObject {

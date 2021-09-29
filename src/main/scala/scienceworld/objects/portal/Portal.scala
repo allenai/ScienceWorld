@@ -1,6 +1,6 @@
-package scienceworld.Objects.portal
+package scienceworld.objects.portal
 
-import scienceworld.Properties.{IsContainer, MoveableProperties, PortalProperties}
+import scienceworld.properties.{IsContainer, MoveableProperties, PortalProperties}
 import scienceworld.struct.EnvObject
 
 

@@ -1,6 +1,6 @@
-package scienceworld.Objects.devices
+package scienceworld.objects.devices
 
-import scienceworld.Properties.{IsActivableDeviceOff, IsOpenUnclosableContainer, MoveableProperties, SteelProp}
+import scienceworld.properties.{IsActivableDeviceOff, IsOpenUnclosableContainer, MoveableProperties, SteelProp}
 import scienceworld.struct.EnvObject
 
 class Device extends EnvObject {

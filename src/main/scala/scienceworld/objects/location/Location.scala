@@ -1,7 +1,7 @@
-package scienceworld.Objects.location
+package scienceworld.objects.location
 
-import scienceworld.Objects.Air
-import scienceworld.Properties.{ContainerProperties, IsContainer, IsOpenUnclosableContainer, MoveableProperties}
+import scienceworld.objects.Air
+import scienceworld.properties.{ContainerProperties, IsContainer, IsOpenUnclosableContainer, MoveableProperties}
 import scienceworld.struct.EnvObject
 
 class Location extends EnvObject {

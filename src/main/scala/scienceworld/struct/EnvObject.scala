@@ -1,6 +1,6 @@
 package scienceworld.struct
 
-import scienceworld.Properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, HeatSourceProperties, MaterialProperties, MoveableProperties, PortalProperties}
+import scienceworld.properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, HeatSourceProperties, MaterialProperties, MoveableProperties, PortalProperties}
 import scienceworld.processes.{HeatTransfer, StateOfMatter}
 import util.UniqueIdentifier
 

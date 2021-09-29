@@ -1,6 +1,6 @@
-package scienceworld.Objects.devices
+package scienceworld.objects.devices
 
-import scienceworld.Properties.{CoolingSourcePropertiesFreezer, CoolingSourcePropertiesFridge, HeatSourcePropertiesStove, IsActivableDeviceOn, IsContainer, IsOpenUnclosableContainer, MoveableProperties}
+import scienceworld.properties.{CoolingSourcePropertiesFreezer, CoolingSourcePropertiesFridge, HeatSourcePropertiesStove, IsActivableDeviceOn, IsContainer, IsOpenUnclosableContainer, MoveableProperties}
 import scienceworld.processes.HeatTransfer
 
 class CoolingSource extends Device {

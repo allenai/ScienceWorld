@@ -1,4 +1,4 @@
-package scienceworld.Objects.agent
+package scienceworld.objects.agent
 
 import scienceworld.struct.EnvObject
 

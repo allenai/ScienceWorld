@@ -1,6 +1,6 @@
-package scienceworld.Objects.devices
+package scienceworld.objects.devices
 
-import scienceworld.Properties.{HeatSourceProperties, HeatSourcePropertiesOven, HeatSourcePropertiesStove, IsContainer, IsOpenUnclosableContainer, MoveableProperties}
+import scienceworld.properties.{HeatSourceProperties, HeatSourcePropertiesOven, HeatSourcePropertiesStove, IsContainer, IsOpenUnclosableContainer, MoveableProperties}
 import scienceworld.processes.HeatTransfer
 
 class HeatSource extends Device {

@@ -1,7 +1,7 @@
 package scienceworld.actions
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
-import scienceworld.Objects.portal.Door
+import scienceworld.objects.portal.Door
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.ActionHandler
 import scienceworld.struct.EnvObject
