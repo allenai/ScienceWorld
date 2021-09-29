@@ -1,6 +1,7 @@
 package scienceworld.tasks.goals
 
 import scienceworld.struct.EnvObject
+import scala.util.control.Breaks._
 
 // Storage class for a single goal
 trait Goal {
@@ -38,11 +39,20 @@ class GoalSequence(val subgoals:Array[Goal]) {
    * Tick
    */
   // Checks the current subgoal for completeness.  If completed, it increments the subgoals.
-  def tick(): Unit = {
+  def tick(objMonitor:ObjMonitor): Unit = {
     while (true) {
       val curSubgoal = this.getCurrentSubgoal()
       if (curSubgoal.isDefined) {
-        val isConditionSatisfied = curSubgoal.get.isGoalConditionSatisfied()      //## TODO: Add object monitor
+
+        // Check each object in the set of monitored objects to see if it meets a subgoal condition
+        var isConditionSatisfied:Boolean = false
+        breakable {
+          for (obj <- objMonitor.getMonitoredObjects()) {
+            val isConditionSatisfied = curSubgoal.get.isGoalConditionSatisfied(obj)
+            if (isConditionSatisfied) break()
+          }
+        }
+
         if (isConditionSatisfied) {
           // Current goal condition is satisfied -- test next goal condition until we find one that we don't satisfy, or complete the list.
           curSubgoalIdx += 1
