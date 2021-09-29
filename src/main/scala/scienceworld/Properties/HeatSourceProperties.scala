@@ -19,6 +19,10 @@ class HeatSourcePropertiesStove extends HeatSourceProperties(maxTemp = 260.0f, c
 
 }
 
+class HeatSourcePropertiesOven extends HeatSourceProperties(maxTemp = 540.0f, curSetTemp = None) {
+
+}
+
 class HeatSourcePropertiesWoodFire extends HeatSourceProperties(maxTemp = 600.0f, curSetTemp = None) {
 
 }
