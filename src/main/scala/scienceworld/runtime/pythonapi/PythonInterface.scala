@@ -10,6 +10,11 @@ import scienceworld.tasks.Task
 
 import scala.util.control.Breaks.{break, breakable}
 
+// Storage class
+class PythonInterfaceReturn(val observation:String, val score:Double, val isCompleted:Boolean) {
+
+}
+
 class PythonInterface() {
   var agentInterface:Option[AgentInterface] = None
   var agent:Option[EnvObject] = None
@@ -18,6 +23,8 @@ class PythonInterface() {
   var environmentStr:String = ""
   var curIter:Int = 0
 
+  var score:Double = 0.0
+  var isComplete:Boolean = false
 
   def load(environmentStr:String): Unit = {
     this.environmentStr = environmentStr
@@ -39,14 +46,22 @@ class PythonInterface() {
     sys.exit(0)
   }
 
-  def step(userInputString:String): (String, Double, Boolean) = {
+
+  def getScore():Double = this.score
+
+  def getCompleted():Boolean = this.isComplete
+
+  def step(userInputString:String): String = {
     val outStr = new StringBuilder
     // Error checking
-    if (agentInterface.isEmpty) return ("ERROR: Interface is not initialized -- call reset() before beginning.", 0.0, false)
-    if (agent.isEmpty) return ("ERROR: No agent is marked as main.", 0.0, false)
+    if (agentInterface.isEmpty) return "ERROR: Interface is not initialized -- call reset() before beginning."
+    if (agent.isEmpty) return "ERROR: No agent is marked as main."
 
     // Process step in environment
-    val (description, score, isCompleted) = agentInterface.get.step(userInputString)
+    val (description, score_, isCompleted_) = agentInterface.get.step(userInputString)
+    this.score = score_
+    this.isComplete = isCompleted_
+    
     println("Description: ")
     println(description)
 
@@ -59,7 +74,7 @@ class PythonInterface() {
 
     curIter += 1
     // Return
-    return (outStr.toString(), score, isCompleted)
+    return outStr.toString()
   }
 
 
