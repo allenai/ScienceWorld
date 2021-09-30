@@ -39,7 +39,7 @@ class Fridge extends CoolingSource {
       if (this.propDevice.get.isActivated) {
         this.propCoolingSource.get.setOnMin()
       } else {
-        this.propHeatSource.get.setOff()
+        this.propCoolingSource.get.setOff()
       }
     }
 
