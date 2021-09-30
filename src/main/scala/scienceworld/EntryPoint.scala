@@ -7,6 +7,8 @@ import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.portal.Door
 import scienceworld.input.{ActionDefinitions, ActionHandler, InputParser}
 import scienceworld.runtime.AgentInterface
+import scienceworld.tasks.Task
+import scienceworld.tasks.goals.ObjMonitor
 
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks.{break, breakable}
@@ -108,6 +110,11 @@ object EntryPoint {
     val agentInterface = new AgentInterface(universe, agent, actionHandler)
     var curIter = 0
 
+    // DEBUG: Set the task/goals
+    val goalSequence = Task.mkTaskChangeOfState()
+    val objMonitor = new ObjMonitor()
+    objMonitor.addMonitor(water)
+
     breakable {
       var userInputString:String = "look around"
       while (true) {
@@ -127,6 +134,10 @@ object EntryPoint {
         println("metal pot: " + metalPot.propMaterial.get.temperatureC)
         println("water: " + water.propMaterial.get.temperatureC)
 
+        // Check whether the goal conditions are met
+        goalSequence.tick(objMonitor)
+        println ("Goal Sequence: " + goalSequence.score().formatted("%3.3f"))
+        if (goalSequence.isCompleted()) println ("Goal is completed.")
 
         // DEBUG
         val referents = agentInterface.inputParser.getAllReferents(agentInterface.getAgentVisibleObjects()._2)

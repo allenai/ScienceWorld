@@ -3,6 +3,22 @@ package scienceworld.tasks.goals.specificgoals
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.Goal
 
+class GoalIsNotStateOfMatter(val isNotState:String) extends Goal {
+
+  override def isGoalConditionSatisfied(obj:EnvObject):Boolean = {
+    // Check for material properties to be defined
+    if (!obj.propMaterial.isDefined) return false
+
+    // Check for state of matter to NOT be a specific value
+    println ("obj.propMaterial.get.stateOfMatter: " + obj.propMaterial.get.stateOfMatter)
+    if (obj.propMaterial.get.stateOfMatter != isNotState) {
+      return true
+    }
+    return false
+  }
+
+}
+
 class GoalChangeStateOfMatter(val changeToState:String) extends Goal {
 
   override def isGoalConditionSatisfied(obj:EnvObject):Boolean = {

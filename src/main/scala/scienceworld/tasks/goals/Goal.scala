@@ -39,28 +39,31 @@ class GoalSequence(val subgoals:Array[Goal]) {
    * Tick
    */
   // Checks the current subgoal for completeness.  If completed, it increments the subgoals.
-  def tick(objMonitor:ObjMonitor): Unit = {
+  def tick(objMonitor: ObjMonitor): Unit = {
     while (true) {
       val curSubgoal = this.getCurrentSubgoal()
-      if (curSubgoal.isDefined) {
+      if (!curSubgoal.isDefined) return
 
-        // Check each object in the set of monitored objects to see if it meets a subgoal condition
-        var isConditionSatisfied:Boolean = false
-        breakable {
-          for (obj <- objMonitor.getMonitoredObjects()) {
-            val isConditionSatisfied = curSubgoal.get.isGoalConditionSatisfied(obj)
-            if (isConditionSatisfied) break()
-          }
-        }
-
-        if (isConditionSatisfied) {
-          // Current goal condition is satisfied -- test next goal condition until we find one that we don't satisfy, or complete the list.
-          curSubgoalIdx += 1
-        } else {
-          // Current goal condition not satisfied -- return
-          return
+      // Check each object in the set of monitored objects to see if it meets a subgoal condition
+      var isConditionSatisfied: Boolean = false
+      breakable {
+        for (obj <- objMonitor.getMonitoredObjects()) {
+          println("Checking obj (" + obj.toStringMinimal() + ") against subgoal " + curSubgoalIdx)
+          isConditionSatisfied = curSubgoal.get.isGoalConditionSatisfied(obj)
+          if (isConditionSatisfied) break()
         }
       }
+
+      if (isConditionSatisfied) {
+        // Current goal condition is satisfied -- test next goal condition until we find one that we don't satisfy, or complete the list.
+        println("Subgoal satisfied.")
+        curSubgoalIdx += 1
+      } else {
+        // Current goal condition not satisfied -- return
+        println("Subgoal not satisfied.")
+        return
+      }
+
     }
   }
 
