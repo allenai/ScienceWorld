@@ -61,7 +61,7 @@ class PythonInterface() {
     val (description, score_, isCompleted_) = agentInterface.get.step(userInputString)
     this.score = score_
     this.isComplete = isCompleted_
-    
+
     println("Description: ")
     println(description)
 

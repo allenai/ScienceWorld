@@ -4,9 +4,11 @@
 #   conda activate virtualenv-scala
 #   pip install py4j
 
-from py4j.java_gateway import JavaGateway
+from py4j.java_gateway import JavaGateway, GatewayParameters
 import time
+import timeit
 import subprocess
+import py4j
 
 class VirtualEnv:
 
@@ -20,7 +22,7 @@ class VirtualEnv:
         self.launchServer()
 
         # Connect to the JVM
-        self.gateway = JavaGateway()
+        self.gateway = JavaGateway(gateway_parameters=GatewayParameters(auto_field=True))
 
         # Load the script
         self.load()
@@ -37,10 +39,10 @@ class VirtualEnv:
     #
     #   Methods
     #
-    
+
     # Launches the PY4J server
     def launchServer(self):            
-        cmd = "nohup java -cp virtualenv-scala-assembly-1.0.jar language.runtime.pythonapi.PythonInterface >/dev/null 2>&1 &"
+        cmd = "nohup java -cp virtualenv-scala-assembly-1.0.jar scienceworld.runtime.pythonapi.PythonInterface >/dev/null 2>&1 &"
         #"nohup usr/local/bin/otherscript.pl {0} >/dev/null 2>&1 &", shell=True
         subprocess.Popen(cmd, shell=True)
         time.sleep(1)
@@ -62,8 +64,12 @@ class VirtualEnv:
 
     # Step
     def step(self, inputStr:str):
+        #observation, score, isCompleted = self.gateway.step(inputStr)
         observation = self.gateway.step(inputStr)
-        return observation
+        score = self.gateway.getScore()
+        isCompleted = self.gateway.getCompleted()
+
+        return observation, score, isCompleted
 
 
 
@@ -75,8 +81,33 @@ class VirtualEnv:
 def example1(scriptFilename:str):    
     env = VirtualEnv(scriptFilename)
     env.reset()
-    observation = env.step("look around")
+    observation, score, isCompleted = env.step("look around")
     print(observation)
+
+def speedTest(scriptFilename:str):
+    exitCommands = ["quit", "exit"]
+    # Initialize environment
+    env = VirtualEnv(scriptFilename)
+    env.reset()
+
+    numEpochs = 1000
+
+    start = timeit.default_timer()
+    userInputStr = "look around"        # First action
+    for i in range(0, numEpochs):
+        # Send user input, get response
+        observation, score, isCompleted = env.step(userInputStr)
+
+    end = timeit.default_timer()
+    deltaTime = end - start
+    print("Runtime: " + str(deltaTime) + " seconds")
+    print("Rate: " + str(numEpochs / deltaTime) + " epochs/second")
+
+    print("Shutting down server...")    
+    #env.shutdown()
+
+    print("Completed.")
+
 
 # Example user input console, to play through a game. 
 def userConsole(scriptFilename:str):
@@ -88,8 +119,10 @@ def userConsole(scriptFilename:str):
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands):
         # Send user input, get response
-        observation = env.step(userInputStr)
+        observation, score, isCompleted = env.step(userInputStr)
         print("\n" + observation)
+        print("Score: " + str(score))
+        print("isCompleted: " + str(isCompleted))
 
         # Get user input
         userInputStr = input('> ')
@@ -113,7 +146,10 @@ def main():
     print("Virtual Text Environment API demo")
 
     # Run a user console
-    userConsole(scriptFilename)
+    #userConsole(scriptFilename)
+
+    # Run speed test
+    speedTest(scriptFilename)
 
     print("Exiting.")
 

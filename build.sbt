@@ -39,7 +39,7 @@ libraryDependencies ++= Seq(
 libraryDependencies += "net.sf.py4j" % "py4j" % "0.10.3"
 
 // Set main class to be the Python Interface
-mainClass in Compile := Some("language.runtime.pythonapi.PythonInterface")
+mainClass in Compile := Some("scienceworld.runtime.pythonapi.PythonInterface")
 
 //pomOnly()
 
