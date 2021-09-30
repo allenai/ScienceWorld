@@ -82,6 +82,11 @@ object EntryPoint {
         val referents = agentInterface.inputParser.getAllReferents(agentInterface.getAgentVisibleObjects()._2)
         println("Possible referents: " + referents.mkString(", "))
 
+        println("Possible actions:\n\t" + actionHandler.getActionExamplesPlainText().mkString("\n\t"))
+
+        println("Possible Combinations:\n\t" + agentInterface.getPossibleActionObjectCombinations().mkString("\n\t") )
+
+
         // Get (and process) next user action
         var validInput:Boolean = false
         while (!validInput) {

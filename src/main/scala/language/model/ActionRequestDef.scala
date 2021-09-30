@@ -1,11 +1,17 @@
 package language.model
 
+import scala.collection.mutable.ArrayBuffer
 import scala.util.parsing.input.Positional
 
 case class ActionRequestDef(val name:String, val paramSigList:ParamSigList, val triggers:List[ActionTrigger]) extends Statement {
 
   def getVarType(varName:String):String = {
     paramSigList.getVarType(varName)
+  }
+
+  def mkHumanReadableExample():String = {
+    if (triggers.length == 0) return ""
+    return triggers(0).mkHumanReadableExample()
   }
 
   override def toString():String = {
@@ -25,6 +31,16 @@ case class ActionRequestDef(val name:String, val paramSigList:ParamSigList, val 
 
 case class ActionTrigger(val pattern:List[ActionExpr]) extends Positional {
 
+  def mkHumanReadableExample():String = {
+    val out = new ArrayBuffer[String]
+
+    for (elem <- pattern) {
+      out.append(elem.mkHumanReadableExample())
+    }
+
+    out.mkString(" ")
+  }
+
   override def toString():String = {
     val os = new StringBuilder
 
@@ -38,13 +54,22 @@ case class ActionTrigger(val pattern:List[ActionExpr]) extends Positional {
 }
 
 class ActionExpr() extends Positional {
-
+  def mkHumanReadableExample():String = return ""
 }
 
 case class ActionExprOR(val orElements:List[String]) extends ActionExpr {
+  override def mkHumanReadableExample():String = {
+    if (orElements.length == 0) return ""
+    return orElements(0)      // Return first element
+  }
+
   override def toString():String = return "ActionExprOR(orElements: " + orElements.mkString(",") + ")"
 }
 
 case class ActionExprIdentifier(val identifier:String) extends ActionExpr {
+  override def mkHumanReadableExample():String = {
+    return "OBJ"
+  }
+
   override def toString():String = return "ActionExprIdentifier(identifier: " + identifier + ")"
 }

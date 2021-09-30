@@ -7,7 +7,7 @@ import scienceworld.objects.agent.Agent
 import scienceworld.runtime.AgentInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.Task
-
+import collection.JavaConverters._
 import scala.util.control.Breaks.{break, breakable}
 
 // Storage class
@@ -16,6 +16,8 @@ class PythonInterfaceReturn(val observation:String, val score:Double, val isComp
 }
 
 class PythonInterface() {
+  val ERROR_MESSAGE_UNINITIALIZED = "ERROR: Interface is not initialized -- call reset() before beginning."
+
   var agentInterface:Option[AgentInterface] = None
   var agent:Option[EnvObject] = None
   val actionHandler = ActionDefinitions.mkActionDefinitions()
@@ -26,6 +28,9 @@ class PythonInterface() {
   var score:Double = 0.0
   var isComplete:Boolean = false
 
+  /*
+   * Load/reset/shutdown server
+   */
   def load(environmentStr:String): Unit = {
     this.environmentStr = environmentStr
 
@@ -46,6 +51,28 @@ class PythonInterface() {
     sys.exit(0)
   }
 
+  /*
+   * Get object/action space
+   */
+  def getPossibleActions(): java.util.List[String] = {
+    if (!agentInterface.isDefined) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
+    agentInterface.get.getPossibleActions().toList.asJava
+  }
+
+  def getPossibleObjects(): java.util.List[String] = {
+    if (!agentInterface.isDefined) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
+    agentInterface.get.getPossibleObjects().toList.asJava
+  }
+
+  def getPossibleActionObjectCombinations(): java.util.List[String] = {
+    if (!agentInterface.isDefined) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
+    agentInterface.get.getPossibleActionObjectCombinations().toList.asJava
+  }
+
+
+  /*
+   * Take action steps and get observations/scores
+   */
 
   def getScore():Double = this.score
 
@@ -54,7 +81,7 @@ class PythonInterface() {
   def step(userInputString:String): String = {
     val outStr = new StringBuilder
     // Error checking
-    if (agentInterface.isEmpty) return "ERROR: Interface is not initialized -- call reset() before beginning."
+    if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
     if (agent.isEmpty) return "ERROR: No agent is marked as main."
 
     // Process step in environment

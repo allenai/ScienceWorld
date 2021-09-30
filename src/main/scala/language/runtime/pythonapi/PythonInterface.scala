@@ -29,6 +29,8 @@ class PythonInterface() {
     sys.exit(0)
   }
 
+
+
   def step(userInputString:String): String = {
     val outStr = new StringBuilder
     // Error checking

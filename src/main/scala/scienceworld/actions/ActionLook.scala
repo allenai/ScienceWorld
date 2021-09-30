@@ -29,7 +29,7 @@ object ActionLookAround {
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("look", "look around"))
+      new ActionExprOR(List("look around", "look"))
     ))
 
     val action = mkActionRequest(ACTION_NAME, triggerPhrase)

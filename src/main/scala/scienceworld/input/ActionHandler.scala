@@ -56,6 +56,21 @@ class ActionHandler {
     return out.mkString("\n")
   }
 
+
+  /*
+   * User-facing functions
+   */
+  def getActionExamplesPlainText(): Array[String] = {
+    val out = new ArrayBuffer[String]
+
+    for (action <- this.getActions()) {
+      out.append( action.mkHumanReadableExample() )
+    }
+
+    // Return
+    out.sorted.toArray
+  }
+
 }
 
 

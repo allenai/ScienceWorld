@@ -62,6 +62,22 @@ class VirtualEnv:
     def shutdown(self):
         self.gateway.shutdown()
 
+
+
+    # Get possible actions
+    def getPossibleActions(self):
+        return self.gateway.getPossibleActions()
+
+    # Get possible objects
+    def getPossibleObjects(self):
+        return self.gateway.getPossibleObjects()
+
+    # Get possible action/object combinations
+    def getPossibleActionObjectCombinations(self):
+        return self.gateway.getPossibleActionObjectCombinations()
+
+
+
     # Step
     def step(self, inputStr:str):
         #observation, score, isCompleted = self.gateway.step(inputStr)
@@ -115,6 +131,11 @@ def userConsole(scriptFilename:str):
     # Initialize environment
     env = VirtualEnv(scriptFilename)
     env.reset()
+    
+    print("Possible actions: " + str(env.getPossibleActions()) )
+    print("Possible objects: " + str(env.getPossibleObjects()) )
+    print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
+    
 
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands):
@@ -146,10 +167,10 @@ def main():
     print("Virtual Text Environment API demo")
 
     # Run a user console
-    #userConsole(scriptFilename)
+    userConsole(scriptFilename)
 
     # Run speed test
-    speedTest(scriptFilename)
+    #speedTest(scriptFilename)
 
     print("Exiting.")
 
