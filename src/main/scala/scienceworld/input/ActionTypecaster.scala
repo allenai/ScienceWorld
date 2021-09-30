@@ -1,10 +1,11 @@
 package scienceworld.input
 
-import scienceworld.actions.{Action, ActionActivate, ActionCloseDoor, ActionDeactivate, ActionEat, ActionLookAround, ActionLookAt, ActionLookIn, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor}
+import scienceworld.actions.{Action, ActionActivate, ActionCloseDoor, ActionDeactivate, ActionEat, ActionFocus, ActionLookAround, ActionLookAt, ActionLookIn, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor}
+import scienceworld.tasks.goals.ObjMonitor
 
 object ActionTypecaster {
 
-  def typecastAction(actionIn:InputMatch):Action = {
+  def typecastAction(actionIn:InputMatch, objMonitor:ObjMonitor):Action = {
     val action = actionIn.actionRequestDef.get
     val assignments = actionIn.varLUT.toMap
 
@@ -19,6 +20,7 @@ object ActionTypecaster {
       case ActionDeactivate.ACTION_NAME => new ActionDeactivate(action, assignments)
       case ActionEat.ACTION_NAME => new ActionEat(action, assignments)
       case ActionMoveObject.ACTION_NAME => new ActionMoveObject(action, assignments)
+      case ActionFocus.ACTION_NAME => new ActionFocus(action, assignments, objMonitor)
 
       case _ => throw new RuntimeException("ERROR: Unknown action name: " + action.name)
     }

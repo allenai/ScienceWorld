@@ -11,6 +11,7 @@ class ObjMonitor(val maxSize:Int = 1) {
   /*
    * Accessors
    */
+  def clearMonitoredObjects() = { this.monitoredObjects.clear() }
 
   def getMonitoredObjects():Set[EnvObject] = this.monitoredObjects.toSet
 

@@ -42,7 +42,7 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
     if (!successVisible) throw new RuntimeException("ERROR: Agent is not in container.")
 
     //val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, interpreter.objectTreeRoot, agent)
-    val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, agent)
+    val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, agent, objMonitor)
     if (!successUserInput) {
       println("ERROR: " + errStr)
     } else {

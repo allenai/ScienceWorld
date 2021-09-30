@@ -88,7 +88,7 @@ object EntryPoint {
 
     stove.addObject(metalPot)
 
-    stove.propDevice.get.isActivated = true
+    //stove.propDevice.get.isActivated = true
 
 
     // Agent
@@ -99,8 +99,8 @@ object EntryPoint {
     println(universe.getDescription())
 
     // Turn on the heat of the stove.
-    stove.propDevice.get.isActivated = true
-    stove.propHeatSource.get.setOnMax()
+    //stove.propDevice.get.isActivated = true
+    //stove.propHeatSource.get.setOnMax()
 
 
 

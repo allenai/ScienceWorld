@@ -31,6 +31,19 @@ class Stove extends HeatSource {
   this.propContainer = Some( new IsOpenUnclosableContainer() )
   this.propMoveable = Some(new MoveableProperties(isMovable = false))
 
+  override def tick():Boolean = {
+    // If it's activated, then set max temp.  If deactivated, set temp to off.
+    if (this.propDevice.isDefined) {
+      if (this.propDevice.get.isActivated) {
+        this.propHeatSource.get.setOnMax()
+      } else {
+        this.propHeatSource.get.setOff()
+      }
+    }
+
+    super.tick()
+  }
+
   override def getReferents():Set[String] = {
     Set("stove", this.name)
   }
@@ -58,6 +71,19 @@ class HotPlate extends HeatSource {
   this.propContainer = Some( new IsOpenUnclosableContainer() )
   this.propMoveable = Some(new MoveableProperties(isMovable = false))
 
+  override def tick():Boolean = {
+    // If it's activated, then set max temp.  If deactivated, set temp to off.
+    if (this.propDevice.isDefined) {
+      if (this.propDevice.get.isActivated) {
+        this.propHeatSource.get.setOnMax()
+      } else {
+        this.propHeatSource.get.setOff()
+      }
+    }
+
+    super.tick()
+  }
+
   override def getReferents():Set[String] = {
     Set("hot plate", this.name)
   }
@@ -84,6 +110,19 @@ class Oven extends HeatSource {
   this.propHeatSource = Some(new HeatSourcePropertiesOven)
   this.propContainer = Some( new IsContainer() )
   this.propMoveable = Some(new MoveableProperties(isMovable = false))
+
+  override def tick():Boolean = {
+    // If it's activated, then set max temp.  If deactivated, set temp to off.
+    if (this.propDevice.isDefined) {
+      if (this.propDevice.get.isActivated) {
+        this.propHeatSource.get.setOnMax()
+      } else {
+        this.propHeatSource.get.setOff()
+      }
+    }
+
+    super.tick()
+  }
 
   override def getReferents():Set[String] = {
     Set("oven", this.name)

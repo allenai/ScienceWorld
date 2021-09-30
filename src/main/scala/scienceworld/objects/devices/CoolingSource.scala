@@ -33,6 +33,19 @@ class Fridge extends CoolingSource {
   this.propMoveable = Some(new MoveableProperties(isMovable = false))
   this.propDevice = Some(new IsActivableDeviceOn)
 
+  override def tick():Boolean = {
+    // If it's activated, then set min temp.  If deactivated, set temp to off.
+    if (this.propDevice.isDefined) {
+      if (this.propDevice.get.isActivated) {
+        this.propCoolingSource.get.setOnMin()
+      } else {
+        this.propHeatSource.get.setOff()
+      }
+    }
+
+    super.tick()
+  }
+
   override def getReferents():Set[String] = {
     Set("fridge", this.name)
   }
@@ -66,6 +79,19 @@ class Freezer extends CoolingSource {
   this.propContainer = Some( new IsContainer() )
   this.propMoveable = Some(new MoveableProperties(isMovable = false))
   this.propDevice = Some(new IsActivableDeviceOn)
+
+  override def tick():Boolean = {
+    // If it's activated, then set min temp.  If deactivated, set temp to off.
+    if (this.propDevice.isDefined) {
+      if (this.propDevice.get.isActivated) {
+        this.propCoolingSource.get.setOnMin()
+      } else {
+        this.propHeatSource.get.setOff()
+      }
+    }
+
+    super.tick()
+  }
 
   override def getReferents():Set[String] = {
     Set("freezer", this.name)
