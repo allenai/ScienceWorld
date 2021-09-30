@@ -5,9 +5,10 @@
 #   pip install py4j
 
 from py4j.java_gateway import JavaGateway, GatewayParameters
-import time
-import timeit
 import subprocess
+import random
+import timeit
+import time
 import py4j
 
 class VirtualEnv:
@@ -124,6 +125,57 @@ def speedTest(scriptFilename:str):
 
     print("Completed.")
 
+# Example user input console, to play through a game. 
+def randomModel(scriptFilename:str):
+    exitCommands = ["quit", "exit"]
+    # Initialize environment
+    env = VirtualEnv(scriptFilename)
+    env.reset()
+    
+    print("Possible actions: " + str(env.getPossibleActions()) )
+    print("Possible objects: " + str(env.getPossibleObjects()) )
+    print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
+    
+    score = 0.0
+    isCompleted = False
+    curIter = 0
+    maxIter = 1000
+
+    userInputStr = "look around"        # First action
+    while (userInputStr not in exitCommands) and (isCompleted == False) and (curIter < maxIter):
+        print("----------------------------------------------------------------")
+        print ("Iteration: " + str(curIter))
+
+        # Send user input, get response
+        observation, score, isCompleted = env.step(userInputStr)
+        print("\n" + observation)
+        print("Score: " + str(score))
+        print("isCompleted: " + str(isCompleted))
+
+        if (isCompleted):
+            break
+
+        # Randomly select action
+        possibleActionObjectCombinations = env.getPossibleActionObjectCombinations()
+        userInputStr = random.choice( possibleActionObjectCombinations )
+
+        # Sanitize input
+        userInputStr = userInputStr.lower().strip()
+        print("Choosing random action: " + str(userInputStr))
+
+        curIter += 1
+        
+    # Report progress of model
+    if (curIter == maxIter):
+        print("Maximum number of iterations reached (" + str(maxIter) + ")")
+    print ("Final score: " + str(score))
+    print ("isCompleted: " + str(isCompleted))
+
+    print("Shutting down server...")    
+    #env.shutdown()
+
+    print("Completed.")
+
 
 # Example user input console, to play through a game. 
 def userConsole(scriptFilename:str):
@@ -167,10 +219,13 @@ def main():
     print("Virtual Text Environment API demo")
 
     # Run a user console
-    userConsole(scriptFilename)
+    #userConsole(scriptFilename)
 
     # Run speed test
     #speedTest(scriptFilename)
+
+    # Run a model that chooses random actions until successfully reaching the goal
+    randomModel(scriptFilename)
 
     print("Exiting.")
 
