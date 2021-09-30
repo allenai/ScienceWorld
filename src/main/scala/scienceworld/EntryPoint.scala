@@ -107,13 +107,12 @@ object EntryPoint {
 
     val startTime = System.currentTimeMillis()
 
-    val agentInterface = new AgentInterface(universe, agent, actionHandler)
+    val goalSequence = Task.mkTaskChangeOfState()
+
+    val agentInterface = new AgentInterface(universe, agent, actionHandler, goalSequence)
     var curIter = 0
 
     // DEBUG: Set the task/goals
-    val goalSequence = Task.mkTaskChangeOfState()
-    val objMonitor = new ObjMonitor()
-    objMonitor.addMonitor(water)
 
     breakable {
       var userInputString:String = "look around"
@@ -125,7 +124,7 @@ object EntryPoint {
         println("")
 
         // Process step in environment
-        val description = agentInterface.step(userInputString)
+        val (description, score, isCompleted) = agentInterface.step(userInputString)
         println("")
         println("Description: ")
         println(description)
@@ -134,10 +133,9 @@ object EntryPoint {
         println("metal pot: " + metalPot.propMaterial.get.temperatureC)
         println("water: " + water.propMaterial.get.temperatureC)
 
-        // Check whether the goal conditions are met
-        goalSequence.tick(objMonitor)
-        println ("Goal Sequence: " + goalSequence.score().formatted("%3.3f"))
-        if (goalSequence.isCompleted()) println ("Goal is completed.")
+        println("Score: " + score.formatted("%3.3f"))
+        println("IsCompleted: " + isCompleted)
+
 
         // DEBUG
         val referents = agentInterface.inputParser.getAllReferents(agentInterface.getAgentVisibleObjects()._2)

@@ -2,11 +2,14 @@ package scienceworld.runtime
 
 import scienceworld.input.{ActionHandler, InputParser}
 import scienceworld.struct.EnvObject
+import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
 
 import scala.io.StdIn.readLine
 
-class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHandler) {
+class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHandler, goalSequence:GoalSequence) {
   val inputParser = new InputParser(actionHandler.getActions())
+  val objMonitor = new ObjMonitor()
+
 
   /*
    * Objects visible to the agent
@@ -54,7 +57,7 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
   /*
    * Step
    */
-  def step(userInputStr:String): String = {
+  def step(userInputStr:String): (String, Double, Boolean) = {
 
     // Parse user input
     val (success, statusStr) = this.processUserInput(userInputStr)
@@ -65,8 +68,13 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
     // Run universe tick
     universe.tick()
 
+    // Check whether the goal conditions are met
+    goalSequence.tick(objMonitor)
+    val score = goalSequence.score()
+    val isCompleted = goalSequence.isCompleted()
+
     // Return action string
-    return userOutstr
+    return (userOutstr, score, isCompleted)
   }
 
 }
