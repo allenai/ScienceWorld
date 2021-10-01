@@ -4,6 +4,7 @@ package scienceworld.properties
 trait DeviceProperties {
   var isActivable:Boolean               = false
   var isActivated:Boolean               = false
+  var isUsable:Boolean                  = false
 }
 
 
@@ -25,4 +26,10 @@ class IsNotActivableDeviceOff extends DeviceProperties {
 class IsNotActivableDeviceOn extends DeviceProperties {
   isActivable                           = false
   isActivated                           = true
+}
+
+
+// For instantaneous use devices (like a thermometer)
+class IsUsable extends DeviceProperties {
+  isUsable                              = true
 }

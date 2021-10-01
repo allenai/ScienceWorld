@@ -101,6 +101,10 @@ class EnvObject(var name:String, var objType:String) {
   /*
    * Text-based simulation methods
    */
+  def useWith(patientObj:EnvObject):(Boolean, String) = {
+    return (false, "")
+  }
+
   def tick():Boolean = {
     // Heat transfer: Conductive heat transfer between this container and all objects in the container (container to obj)
     for (containedObj <- this.getContainedObjects()) {
