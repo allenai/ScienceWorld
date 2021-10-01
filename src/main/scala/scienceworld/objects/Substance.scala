@@ -5,6 +5,14 @@ import scienceworld.struct.EnvObject
 
 class Substance extends EnvObject {
   this.name = "substance"
+
+  override def getReferents(): Set[String] = {
+    Set("substance", this.name)
+  }
+
+  override def getDescription(): String = {
+    return "A substance called " + this.name
+  }
 }
 
 
