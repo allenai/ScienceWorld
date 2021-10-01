@@ -40,6 +40,10 @@ class EnvObject(var name:String, var objType:String) {
 
   def getContainedObjects():Set[EnvObject] = this.containedObjects.toSet
 
+  def getContainedObjectsOfType[T]():Set[EnvObject] = {
+    this.containedObjects.filter(_.isInstanceOf[T]).toSet
+  }
+
   // Add an object to this container
   def addObject(objIn:EnvObject): Unit = {
     objIn.removeAndResetContainer()    // Remove from it's previous container

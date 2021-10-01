@@ -1,7 +1,7 @@
 package scienceworld.environments
 
 import scienceworld.EntryPoint.mkDoor
-import scienceworld.objects.{Apple, MetalPot, Water}
+import scienceworld.objects.{Apple, GlassCup, MetalPot, Water}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove}
 import scienceworld.objects.location.{Room, Universe}
@@ -58,6 +58,10 @@ object EnvironmentMaker {
     metalPot.addObject(water)
 
     stove.addObject(metalPot)
+
+    // Another container
+    val cup = new GlassCup()
+    roomKitchen.addObject(cup)
 
     // Agent
     val agent = new Agent()

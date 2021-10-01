@@ -21,6 +21,15 @@ class ActionMoveObject(action:ActionRequestDef, assignments:Map[String, EnvObjec
       return "The " + objToMove.name + " is not moveable."
     }
 
+    // Check that the object is not a liquid or a gas (which can't be directly held by the agent)
+    if (objToMove.propMaterial.isDefined) {
+      if (objToMove.propMaterial.get.stateOfMatter == "liquid") {
+        return "You can't pick up a liquid directly.  Try pouring it from one container to another, or dunking empty containers into containers filled with the liquid."
+      } else if (objToMove.propMaterial.get.stateOfMatter == "gas") {
+        return "You can't pick up a gas directly. "
+      }
+    }
+
     // Check that if the container is a proper container, that it's open
     if (container.propContainer.isEmpty) {
       return "That can't be moved there."

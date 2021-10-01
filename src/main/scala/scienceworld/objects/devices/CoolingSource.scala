@@ -53,18 +53,31 @@ class Fridge extends CoolingSource {
   override def getDescription():String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ", which is turned ")
-    if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
+    os.append("a " + this.name)
+    // Only mention being off if it's off, but don't mention being on (since this is assumed).
+    if (!this.propDevice.get.isActivated) {
+      os.append(", which is turned ")
+      if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
+    }
     os.append(". ")
 
-    val contents = this.getContainedObjects().map(_.getDescription())
-    os.append("In the fridge is: ")
-    if (contents.size == 0) {
-      os.append("nothing")
+    os.append("The " + this.name + " door is ")
+    if (this.propContainer.get.isOpen) {
+      os.append("open. ")
     } else {
-      os.append(contents.mkString(", "))
+      os.append("closed. ")
     }
-    os.append(".")
+
+    if (this.propContainer.get.isOpen) {
+      val contents = this.getContainedObjects().map(_.getDescription())
+      os.append("In the " + this.name + " is: ")
+      if (contents.size == 0) {
+        os.append("nothing")
+      } else {
+        os.append(contents.mkString(", "))
+      }
+      os.append(".")
+    }
 
     os.toString()
   }
@@ -100,18 +113,32 @@ class Freezer extends CoolingSource {
   override def getDescription():String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ", which is turned ")
-    if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
+    os.append("a " + this.name)
+    // Only mention being off if it's off, but don't mention being on (since this is assumed).
+    if (!this.propDevice.get.isActivated) {
+      os.append(", which is turned ")
+      if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
+    }
     os.append(". ")
 
-    val contents = this.getContainedObjects().map(_.getDescription())
-    os.append("In the freezer is: ")
-    if (contents.size == 0) {
-      os.append("nothing")
+    os.append("The " + this.name + " door is ")
+    if (this.propContainer.get.isOpen) {
+      os.append("open. ")
     } else {
-      os.append(contents.mkString(", "))
+      os.append("closed. ")
     }
-    os.append(".")
+
+    if (this.propContainer.get.isOpen) {
+      val contents = this.getContainedObjects().map(_.getDescription())
+      os.append("In the " + this.name + " is: ")
+      if (contents.size == 0) {
+        os.append("nothing")
+      } else {
+        os.append(contents.mkString(", "))
+      }
+      os.append(".")
+    }
+
     os.toString()
   }
 

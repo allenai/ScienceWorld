@@ -12,8 +12,14 @@ class Container extends EnvObject {
   }
 
   override def getDescription(): String = {
-    return "a container"
+    val containedObjects = this.getContainedObjects()
+    if (containedObjects.size == 0) {
+      return "an empty " + this.name
+    } else {
+      return "a " + this.name + " (containing " + containedObjects.map(_.getName()).mkString(", ") + ")"
+    }
   }
+
 }
 
 
@@ -30,9 +36,6 @@ class MetalPot extends Container {
     Set("pot", "metal pot", this.name)
   }
 
-  override def getDescription(): String = {
-    return "a metal pot"
-  }
 }
 
 
@@ -48,9 +51,6 @@ class GlassCup extends Container {
     Set("cup", "glass cup", this.name)
   }
 
-  override def getDescription(): String = {
-    return "a glass cup"
-  }
 }
 
 class PlasticCup extends Container {
@@ -62,9 +62,6 @@ class PlasticCup extends Container {
     Set("cup", "plastic cup", this.name)
   }
 
-  override def getDescription(): String = {
-    return "a plastic cup"
-  }
 }
 
 class WoodCup extends Container {
@@ -76,9 +73,6 @@ class WoodCup extends Container {
     Set("cup", "wood cup", this.name)
   }
 
-  override def getDescription(): String = {
-    return "a wood cup"
-  }
 }
 
 class TinCup extends Container {
@@ -90,9 +84,7 @@ class TinCup extends Container {
     Set("cup", "tin cup", this.name)
   }
 
-  override def getDescription(): String = {
-    return "a tin cup"
-  }
+
 }
 
 class PaperCup extends Container {
@@ -104,9 +96,6 @@ class PaperCup extends Container {
     Set("cup", "paper cup", this.name)
   }
 
-  override def getDescription(): String = {
-    return "a paper cup"
-  }
 }
 
 class CeramicCup extends Container {
@@ -118,9 +107,6 @@ class CeramicCup extends Container {
     Set("cup", "ceramic cup", this.name)
   }
 
-  override def getDescription(): String = {
-    return "a ceramic cup"
-  }
 }
 
 
@@ -136,7 +122,4 @@ class FlowerPot extends Container {
     Set("pot", "flower pot", this.name)
   }
 
-  override def getDescription(): String = {
-    return "a flower pot"
-  }
 }

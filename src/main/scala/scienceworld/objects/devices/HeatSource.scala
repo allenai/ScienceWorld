@@ -56,7 +56,11 @@ class Stove extends HeatSource {
     os.append(". ")
 
     os.append("On the stove is: ")
-    os.append( this.getContainedObjects().map(_.getDescription()).mkString(", ") )
+    if (this.getContainedObjects().size > 0) {
+      os.append(this.getContainedObjects().map(_.getDescription()).mkString(", "))
+    } else {
+      os.append("nothing")
+    }
     os.append(".")
 
     os.toString()
@@ -96,7 +100,11 @@ class HotPlate extends HeatSource {
     os.append(". ")
 
     os.append("On the hot plate is: ")
-    os.append( this.getContainedObjects().map(_.getDescription()).mkString(", ") )
+    if (this.getContainedObjects().size > 0) {
+      os.append(this.getContainedObjects().map(_.getDescription()).mkString(", "))
+    } else {
+      os.append("nothing")
+    }
     os.append(".")
 
     os.toString()
@@ -136,7 +144,11 @@ class Oven extends HeatSource {
     os.append(". ")
 
     os.append("In the oven is: ")
-    os.append( this.getContainedObjects().map(_.getDescription()).mkString(", ") )
+    if (this.getContainedObjects().size > 0) {
+      os.append(this.getContainedObjects().map(_.getDescription()).mkString(", "))
+    } else {
+      os.append("nothing")
+    }
     os.append(".")
 
     os.toString()

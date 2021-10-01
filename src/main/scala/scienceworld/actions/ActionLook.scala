@@ -79,13 +79,22 @@ class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
     val agent = assignments("agent")
     val obj = assignments("obj")
 
-    val containedObjs = obj.getContainedObjects()
-    if (containedObjs.size == 0) {
-      return "There is nothing in the " + obj.name + "."
-    } else {
-      val objNames = containedObjs.map(_.name)
-      return "Inside the " + obj.name + " is: " + objNames.mkString(", ") + "."
+    if (obj.propContainer.isDefined) {
+      if (!obj.propContainer.get.isOpen) {
+        return "The " + obj.name + " isn't open, so you can't see inside."
+      } else {
+        // Normal case -- look inside the container
+        val containedObjs = obj.getContainedObjects()
+        if (containedObjs.size == 0) {
+          return "There is nothing in the " + obj.name + "."
+        } else {
+          val objNames = containedObjs.map(_.name)
+          return "Inside the " + obj.name + " is: " + objNames.mkString(", ") + "."
+        }
+      }
     }
+
+    return "It's not clear how to look inside of that."
   }
 
 }
