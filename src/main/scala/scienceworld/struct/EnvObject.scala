@@ -137,6 +137,23 @@ class EnvObject(var name:String, var objType:String) {
     out.toSet
   }
 
+  // Enumerates referents with their container (e.g. water becomes water, water in pot) to allow for disambiguation
+  def getReferentsWithContainers():Set[String] = {
+    val out = mutable.Set[String]()
+    for (ref <- this.getReferents()) {
+      out.add(ref)
+      val container = this.getContainer()
+      if (container.isDefined) {
+        for (containerRef <- container.get.getReferents()) {
+          out.add(ref + " in " + containerRef)
+          out.add(ref + " on " + containerRef)
+        }
+      }
+    }
+
+    out.toSet
+  }
+
   def getDescription():String = {
     return "An object, called " + this.name + ", of type " + this.objType
   }

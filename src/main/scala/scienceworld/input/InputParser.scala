@@ -19,7 +19,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     val out = mutable.Set[String]()
     val allObjs = InputParser.collectObjects(objTreeRoot).toArray
     for (obj <- allObjs) {
-      out ++= obj.getReferents()
+      out ++= obj.getReferentsWithContainers()
     }
 
     out.toArray.map(_.toLowerCase).sorted
@@ -322,7 +322,7 @@ object InputParser {
   }
 
   def getObjectReferents(obj:EnvObject):Array[String] = {
-    return obj.getReferents().map(_.toLowerCase).toArray
+    return obj.getReferentsWithContainers().map(_.toLowerCase).toArray
   }
 
 
