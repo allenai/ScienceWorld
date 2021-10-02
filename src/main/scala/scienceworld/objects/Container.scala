@@ -123,3 +123,18 @@ class FlowerPot extends Container {
   }
 
 }
+
+
+/*
+ * Shelf
+ */
+class BookShelf extends Container {
+  this.name = "book shelf"
+  this.propContainer = Some(new IsOpenUnclosableContainer())
+  this.propMaterial = Some(new WoodProp())
+
+  override def getReferents(): Set[String] = {
+    Set("shelf", "book shelf", this.name)
+  }
+
+}

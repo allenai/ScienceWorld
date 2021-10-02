@@ -145,12 +145,12 @@ class EnvObject(var name:String, var objType:String) {
   def getReferentsWithContainers():Set[String] = {
     val out = mutable.Set[String]()
     for (ref <- this.getReferents()) {
-      out.add(ref)
+      out.add(ref.toLowerCase)
       val container = this.getContainer()
       if (container.isDefined) {
         for (containerRef <- container.get.getReferents()) {
-          out.add(ref + " in " + containerRef)
-          out.add(ref + " on " + containerRef)
+          out.add( (ref + " in " + containerRef).toLowerCase )
+          out.add( (ref + " on " + containerRef).toLowerCase )
         }
       }
     }

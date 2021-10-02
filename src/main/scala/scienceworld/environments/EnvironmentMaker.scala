@@ -1,9 +1,10 @@
 package scienceworld.environments
 
 import scienceworld.EntryPoint.mkDoor
-import scienceworld.objects.{Apple, GlassCup, MetalPot, Water}
+import scienceworld.objects.{Apple, BookShelf, GlassCup, MetalPot, Water}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove, Thermometer}
+import scienceworld.objects.document.{BookFrankenstein, BookMobyDick}
 import scienceworld.objects.location.{Room, Universe}
 import scienceworld.struct.EnvObject
 
@@ -66,6 +67,15 @@ object EnvironmentMaker {
     // A Thermometer
     val thermometer = new Thermometer()
     roomKitchen.addObject(thermometer)
+
+    // Books
+    val bookshelf = new BookShelf()
+    roomKitchen.addObject(bookshelf)
+
+    val book1 = new BookMobyDick()
+    val book2 = new BookFrankenstein()
+    bookshelf.addObject(book1)
+    bookshelf.addObject(book2)
 
     // Agent
     val agent = new Agent()
