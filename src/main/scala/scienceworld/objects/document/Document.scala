@@ -103,3 +103,31 @@ class BookFrankenstein extends Book {
 
   this.name = "book (" + this.title + ")"
 }
+
+class BookSherlockHolmes extends Book {
+  this.title = "Sherlock Holmes"
+  this.author = "Arthur Conan Doyle"
+  this.contents = "To Sherlock Holmes she is always the woman. I have seldom heard him mention her under any other name. In his eyes she eclipses and predominates the whole of her sex. It was not that he felt any emotion akin to love for Irene Adler. All emotions, and that one particularly, were abhorrent to his cold, precise but admirably balanced mind. He was, I take it, the most perfect reasoning and observing machine that the world has seen, but as a lover he would have placed himself in a false position. "
+
+  this.name = "book (" + this.title + ")"
+}
+
+class BookPrideAndPredjudice extends Book {
+  this.title = "Pride and Prejudice"
+  this.author = "Jane Austen"
+  this.contents = """It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.\n\nHowever little known the feelings or views of such a man may be on his first entering a neighbourhood, this truth is so well fixed in the minds of the surrounding families, that he is considered as the rightful property of some one or other of their daughters.\n\n“My dear Mr. Bennet,” said his lady to him one day, “have you heard that Netherfield Park is let at last?” """
+
+  this.name = "book (" + this.title + ")"
+}
+
+class BookBeowulf extends Book {
+  this.title = "Beowulf"
+  this.author = "Beowulf poet"
+  this.contents = """Lo! the Spear-Danes’ glory through splendid achievements
+                    |The folk-kings’ former fame we have heard of,
+                    |How princes displayed then their prowess-in-battle.
+                    |Oft Scyld the Scefing from scathers in numbers
+                    |From many a people their mead-benches tore. """.stripMargin
+
+  this.name = "book (" + this.title + ")"
+}
