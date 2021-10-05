@@ -48,7 +48,7 @@ class Stove extends HeatSource {
     Set("stove", this.name)
   }
 
-  override def getDescription():String = {
+  override def getDescription(mode:Int):String = {
     val os = new StringBuilder
 
     os.append("a " + this.name + ", which is turned ")
@@ -92,7 +92,7 @@ class HotPlate extends HeatSource {
     Set("hot plate", this.name)
   }
 
-  override def getDescription():String = {
+  override def getDescription(mode:Int):String = {
     val os = new StringBuilder
 
     os.append("a " + this.name + ", which is turned ")
@@ -136,7 +136,7 @@ class Oven extends HeatSource {
     Set("oven", this.name)
   }
 
-  override def getDescription():String = {
+  override def getDescription(mode:Int):String = {
     val os = new StringBuilder
 
     os.append("a " + this.name + ", which is turned ")

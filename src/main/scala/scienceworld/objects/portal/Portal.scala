@@ -23,7 +23,7 @@ class Door(isOpen:Boolean, connectsFrom:EnvObject, connectsTo:EnvObject) extends
     Set("door", "door to " + connectsTo.name, connectsTo.name + " door")
   }
 
-  override def getDescription(): String = {
+  override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
     os.append("A door to the " + connectsTo.name )

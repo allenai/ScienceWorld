@@ -1,11 +1,13 @@
 package scienceworld.struct
 
+import scienceworld.objects.portal.Portal
 import scienceworld.properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, HeatSourceProperties, MaterialProperties, MoveableProperties, PortalProperties}
 import scienceworld.processes.{HeatTransfer, StateOfMatter}
 import util.UniqueIdentifier
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import EnvObject._
 
 
 class EnvObject(var name:String, var objType:String) {
@@ -16,6 +18,10 @@ class EnvObject(var name:String, var objType:String) {
   // Contained objects
   private val containedObjects = mutable.Set[EnvObject]()
   private var inContainer:Option[EnvObject] = None
+
+  // Portals
+  private val portals = mutable.Set[Portal]()
+
 
   // Unique identifier
   val uuid = UniqueIdentifier.getNextID()
@@ -30,6 +36,19 @@ class EnvObject(var name:String, var objType:String) {
   var propPortal:Option[PortalProperties] = None
   var propMoveable:Option[MoveableProperties] = Some( new MoveableProperties(isMovable = true) )
 
+
+
+  /*
+   * Portals
+   */
+  def addPortal(portalIn:Portal): Unit = {
+    this.portals.add(portalIn)
+  }
+
+  def removePortal(portalIn:Portal):Boolean = {
+    if (!this.portals.contains(portalIn)) return false
+    this.portals.remove(portalIn)
+  }
 
 
   /*
@@ -158,7 +177,7 @@ class EnvObject(var name:String, var objType:String) {
     out.toSet
   }
 
-  def getDescription():String = {
+  def getDescription(mode:Int = MODE_CURSORY_DETAIL):String = {
     return "An object, called " + this.name + ", of type " + this.objType
   }
 
@@ -227,5 +246,6 @@ class EnvObject(var name:String, var objType:String) {
 
 
 object EnvObject {
-
+  val MODE_CURSORY_DETAIL  =   0
+  val MODE_DETAILED        =   1
 }

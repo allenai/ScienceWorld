@@ -14,7 +14,7 @@ class Location extends EnvObject {
     Set("location", this.name)
   }
 
-  override def getDescription(): String = {
+  override def getDescription(mode:Int): String = {
     val os = new StringBuilder()
 
     os.append("A location. ")
@@ -36,7 +36,7 @@ class Universe extends Location {
     Set("universe")
   }
 
-  override def getDescription(): String = {
+  override def getDescription(mode:Int): String = {
     val os = new StringBuilder()
 
     os.append("A Universe. ")
@@ -65,7 +65,7 @@ class Room(_name:String) extends Location {
     Set("room", this.name)
   }
 
-  override def getDescription(): String = {
+  override def getDescription(mode:Int): String = {
     val os = new StringBuilder()
 
     os.append("This room is called the " + this.name + ". ")

@@ -11,7 +11,7 @@ class Agent extends EnvObject {
     Set("agent", "self")
   }
 
-  override def getDescription(): String = {
+  override def getDescription(mode:Int): String = {
     return ("the agent")
   }
 

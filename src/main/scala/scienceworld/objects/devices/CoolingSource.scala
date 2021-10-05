@@ -50,7 +50,7 @@ class Fridge extends CoolingSource {
     Set("fridge", this.name)
   }
 
-  override def getDescription():String = {
+  override def getDescription(mode:Int):String = {
     val os = new StringBuilder
 
     os.append("a " + this.name)
@@ -110,7 +110,7 @@ class Freezer extends CoolingSource {
     Set("freezer", this.name)
   }
 
-  override def getDescription():String = {
+  override def getDescription(mode:Int):String = {
     val os = new StringBuilder
 
     os.append("a " + this.name)

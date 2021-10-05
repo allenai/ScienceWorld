@@ -10,7 +10,7 @@ class Substance extends EnvObject {
     Set("substance", this.name)
   }
 
-  override def getDescription(): String = {
+  override def getDescription(mode:Int): String = {
     return "A substance called " + this.name
   }
 }

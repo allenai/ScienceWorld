@@ -9,7 +9,7 @@ class Device extends EnvObject {
 
   this.propDevice = Some(new IsActivableDeviceOff())
 
-  override def getDescription(): String = {
+  override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
     os.append("a " + this.name + ", which is turned ")

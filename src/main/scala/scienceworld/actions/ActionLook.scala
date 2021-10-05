@@ -4,6 +4,8 @@ import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, Act
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.ActionHandler
 import scienceworld.struct.EnvObject
+import scienceworld.struct.EnvObject._
+
 
 /*
  * Action: Look Around
@@ -49,7 +51,7 @@ class ActionLookAt(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
     val agent = assignments("agent")
     val obj = assignments("obj")
 
-    return obj.getDescription()
+    return obj.getDescription(mode = MODE_DETAILED)
   }
 
 }

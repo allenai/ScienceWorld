@@ -33,7 +33,7 @@ class Thermometer extends Device {
     Set("thermometer", this.name)
   }
 
-  override def getDescription(): String = {
+  override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
     // Get reading of the thermometer's current container

@@ -43,7 +43,7 @@ class Sink extends Device {
     Set("sink", this.name)
   }
 
-  override def getDescription(): String = {
+  override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
     os.append("a sink, which is turned ")

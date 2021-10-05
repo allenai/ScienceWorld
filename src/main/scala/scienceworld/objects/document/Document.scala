@@ -21,7 +21,7 @@ class Document extends EnvObject {
     Set(this.name, this.title, this.name + " called " + this.title)
   }
 
-  override def getDescription(): String = {
+  override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
     os.append("A document titled " + this.title)
@@ -45,7 +45,7 @@ class Paper extends Document {
     os.toString()
   }
 
-  override def getDescription(): String = {
+  override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
     os.append("A paper titled " + this.title)
@@ -77,7 +77,7 @@ class Book extends Document {
     Set("book", this.title, "book by " + this.author, this.title + " book", this.name)
   }
 
-  override def getDescription(): String = {
+  override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
     os.append("A book titled " + this.title + " by " + this.author)

@@ -11,7 +11,7 @@ class Container extends EnvObject {
     Set("container", this.name)
   }
 
-  override def getDescription(): String = {
+  override def getDescription(mode:Int): String = {
     val containedObjects = this.getContainedObjects()
     if (containedObjects.size == 0) {
       return "an empty " + this.name
