@@ -1,6 +1,6 @@
 package scienceworld.objects
 
-import scienceworld.properties.{EdibilityProperties, Edible}
+import scienceworld.properties.{EdibilityProperties, Edible, OrangeJuiceProp}
 import scienceworld.struct.EnvObject
 
 class Food extends EnvObject {
@@ -39,6 +39,23 @@ class Orange extends Food {
 
   override def getDescription(mode:Int): String = {
     return "an orange"
+  }
+
+}
+
+class OrangeJuice extends Food {
+  this.name = "orange juice"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new OrangeJuiceProp())
+
+  var color = "orange"
+
+  override def getReferents(): Set[String] = {
+    Set("orange juice", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return "orange juice"
   }
 
 }

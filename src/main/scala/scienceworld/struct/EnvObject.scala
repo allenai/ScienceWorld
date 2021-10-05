@@ -69,6 +69,8 @@ class EnvObject(var name:String, var objType:String) {
 
   // Add an object to this container
   def addObject(objIn:EnvObject): Unit = {
+    if (objIn == this) throw new RuntimeException("ERROR: addObject(): Attempted to add self to container (" + this.name + ").")
+
     objIn.removeAndResetContainer()    // Remove from it's previous container
     this.containedObjects.add(objIn)
     objIn.inContainer = Some(this)

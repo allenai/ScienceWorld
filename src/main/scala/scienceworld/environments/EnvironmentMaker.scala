@@ -1,9 +1,9 @@
 package scienceworld.environments
 
-import scienceworld.objects.{Apple, Water}
-import scienceworld.objects.containers.{BookShelf, GlassCup, MetalPot, Sewer}
+import scienceworld.objects.{Apple, OrangeJuice, Water}
+import scienceworld.objects.containers.{BookShelf, GlassCup, MetalPot, Sewer, WoodCup}
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove, Thermometer}
+import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.document.{BookFrankenstein, BookMobyDick}
 import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.portal.Door
@@ -55,6 +55,9 @@ object EnvironmentMaker {
     val sink = new Sink(drainsTo = Some(sewer))
     roomKitchen.addObject(sink)
 
+    val toilet = new Toilet(drainsTo = sewer)
+    roomKitchen.addObject(toilet)
+
     val stove = new Stove()
     roomKitchen.addObject(stove)
 
@@ -74,6 +77,10 @@ object EnvironmentMaker {
     // Another container
     val cup = new GlassCup()
     roomKitchen.addObject(cup)
+
+    val cup2 = new WoodCup()
+    cup2.addObject( new OrangeJuice() )
+    roomKitchen.addObject(cup2)
 
     // A Thermometer
     val thermometer = new Thermometer()

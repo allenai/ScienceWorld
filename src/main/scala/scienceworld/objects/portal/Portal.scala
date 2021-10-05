@@ -6,13 +6,13 @@ import scienceworld.struct.EnvObject
 import scala.collection.mutable.ArrayBuffer
 
 
-class Portal (val isOpen:Boolean, val connectsFrom:EnvObject, val connectsTo:EnvObject) extends EnvObject {
+class Portal (val _isOpen:Boolean, val connectsFrom:EnvObject, val connectsTo:EnvObject) extends EnvObject {
 
-  propPortal = Some( new PortalProperties(isOpen=isOpen, isOpenable=true, connectsFrom=connectsFrom, connectsTo=connectsTo, isLockable = false, isLocked = false) )
+  propPortal = Some( new PortalProperties(isOpen=_isOpen, isOpenable=true, connectsFrom=connectsFrom, connectsTo=connectsTo, isLockable = false, isLocked = false) )
   propMoveable = Some( new MoveableProperties(isMovable = false) )
 
   def getOpenClosedStr():String = {
-    if (this.isOpen == true) return "open"
+    if (this.propPortal.get.isOpen == true) return "open"
     return "closed"
   }
 

@@ -343,11 +343,25 @@ class WaterProp extends MaterialProperties {
   // Thermal
   temperatureC                    = 10.0f
   thermalConductivity             = 0.5f
-  stateOfMatter                   = "solid"
+  stateOfMatter                   = "liquid"
   boilingPoint                    = 100.0f
   meltingPoint                    = 0.0f
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = false
 
+}
+
+class OrangeJuiceProp extends MaterialProperties {
+  substanceName                   = "orange juice"
+  color                           = "orange"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.5f
+  stateOfMatter                   = "liquid"
+  boilingPoint                    = 100.0f
+  meltingPoint                    = 0.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = false
 }
