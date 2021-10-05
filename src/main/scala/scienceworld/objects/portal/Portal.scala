@@ -120,7 +120,7 @@ class LiquidDrain(isOpen:Boolean, connectsFrom:EnvObject, connectsTo:EnvObject) 
   override def tick(): Boolean = {
     // If there are any liquids in the 'from' container, move them through the drain.
     val objsToMove = new ArrayBuffer[EnvObject]()
-    println ("#### DRAIN TICK!!!")
+    //println ("#### DRAIN TICK!!!")
 
     if (propPortal.get.isOpen) {
 
@@ -135,7 +135,7 @@ class LiquidDrain(isOpen:Boolean, connectsFrom:EnvObject, connectsTo:EnvObject) 
 
       // Move all liquids through drain to the 'to' container
       for (liquidObj <- objsToMove) {
-        println ("LiquidDrain: Moving " + liquidObj.name + " from " + liquidObj.getContainer().get.name + " to " + connectsTo.name + ". ")
+        //println ("LiquidDrain: Moving " + liquidObj.name + " from " + liquidObj.getContainer().get.name + " to " + connectsTo.name + ". ")
         connectsTo.addObject(liquidObj)
       }
 
