@@ -12,7 +12,7 @@ class Container extends EnvObject {
   }
 
   override def getDescription(mode:Int): String = {
-    val containedObjects = this.getContainedObjects()
+    val containedObjects = this.getContainedObjectsAndPortals()
     if (containedObjects.size == 0) {
       return "an empty " + this.name
     } else {
