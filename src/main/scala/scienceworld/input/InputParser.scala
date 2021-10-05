@@ -19,14 +19,15 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     val out = mutable.Set[String]()
     val allObjs = InputParser.collectObjects(objTreeRoot).toArray
     for (obj <- allObjs) {
-      out ++= obj.getReferentsWithContainers()
+      out ++= obj.getReferentsWithContainers(perspectiveContainer = objTreeRoot)
     }
 
     out.toArray.map(_.toLowerCase).sorted
   }
 
   // Main entry point
-  def parse(inputStr:String, objTreeRoot:EnvObject, agent:EnvObject, objMonitor:ObjMonitor): (Boolean, String, String, Option[Action]) = {      // (Success, errorMessage, userString)
+  // Perspective container: The container where the agent is located
+  def parse(inputStr:String, objTreeRoot:EnvObject, agent:EnvObject, objMonitor:ObjMonitor, perspectiveContainer:EnvObject): (Boolean, String, String, Option[Action]) = {      // (Success, errorMessage, userString)
     // TODO: Only include observable objects in the list of all objects
     val tokens = this.tokenize(inputStr.toLowerCase)
     val allObjs = InputParser.collectObjects(objTreeRoot).toArray
@@ -41,7 +42,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
       // Iterate through all possible triggers for this action
       val matches = new ArrayBuffer[InputMatch]
       for (trigger <- actionRequestDef.triggers) {
-        matches.insertAll(matches.length, this.populate(tokens, actionRequestDef.paramSigList, trigger, allObjs) )
+        matches.insertAll(matches.length, this.populate(tokens, actionRequestDef.paramSigList, trigger, allObjs, perspectiveContainer) )
       }
 
       // Populate the actionRequestDef references in the storage class
@@ -126,12 +127,12 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   }
 
   // Try to populate the slots of a given actionRequestDef with a given set of input tokens
-  def populate(tokens:Array[String], paramSigList:ParamSigList, trigger:ActionTrigger, allObjs:Array[EnvObject]): Array[InputMatch] = {
+  def populate(tokens:Array[String], paramSigList:ParamSigList, trigger:ActionTrigger, allObjs:Array[EnvObject], perspectiveContainer:EnvObject): Array[InputMatch] = {
     val paramLUT = paramSigList.paramLUT
     var sanitizedStr = tokens.mkString(" ")
     val out = new ArrayBuffer[InputMatch]
 
-    val (success, matches) = this.populateHelper(sanitizedStr, trigger.pattern, allObjs, Array.empty[EnvObject])
+    val (success, matches) = this.populateHelper(sanitizedStr, trigger.pattern, allObjs, Array.empty[EnvObject], perspectiveContainer)
     if (success) {
       // Remove duplicates
       val matchesNoDuplicates = this.removeDuplicates(matches)
@@ -152,10 +153,11 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   }
 
   // Try to populate the slots of a given actionRequestDef with a given set of input tokens
-  def populateHelper(inStr: String, pattern: List[ActionExpr], allObjs: Array[EnvObject], objMatchesSoFar: Array[EnvObject]): (Boolean, Array[Array[EnvObject]]) = {
+  def populateHelper(inStr: String, pattern: List[ActionExpr], allObjs: Array[EnvObject], objMatchesSoFar: Array[EnvObject], perspectiveContainer:EnvObject): (Boolean, Array[Array[EnvObject]]) = {
     var sanitizedStr:String = inStr
 
-    //println(" * populateHelper: sanitizedStr: " + sanitizedStr + "  pattern: " + pattern.mkString(", "))
+    // println(" * populateHelper: sanitizedStr: " + sanitizedStr + "  pattern: " + pattern.mkString(", "))
+    // println("   * populateHelper: perspectiveContainer: " + perspectiveContainer.toStringMinimal())
 
     // Check if we're at the end of the trigger pattern
     if (pattern.length == 0) {
@@ -180,7 +182,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
         if (!success) return (false, Array.empty[Array[EnvObject]])
         for (matchString <- matchStrings) {
           val sanitizedStr = matchString
-          val (successRecurse, objMatches) = this.populateHelper(sanitizedStr, restOfPattern, allObjs, objMatchesSoFar_.toArray)
+          val (successRecurse, objMatches) = this.populateHelper(sanitizedStr, restOfPattern, allObjs, objMatchesSoFar_.toArray, perspectiveContainer)
           // If we reach here, success
           for (m <- objMatches) {
             out.append(m)
@@ -188,12 +190,12 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
         }
       }
       case ActionExprIdentifier(name) => {
-        val (success, matchTuples) = this.matchObj(sanitizedStr, allObjs)
+        val (success, matchTuples) = this.matchObj(sanitizedStr, allObjs, perspectiveContainer)
         if (!success) return (false, Array.empty[Array[EnvObject]])
         for (tupleMatch <- matchTuples) {
           val sanitizedStr = tupleMatch._1
           val objMatchPartial = objMatchesSoFar_.toArray ++ Array(tupleMatch._2)
-          val (successRecurse, objMatches) = this.populateHelper(sanitizedStr, restOfPattern, allObjs, objMatchPartial)
+          val (successRecurse, objMatches) = this.populateHelper(sanitizedStr, restOfPattern, allObjs, objMatchPartial, perspectiveContainer)
           // If we reach here, success
           for (m <- objMatches) {
             out.append( m )
@@ -202,6 +204,13 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
 
       }
     }
+
+    /*
+    println ("  * populateHelper: out = ")
+    for (elem <- out) {
+      println (elem.map(_.toStringMinimal()).mkString(", "))
+    }
+     */
 
     if (out.length == 0) return (false, out.toArray)
     return (true, out.toArray)
@@ -225,11 +234,12 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   }
 
   // See if the start of a given string matches with a list of possible referents for objects
-  def matchObj(inStr: String, allObjs: Array[EnvObject]): (Boolean, Array[(String, EnvObject)]) = {
+  def matchObj(inStr: String, allObjs: Array[EnvObject], perspectiveContainer:EnvObject): (Boolean, Array[(String, EnvObject)]) = {
     val out = new ArrayBuffer[(String, EnvObject)]
 
     for (obj <- allObjs) {
-      val referents = InputParser.getObjectReferents(obj)
+      val referents = InputParser.getObjectReferents(obj, perspectiveContainer)
+      // println ("\t matchObj: " + referents.mkString(", "))
       for (referent <- referents) {
         if (inStr.startsWith(referent)) {
           val restOfStr = inStr.substring(referent.length).trim()
@@ -309,20 +319,20 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
 object InputParser {
 
   // DEBUG: Get a list of all possible valid referents, for debugging
-  def getPossibleReferents(objTreeRoot:EnvObject):Array[String] = {
+  def getPossibleReferents(objTreeRoot:EnvObject, perspectiveContainer:EnvObject):Array[String] = {
     val out = new ArrayBuffer[String]()
 
     val allObjs = collectObjects(objTreeRoot).toArray
 
     for (obj <- allObjs) {
-      out.insertAll(out.size, getObjectReferents(obj) )
+      out.insertAll(out.size, getObjectReferents(obj, perspectiveContainer) )
     }
 
     out.toArray
   }
 
-  def getObjectReferents(obj:EnvObject):Array[String] = {
-    return obj.getReferentsWithContainers().map(_.toLowerCase).toArray
+  def getObjectReferents(obj:EnvObject, perspectiveContainer:EnvObject):Array[String] = {
+    return obj.getReferentsWithContainers(perspectiveContainer).map(_.toLowerCase).toArray
   }
 
 
@@ -338,7 +348,7 @@ object InputParser {
     if (!out.contains(objectTreeRoot)) out.add(objectTreeRoot)
 
     // Step 2: Add children recursively
-    for (obj <- objectTreeRoot.getContainedObjects()) {
+    for (obj <- objectTreeRoot.getContainedObjectsAndPortals()) {
       if (!out.contains(obj)) {
         out ++= this.collectObjects(obj)
       }

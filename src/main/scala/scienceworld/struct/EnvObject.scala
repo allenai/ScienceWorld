@@ -50,6 +50,10 @@ class EnvObject(var name:String, var objType:String) {
     this.portals.remove(portalIn)
   }
 
+  def getPortals():Set[Portal] = this.portals.toSet
+
+  // Get both portals and objects
+  def getContainedObjectsAndPortals():Set[EnvObject] = (this.containedObjects ++ this.portals).toSet
 
   /*
    * Object containment
@@ -161,9 +165,14 @@ class EnvObject(var name:String, var objType:String) {
   }
 
   // Enumerates referents with their container (e.g. water becomes water, water in pot) to allow for disambiguation
-  def getReferentsWithContainers():Set[String] = {
+  def getReferentsWithContainers(perspectiveContainer:EnvObject):Set[String] = {
     val out = mutable.Set[String]()
-    for (ref <- this.getReferents()) {
+    var referents = this match {
+      case x:Portal => x.getReferents(perspectiveContainer)
+      case _ => this.getReferents()
+    }
+
+    for (ref <- referents) {
       out.add(ref.toLowerCase)
       val container = this.getContainer()
       if (container.isDefined) {

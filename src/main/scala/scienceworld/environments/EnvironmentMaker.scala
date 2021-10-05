@@ -1,11 +1,11 @@
 package scienceworld.environments
 
-import scienceworld.EntryPoint.mkDoor
 import scienceworld.objects.{Apple, BookShelf, GlassCup, MetalPot, Water}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove, Thermometer}
 import scienceworld.objects.document.{BookFrankenstein, BookMobyDick}
-import scienceworld.objects.location.{Room, Universe}
+import scienceworld.objects.location.{Location, Room, Universe}
+import scienceworld.objects.portal.Door
 import scienceworld.struct.EnvObject
 
 class EnvironmentMaker {
@@ -13,6 +13,15 @@ class EnvironmentMaker {
 }
 
 object EnvironmentMaker {
+  /*
+   * Helper functions
+   */
+  def mkDoor(location1:Location, location2:Location, isOpen:Boolean = false) {
+    val door = new Door(isOpen, location1, location2)
+    location1.addPortal(door)
+    location2.addPortal(door)
+  }
+
 
   def mkKitchenEnvironment(): (EnvObject, EnvObject) = {
     // Universe (object tree root)

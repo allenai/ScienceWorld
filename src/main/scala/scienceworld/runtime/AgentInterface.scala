@@ -89,12 +89,14 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
   }
 
   def processUserInput(inputStr:String):(Boolean, String) = {   // (Success, statusString)
-
     val (successVisible, visibleObjects) = this.getAgentVisibleObjects()      // TODO: Currently just a reference to the container (current room), rather than a list
     if (!successVisible) throw new RuntimeException("ERROR: Agent is not in container.")
 
+    // The agent's container (to render the agent's perspective)
+    val agentContainer = agent.getContainer().get
+
     //val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, interpreter.objectTreeRoot, agent)
-    val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, agent, objMonitor)
+    val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, agent, objMonitor, agentContainer)
     if (!successUserInput) {
       println("ERROR: " + errStr)
     } else {

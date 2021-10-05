@@ -20,18 +20,6 @@ class EntryPoint {
 
 object EntryPoint {
 
-  /*
-   * Helper functions
-   */
-  def mkDoor(location1:Location, location2:Location, isOpen:Boolean = false) {
-    val door1 = new Door(isOpen, location1, location2)
-    location1.addObject(door1)
-
-    val door2 = new Door(isOpen, location2, location1)
-    location2.addObject(door2)
-  }
-
-
 
   /*
    * Main

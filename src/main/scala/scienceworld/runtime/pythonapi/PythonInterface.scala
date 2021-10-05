@@ -83,6 +83,10 @@ class PythonInterface() {
     // Error checking
     if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
     if (agent.isEmpty) return "ERROR: No agent is marked as main."
+    if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
+
+    // Get agent's container (to render agent's perspective)
+    val agentContainer = agent.get.getContainer().get
 
     // Process step in environment
     val (description, score_, isCompleted_) = agentInterface.get.step(userInputString)
@@ -93,7 +97,7 @@ class PythonInterface() {
     println(description)
 
     // DEBUG
-    val referents = InputParser.getPossibleReferents(agentInterface.get.getAgentVisibleObjects()._2)
+    val referents = InputParser.getPossibleReferents(agentInterface.get.getAgentVisibleObjects()._2, agentContainer)
     println("Possible referents: " + referents.mkString(", "))
 
     outStr.append(description)

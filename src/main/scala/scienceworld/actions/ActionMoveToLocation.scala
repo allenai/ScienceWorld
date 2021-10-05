@@ -28,9 +28,18 @@ class ActionMoveThroughDoor(action:ActionRequestDef, assignments:Map[String, Env
     }
 
     // Move the agent through door
-    val connectsTo = door.propPortal.get.connectsTo
-    connectsTo.addObject(agent)
-    return "You move through the " + door.name + " to the " + connectsTo.name + "."
+
+    // First, check which side of the door we're on
+    val door1 = door.asInstanceOf[Door]
+    val agentContainer = agent.getContainer().get
+    var connectsTo = door1.getConnectsTo(agentContainer)
+    if (connectsTo.isEmpty) {
+      return "The door doesn't appear to go anywhere."
+    }
+
+    // Then, move the agent to the other side
+    connectsTo.get.addObject(agent)
+    return "You move through the " + door.name + " to the " + connectsTo.get.name + "."
 
   }
 
