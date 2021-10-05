@@ -6,6 +6,7 @@ import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.document.{BookFrankenstein, BookMobyDick}
 import scienceworld.objects.location.{Location, Room, Universe}
+import scienceworld.objects.misc.Picture
 import scienceworld.objects.portal.Door
 import scienceworld.struct.EnvObject
 
@@ -94,6 +95,9 @@ object EnvironmentMaker {
     val book2 = new BookFrankenstein()
     bookshelf.addObject(book1)
     bookshelf.addObject(book2)
+
+    // Random picture
+    roomKitchen.addObject( Picture.mkRandom() )
 
     // Agent
     val agent = new Agent()

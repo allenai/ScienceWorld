@@ -63,7 +63,7 @@ object ActionLookAt {
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("look at")),
+      new ActionExprOR(List("look at", "examine")),
       new ActionExprIdentifier("obj")
     ))
 
