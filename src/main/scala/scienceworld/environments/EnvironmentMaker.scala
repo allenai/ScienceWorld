@@ -99,6 +99,12 @@ object EnvironmentMaker {
     // Random picture
     roomKitchen.addObject( Picture.mkRandom() )
 
+
+    // Bathroom
+    val roomBathroom = BuildingMaker.mkBathroom(includeBathtub = true, sewer)
+    universe.addObject(roomBathroom)
+    mkDoor(roomBathroom, roomKitchen)
+
     // Agent
     val agent = new Agent()
     roomKitchen.addObject(agent)
