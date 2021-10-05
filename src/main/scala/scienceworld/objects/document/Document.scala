@@ -3,6 +3,8 @@ package scienceworld.objects.document
 import scienceworld.properties.{GlassProp, IsActivableDeviceOff, IsNotContainer, IsUsable, MoveableProperties, PaperProp}
 import scienceworld.struct.EnvObject
 
+import scala.util.Random
+
 class Document extends EnvObject {
   this.name = "document"
   var title = "document"
@@ -88,6 +90,27 @@ class Book extends Document {
 
 }
 
+object Book {
+
+  def mkRandom(): EnvObject = {
+    while(true) {
+      val randIdx = Random.nextInt(10)    // This value should be as large or larger than the number of book options
+
+      if (randIdx == 0) return new BookMobyDick
+      if (randIdx == 1) return new BookFrankenstein
+      if (randIdx == 2) return new BookSherlockHolmes
+      if (randIdx == 3) return new BookPrideAndPredjudice
+      if (randIdx == 4) return new BookBeowulf
+      if (randIdx == 5) return new BookOriginOfSpecies
+    }
+
+    return new BookMobyDick
+  }
+
+
+}
+
+
 class BookMobyDick extends Book {
   this.title = "Moby Dick"
   this.author = "Herman Melville"
@@ -142,3 +165,4 @@ class BookOriginOfSpecies extends Book {
 
   this.name = "book (" + this.title + ")"
 }
+

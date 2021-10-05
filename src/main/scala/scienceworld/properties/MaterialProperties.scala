@@ -335,6 +335,25 @@ class PaperProp extends MaterialProperties {
 
 
 /*
+ * Cloth
+ */
+class CottonClothProp extends MaterialProperties {
+  substanceName                   = "cloth"
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.10
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 300.0f
+  // Electrical
+  electricallyConductive          = false
+
+}
+
+
+/*
  * Liquids
  */
 class WaterProp extends MaterialProperties {

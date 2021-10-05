@@ -3,6 +3,7 @@ package scienceworld.environments
 import scienceworld.objects.{Apple, OrangeJuice, Water}
 import scienceworld.objects.containers.{BookShelf, GlassCup, MetalPot, Sewer, WoodCup}
 import scienceworld.objects.agent.Agent
+import scienceworld.objects.containers.furniture.{Desk, Table}
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.document.{BookFrankenstein, BookMobyDick}
 import scienceworld.objects.location.{Location, Room, Universe}
@@ -33,15 +34,20 @@ object EnvironmentMaker {
     val roomKitchen = new Room("Kitchen")
     universe.addObject(roomKitchen)
 
-    val roomLivingRoom = new Room("Living Room")
+    val roomLivingRoom = BuildingMaker.mkLivingRoom()
     universe.addObject(roomLivingRoom)
+
+    val roomBedroom = BuildingMaker.mkBedroom()
+    universe.addObject(roomBedroom)
 
     val roomHallway = new Room("Hallway")
     universe.addObject(roomHallway)
 
+
     // Doors
     mkDoor(roomKitchen, roomHallway)
     mkDoor(roomLivingRoom, roomHallway)
+    mkDoor(roomBedroom, roomHallway)
 
 
     // Objects
@@ -99,6 +105,13 @@ object EnvironmentMaker {
     // Random picture
     roomKitchen.addObject( Picture.mkRandom() )
 
+    val table = new Table()
+    table.addObject(cup)
+    roomKitchen.addObject( table )
+
+    val desk = new Desk()
+    desk.drawer.addObject(cup2)
+    roomKitchen.addObject(desk)
 
     // Bathroom
     val roomBathroom = BuildingMaker.mkBathroom(includeBathtub = true, sewer)

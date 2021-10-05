@@ -1,7 +1,10 @@
 package scienceworld.objects.containers
 
+import scienceworld.objects.document.Book
 import scienceworld.properties._
 import scienceworld.struct.EnvObject
+
+import scala.util.Random
 
 class Container extends EnvObject {
   this.name = "container"
@@ -137,4 +140,18 @@ class BookShelf extends Container {
     Set("shelf", "book shelf", this.name)
   }
 
+}
+
+object BookShelf {
+
+  def mkRandom(): EnvObject = {
+    val numBooks = Random.nextInt(4)
+
+    val bookshelf = new BookShelf()
+    for (i <- 0 until numBooks) {
+      bookshelf.addObject( Book.mkRandom() )
+    }
+
+    return bookshelf
+  }
 }
