@@ -6,6 +6,8 @@ import scienceworld.input.ActionHandler
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 
+import scala.collection.mutable.ArrayBuffer
+
 
 /*
  * Action: Look Around
@@ -80,6 +82,7 @@ class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
   override def runAction(): String = {
     val agent = assignments("agent")
     val obj = assignments("obj")
+    val os = new StringBuilder()
 
     if (obj.propContainer.isDefined) {
       if (!obj.propContainer.get.isOpen) {
@@ -88,14 +91,26 @@ class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
         // Normal case -- look inside the container
         val containedObjs = obj.getContainedObjects()
         if (containedObjs.size == 0) {
-          return "There is nothing in the " + obj.name + "."
+          os.append ("There is nothing in the " + obj.name + ".")
         } else {
           val objNames = containedObjs.map(_.name)
-          return "Inside the " + obj.name + " is: " + objNames.mkString(", ") + "."
+          os.append ("Inside the " + obj.name + " is: " + objNames.mkString(", ") + ".")
         }
       }
     }
 
+    if (obj.getPortals().size > 0) {
+      os.append(" You also see: ")
+      val descriptions = new ArrayBuffer[String]
+      for (portal <- obj.getPortals()) {
+        descriptions.append(portal.getDescription(mode = MODE_CURSORY_DETAIL, perspectiveContainer = obj))
+      }
+      os.append(descriptions.mkString(", "))
+      os.append(".")
+    }
+    if (os.length > 0) return os.toString
+
+    // Otherwise
     return "It's not clear how to look inside of that."
   }
 

@@ -1,6 +1,7 @@
 package scienceworld.environments
 
-import scienceworld.objects.{Apple, BookShelf, GlassCup, MetalPot, Water}
+import scienceworld.objects.{Apple, Water}
+import scienceworld.objects.containers.{BookShelf, GlassCup, MetalPot, Sewer}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove, Thermometer}
 import scienceworld.objects.document.{BookFrankenstein, BookMobyDick}
@@ -50,7 +51,8 @@ object EnvironmentMaker {
     val metalPot = new MetalPot
     roomKitchen.addObject(metalPot)
 
-    val sink = new Sink()
+    val sewer = new Sewer()
+    val sink = new Sink(drainsTo = Some(sewer))
     roomKitchen.addObject(sink)
 
     val stove = new Stove()

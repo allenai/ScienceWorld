@@ -108,6 +108,19 @@ class EnvObject(var name:String, var objType:String) {
     return false
   }
 
+  /*
+   * Contains (recursive)
+   */
+  def containsRecursive(objIn:EnvObject):Boolean = {
+    if (this.contains(objIn)) return true
+    if (this.getContainer().isDefined) {
+      // If this object is in a container, then continue searching by recursing down through the containers
+      return this.containsRecursive(objIn)
+    } else {
+      // If this object is not in a container, then we've hit the bottom of the object tree, and this container isn't in it
+      return false
+    }
+  }
 
   /*
    * Helpers
@@ -151,6 +164,10 @@ class EnvObject(var name:String, var objType:String) {
     for (containedObj <- this.getContainedObjects()) {
       containedObj.tick()
     }
+    for (portalObj <- this.getPortals()) {      //## TODO: Verify that the portal tick was run only once?
+      portalObj.tick()
+    }
+
 
     // Return
     true

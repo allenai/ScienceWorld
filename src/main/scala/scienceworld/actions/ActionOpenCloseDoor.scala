@@ -21,8 +21,12 @@ class ActionOpenDoor(action:ActionRequestDef, assignments:Map[String, EnvObject]
       if (obj.propPortal.get.isOpen) {
         return "The " + obj.name + " is already open."
       } else {
-        obj.propPortal.get.isOpen = true
-        return "The " + obj.name + " is now open."
+        if (obj.propPortal.get.isOpenable) {
+          obj.propPortal.get.isOpen = true
+          return "The " + obj.name + " is now open."
+        } else {
+          return "The " + obj.name + " is not openable."
+        }
       }
     }
 
@@ -72,18 +76,39 @@ class ActionCloseDoor(action:ActionRequestDef, assignments:Map[String, EnvObject
     val agent = assignments("agent")
     val obj = assignments("door")
 
-    // Check that the object is openable
-    if ((obj.propContainer.isEmpty) || (obj.propContainer.get.isClosable == false)) {
-      return "The " + obj.name + " is not closeable."
+    // Case 1: Openable portals (e.g. doors)
+    if (obj.propPortal.isDefined) {
+      // Open
+      if (!obj.propPortal.get.isOpen) {
+        return "The " + obj.name + " is already closed."
+      } else {
+        if (obj.propPortal.get.isOpenable) {
+          obj.propPortal.get.isOpen = false
+          return "The " + obj.name + " is now closed."
+        } else {
+          return "The " + obj.name + " is not closeable."
+        }
+      }
     }
 
-    // Open
-    if (!obj.propContainer.get.isOpen) {
-      return "The " + obj.name + " is already closed."
-    } else {
-      obj.propContainer.get.isOpen = false
-      return "The " + obj.name + " is now closed."
+    // Case 2: Openable containers (e.g. cupboards)
+    if (obj.propContainer.isDefined) {
+      if (!obj.propContainer.get.isClosable) {
+        return "The " + obj.name + " is not closeable."
+      }
+
+      // Open
+      if (!obj.propContainer.get.isOpen) {
+        return "The " + obj.name + " is already closed."
+      } else {
+        obj.propContainer.get.isOpen = false
+        return "The " + obj.name + " is now closed."
+      }
     }
+
+    // Case 3: Not a portal or a container
+    return "The " + obj.name + " is not closeable."
+
 
   }
 

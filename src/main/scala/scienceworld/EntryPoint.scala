@@ -2,7 +2,7 @@ package scienceworld
 
 import scienceworld.environments.EnvironmentMaker
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.{Apple, MetalPot, Water}
+import scienceworld.objects.{Apple, Water}
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove}
 import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.portal.Door

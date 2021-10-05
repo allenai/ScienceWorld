@@ -1,6 +1,6 @@
-package scienceworld.objects
+package scienceworld.objects.containers
 
-import scienceworld.properties.{CeramicProp, GlassProp, IsContainer, IsOpenUnclosableContainer, PaperProp, PlasticProp, SteelProp, TinProp, WoodProp}
+import scienceworld.properties._
 import scienceworld.struct.EnvObject
 
 class Container extends EnvObject {
