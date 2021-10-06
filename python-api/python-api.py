@@ -148,7 +148,7 @@ def randomModel(scriptFilename:str):
 
         # Send user input, get response
         observation, score, isCompleted = env.step(userInputStr)
-        print("\n" + observation)
+        print("\n>>> " + observation)
         print("Score: " + str(score))
         print("isCompleted: " + str(isCompleted))
 
