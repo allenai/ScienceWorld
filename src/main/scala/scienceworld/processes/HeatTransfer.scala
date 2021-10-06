@@ -24,7 +24,7 @@ object HeatTransfer {
             var increment = deltaTemp * 0.10
             heatedObj.propMaterial.get.temperatureC += increment
 
-            println("Heat transfer: Object (" + heatedObj.name + ") tempererature now " + heatedObj.propMaterial.get.temperatureC)
+            //println("Heat transfer: Object (" + heatedObj.name + ") tempererature now " + heatedObj.propMaterial.get.temperatureC)
           }
         }
 
@@ -50,7 +50,7 @@ object HeatTransfer {
             var increment = deltaTemp * 0.10
             cooledObj.propMaterial.get.temperatureC += increment
 
-            println("Heat transfer: Object (" + cooledObj.name + ") tempererature now " + cooledObj.propMaterial.get.temperatureC)
+            //println("Heat transfer: Object (" + cooledObj.name + ") tempererature now " + cooledObj.propMaterial.get.temperatureC)
           }
         }
 
@@ -83,8 +83,8 @@ object HeatTransfer {
     val increment2 = delta2 * 0.10
     obj2.propMaterial.get.temperatureC += increment2
 
-    println ("Heat transfer (conductive - 1): Object (" + obj1.name + ") temperature from " + obj1Temp + " to " + obj1.propMaterial.get.temperatureC)
-    println ("Heat transfer (conductive - 2): Object (" + obj2.name + ") temperature from " + obj1Temp + " to " + obj2.propMaterial.get.temperatureC)
+    //println ("Heat transfer (conductive - 1): Object (" + obj1.name + ") temperature from " + obj1Temp + " to " + obj1.propMaterial.get.temperatureC)
+    //println ("Heat transfer (conductive - 2): Object (" + obj2.name + ") temperature from " + obj1Temp + " to " + obj2.propMaterial.get.temperatureC)
   }
 
 

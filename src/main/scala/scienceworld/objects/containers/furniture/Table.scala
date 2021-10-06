@@ -104,7 +104,7 @@ class Counter extends Container {
 
 class Cupboard extends Container {
   this.name = "cupboard"
-  this.propContainer = Some(new IsOpenUnclosableContainer())
+  this.propContainer = Some(new IsContainer())
   this.propMaterial = Some(new WoodProp())
 
   // Create a drawer
