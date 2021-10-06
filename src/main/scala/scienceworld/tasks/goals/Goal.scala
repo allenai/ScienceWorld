@@ -5,8 +5,9 @@ import scala.util.control.Breaks._
 
 // Storage class for a single goal
 trait Goal {
+  var satisfiedWithObject:Option[EnvObject] = None
 
-  def isGoalConditionSatisfied(obj:EnvObject):Boolean = {
+  def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):Boolean = {
     return false
   }
 
@@ -17,10 +18,17 @@ trait Goal {
 class GoalSequence(val subgoals:Array[Goal]) {
 
   var curSubgoalIdx:Int = 0
+  this.reset()
+
 
   def getCurrentSubgoal():Option[Goal] = {
     if (this.isCompleted()) return None
     return Some(this.subgoals(curSubgoalIdx))
+  }
+
+  def getLastSubgoal():Option[Goal] = {
+    if (this.curSubgoalIdx == 0) return None
+    return Some( this.subgoals(this.curSubgoalIdx-1) )
   }
 
   // Generate a normalized score (0-1) representing progress on this sequence of goals
@@ -35,6 +43,10 @@ class GoalSequence(val subgoals:Array[Goal]) {
     return false
   }
 
+  def reset() {
+    this.curSubgoalIdx = 0
+  }
+
   /*
    * Tick
    */
@@ -42,6 +54,8 @@ class GoalSequence(val subgoals:Array[Goal]) {
   def tick(objMonitor: ObjMonitor): Unit = {
     while (true) {
       val curSubgoal = this.getCurrentSubgoal()
+      var lastSubgoal = this.getLastSubgoal()
+
       if (!curSubgoal.isDefined) return
 
       // Check each object in the set of monitored objects to see if it meets a subgoal condition
@@ -49,7 +63,7 @@ class GoalSequence(val subgoals:Array[Goal]) {
       breakable {
         for (obj <- objMonitor.getMonitoredObjects()) {
           println("Checking obj (" + obj.toStringMinimal() + ") against subgoal " + curSubgoalIdx)
-          isConditionSatisfied = curSubgoal.get.isGoalConditionSatisfied(obj)
+          isConditionSatisfied = curSubgoal.get.isGoalConditionSatisfied(obj, lastSubgoal)
           if (isConditionSatisfied) break()
         }
       }

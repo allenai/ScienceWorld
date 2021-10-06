@@ -80,6 +80,8 @@ object EntryPoint {
 
           if (userInputString == "debug") {
             //agentInterface.printDebugDisplay()
+          } else if (userInputString == "help") {
+            println("Possible Actions: \n" + agentInterface.getPossibleActions().mkString("\n"))
           } else {
             validInput = true
           }

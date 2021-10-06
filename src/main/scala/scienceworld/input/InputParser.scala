@@ -5,7 +5,7 @@ import language.runtime.runners.{ActionRunner, PredicateRunner}
 import language.struct.{DynamicValue, ScopedVariableLUT}
 import scienceworld.actions.Action
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.goals.ObjMonitor
+import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -27,7 +27,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
 
   // Main entry point
   // Perspective container: The container where the agent is located
-  def parse(inputStr:String, objTreeRoot:EnvObject, agent:EnvObject, objMonitor:ObjMonitor, perspectiveContainer:EnvObject): (Boolean, String, String, Option[Action]) = {      // (Success, errorMessage, userString)
+  def parse(inputStr:String, objTreeRoot:EnvObject, agent:EnvObject, objMonitor:ObjMonitor, goalSequence:GoalSequence, perspectiveContainer:EnvObject): (Boolean, String, String, Option[Action]) = {      // (Success, errorMessage, userString)
     // TODO: Only include observable objects in the list of all objects
     val tokens = this.tokenize(inputStr.toLowerCase)
     val allObjs = InputParser.collectObjects(objTreeRoot).toArray
@@ -86,7 +86,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
       //## TODO: val (success, errorStr) = actionRunner.setActionRequest(oneMatch.get.actionRequestDef.get, oneMatch.get.varLUT)
       // Convert from InputMatch to Action
       var oneAction:Option[Action] = None
-      if (oneMatch.isDefined) oneAction = Some( ActionTypecaster.typecastAction(oneMatch.get, objMonitor) )
+      if (oneMatch.isDefined) oneAction = Some( ActionTypecaster.typecastAction(oneMatch.get, objMonitor, goalSequence) )
 
       val success = true
       var errorStr = ""

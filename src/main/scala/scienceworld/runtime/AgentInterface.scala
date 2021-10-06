@@ -96,7 +96,7 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
     val agentContainer = agent.getContainer().get
 
     //val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, interpreter.objectTreeRoot, agent)
-    val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, agent, objMonitor, agentContainer)
+    val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, agent, objMonitor, goalSequence, agentContainer)
     if (!successUserInput) {
       println("ERROR: " + errStr)
     } else {

@@ -1,16 +1,17 @@
 package scienceworld.input
 
-import scienceworld.actions.{Action, ActionActivate, ActionCloseDoor, ActionDeactivate, ActionEat, ActionFlush, ActionFocus, ActionLookAround, ActionLookAt, ActionLookIn, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPourObject, ActionRead, ActionUseDevice}
-import scienceworld.tasks.goals.ObjMonitor
+import scienceworld.actions.{Action, ActionActivate, ActionCloseDoor, ActionDeactivate, ActionEat, ActionFlush, ActionFocus, ActionLookAround, ActionLookAt, ActionLookIn, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPourObject, ActionRead, ActionResetTask, ActionUseDevice}
+import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
 
 object ActionTypecaster {
 
-  def typecastAction(actionIn:InputMatch, objMonitor:ObjMonitor):Action = {
+  def typecastAction(actionIn:InputMatch, objMonitor:ObjMonitor, goalSequence:GoalSequence):Action = {
     val action = actionIn.actionRequestDef.get
     val assignments = actionIn.varLUT.toMap
 
     action.name match {
       case ActionFocus.ACTION_NAME => new ActionFocus(action, assignments, objMonitor)
+      case ActionResetTask.ACTION_NAME => new ActionResetTask(action, assignments, objMonitor, goalSequence)
 
       case ActionOpenDoor.ACTION_NAME => new ActionOpenDoor(action, assignments)
       case ActionCloseDoor.ACTION_NAME => new ActionCloseDoor(action, assignments)
