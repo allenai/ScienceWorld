@@ -112,6 +112,17 @@ class CeramicCup extends Container {
 
 }
 
+class WoodBowl extends Container {
+  this.name = "bowl"
+  this.propContainer = Some(new IsOpenUnclosableContainer())
+  this.propMaterial = Some(new WoodProp())
+
+  override def getReferents(): Set[String] = {
+    Set("bowl", this.propMaterial.get.substanceName + " bowl", this.name)
+  }
+
+}
+
 
 /*
  * Flower pot

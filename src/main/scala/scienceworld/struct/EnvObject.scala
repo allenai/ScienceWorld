@@ -9,6 +9,8 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import EnvObject._
 
+import scala.reflect.ClassTag
+
 
 class EnvObject(var name:String, var objType:String) {
 
@@ -63,8 +65,15 @@ class EnvObject(var name:String, var objType:String) {
 
   def getContainedObjects():Set[EnvObject] = this.containedObjects.toSet
 
-  def getContainedObjectsOfType[T]():Set[EnvObject] = {
-    this.containedObjects.filter(_.isInstanceOf[T]).toSet
+  def getContainedObjectsOfType[T:ClassTag]():Set[EnvObject] = {
+    val out = mutable.Set[EnvObject]()
+    for (obj <- this.containedObjects) {
+      obj match {
+        case x:T => out.add(obj)
+        case _ => {}
+      }
+    }
+    return out.toSet
   }
 
   // Add an object to this container

@@ -11,117 +11,34 @@ import scienceworld.objects.misc.Picture
 import scienceworld.objects.portal.Door
 import scienceworld.struct.EnvObject
 
+import scala.util.Random
+
 class EnvironmentMaker {
 
 }
 
 object EnvironmentMaker {
-  /*
-   * Helper functions
-   */
-  def mkDoor(location1:Location, location2:Location, isOpen:Boolean = false) {
-    val door = new Door(isOpen, location1, location2)
-    location1.addPortal(door)
-    location2.addPortal(door)
-  }
 
 
   def mkKitchenEnvironment(): (EnvObject, EnvObject) = {
     // Universe (object tree root)
     val universe = new Universe()
 
-    // Rooms
-    val roomKitchen = new Room("Kitchen")
-    universe.addObject(roomKitchen)
-
-    val roomLivingRoom = BuildingMaker.mkLivingRoom()
-    universe.addObject(roomLivingRoom)
-
-    val roomBedroom = BuildingMaker.mkBedroom()
-    universe.addObject(roomBedroom)
-
-    val roomHallway = new Room("Hallway")
-    universe.addObject(roomHallway)
-
-
-    // Doors
-    mkDoor(roomKitchen, roomHallway)
-    mkDoor(roomLivingRoom, roomHallway)
-    mkDoor(roomBedroom, roomHallway)
-
-
-    // Objects
-    val apple = new Apple()
-    roomHallway.addObject(apple)
-
-
-    val metalPot = new MetalPot
-    roomKitchen.addObject(metalPot)
-
+    // Sewer (for plumbing)
     val sewer = new Sewer()
-    val sink = new Sink(drainsTo = Some(sewer))
-    roomKitchen.addObject(sink)
+    universe.addObject(sewer)
 
-    val toilet = new Toilet(drainsTo = sewer)
-    roomKitchen.addObject(toilet)
+    // House
+    BuildingMaker.mkRandomHouse(universe, sewer)
 
-    val stove = new Stove()
-    roomKitchen.addObject(stove)
-
-    val fridge = new Fridge()
-    roomKitchen.addObject(fridge)
-
-    val freezer = new Freezer()
-    roomKitchen.addObject(freezer)
-
-
-    // Add water to pot, place it on the stove, and turn on the stove.
-    val water = new Water()
-    metalPot.addObject(water)
-
-    stove.addObject(metalPot)
-
-    // Another container
-    val cup = new GlassCup()
-    roomKitchen.addObject(cup)
-
-    val cup2 = new WoodCup()
-    cup2.addObject( new OrangeJuice() )
-    roomKitchen.addObject(cup2)
-
-    // A Thermometer
-    val thermometer = new Thermometer()
-    roomKitchen.addObject(thermometer)
-
-    // Books
-    val bookshelf = new BookShelf()
-    roomKitchen.addObject(bookshelf)
-
-    val book1 = new BookMobyDick()
-    val book2 = new BookFrankenstein()
-    bookshelf.addObject(book1)
-    bookshelf.addObject(book2)
-
-    // Random picture
-    roomKitchen.addObject( Picture.mkRandom() )
-
-    val table = new Table()
-    table.addObject(cup)
-    roomKitchen.addObject( table )
-
-    val desk = new Desk()
-    desk.drawer.addObject(cup2)
-    roomKitchen.addObject(desk)
-
-    // Bathroom
-    val roomBathroom = BuildingMaker.mkBathroom(includeBathtub = true, sewer)
-    universe.addObject(roomBathroom)
-    mkDoor(roomBathroom, roomKitchen)
 
     // Agent
     val agent = new Agent()
-    roomKitchen.addObject(agent)
+    // Place in a random location
+    val locations = universe.getContainedObjectsOfType[Location]().toArray
+    val randomLocation = locations( Random.nextInt(locations.length) )
 
+    randomLocation.addObject(agent)
 
     // Return
     return (universe, agent)
