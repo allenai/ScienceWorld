@@ -58,6 +58,14 @@ class VirtualEnv:
     # Ask the simulator to reset an environment back to it's initial state
     def reset(self):
         self.gateway.reset()
+        # Make first move
+        observation, score, isCompleted = self.step("look around")
+        # Also get the number of moves
+        numMoves = self.getNumMoves()
+
+        # Return a tuple that looks like the Jericho signiture for reset
+        return observation, {'moves': numMoves, 'score': score}
+
 
     # Shutdown the scala server
     def shutdown(self):
@@ -76,6 +84,9 @@ class VirtualEnv:
     # Get possible action/object combinations
     def getPossibleActionObjectCombinations(self):
         return self.gateway.getPossibleActionObjectCombinations()
+
+    def getNumMoves(self):
+        return self.gateway.getNumMoves()
 
 
 
@@ -97,15 +108,16 @@ class VirtualEnv:
 # Example of creating an environment, then taking one step
 def example1(scriptFilename:str):    
     env = VirtualEnv(scriptFilename)
-    env.reset()
+    initialObs, initialDict = env.reset()
     observation, score, isCompleted = env.step("look around")
     print(observation)
+
 
 def speedTest(scriptFilename:str):
     exitCommands = ["quit", "exit"]
     # Initialize environment
     env = VirtualEnv(scriptFilename)
-    env.reset()
+    initialObs, initialDict = env.reset()
 
     numEpochs = 1000
 
@@ -130,11 +142,11 @@ def randomModel(scriptFilename:str):
     exitCommands = ["quit", "exit"]
     # Initialize environment
     env = VirtualEnv(scriptFilename)
-    env.reset()
+    initialObs, initialDict = env.reset()
     
     print("Possible actions: " + str(env.getPossibleActions()) )
     print("Possible objects: " + str(env.getPossibleObjects()) )
-    print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
+    #print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
     
     score = 0.0
     isCompleted = False
@@ -182,7 +194,7 @@ def userConsole(scriptFilename:str):
     exitCommands = ["quit", "exit"]
     # Initialize environment
     env = VirtualEnv(scriptFilename)
-    env.reset()
+    initialObs, initialDict = env.reset()
     
     print("Possible actions: " + str(env.getPossibleActions()) )
     print("Possible objects: " + str(env.getPossibleObjects()) )
