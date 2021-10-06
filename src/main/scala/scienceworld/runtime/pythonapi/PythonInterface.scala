@@ -69,6 +69,7 @@ class PythonInterface() {
     agentInterface.get.getPossibleActionObjectCombinations().toList.asJava
   }
 
+  def getNumMoves():Int = this.curIter
 
   /*
    * Take action steps and get observations/scores
