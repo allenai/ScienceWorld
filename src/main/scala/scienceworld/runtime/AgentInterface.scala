@@ -78,6 +78,9 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
     out.toArray
   }
 
+  def getTaskDescription():String = {
+    return this.goalSequence.plainTextDescription
+  }
 
   /*
    * User Input
@@ -112,12 +115,17 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
    * Step
    */
   def step(userInputStr:String): (String, Double, Boolean) = {
+    val userOutStr = new StringBuilder()
 
     // Parse user input
     val (success, statusStr) = this.processUserInput(userInputStr)
+    if (statusStr.length > 0) {
+      userOutStr.append("Input: " + statusStr + "\n\n")
+    }
 
     // Run queued actions
-    val userOutstr = actionHandler.runQueuedActions()
+    val actionOutStr = actionHandler.runQueuedActions()
+    userOutStr.append(actionOutStr)
 
     // Run universe tick
     universe.tick()
@@ -128,7 +136,7 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
     val isCompleted = goalSequence.isCompleted()
 
     // Return action string
-    return (userOutstr, score, isCompleted)
+    return (userOutStr.toString(), score, isCompleted)
   }
 
 }

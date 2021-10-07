@@ -93,6 +93,8 @@ class VirtualEnv:
     def getNumMoves(self):
         return self.gateway.getNumMoves()
 
+    def getTaskDescription(self):
+        return self.gateway.getTaskDescription()
 
 
     # Step

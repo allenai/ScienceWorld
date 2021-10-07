@@ -119,7 +119,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
       val slots = new ArrayBuffer[Array[String]]
 
       // TODO...
-      os.append("Ambiguous request: Multiple object matches.  I'm not sure which (X:TODO) you mean... ")
+      os.append("Ambiguous request: Multiple object matches.  I'm not sure which object you mean... ")
     }
 
     // Return

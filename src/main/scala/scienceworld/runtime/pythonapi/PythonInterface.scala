@@ -69,7 +69,11 @@ class PythonInterface() {
     agentInterface.get.getPossibleActionObjectCombinations().toList.asJava
   }
 
-  def getNumMoves():Int = this.curIter
+  def getNumMoves():Integer = this.curIter
+
+  def getTaskDescription():String = {
+    agentInterface.get.getTaskDescription()
+  }
 
   /*
    * Take action steps and get observations/scores
@@ -95,6 +99,9 @@ class PythonInterface() {
     }
     if (userInputString.trim.toLowerCase == "objects") {
       return "Possible object references: \n\t" + this.getPossibleObjects().toArray().mkString("\n\t")
+    }
+    if (userInputString.trim.toLowerCase == "task") {
+      return "Task description:\n" + agentInterface.get.getTaskDescription()
     }
 
     // Process step in environment

@@ -96,6 +96,8 @@ class VirtualEnv:
     def getNumMoves(self):
         return self.gateway.getNumMoves()
 
+    def getTaskDescription(self):
+        return self.gateway.getTaskDescription()
 
 
     # Step
@@ -270,14 +272,18 @@ def app():
     #print("Possible actions: " + str(env.getPossibleActions()) )
     #print("Possible objects: " + str(env.getPossibleObjects()) )
     #print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
-    
+    put_markdown('## Science World (Text Simulation)')
+    put_table([
+        ["Task", env.getTaskDescription()]
+    ])
 
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands):
+        put_markdown("### Move " + str(env.getNumMoves()) )
+        
         # Send user input, get response
-        observation, score, isCompleted = env.step(userInputStr)
-
-        put_markdown('## Science World (Text Simulation)')
+        observation, score, isCompleted = env.step(userInputStr)        
+        
         put_text(observation)
         put_table([
             ["Score:", str(score)],
