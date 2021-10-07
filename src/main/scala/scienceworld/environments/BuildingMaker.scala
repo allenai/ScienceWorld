@@ -79,7 +79,7 @@ object RoomMaker {
    * Living Room
    */
   def mkLivingRoom():Location = {
-    val room = new Room("living Room")
+    val room = new Room("living room")
 
     // Couch
     val couch = new Couch()
