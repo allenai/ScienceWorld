@@ -79,7 +79,7 @@ object RoomMaker {
    * Living Room
    */
   def mkLivingRoom():Location = {
-    val room = new Room("Living Room")
+    val room = new Room("living Room")
 
     // Couch
     val couch = new Couch()
@@ -112,7 +112,7 @@ object RoomMaker {
    * Kitchen
    */
   def mkKitchen(sewer:EnvObject):Location = {
-    val room = new Room("Kitchen")
+    val room = new Room("kitchen")
 
     // Objects
 
@@ -227,7 +227,7 @@ object BuildingMaker {
     universe.addObject(roomBathroom)
 
     // Hallway
-    val roomHallway = new Room("Hallway")
+    val roomHallway = new Room("hallway")
     roomHallway.addObject( Picture.mkRandom() )
     universe.addObject(roomHallway)
 
