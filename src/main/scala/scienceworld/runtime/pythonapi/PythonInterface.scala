@@ -89,6 +89,14 @@ class PythonInterface() {
     // Get agent's container (to render agent's perspective)
     val agentContainer = agent.get.getContainer().get
 
+    // Process special input commands (help, objects)
+    if (userInputString.trim.toLowerCase == "help") {
+      return "Possible actions: \n\t" + this.getPossibleActions().toArray().mkString("\n\t")
+    }
+    if (userInputString.trim.toLowerCase == "objects") {
+      return "Possible object references: \n\t" + this.getPossibleObjects().toArray().mkString("\n\t")
+    }
+
     // Process step in environment
     val (description, score_, isCompleted_) = agentInterface.get.step(userInputString)
     this.score = score_
@@ -101,8 +109,12 @@ class PythonInterface() {
     val referents = InputParser.getPossibleReferents(agentInterface.get.getAgentVisibleObjects()._2, agentContainer)
     println("Possible referents: " + referents.mkString(", "))
 
-    outStr.append(description)
-    outStr.append("\nPossible referents: " + referents.mkString(", "))
+    if (description.length > 0) {
+      outStr.append(description)
+    } else {
+      outStr.append("Unknown action.  Type 'help' for a list of actions, and 'objects' for a list of possible object referents. ")
+    }
+    //outStr.append("\nPossible referents: " + referents.mkString(", "))
 
     curIter += 1
     // Return

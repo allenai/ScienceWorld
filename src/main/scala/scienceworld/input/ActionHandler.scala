@@ -49,7 +49,7 @@ class ActionHandler {
       println ("Running action: " + action.name)
 
       val resultDesc = action.runAction()
-      out.append(action.name + ": " + resultDesc)
+      out.append("(" + action.name + "):\n" + resultDesc)
     }
 
     // Return
