@@ -41,6 +41,7 @@ object EntryPoint {
     val agentInterface = new AgentInterface(universe, agent, actionHandler, goalSequence)
     var curIter = 0
 
+    println ("Task: " + goalSequence.plainTextDescription)
     // DEBUG: Set the task/goals
 
     breakable {
