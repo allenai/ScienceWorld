@@ -15,7 +15,7 @@ trait Goal {
 
 
 // Storage class for a sequence of goals
-class GoalSequence(val subgoals:Array[Goal], val plainTextDescription:String) {
+class GoalSequence(val subgoals:Array[Goal]) {
 
   var curSubgoalIdx:Int = 0
   this.reset()

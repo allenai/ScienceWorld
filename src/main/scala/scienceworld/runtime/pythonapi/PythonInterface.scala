@@ -6,7 +6,8 @@ import scienceworld.input.{ActionDefinitions, InputParser}
 import scienceworld.objects.agent.Agent
 import scienceworld.runtime.AgentInterface
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.Task
+import scienceworld.tasks.{Task, TaskMaker}
+
 import collection.JavaConverters._
 import scala.util.control.Breaks.{break, breakable}
 
@@ -34,11 +35,13 @@ class PythonInterface() {
   def load(environmentStr:String): Unit = {
     this.environmentStr = environmentStr
 
-    val goalSequence = Task.mkTaskChangeOfState()
+    //## Currently, get a random task instead of using the environment string
+    val task = TaskMaker.getRandomTask()
+
     val (universe, agent_) = EnvironmentMaker.mkKitchenEnvironment()
 
     agent = Some(agent_)
-    agentInterface = Some( new AgentInterface(universe, agent.get, actionHandler, goalSequence) )
+    agentInterface = Some( new AgentInterface(universe, agent.get, actionHandler, task) )
 
     curIter = 0
   }
