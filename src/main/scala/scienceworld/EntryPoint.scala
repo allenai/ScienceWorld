@@ -8,7 +8,7 @@ import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.portal.Door
 import scienceworld.input.{ActionDefinitions, ActionHandler, InputParser}
 import scienceworld.runtime.AgentInterface
-import scienceworld.tasks.Task
+import scienceworld.tasks.{Task, TaskMaker}
 import scienceworld.tasks.goals.ObjMonitor
 
 import scala.io.StdIn.readLine
@@ -36,11 +36,12 @@ object EntryPoint {
 
     val startTime = System.currentTimeMillis()
 
-    val goalSequence = Task.mkTaskChangeOfState()
+    val task = TaskMaker.getRandomTask()
 
-    val agentInterface = new AgentInterface(universe, agent, actionHandler, goalSequence)
+    val agentInterface = new AgentInterface(universe, agent, actionHandler, task)
     var curIter = 0
 
+    println ("Task: " + agentInterface.getTaskDescription() )
     // DEBUG: Set the task/goals
 
     breakable {

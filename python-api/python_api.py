@@ -2,7 +2,8 @@
 #
 #   conda create --name virtualenv-scala python=3.8
 #   conda activate virtualenv-scala
-#   pip install py4j
+#   pip install py4j                                (for scala-python interface)
+#   pip install -U pywebio                          (for web server)
 
 from py4j.java_gateway import JavaGateway, GatewayParameters
 import subprocess
@@ -10,6 +11,10 @@ import random
 import timeit
 import time
 import py4j
+
+# Web interface
+from pywebio.input import *
+from pywebio.output import *
 
 class VirtualEnv:
 
@@ -86,6 +91,8 @@ class VirtualEnv:
     def getNumMoves(self):
         return self.gateway.getNumMoves()
 
+    def getTaskDescription(self):
+        return self.gateway.getTaskDescription()
 
 
     # Step

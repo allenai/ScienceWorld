@@ -6,7 +6,8 @@ import scienceworld.input.{ActionDefinitions, InputParser}
 import scienceworld.objects.agent.Agent
 import scienceworld.runtime.AgentInterface
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.Task
+import scienceworld.tasks.{Task, TaskMaker}
+
 import collection.JavaConverters._
 import scala.util.control.Breaks.{break, breakable}
 
@@ -34,11 +35,13 @@ class PythonInterface() {
   def load(environmentStr:String): Unit = {
     this.environmentStr = environmentStr
 
-    val goalSequence = Task.mkTaskChangeOfState()
+    //## Currently, get a random task instead of using the environment string
+    val task = TaskMaker.getRandomTask()
+
     val (universe, agent_) = EnvironmentMaker.mkKitchenEnvironment()
 
     agent = Some(agent_)
-    agentInterface = Some( new AgentInterface(universe, agent.get, actionHandler, goalSequence) )
+    agentInterface = Some( new AgentInterface(universe, agent.get, actionHandler, task) )
 
     curIter = 0
   }
@@ -69,7 +72,11 @@ class PythonInterface() {
     agentInterface.get.getPossibleActionObjectCombinations().toList.asJava
   }
 
-  def getNumMoves():Int = this.curIter
+  def getNumMoves():Integer = this.curIter
+
+  def getTaskDescription():String = {
+    agentInterface.get.getTaskDescription()
+  }
 
   /*
    * Take action steps and get observations/scores
@@ -89,6 +96,17 @@ class PythonInterface() {
     // Get agent's container (to render agent's perspective)
     val agentContainer = agent.get.getContainer().get
 
+    // Process special input commands (help, objects)
+    if (userInputString.trim.toLowerCase == "help") {
+      return "Possible actions: \n\t" + this.getPossibleActions().toArray().mkString("\n\t")
+    }
+    if (userInputString.trim.toLowerCase == "objects") {
+      return "Possible object references: \n\t" + this.getPossibleObjects().toArray().mkString("\n\t")
+    }
+    if (userInputString.trim.toLowerCase == "task") {
+      return "Task description:\n" + agentInterface.get.getTaskDescription()
+    }
+
     // Process step in environment
     val (description, score_, isCompleted_) = agentInterface.get.step(userInputString)
     this.score = score_
@@ -101,8 +119,12 @@ class PythonInterface() {
     val referents = InputParser.getPossibleReferents(agentInterface.get.getAgentVisibleObjects()._2, agentContainer)
     println("Possible referents: " + referents.mkString(", "))
 
-    outStr.append(description)
-    outStr.append("\nPossible referents: " + referents.mkString(", "))
+    if (description.length > 0) {
+      outStr.append(description)
+    } else {
+      outStr.append("Unknown action.  Type 'help' for a list of actions, and 'objects' for a list of possible object referents. ")
+    }
+    //outStr.append("\nPossible referents: " + referents.mkString(", "))
 
     curIter += 1
     // Return

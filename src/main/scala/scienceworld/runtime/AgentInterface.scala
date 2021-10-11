@@ -2,12 +2,13 @@ package scienceworld.runtime
 
 import scienceworld.input.{ActionHandler, InputParser}
 import scienceworld.struct.EnvObject
+import scienceworld.tasks.Task
 import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.io.StdIn.readLine
 
-class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHandler, goalSequence:GoalSequence) {
+class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHandler, task:Task) {
   val inputParser = new InputParser(actionHandler.getActions())
   val objMonitor = new ObjMonitor()
 
@@ -78,6 +79,9 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
     out.toArray
   }
 
+  def getTaskDescription():String = {
+    return this.task.description
+  }
 
   /*
    * User Input
@@ -96,7 +100,7 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
     val agentContainer = agent.getContainer().get
 
     //val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, interpreter.objectTreeRoot, agent)
-    val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, agent, objMonitor, goalSequence, agentContainer)
+    val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, agent, objMonitor, task.goalSequence, agentContainer)
     if (!successUserInput) {
       println("ERROR: " + errStr)
     } else {
@@ -112,23 +116,28 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
    * Step
    */
   def step(userInputStr:String): (String, Double, Boolean) = {
+    val userOutStr = new StringBuilder()
 
     // Parse user input
     val (success, statusStr) = this.processUserInput(userInputStr)
+    if (statusStr.length > 0) {
+      userOutStr.append("Input: " + statusStr + "\n\n")
+    }
 
     // Run queued actions
-    val userOutstr = actionHandler.runQueuedActions()
+    val actionOutStr = actionHandler.runQueuedActions()
+    userOutStr.append(actionOutStr)
 
     // Run universe tick
     universe.tick()
 
     // Check whether the goal conditions are met
-    goalSequence.tick(objMonitor)
-    val score = goalSequence.score()
-    val isCompleted = goalSequence.isCompleted()
+    task.goalSequence.tick(objMonitor)
+    val score = task.goalSequence.score()
+    val isCompleted = task.goalSequence.isCompleted()
 
     // Return action string
-    return (userOutstr, score, isCompleted)
+    return (userOutStr.toString(), score, isCompleted)
   }
 
 }
