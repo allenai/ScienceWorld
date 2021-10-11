@@ -59,12 +59,10 @@ class VirtualEnv:
     def reset(self):
         self.gateway.reset()
         # Make first move
-        observation, score, isCompleted = self.step("look around")
-        # Also get the number of moves
-        numMoves = self.getNumMoves()
+        observation, score, isCompleted, info = self.step("look around")
 
         # Return a tuple that looks like the Jericho signiture for reset
-        return observation, {'moves': numMoves, 'score': score}
+        return observation, info
 
 
     # Shutdown the scala server
@@ -96,8 +94,9 @@ class VirtualEnv:
         observation = self.gateway.step(inputStr)
         score = self.gateway.getScore()
         isCompleted = self.gateway.getCompleted()
+        numMoves = self.getNumMoves()
 
-        return observation, score, isCompleted
+        return observation, score, isCompleted, {'moves': numMoves, 'score': score}
 
 
 
