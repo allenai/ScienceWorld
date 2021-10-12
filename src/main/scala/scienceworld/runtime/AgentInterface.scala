@@ -1,6 +1,7 @@
 package scienceworld.runtime
 
 import scienceworld.input.{ActionHandler, InputParser}
+import scienceworld.runtime.pythonapi.TemplateAction
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.Task
 import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
@@ -37,7 +38,7 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
   }
 
   def getPossibleObjects(): Array[String] = {
-    val referents = inputParser.getAllReferents(this.getAgentVisibleObjects()._2)
+    val referents = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2)
     return referents
   }
 
@@ -46,6 +47,7 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
     val START_TOKEN = "START "
     val END_TOKEN = " END"
     val out = new ArrayBuffer[String]
+    val outTemplates = new ArrayBuffer[TemplateAction]
 
     val objects = this.getPossibleObjects()
 
@@ -69,6 +71,7 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
           }
           // Remove start/end tokens
           val sanitizedOutStr = outStr.substring(START_TOKEN.length, outStr.length - END_TOKEN.length).trim
+
 
           out.append(sanitizedOutStr)
         }
