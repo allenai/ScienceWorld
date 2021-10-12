@@ -149,7 +149,7 @@ class Anode extends EnvObject {
   }
 
   override def getDescription(mode: Int): String = {
-    return "an anode"
+    return "an anode.  it is connected to: " + this.propElectricalConnection.get.getConnectedToStr() + ". "
   }
 }
 
@@ -172,7 +172,7 @@ class Cathode extends EnvObject {
   }
 
   override def getDescription(mode: Int): String = {
-    return "a cathode"
+    return "an cathode.  it is connected to: " + this.propElectricalConnection.get.getConnectedToStr() + ". "
   }
 }
 
