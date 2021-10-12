@@ -28,7 +28,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   }
 
   // Get a list of all referents
-  def getAllUniqueReferents(objTreeRoot:EnvObject):Array[String] = {
+  def getAllUniqueReferents(objTreeRoot:EnvObject):Array[(String, EnvObject)] = {
     // Step 1: Collect a list of all referents for each object
     val objReferents = new ArrayBuffer[Array[String]]()
     val allObjs = InputParser.collectObjects(objTreeRoot).toArray
@@ -40,14 +40,14 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     val indices = this.chooseUniqueReferents(objReferents.toArray)
 
     // Step 2A: Populate an array of the unique referents (as strings)
-    val out = mutable.Set[String]()
+    val out = new ArrayBuffer[(String, EnvObject)]()
     for (i <- 0 until allObjs.length) {
       val referent = objReferents(i)(indices(i))
-      out.add(referent)
+      out.append( (referent.toLowerCase(), allObjs(i)) )
     }
 
     // Return
-    out.toArray.map(_.toLowerCase).sorted
+    out.toArray.sortBy(_._1)
   }
 
   private def chooseUniqueReferents(objReferents:Array[Array[String]]): Array[Int] = {
