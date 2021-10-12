@@ -184,6 +184,7 @@ def randomModel(scriptFilename:str):
         # Randomly select action
         possibleActionObjectCombinations = env.getPossibleActionObjectCombinations()
         randomTemplate = random.choice( possibleActionObjectCombinations )        
+        print(randomTemplate)
         userInputStr = randomTemplate["action"]
 
         # Sanitize input
