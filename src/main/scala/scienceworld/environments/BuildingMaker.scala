@@ -180,11 +180,6 @@ object RoomMaker {
     room.addObject(chair)
 
 
-    // Light bulb
-    val lightbulb = new LightBulb()
-    room.addObject(lightbulb)
-
-
     // Return
     room
   }

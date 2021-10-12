@@ -1,7 +1,7 @@
 package scienceworld.objects.electricalcomponent
 
 import scienceworld.objects.electricalcomponent.ElectricalComponent.{ROLE_VOLTAGE_GENERATOR, ROLE_VOLTAGE_USER}
-import scienceworld.properties.{ElectricalConnectionProperties, IsActivableDeviceOff, IsNotActivableDeviceOff, MoveableProperties}
+import scienceworld.properties.{ElectricalConnectionProperties, IsActivableDeviceOff, IsNotActivableDeviceOff, IsNotActivableDeviceOn, MoveableProperties}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 
@@ -186,8 +186,9 @@ class LightBulb extends ElectricalComponent {
 
   this.propDevice = Some(new IsNotActivableDeviceOff())
 
-  // Forward voltage required to function
-  this.forwardVoltage = 2.0
+  this.electricalRole = ROLE_VOLTAGE_USER     // Component uses voltage, rather than generating it
+  this.forwardVoltage = 2.0                   // Forward voltage required to function
+
 
   override def tick(): Boolean = {
     super.tick()
@@ -219,3 +220,33 @@ class LightBulb extends ElectricalComponent {
 }
 
 
+class Battery extends ElectricalComponent {
+  this.name = "battery"
+
+  this.propDevice = Some(new IsNotActivableDeviceOn())
+
+  this.electricalRole = ROLE_VOLTAGE_GENERATOR  // Component uses voltage, rather than generating it
+  this.forwardVoltage = 0.0                     // The battery does not use any voltage
+
+  override def tick(): Boolean = {
+    super.tick()
+  }
+
+  override def getReferents(): Set[String] = {
+    Set("battery", this.name)
+  }
+
+  override def getDescription(mode:Int):String = {
+    val os = new StringBuilder
+
+    os.append("a " + this.name + "")
+    if (mode == MODE_DETAILED) {
+      os.append(". ")
+      os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
+      os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
+    }
+
+    os.toString
+  }
+
+}

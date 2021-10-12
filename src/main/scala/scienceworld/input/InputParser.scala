@@ -53,10 +53,10 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   private def chooseUniqueReferents(objReferents:Array[Array[String]]): Array[Int] = {
     // Array of referent indicies
     val indices = Array.fill[Int](objReferents.length)(0)
-    var attempts:Int = 0
+    var numAttempts:Int = 0
     val MAX_ATTEMPTS = 20
 
-    while (attempts < MAX_ATTEMPTS) {
+    while (numAttempts < MAX_ATTEMPTS) {
       // Get a frequency counter of chosen referents
       val frequency = new mutable.HashMap[String, Int]()
       for (i <- 0 until objReferents.length) {
@@ -64,7 +64,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
         if (frequency.contains(referent)) {
           frequency(referent) = frequency(referent) + 1
         } else {
-          frequency(referent) = 0
+          frequency(referent) = 1
         }
       }
 
@@ -74,7 +74,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
         val referent = objReferents(i)(indices(i))
         if (frequency(referent) > 1) {
           // If there's a duplicate, then increment the array for both elements
-          if (attempts < 10) {
+          if (numAttempts < 10) {
             // For the first 10 attempts, just increment the index, which should go to further specifications of the object names (e.g. 'cat', 'cat in the box')
             indices(i) = (indices(i) + 1) % objReferents(i).length
           } else {
@@ -89,6 +89,8 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
       if (numDuplicates == 0) {
         return indices
       }
+
+      numAttempts += 1
     }
 
     // If we reach here, then there was an error creating unique referents.  Just pick the ones we have so far.
