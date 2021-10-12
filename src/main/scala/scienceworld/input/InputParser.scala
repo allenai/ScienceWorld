@@ -7,8 +7,10 @@ import scienceworld.actions.Action
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
 
+import scala.Console.out
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
 import scala.util.control.Breaks.{break, breakable}
 
 class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
@@ -23,6 +25,77 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     }
 
     out.toArray.map(_.toLowerCase).sorted
+  }
+
+  // Get a list of all referents
+  def getAllUniqueReferents(objTreeRoot:EnvObject):Array[(String, EnvObject)] = {
+    // Step 1: Collect a list of all referents for each object
+    val objReferents = new ArrayBuffer[Array[String]]()
+    val allObjs = InputParser.collectObjects(objTreeRoot).toArray
+    for (obj <- allObjs) {
+      objReferents.append( obj.getReferentsWithContainers(perspectiveContainer = objTreeRoot).toArray.sorted )
+    }
+
+    // Step 2: Choose unique referents (find their indices)
+    val indices = this.chooseUniqueReferents(objReferents.toArray)
+
+    // Step 2A: Populate an array of the unique referents (as strings)
+    val out = new ArrayBuffer[(String, EnvObject)]()
+    for (i <- 0 until allObjs.length) {
+      val referent = objReferents(i)(indices(i))
+      out.append( (referent.toLowerCase(), allObjs(i)) )
+    }
+
+    // Return
+    out.toArray.sortBy(_._1)
+  }
+
+  private def chooseUniqueReferents(objReferents:Array[Array[String]]): Array[Int] = {
+    // Array of referent indicies
+    val indices = Array.fill[Int](objReferents.length)(0)
+    var numAttempts:Int = 0
+    val MAX_ATTEMPTS = 20
+
+    while (numAttempts < MAX_ATTEMPTS) {
+      // Get a frequency counter of chosen referents
+      val frequency = new mutable.HashMap[String, Int]()
+      for (i <- 0 until objReferents.length) {
+        val referent = objReferents(i)(indices(i))
+        if (frequency.contains(referent)) {
+          frequency(referent) = frequency(referent) + 1
+        } else {
+          frequency(referent) = 1
+        }
+      }
+
+      // Check to see if they're unique
+      var numDuplicates: Int = 0
+      for (i <- 0 until objReferents.length) {
+        val referent = objReferents(i)(indices(i))
+        if (frequency(referent) > 1) {
+          // If there's a duplicate, then increment the array for both elements
+          if (numAttempts < 10) {
+            // For the first 10 attempts, just increment the index, which should go to further specifications of the object names (e.g. 'cat', 'cat in the box')
+            indices(i) = (indices(i) + 1) % objReferents(i).length
+          } else {
+            // For subsequent attempts, pick random referent IDs
+            indices(i) = Random.nextInt( objReferents(i).length )
+          }
+          numDuplicates += 1
+        }
+      }
+
+      // If no duplicates, exit
+      if (numDuplicates == 0) {
+        return indices
+      }
+
+      numAttempts += 1
+    }
+
+    // If we reach here, then there was an error creating unique referents.  Just pick the ones we have so far.
+    println ("WARNING: Unable to create unique referents. ")
+    return indices
   }
 
   // Main entry point

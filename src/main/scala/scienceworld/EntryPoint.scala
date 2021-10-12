@@ -30,7 +30,9 @@ object EntryPoint {
 
     val actionHandler = ActionDefinitions.mkActionDefinitions()
 
-    val (universe, agent) = EnvironmentMaker.mkKitchenEnvironment()
+    //val (universe, agent) = EnvironmentMaker.mkKitchenEnvironment()
+    val (universe, agent) = EnvironmentMaker.mkElectricalEnvironment()
+
     println(universe.getDescription())
 
 
@@ -68,7 +70,11 @@ object EntryPoint {
 
 
         // DEBUG
-        val referents = agentInterface.inputParser.getAllReferents(agentInterface.getAgentVisibleObjects()._2)
+        //val referents = agentInterface.inputParser.getAllReferents(agentInterface.getAgentVisibleObjects()._2)
+
+        val referents = agentInterface.inputParser.getAllUniqueReferents(agentInterface.getAgentVisibleObjects()._2).map(_._1)
+
+
         println("Possible referents: " + referents.mkString(", "))
         //println("Possible actions:\n\t" + actionHandler.getActionExamplesPlainText().mkString("\n\t"))
         //println("Possible Combinations:\n\t" + agentInterface.getPossibleActionObjectCombinations().mkString("\n\t") )

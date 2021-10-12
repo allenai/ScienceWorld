@@ -67,9 +67,9 @@ class PythonInterface() {
     agentInterface.get.getPossibleObjects().toList.asJava
   }
 
-  def getPossibleActionObjectCombinations(): java.util.List[String] = {
+  def getPossibleActionObjectCombinationsJSON(): java.util.List[String] = {
     if (!agentInterface.isDefined) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
-    agentInterface.get.getPossibleActionObjectCombinations().toList.asJava
+    agentInterface.get.getPossibleActionObjectCombinationsJSON().toList.asJava
   }
 
   def getNumMoves():Integer = this.curIter

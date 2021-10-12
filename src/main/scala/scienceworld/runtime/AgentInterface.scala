@@ -1,6 +1,7 @@
 package scienceworld.runtime
 
 import scienceworld.input.{ActionHandler, InputParser}
+import scienceworld.runtime.pythonapi.TemplateAction
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.Task
 import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
@@ -33,23 +34,27 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
    * Get possible actions/objects
    */
   def getPossibleActions(): Array[String] = {
-    actionHandler.getActionExamplesPlainText()
+    actionHandler.getActionExamplesPlainText().sorted
   }
 
   def getPossibleObjects(): Array[String] = {
-    val referents = inputParser.getAllReferents(this.getAgentVisibleObjects()._2)
+    val referents = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2).map(_._1)
     return referents
   }
 
-  def getPossibleActionObjectCombinations(): Array[String] = {
+  def getPossibleActionObjectCombinations(): Array[TemplateAction] = {
     val OBJ_PLACEHOLDER_TOKEN = "OBJ"
     val START_TOKEN = "START "
     val END_TOKEN = " END"
-    val out = new ArrayBuffer[String]
 
-    val objects = this.getPossibleObjects()
+    val outTemplates = new ArrayBuffer[TemplateAction]
 
-    for (actionStr <- this.getPossibleActions()) {
+    val objects = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2)
+
+    val allActions = this.getPossibleActions()
+    for (actionIdx <- 0 until allActions.length) {
+      val actionStr = allActions(actionIdx)
+
       val actionStr1 = START_TOKEN + actionStr + END_TOKEN
       val split = actionStr1.split(OBJ_PLACEHOLDER_TOKEN)
 
@@ -61,22 +66,43 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
       for (combo <- combos) {
         for (perm <- combo permutations) {
           val outStr = new StringBuilder
+          val outObjs = new ArrayBuffer[EnvObject]
+
           for (i <- 0 until split.length) {
             outStr.append(split(i))
             if (i < (split.length - 1)) {
-              outStr.append(perm(i))
+              val objReferent = perm(i)._1
+              val obj = perm(i)._2
+              outStr.append(objReferent)
+              outObjs.append(obj)
             }
           }
           // Remove start/end tokens
           val sanitizedOutStr = outStr.substring(START_TOKEN.length, outStr.length - END_TOKEN.length).trim
+          val templateID = actionIdx      // TODO: This is just the index of the action in a name-stored array, rather than a unique ID for each action.  If different environments are run with different numbers of valid actions, this ID number would likely be different. (i.e. cross-action-space transfer would not work)
+          val objectUUIDs = outObjs.map(_.uuid).map(_.toInt).toList
+          // Pack
+          val template = new TemplateAction(sanitizedOutStr, templateID, objectUUIDs)
 
-          out.append(sanitizedOutStr)
+          // Store
+          outTemplates.append(template)
         }
       }
     }
 
     // Return
-    out.toArray
+    outTemplates.toArray
+  }
+
+  def getPossibleActionObjectCombinationsJSON():Array[String] = {
+    // Step 1: Get templates
+    val templates = this.getPossibleActionObjectCombinations()
+
+    // Step 2: Serialize to JSON
+    val templatesJSON = templates.map(_.toJSON())
+
+    // Step 3: Return
+    return templatesJSON
   }
 
   def getTaskDescription():String = {

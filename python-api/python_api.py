@@ -10,6 +10,7 @@ import subprocess
 import random
 import timeit
 import time
+import json
 import py4j
 
 # Web interface
@@ -86,7 +87,13 @@ class VirtualEnv:
 
     # Get possible action/object combinations
     def getPossibleActionObjectCombinations(self):
-        return self.gateway.getPossibleActionObjectCombinations()
+        templatesJSON = self.gateway.getPossibleActionObjectCombinationsJSON()
+        out = []
+        for templateJSON in templatesJSON:            
+            out.append( json.loads(templateJSON) )
+
+        return out
+
 
     def getNumMoves(self):
         return self.gateway.getNumMoves()
@@ -175,7 +182,9 @@ def randomModel(scriptFilename:str):
 
         # Randomly select action
         possibleActionObjectCombinations = env.getPossibleActionObjectCombinations()
-        userInputStr = random.choice( possibleActionObjectCombinations )
+        randomTemplate = random.choice( possibleActionObjectCombinations )        
+        print(randomTemplate)
+        userInputStr = randomTemplate["action"]
 
         # Sanitize input
         userInputStr = userInputStr.lower().strip()
