@@ -4,6 +4,7 @@ import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, GlassCup, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
 import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
+import scienceworld.objects.electricalcomponent.LightBulb
 import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.misc.Picture
 import scienceworld.objects.portal.Door
@@ -177,6 +178,11 @@ object RoomMaker {
     // Chair
     val chair = new Chair()
     room.addObject(chair)
+
+
+    // Light bulb
+    val lightbulb = new LightBulb()
+    room.addObject(lightbulb)
 
 
     // Return
