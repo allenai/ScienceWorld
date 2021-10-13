@@ -78,7 +78,7 @@ object EnvironmentMaker {
 
     this.mkConnection(battery, lightbulb1)
     this.mkConnection(lightbulb1, lightbulb2)
-    //this.mkConnection(lightbulb2, battery)
+    this.mkConnection(lightbulb2, battery)
 
     /*
     battery.anode.propElectricalConnection.get.addConnection( lightbulb1.cathode )
