@@ -5,6 +5,8 @@ import scienceworld.properties.{ElectricalConnectionProperties, IsActivableDevic
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 
+//## TODO: Also add UnpolarizedElectricalComponent
+
 class PolarizedElectricalComponent extends EnvObject {
   this.name = "component"
 
