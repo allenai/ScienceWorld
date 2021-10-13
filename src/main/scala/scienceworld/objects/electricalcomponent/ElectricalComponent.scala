@@ -27,10 +27,68 @@ class PolarizedElectricalComponent extends EnvObject {
   // If a voltage generator, how much voltage does it generate?
   var generatorVoltage:Double = 0.0
 
+  // Check if a complete circuit
+  var circuitCheckLabel:Option[Int] = None
+
+  def isContinuousCircuit(labelIdx:Int = 0):Boolean = {
+    // This circuit node
+    circuitCheckLabel = Some(labelIdx)
+    // Progress along path towards cathode
+    val cathodeConnections = this.cathode.propElectricalConnection.get.getConnections().toArray
+    println("isContinuousCircuit(): " + this.name )
+    println("cathodeConnections: " + cathodeConnections.length)
+    if (cathodeConnections.size == 0) return false
+
+    val cathodeConnection = cathodeConnections(0)
+
+
+    cathodeConnection match {
+      case t:Terminal => {
+        t.parentObject match {
+          case x:PolarizedElectricalComponent => {
+            println (this.name + " connects to " + x.name)
+            println (x.name + ".circuitCheckLabel: " + x.circuitCheckLabel)
+            if (x.circuitCheckLabel.isEmpty) {
+              // Recurse case
+              println ("\tRecurse: " + x.name + " " + labelIdx + 1)
+              val result = x.isContinuousCircuit (labelIdx + 1)
+              this.circuitCheckLabel = None
+              return result
+            } else {
+              println ("\tIs populated: " + x.circuitCheckLabel)
+              if (x.circuitCheckLabel.get == 0) {
+                // Complete circuit
+                this.circuitCheckLabel = None
+                return true
+              } else {
+                // Partial circuit
+                this.circuitCheckLabel = None
+                return false
+              }
+            }
+          }
+          case _ => {
+            println("Unknown (" + cathodeConnection.name + ")" )
+            this.circuitCheckLabel = None
+            return false
+          }
+        }
+      }
+      case _ => {
+        println("Unknown (" + cathodeConnection.name + ")" )
+        // Unknown component
+        this.circuitCheckLabel = None
+        return false
+      }
+    }
+
+  }
+
+
   def getAnodeVoltage():Option[Double] = {
     if (electricalRole == ROLE_VOLTAGE_GENERATOR) {
-      // If this is a generator, return it's generation voltage
-      return Some(this.generatorVoltage)
+      // If this is a generator, return ground
+      return Some(0.0f)
     } else {
       // If this is a user, then travel along the chain until we find the source voltage, and then subtract each component's forward voltage from it.
 
@@ -41,7 +99,8 @@ class PolarizedElectricalComponent extends EnvObject {
       for (obj <- anodeConnections) {
         obj match {
           case x:Terminal => {
-            val av = x.getVoltagePotential()
+            val av = x.voltage
+            println ("* anode: " + this.name + " connected to " + x.parentObject.name + " : " + av)
             if (av.isEmpty) return None               // Case: no connection
             inputVoltage += av.get                    // Case: valid connection
           }
@@ -49,17 +108,16 @@ class PolarizedElectricalComponent extends EnvObject {
         }
       }
       // Step 2: Then, subtract the forward voltage
-      return Some(inputVoltage - this.forwardVoltage)
+      return Some(inputVoltage)
     }
   }
 
   def getCathodeVoltage():Option[Double] = {
     if (electricalRole == ROLE_VOLTAGE_GENERATOR) {
-      // If this is a generator, return ground
-      return Some(0.0f)
+      // If this is a generator, return it's generation voltage
+      return Some(this.generatorVoltage)
     } else {
       // If this is a user, then travel along the chain until we find the source voltage, and then subtract each component's forward voltage from it.
-
       // Step 1: Sum the input voltages on the cathode
       val cathodeConnections = this.cathode.propElectricalConnection.get.getConnections()
       if (cathodeConnections.size == 0) return None     // No-connection case, return None
@@ -67,7 +125,8 @@ class PolarizedElectricalComponent extends EnvObject {
       for (obj <- cathodeConnections) {
         obj match {
           case x:Terminal => {
-            val cv = x.getVoltagePotential()
+            val cv = x.voltage
+            println ("* cathode: " + this.name + " connected to " + x.parentObject.name + " : " + cv)
             if (cv.isEmpty) return None               // Case: no connection
             inputVoltage += cv.get                    // Case: valid connection
           }
@@ -83,14 +142,16 @@ class PolarizedElectricalComponent extends EnvObject {
   // Reminder: Cathode is the input, Anode is the output
   def calculatePotentialDifference():Double = {
     val anodeVoltage = this.getAnodeVoltage()
+    anode.voltage = anodeVoltage
     val cathodeVoltage = this.getCathodeVoltage()
+    cathode.voltage = cathodeVoltage
 
     println(" * ElectricalComponent (" + this.name + "): Anode Voltage: " + anodeVoltage + "  Cathode Voltage: " + cathodeVoltage)
 
     if (anodeVoltage.isEmpty) return 0.0f
     if (cathodeVoltage.isEmpty) return 0.0f
 
-    val potentialDifference = cathodeVoltage.get - anodeVoltage.get
+    val potentialDifference = anodeVoltage.get - cathodeVoltage.get
     return potentialDifference
   }
 
@@ -98,6 +159,8 @@ class PolarizedElectricalComponent extends EnvObject {
     // If this is an electrical component, check to see if it should be activated
     val potentialDifference = this.calculatePotentialDifference()
     println(" * ElectricalComponent (" + this.name + "): Potential difference: " + potentialDifference)
+    println("\t isContinuousCircuit(): " + this.isContinuousCircuit() )
+    println("----------------")
 
     if (potentialDifference >= this.forwardVoltage) {
       // Activated!
@@ -143,14 +206,8 @@ class Terminal(val parentObject:EnvObject) extends EnvObject {
   propMoveable = Some( new MoveableProperties(isMovable = false) )                        // Not moveable
   propElectricalConnection = Some( new ElectricalConnectionProperties() )                 // Electrical connection point
 
-  def getVoltagePotential():Option[Double] = {
-    return None   // TODO: Unimplemented
-    /*
-    parentObject match {
-      case x:PolarizedElectricalComponent =>
-    }
-     */
-  }
+  var voltage:Option[Double] = None
+
 
   override def tick():Boolean = {
 
@@ -172,14 +229,6 @@ class Terminal(val parentObject:EnvObject) extends EnvObject {
 class Anode(parentObject:EnvObject) extends Terminal(parentObject) {
   this.name = "anode"
 
-  override def getVoltagePotential():Option[Double] = {
-    parentObject match {
-      case x:PolarizedElectricalComponent => x.getAnodeVoltage()
-      // TODO: Add case for unpolarized electrical component
-      case _ => None
-    }
-  }
-
 }
 
 /*
@@ -187,14 +236,6 @@ class Anode(parentObject:EnvObject) extends Terminal(parentObject) {
  */
 class Cathode(parentObject:EnvObject) extends Terminal(parentObject) {
   this.name = "cathode"
-
-  override def getVoltagePotential():Option[Double] = {
-    parentObject match {
-      case x:PolarizedElectricalComponent => x.getCathodeVoltage()
-      // TODO: Add case for unpolarized electrical component
-      case _ => None
-    }
-  }
 
 }
 
