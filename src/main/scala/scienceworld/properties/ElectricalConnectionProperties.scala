@@ -21,7 +21,7 @@ class ElectricalConnectionProperties {
     return true
   }
 
-  def removeConnection(obj:EnvObject): Unit = {
+  def removeConnection(obj:EnvObject): Boolean = {
     if (connectedTo.contains(obj)) {
       connectedTo.remove(obj)
       return true
