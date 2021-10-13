@@ -66,6 +66,23 @@ object EnvironmentMaker {
     room.addObject(battery)
 
 
+    battery.anode.propElectricalConnection.get.addConnection( lightbulb.cathode )
+    battery.cathode.propElectricalConnection.get.addConnection( lightbulb.anode )
+
+    lightbulb.anode.propElectricalConnection.get.addConnection( battery.cathode )
+    lightbulb.cathode.propElectricalConnection.get.addConnection( battery.anode )
+
+
+/*
+    battery.anode.propElectricalConnection.get.addConnection( lightbulb.anode )
+    battery.cathode.propElectricalConnection.get.addConnection( lightbulb.cathode )
+
+    lightbulb.anode.propElectricalConnection.get.addConnection( battery.anode )
+    lightbulb.cathode.propElectricalConnection.get.addConnection( battery.cathode )
+*/
+
+
+
     // Agent
     val agent = new Agent()
     // Place in a random location

@@ -5,15 +5,15 @@ import scienceworld.properties.{ElectricalConnectionProperties, IsActivableDevic
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 
-class ElectricalComponent extends EnvObject {
+class PolarizedElectricalComponent extends EnvObject {
   this.name = "component"
 
   this.propDevice = Some(new IsNotActivableDeviceOff())                       // By default, not activable, and is off
   this.propMoveable = Some( new MoveableProperties(isMovable = false) )       // Not moveable
 
   // Each electrical component has an anode and a cathode
-  val anode = new Anode()
-  val cathode = new Cathode()
+  val anode = new Anode(this)
+  val cathode = new Cathode(this)
   this.addObject(anode)
   this.addObject(cathode)
 
@@ -38,8 +38,8 @@ class ElectricalComponent extends EnvObject {
       var inputVoltage:Double = 0.0f
       for (obj <- anodeConnections) {
         obj match {
-          case x:ElectricalComponent => {
-            val av = x.getAnodeVoltage()
+          case x:Terminal => {
+            val av = x.getVoltagePotential()
             if (av.isEmpty) return None               // Case: no connection
             inputVoltage += av.get                    // Case: valid connection
           }
@@ -64,8 +64,8 @@ class ElectricalComponent extends EnvObject {
       var inputVoltage:Double = 0.0f
       for (obj <- cathodeConnections) {
         obj match {
-          case x:ElectricalComponent => {
-            val cv = x.getCathodeVoltage()
+          case x:Terminal => {
+            val cv = x.getVoltagePotential()
             if (cv.isEmpty) return None               // Case: no connection
             inputVoltage += cv.get                    // Case: valid connection
           }
@@ -83,10 +83,12 @@ class ElectricalComponent extends EnvObject {
     val anodeVoltage = this.getAnodeVoltage()
     val cathodeVoltage = this.getCathodeVoltage()
 
+    println(" * ElectricalComponent (" + this.name + "): Anode Voltage: " + anodeVoltage + "  Cathode Voltage: " + cathodeVoltage)
+
     if (anodeVoltage.isEmpty) return 0.0f
     if (cathodeVoltage.isEmpty) return 0.0f
 
-    val potentialDifference = anodeVoltage.get - cathodeVoltage.get
+    val potentialDifference = cathodeVoltage.get - anodeVoltage.get
     return potentialDifference
   }
 
@@ -131,13 +133,22 @@ object ElectricalComponent {
 
 
 /*
- * Anode
+ * Terminal
  */
-class Anode extends EnvObject {
-  this.name = "anode"
+class Terminal(val parentObject:EnvObject) extends EnvObject {
+  this.name = "terminal"
 
   propMoveable = Some( new MoveableProperties(isMovable = false) )                        // Not moveable
   propElectricalConnection = Some( new ElectricalConnectionProperties() )                 // Electrical connection point
+
+  def getVoltagePotential():Option[Double] = {
+    return None   // TODO: Unimplemented
+    /*
+    parentObject match {
+      case x:PolarizedElectricalComponent =>
+    }
+     */
+  }
 
   override def tick():Boolean = {
 
@@ -145,35 +156,44 @@ class Anode extends EnvObject {
   }
 
   override def getReferents():Set[String] = {
-    Set("anode", this.name)
+    Set("terminal", this.name)
   }
 
   override def getDescription(mode: Int): String = {
-    return "an anode.  it is connected to: " + this.propElectricalConnection.get.getConnectedToStr() + ". "
+    return "a " + this.name + ".  it is connected to: " + this.propElectricalConnection.get.getConnectedToStr() + ". "
   }
+}
+
+/*
+ * Anode
+ */
+class Anode(parentObject:EnvObject) extends Terminal(parentObject) {
+  this.name = "anode"
+
+  override def getVoltagePotential():Option[Double] = {
+    parentObject match {
+      case x:PolarizedElectricalComponent => x.getAnodeVoltage()
+      // TODO: Add case for unpolarized electrical component
+      case _ => None
+    }
+  }
+
 }
 
 /*
  * Cathode
  */
-class Cathode extends EnvObject {
+class Cathode(parentObject:EnvObject) extends Terminal(parentObject) {
   this.name = "cathode"
 
-  propMoveable = Some( new MoveableProperties(isMovable = false) )                        // Not moveable
-  propElectricalConnection = Some( new ElectricalConnectionProperties() )                 // Electrical connection point
-
-  override def tick():Boolean = {
-
-    super.tick()
+  override def getVoltagePotential():Option[Double] = {
+    parentObject match {
+      case x:PolarizedElectricalComponent => x.getCathodeVoltage()
+      // TODO: Add case for unpolarized electrical component
+      case _ => None
+    }
   }
 
-  override def getReferents():Set[String] = {
-    Set("cathode", this.name)
-  }
-
-  override def getDescription(mode: Int): String = {
-    return "an cathode.  it is connected to: " + this.propElectricalConnection.get.getConnectedToStr() + ". "
-  }
 }
 
 
@@ -181,7 +201,7 @@ class Cathode extends EnvObject {
  * Other components
  */
 
-class LightBulb extends ElectricalComponent {
+class LightBulb extends PolarizedElectricalComponent {
   this.name = "light bulb"
 
   this.propDevice = Some(new IsNotActivableDeviceOff())
@@ -220,13 +240,14 @@ class LightBulb extends ElectricalComponent {
 }
 
 
-class Battery extends ElectricalComponent {
+class Battery extends PolarizedElectricalComponent {
   this.name = "battery"
 
   this.propDevice = Some(new IsNotActivableDeviceOn())
 
   this.electricalRole = ROLE_VOLTAGE_GENERATOR  // Component uses voltage, rather than generating it
   this.forwardVoltage = 0.0                     // The battery does not use any voltage
+  this.generatorVoltage = 9.0                   // This battery generates 9V
 
   override def tick(): Boolean = {
     super.tick()
