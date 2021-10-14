@@ -74,11 +74,11 @@ class ActionDisconnectElectrical(action:ActionRequestDef, assignments:Map[String
 
     obj match {
       case x:PolarizedElectricalComponent => {
-        x.disconnect()
+        x.disconnectElectricalTerminals()
         return obj.name + " has been disconnected"
       }
       case x:UnpolarizedElectricalComponent => {
-        x.disconnect()
+        x.disconnectElectricalTerminals()
         return obj.name + " has been disconnected"
       }
       case x:Terminal => {

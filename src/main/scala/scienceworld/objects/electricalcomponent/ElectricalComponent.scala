@@ -1,11 +1,12 @@
 package scienceworld.objects.electricalcomponent
 
 import scienceworld.objects.electricalcomponent.ElectricalComponent.{ROLE_VOLTAGE_GENERATOR, ROLE_VOLTAGE_SWITCH, ROLE_VOLTAGE_USER, VOLTAGE_GENERATOR, VOLTAGE_GROUND}
+import scienceworld.processes.ElectricalConductivity
 import scienceworld.properties.{ElectricalConnectionProperties, IsActivableDeviceOff, IsActivableDeviceOn, IsNotActivableDeviceOff, IsNotActivableDeviceOn, MoveableProperties}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 
-class PolarizedElectricalComponent extends EnvObject {
+class PolarizedElectricalComponent() extends EnvObject(name = "", objType = "", includeElectricalTerminals = false) {
   this.name = "component"
 
   this.propDevice = Some(new IsNotActivableDeviceOff())                       // By default, not activable, and is off
@@ -18,11 +19,11 @@ class PolarizedElectricalComponent extends EnvObject {
   this.addObject(cathode)
 
   // Electrical role (generator, or consumer)
-  var electricalRole = ROLE_VOLTAGE_USER
+  electricalRole = ROLE_VOLTAGE_USER
 
 
   // Given one terminal, get the other (connected) terminal.
-  def getOtherTerminal(terminalIn:EnvObject):Option[Terminal] = {
+  override def getOtherElectricalTerminal(terminalIn:EnvObject):Option[Terminal] = {
     if (terminalIn == anode) return Some(cathode)
     if (terminalIn == cathode) return Some(anode)
 
@@ -30,7 +31,7 @@ class PolarizedElectricalComponent extends EnvObject {
     return None
   }
 
-  def disconnect() {
+  override def disconnectElectricalTerminals() {
     this.anode.disconnect()
     this.cathode.disconnect()
   }
@@ -80,51 +81,15 @@ class UnpolarizedElectricalComponent extends EnvObject {
   this.propDevice = Some(new IsNotActivableDeviceOff())                       // By default, not activable, and is off
   this.propMoveable = Some( new MoveableProperties(isMovable = true) )        // Moveable
 
-  // Each electrical component has an anode and a cathode
-  val terminal1 = new Terminal(this, "terminal 1")
-  val terminal2 = new Terminal(this, "terminal 2")
-  this.addObject(terminal1)
-  this.addObject(terminal2)
-
   // Electrical role (generator, or consumer)
-  var electricalRole = ROLE_VOLTAGE_USER
+  electricalRole = ROLE_VOLTAGE_USER
 
-
-  // Given one terminal, get the other (connected) terminal.
-  def getOtherTerminal(terminalIn:EnvObject):Option[Terminal] = {
-    if (terminalIn == terminal1) return Some(terminal2)
-    if (terminalIn == terminal2) return Some(terminal1)
-
-    // Otherwise
-    return None
-  }
-
-
-  def disconnect() {
-    this.terminal1.disconnect()
-    this.terminal2.disconnect()
-  }
 
   override def tick():Boolean = {
     //println ("TICK: " + this.name)
 
-    // If this is an electrical component, check to see if it should be activated
-    if (electricalRole == ROLE_VOLTAGE_USER) {
-      this.propDevice.get.isActivated = false
-
-      // Check to see if the ground is connected to one side
-      // Case 1: Ground is connected to Terminal 1, Voltage is connected to Terminal 2
-      if (this.terminal1.connectsToGround() && this.terminal2.connectsToVoltage()) {
-        println ("Terminal 1 is ground, Terminal 2 is voltage")
-        this.terminal1.voltage = Some(VOLTAGE_GENERATOR)
-        this.propDevice.get.isActivated = true
-      } else if (this.terminal2.connectsToGround() && this.terminal1.connectsToVoltage()) {
-        // Case 2: Ground is connected to Terminal 2, Voltage is connected to Terminal 1
-        println ("Terminal 2 is ground, Terminal 1 is voltage")
-        this.terminal2.voltage = Some(VOLTAGE_GENERATOR)
-        this.propDevice.get.isActivated = true
-      }
-    }
+    // Electrical conductivity: Potentially conduct electricity, if an electrical conductor and connected to other conductors
+    ElectricalConductivity.unpolarizedElectricalConductivityTick(this, activateDeviceIfPowered = true)
 
     super.tick()
   }
@@ -138,8 +103,8 @@ class UnpolarizedElectricalComponent extends EnvObject {
 
     os.append("a " + this.name + ". ")
     if (mode == MODE_DETAILED) {
-      os.append("its terminal 1 is connected to: " + this.terminal1.propElectricalConnection.get.getConnectedToStr() + ". ")
-      os.append("its terminal 2 is connected to: " + this.terminal2.propElectricalConnection.get.getConnectedToStr() + ". ")
+      os.append("its terminal 1 is connected to: " + this.terminal1.get.propElectricalConnection.get.getConnectedToStr() + ". ")
+      os.append("its terminal 2 is connected to: " + this.terminal2.get.propElectricalConnection.get.getConnectedToStr() + ". ")
     }
 
     //if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
@@ -166,7 +131,7 @@ object ElectricalComponent {
 /*
  * Terminal
  */
-class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends EnvObject {
+class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends EnvObject(name = "", objType = "", includeElectricalTerminals = false) {
   this.name = _name
 
   propMoveable = Some( new MoveableProperties(isMovable = false) )                        // Not moveable
@@ -238,7 +203,7 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
               }
 
               // Step 2: If the parent object isn't a generator, traverse through the object, IF the two terminals are "connected" (i.e. a light bulb, a switch that's open, etc).
-              val otherTerminal = po.getOtherTerminal(co)
+              val otherTerminal = po.getOtherElectricalTerminal(co)
               if (otherTerminal.isEmpty) {
                 //println("false2")
                 return false
@@ -256,7 +221,7 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
               // Step 1: Unpolarized can't be a generator, so skip this check.
 
               // Step 2: If the parent object isn't a generator, traverse through the object, IF the two terminals are "connected" (i.e. a light bulb, a switch that's open, etc).
-              val otherTerminal = unpo.getOtherTerminal(co)
+              val otherTerminal = unpo.getOtherElectricalTerminal(co)
               if (otherTerminal.isEmpty) {
                 //println("false2")
                 return false

@@ -2,17 +2,19 @@ package scienceworld.struct
 
 import scienceworld.objects.portal.Portal
 import scienceworld.properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, ElectricalConnectionProperties, HeatSourceProperties, MaterialProperties, MoveableProperties, PortalProperties}
-import scienceworld.processes.{HeatTransfer, StateOfMatter}
+import scienceworld.processes.{ElectricalConductivity, HeatTransfer, StateOfMatter}
 import util.UniqueIdentifier
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import EnvObject._
+import scienceworld.objects.electricalcomponent.ElectricalComponent.ROLE_VOLTAGE_USER
+import scienceworld.objects.electricalcomponent.Terminal
 
 import scala.reflect.ClassTag
 
 
-class EnvObject(var name:String, var objType:String) {
+class EnvObject(var name:String, var objType:String, includeElectricalTerminals:Boolean = true) {
 
   // Alternate constructors
   def this() = this(name = "", objType = "")
@@ -23,6 +25,16 @@ class EnvObject(var name:String, var objType:String) {
 
   // Portals
   private val portals = mutable.Set[Portal]()
+
+  // Each (potentially) electrical component has two terminals
+  val terminal1:Option[Terminal] = if (includeElectricalTerminals) { Some( new Terminal(this, "terminal 1") ) } else { None }
+  val terminal2:Option[Terminal] = if (includeElectricalTerminals) { Some( new Terminal(this, "terminal 2") ) } else { None }
+  if (includeElectricalTerminals) {
+    this.addObject(terminal1.get)
+    this.addObject(terminal2.get)
+  }
+  // Electrical role (generator, or consumer)
+  var electricalRole = ROLE_VOLTAGE_USER
 
 
   // Unique identifier
@@ -146,6 +158,34 @@ class EnvObject(var name:String, var objType:String) {
 
 
   /*
+   * Simulation methods (electrical conductivity)
+   */
+  def hasUnpolarizedElectricalTerminals():Boolean = {
+    if (terminal1.isDefined && terminal2.isDefined) return true
+    // Otherwise
+    return false
+  }
+
+
+  // Given one terminal, get the other (connected) terminal.
+  def getOtherElectricalTerminal(terminalIn:EnvObject):Option[Terminal] = {
+    if ((terminal1.isEmpty) || (terminal2.isEmpty)) return None
+
+    if (terminalIn == terminal1.get) return terminal2
+    if (terminalIn == terminal2.get) return terminal1
+
+    // Otherwise
+    return None
+  }
+
+
+  def disconnectElectricalTerminals() {
+    if (terminal1.isDefined) this.terminal1.get.disconnectElectricalTerminals()
+    if (terminal2.isDefined) this.terminal2.get.disconnectElectricalTerminals()
+  }
+
+
+  /*
    * Text-based simulation methods
    */
   def useWith(patientObj:EnvObject):(Boolean, String) = {
@@ -170,6 +210,10 @@ class EnvObject(var name:String, var objType:String) {
 
     // State of matter: Change state of matter based on temperature
     StateOfMatter.ChangeOfState(this)
+
+    // Electrical conductivity: Potentially conduct electricity, if an electrical conductor and connected to other conductors
+    ElectricalConductivity.unpolarizedElectricalConductivityTick(this, activateDeviceIfPowered = false)
+
 
     // Run tick for all objects further down in the object tree
     for (containedObj <- this.getContainedObjects()) {
