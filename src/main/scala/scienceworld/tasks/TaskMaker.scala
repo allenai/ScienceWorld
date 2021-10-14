@@ -1,7 +1,7 @@
 package scienceworld.tasks
 
 import scienceworld.tasks.goals.GoalSequence
-import scienceworld.tasks.goals.specificgoals.{GoalChangeStateOfMatter, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalChangeStateOfMatter, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter}
 
 import scala.collection.mutable
 import scala.util.Random
@@ -16,6 +16,10 @@ object TaskMaker {
   // Constructor
   this.registerTasks()
 
+
+  /*
+   *  Changes of state
+   */
 
   // Test goal sequence: Change the state of some matter into any other state
   def mkTaskChangeOfState():Task = {
@@ -70,6 +74,29 @@ object TaskMaker {
   }
 
 
+
+  /*
+   * Electrical
+   */
+  def mkTaskTurnOnLightbulb():Task = {
+    val taskName = "task-2-lightbulb"
+    val description = "Your task is to turn on light bulb 1, by creating an electrical circuit.  Light bulb 1 is in the workshop. "
+
+    val goalSequence = new GoalSequence(Array(
+      new GoalActivateDevice(deviceName = "light bulb 1"),              // Be in any state but a gas
+    ))
+
+    // Return
+    new Task(taskName, description, goalSequence)
+  }
+
+
+
+  /*
+   * Helper functions
+   */
+
+
   // Add a task
   def addTask(task:Task): Unit = {
     tasks(task.taskName) = task
@@ -94,6 +121,8 @@ object TaskMaker {
     this.addTask( mkTaskChangeOfStateSolid() )
     this.addTask( mkTaskChangeOfStateLiquid() )
     this.addTask( mkTaskChangeOfStateGas() )
+
+    this.addTask( mkTaskTurnOnLightbulb() )
   }
 
 
