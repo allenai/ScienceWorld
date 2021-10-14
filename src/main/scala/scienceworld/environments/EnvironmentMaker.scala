@@ -6,7 +6,7 @@ import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.furniture.{Desk, Table}
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.document.{BookFrankenstein, BookMobyDick}
-import scienceworld.objects.electricalcomponent.{Battery, LightBulb, PolarizedElectricalComponent, Switch}
+import scienceworld.objects.electricalcomponent.{Battery, LightBulb, PolarizedElectricalComponent, Switch, Wire}
 import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.misc.Picture
 import scienceworld.objects.portal.Door
@@ -51,6 +51,13 @@ object EnvironmentMaker {
     obj2.cathode.propElectricalConnection.get.addConnection( obj1.anode )
   }
 
+  /*
+  def mkConnection(obj1:PolarizedElectricalComponent, obj2:PolarizedElectricalComponent): Unit = {
+    obj1.anode.propElectricalConnection.get.addConnection( obj2.cathode )
+    obj2.cathode.propElectricalConnection.get.addConnection( obj1.anode )
+  }
+   */
+
 
   def mkElectricalEnvironment(): (EnvObject, EnvObject) = {
     // Universe (object tree root)
@@ -77,6 +84,15 @@ object EnvironmentMaker {
     room.addObject(lightbulb3)
     lightbulb3.name = "light bulb 3"
 
+    val wire1 = new Wire()
+    wire1.name = "wire 1"
+    room.addObject(wire1)
+
+    val wire2 = new Wire()
+    wire2.name = "wire 2"
+    room.addObject(wire2)
+
+
     val switch = new Switch()
     room.addObject(switch)
 
@@ -96,12 +112,22 @@ object EnvironmentMaker {
     this.mkConnection(lightbulb3, battery)
      */
 
+    /*
     this.mkConnection(battery, lightbulb1)
     this.mkConnection(lightbulb1, lightbulb2)
     this.mkConnection(lightbulb2, switch)
-    //this.mkConnection(lightbulb3, switch)
     this.mkConnection(switch, battery)
+     */
 
+    this.mkConnection(battery, lightbulb1)
+    this.mkConnection(lightbulb1, lightbulb2)
+    this.mkConnection(lightbulb2, switch)
+    //this.mkConnection(switch, wire1)
+    switch.anode.propElectricalConnection.get.addConnection( wire1.terminal1 )
+    wire1.terminal1.propElectricalConnection.get.addConnection( switch.anode )
+    //this.mkConnection(wire1, battery)
+    wire1.terminal2.propElectricalConnection.get.addConnection( battery.cathode )
+    battery.cathode.propElectricalConnection.get.addConnection( wire1.terminal2 )
 
     /*
     battery.anode.propElectricalConnection.get.addConnection( lightbulb1.cathode )

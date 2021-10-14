@@ -1,26 +1,21 @@
 package scienceworld.objects.electricalcomponent
 
 import scienceworld.objects.electricalcomponent.ElectricalComponent.{ROLE_VOLTAGE_GENERATOR, ROLE_VOLTAGE_SWITCH, ROLE_VOLTAGE_USER, VOLTAGE_GENERATOR, VOLTAGE_GROUND}
-import scienceworld.properties.{ElectricalConnectionProperties, IsActivableDeviceOff, IsNotActivableDeviceOff, IsNotActivableDeviceOn, MoveableProperties}
+import scienceworld.properties.{ElectricalConnectionProperties, IsActivableDeviceOff, IsActivableDeviceOn, IsNotActivableDeviceOff, IsNotActivableDeviceOn, MoveableProperties}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
-
-//## TODO: Also add UnpolarizedElectricalComponent
 
 class PolarizedElectricalComponent extends EnvObject {
   this.name = "component"
 
   this.propDevice = Some(new IsNotActivableDeviceOff())                       // By default, not activable, and is off
-  this.propMoveable = Some( new MoveableProperties(isMovable = false) )       // Not moveable
+  this.propMoveable = Some( new MoveableProperties(isMovable = true) )        // Moveable
 
   // Each electrical component has an anode and a cathode
   val anode = new Anode(this)
   val cathode = new Cathode(this)
   this.addObject(anode)
   this.addObject(cathode)
-
-  // Default forward voltage (the voltage that this component uses)
-  var forwardVoltage:Double = 0.0f
 
   // Electrical role (generator, or consumer)
   var electricalRole = ROLE_VOLTAGE_USER
@@ -71,6 +66,75 @@ class PolarizedElectricalComponent extends EnvObject {
 
 }
 
+
+class UnpolarizedElectricalComponent extends EnvObject {
+  this.name = "component"
+
+  this.propDevice = Some(new IsNotActivableDeviceOff())                       // By default, not activable, and is off
+  this.propMoveable = Some( new MoveableProperties(isMovable = true) )        // Moveable
+
+  // Each electrical component has an anode and a cathode
+  val terminal1 = new Terminal(this, "terminal 1")
+  val terminal2 = new Terminal(this, "terminal 2")
+  this.addObject(terminal1)
+  this.addObject(terminal2)
+
+  // Electrical role (generator, or consumer)
+  var electricalRole = ROLE_VOLTAGE_USER
+
+
+  // Given one terminal, get the other (connected) terminal.
+  def getOtherTerminal(terminalIn:EnvObject):Option[Terminal] = {
+    if (terminalIn == terminal1) return Some(terminal2)
+    if (terminalIn == terminal2) return Some(terminal1)
+
+    // Otherwise
+    return None
+  }
+
+  override def tick():Boolean = {
+    println ("TICK: " + this.name)
+
+    // If this is an electrical component, check to see if it should be activated
+    if (electricalRole == ROLE_VOLTAGE_USER) {
+      this.propDevice.get.isActivated = false
+
+      // Check to see if the ground is connected to one side
+      // Case 1: Ground is connected to Terminal 1, Voltage is connected to Terminal 2
+      if (this.terminal1.connectsToGround() && this.terminal2.connectsToVoltage()) {
+        println ("Terminal 1 is ground, Terminal 2 is voltage")
+        this.terminal1.voltage = Some(VOLTAGE_GENERATOR)
+        this.propDevice.get.isActivated = true
+      } else if (this.terminal2.connectsToGround() && this.terminal1.connectsToVoltage()) {
+        // Case 2: Ground is connected to Terminal 2, Voltage is connected to Terminal 1
+        println ("Terminal 2 is ground, Terminal 1 is voltage")
+        this.terminal2.voltage = Some(VOLTAGE_GENERATOR)
+        this.propDevice.get.isActivated = true
+      }
+    }
+
+    super.tick()
+  }
+
+  override def getReferents(): Set[String] = {
+    Set("component", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    val os = new StringBuilder
+
+    os.append("a " + this.name + ". ")
+    os.append("its terminal 1 is connected to: " + this.terminal1.propElectricalConnection.get.getConnectedToStr() + ". ")
+    os.append("its terminal 2 is connected to: " + this.terminal2.propElectricalConnection.get.getConnectedToStr() + ". ")
+
+    //if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
+
+    os.toString
+  }
+
+}
+
+
 object ElectricalComponent {
   val ROLE_VOLTAGE_GENERATOR    =   1
   val ROLE_VOLTAGE_USER         =   2
@@ -82,11 +146,13 @@ object ElectricalComponent {
 }
 
 
+
+
 /*
  * Terminal
  */
-class Terminal(val parentObject:EnvObject) extends EnvObject {
-  this.name = "terminal"
+class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends EnvObject {
+  this.name = _name
 
   propMoveable = Some( new MoveableProperties(isMovable = false) )                        // Not moveable
   propElectricalConnection = Some( new ElectricalConnectionProperties() )                 // Electrical connection point
@@ -126,8 +192,8 @@ class Terminal(val parentObject:EnvObject) extends EnvObject {
             case po:PolarizedElectricalComponent => {
               println("\t\tPolarized")
               // Step 1: Find the parent object to see if it's a generator, and if this is connected to ground (if so, return true)
-              if (po.isInstanceOf[Battery]) {
-                println ("\t\tAppears to be connected to battery: " + co.name + " " + co.voltage)
+              if (po.isInstanceOf[Generator]) {
+                println ("\t\tAppears to be connected to a generator: " + co.name + " " + co.voltage)
                 if ((co.voltage.isDefined) && (co.voltage.get == VOLTAGE_GROUND)) {
                   // Connected to ground
                   println("true1")
@@ -152,6 +218,25 @@ class Terminal(val parentObject:EnvObject) extends EnvObject {
               }      // If the recursive case returns true, then that pin connects to ground.  If it doesn't, continue on other connections.
 
             }
+
+            case unpo:UnpolarizedElectricalComponent => {
+              println("\t\tUnpolarized")
+              // Step 1: Unpolarized can't be a generator, so skip this check.
+
+              // Step 2: If the parent object isn't a generator, traverse through the object, IF the two terminals are "connected" (i.e. a light bulb, a switch that's open, etc).
+              val otherTerminal = unpo.getOtherTerminal(co)
+              if (otherTerminal.isEmpty) {
+                println("false2")
+                return false
+              }         // Other terminal doesn't exist or is not connected in a switch, return false
+              // Other terminal exists, traverse/recurse
+              if ( otherTerminal.get.connectsToGround(maxSteps-1) == true) {
+                println("true2")
+                return true
+              }      // If the recursive case returns true, then that pin connects to ground.  If it doesn't, continue on other connections.
+
+            }
+
             case _ => {
               // Other non-electrical component object
               print("### OTHER")
@@ -179,7 +264,7 @@ class Terminal(val parentObject:EnvObject) extends EnvObject {
   }
 
   override def getReferents():Set[String] = {
-    Set("terminal", this.name)
+    Set("terminal", this.name, this.name + " on " + parentObject.name, parentObject.name + " " + this.name)
   }
 
   override def getDescription(mode: Int): String = {
@@ -221,7 +306,6 @@ class LightBulb extends PolarizedElectricalComponent {
   this.propDevice = Some(new IsNotActivableDeviceOff())
 
   this.electricalRole = ROLE_VOLTAGE_USER     // Component uses voltage, rather than generating it
-  this.forwardVoltage = 2.0                   // Forward voltage required to function
 
 
   override def tick(): Boolean = {
@@ -298,17 +382,28 @@ class Switch extends PolarizedElectricalComponent {
 
 }
 
+
+/*
+ *  Wire
+ */
+
+class Wire extends UnpolarizedElectricalComponent {
+  this.name = "wire"
+
+  this.electricalRole = ROLE_VOLTAGE_USER
+
+}
+
+
 /*
  *  Generators
  */
 
-class Battery extends PolarizedElectricalComponent {
-  this.name = "battery"
+class Generator extends PolarizedElectricalComponent {
+  this.name = "generator"
 
-  this.propDevice = Some(new IsNotActivableDeviceOn())
-
+  this.propDevice = Some(new IsActivableDeviceOn())
   this.electricalRole = ROLE_VOLTAGE_GENERATOR  // Component uses voltage, rather than generating it
-  this.forwardVoltage = 0.0                     // The battery does not use any voltage
 
   override def tick(): Boolean = {
     // If this generator is activated, then generate a voltage potential at the terminals.
@@ -323,7 +418,7 @@ class Battery extends PolarizedElectricalComponent {
   }
 
   override def getReferents(): Set[String] = {
-    Set("battery", this.name)
+    Set("generator", this.name)
   }
 
   override def getDescription(mode:Int):String = {
@@ -338,5 +433,12 @@ class Battery extends PolarizedElectricalComponent {
 
     os.toString
   }
+
+}
+
+class Battery extends Generator {
+  this.name = "battery"
+
+  this.propDevice = Some(new IsNotActivableDeviceOn())      // Always on
 
 }
