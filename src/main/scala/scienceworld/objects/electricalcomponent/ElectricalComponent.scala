@@ -183,7 +183,14 @@ class Terminal(val parentObject:EnvObject) extends EnvObject {
   }
 
   override def getDescription(mode: Int): String = {
-    return "a " + this.name + ".  it is connected to: " + this.propElectricalConnection.get.getConnectedToStr() + ". "
+    if (mode == MODE_CURSORY_DETAIL) {
+      return "a " + this.name + " on " + parentObject.name
+    } else if (mode == MODE_DETAILED) {
+      return "a " + this.name + ".  it is connected to: " + this.propElectricalConnection.get.getConnectedToStr() + ". "
+    }
+
+    // Default return
+    return "a " + this.name + " on " + parentObject.name
   }
 }
 
