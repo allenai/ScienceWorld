@@ -166,7 +166,6 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     return false
   }
 
-
   // Given one terminal, get the other (connected) terminal.
   def getOtherElectricalTerminal(terminalIn:EnvObject):Option[Terminal] = {
     if ((terminal1.isEmpty) || (terminal2.isEmpty)) return None
@@ -178,12 +177,21 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     return None
   }
 
+  def getUnconnectedElectricalTerminal():Option[Terminal] = {
+    if ((terminal1.isEmpty) || (terminal2.isEmpty)) return None
+
+    if (terminal1.get.propElectricalConnection.get.size() == 0) return terminal1
+    if (terminal2.get.propElectricalConnection.get.size() == 0) return terminal2
+
+    // Otherwise
+    return None
+  }
 
   def disconnectElectricalTerminals() {
-    println ("### DISCONNECTING " + this.name)
     if (terminal1.isDefined) this.terminal1.get.disconnect()
     if (terminal2.isDefined) this.terminal2.get.disconnect()
   }
+
 
 
   /*

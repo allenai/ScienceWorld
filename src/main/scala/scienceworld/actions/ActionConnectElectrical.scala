@@ -14,8 +14,40 @@ class ActionConnectElectrical(action:ActionRequestDef, assignments:Map[String, E
 
   override def runAction(): String = {
     val agent = assignments("agent")
-    val terminalA = assignments("terminalA")
-    val terminalB = assignments("terminalB")
+    var terminalA = assignments("terminalA")
+    var terminalB = assignments("terminalB")
+
+    // Find a connection point on object passed as TerminalA
+    terminalA match {
+      case x:Terminal => { }    // Valid/Good
+      case x:PolarizedElectricalComponent => { return "Connections must specify specific points of contact on polarized electrical components (e.g. anode, cathode) "}
+      case x:UnpolarizedElectricalComponent => { return "Connections must specify specific points of contact on unpolarized electrical components (e.g. terminal 1, terminal 2) "}
+      case x:EnvObject => {
+        // Case: Not an object with terminals to connect to
+        if (!x.hasUnpolarizedElectricalTerminals()) return "It's not clear how to connect something to " + x.name
+        val unconnectedTerminal = x.getUnconnectedElectricalTerminal()
+        // Case: An object with terminals that are already used
+        if (unconnectedTerminal.isEmpty) return x.name + " is already connected, and must be disconnected before it can be connected to something else"
+        // Case: An object with a free terminal
+        terminalA = unconnectedTerminal.get
+      }
+    }
+
+    // Find a connection point on object passed as TerminalA
+    terminalB match {
+      case x:Terminal => { }    // Valid/Good
+      case x:PolarizedElectricalComponent => { return "Connections must specify specific points of contact on polarized electrical components (e.g. anode, cathode) "}
+      case x:UnpolarizedElectricalComponent => { return "Connections must specify specific points of contact on unpolarized electrical components (e.g. terminal 1, terminal 2) "}
+      case x:EnvObject => {
+        // Case: Not an object with terminals to connect to
+        if (!x.hasUnpolarizedElectricalTerminals()) return "It's not clear how to connect something to " + x.name
+        val unconnectedTerminal = x.getUnconnectedElectricalTerminal()
+        // Case: An object with terminals that are already used
+        if (unconnectedTerminal.isEmpty) return x.name + " is already connected, and must be disconnected before it can be connected to something else"
+        // Case: An object with a free terminal
+        terminalB = unconnectedTerminal.get
+      }
+    }
 
     // Check that the objects are connectable
     if (terminalA.propElectricalConnection.isEmpty) return "It's not clear how to connect something to " + terminalA.name
