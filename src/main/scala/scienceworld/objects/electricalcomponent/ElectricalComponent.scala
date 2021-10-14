@@ -30,8 +30,13 @@ class PolarizedElectricalComponent extends EnvObject {
     return None
   }
 
+  def disconnect() {
+    this.anode.disconnect()
+    this.cathode.disconnect()
+  }
+
   override def tick():Boolean = {
-    println ("TICK: " + this.name)
+    //println ("TICK: " + this.name)
 
     // If this is an electrical component, check to see if it should be activated
     if (electricalRole == ROLE_VOLTAGE_USER) {
@@ -92,8 +97,14 @@ class UnpolarizedElectricalComponent extends EnvObject {
     return None
   }
 
+
+  def disconnect() {
+    this.terminal1.disconnect()
+    this.terminal2.disconnect()
+  }
+
   override def tick():Boolean = {
-    println ("TICK: " + this.name)
+    //println ("TICK: " + this.name)
 
     // If this is an electrical component, check to see if it should be activated
     if (electricalRole == ROLE_VOLTAGE_USER) {
@@ -159,6 +170,23 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
 
   var voltage:Option[Double] = None
 
+  // Remove all electrical connections to this terminal
+  def disconnect(): Unit = {
+    val connections = propElectricalConnection.get.getConnections()
+
+    // Remove these connections from this object to other objects
+    for (obj <- connections) {
+      propElectricalConnection.get.removeConnection(obj)
+    }
+
+    // Remove the reciprocal connections from that object to this object
+    for (obj <- connections) {
+      if (obj.propElectricalConnection.isDefined) {
+        obj.propElectricalConnection.get.removeConnection(this)
+      }
+    }
+  }
+
   // Does this terminal connect to a voltage source?
   def connectsToVoltage():Boolean = {
     // For each connectected object
@@ -179,28 +207,28 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
 
   // Check to see if this terminal (ultimately) connects to ground
   def connectsToGround(maxSteps:Int = 10):Boolean = {
-    println(" * connectsToGround(" + this.name + " / " + this.parentObject.name + " / " + maxSteps + "):")
+    //println(" * connectsToGround(" + this.name + " / " + this.parentObject.name + " / " + maxSteps + "):")
 
     // For each connectected object
     for (obj <- propElectricalConnection.get.getConnections()) {
-      println ("\tconnected to object: " + obj.toStringMinimal())
+      //println ("\tconnected to object: " + obj.toStringMinimal())
       obj match {
         case co:Terminal => {
           val parentObject = co.parentObject
-          println ("\t\tparent object: " + parentObject.toStringMinimal())
+          //println ("\t\tparent object: " + parentObject.toStringMinimal())
           parentObject match {
             case po:PolarizedElectricalComponent => {
-              println("\t\tPolarized")
+              //println("\t\tPolarized")
               // Step 1: Find the parent object to see if it's a generator, and if this is connected to ground (if so, return true)
               if (po.isInstanceOf[Generator]) {
-                println ("\t\tAppears to be connected to a generator: " + co.name + " " + co.voltage)
+                //println ("\t\tAppears to be connected to a generator: " + co.name + " " + co.voltage)
                 if ((co.voltage.isDefined) && (co.voltage.get == VOLTAGE_GROUND)) {
                   // Connected to ground
-                  println("true1")
+                  //println("true1")
                   return true
                 } else {
                   // Not connected to ground -- and, stop traversal through the battery
-                  println("false1")
+                  //println("false1")
                   return false
                 }
               }
@@ -208,30 +236,30 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
               // Step 2: If the parent object isn't a generator, traverse through the object, IF the two terminals are "connected" (i.e. a light bulb, a switch that's open, etc).
               val otherTerminal = po.getOtherTerminal(co)
               if (otherTerminal.isEmpty) {
-                println("false2")
+                //println("false2")
                 return false
               }         // Other terminal doesn't exist or is not connected in a switch, return false
               // Other terminal exists, traverse/recurse
               if ( otherTerminal.get.connectsToGround(maxSteps-1) == true) {
-                println("true2")
+                //println("true2")
                 return true
               }      // If the recursive case returns true, then that pin connects to ground.  If it doesn't, continue on other connections.
 
             }
 
             case unpo:UnpolarizedElectricalComponent => {
-              println("\t\tUnpolarized")
+              //println("\t\tUnpolarized")
               // Step 1: Unpolarized can't be a generator, so skip this check.
 
               // Step 2: If the parent object isn't a generator, traverse through the object, IF the two terminals are "connected" (i.e. a light bulb, a switch that's open, etc).
               val otherTerminal = unpo.getOtherTerminal(co)
               if (otherTerminal.isEmpty) {
-                println("false2")
+                //println("false2")
                 return false
               }         // Other terminal doesn't exist or is not connected in a switch, return false
               // Other terminal exists, traverse/recurse
               if ( otherTerminal.get.connectsToGround(maxSteps-1) == true) {
-                println("true2")
+                //println("true2")
                 return true
               }      // If the recursive case returns true, then that pin connects to ground.  If it doesn't, continue on other connections.
 
@@ -239,7 +267,7 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
 
             case _ => {
               // Other non-electrical component object
-              print("### OTHER")
+              print("### CONNECTED TO UNRECOGNIZED ELECTRICAL COMPONENT")
             }
           }
 
@@ -248,13 +276,13 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
 
         case _ => {
           // Other object
-          print("### OTHER")
+          print("### CONNECTED TO UNRECOGNIZED ELECTRICAL COMPONENT")
         }
       }
 
     }
 
-    println("false (default)")
+    //println("false (default)")
     false
   }
 
@@ -326,11 +354,11 @@ class LightBulb extends PolarizedElectricalComponent {
       os.append("off")
     }
 
-    if (mode == MODE_DETAILED) {
+    //if (mode == MODE_DETAILED) {
       os.append(". ")
       os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
       os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
-    }
+    //}
 
     os.toString
   }
@@ -359,8 +387,6 @@ class Switch extends PolarizedElectricalComponent {
 
 
   override def tick():Boolean = {
-    println ("TICK: " + this.name)
-
     super.tick()
   }
 
@@ -372,10 +398,12 @@ class Switch extends PolarizedElectricalComponent {
     val os = new StringBuilder
 
     os.append("a " + this.name + ", which is ")
-    //os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
-    //os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
-
     if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
+    os.append(". ")
+    os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
+    os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
+
+
 
     os.toString
   }
@@ -425,11 +453,11 @@ class Generator extends PolarizedElectricalComponent {
     val os = new StringBuilder
 
     os.append("a " + this.name + "")
-    if (mode == MODE_DETAILED) {
+    //if (mode == MODE_DETAILED) {
       os.append(". ")
       os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
       os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
-    }
+    //}
 
     os.toString
   }

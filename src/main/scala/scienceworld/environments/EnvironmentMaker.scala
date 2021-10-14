@@ -119,6 +119,7 @@ object EnvironmentMaker {
     this.mkConnection(switch, battery)
      */
 
+    /*
     this.mkConnection(battery, lightbulb1)
     this.mkConnection(lightbulb1, lightbulb2)
     this.mkConnection(lightbulb2, switch)
@@ -128,6 +129,7 @@ object EnvironmentMaker {
     //this.mkConnection(wire1, battery)
     wire1.terminal2.propElectricalConnection.get.addConnection( battery.cathode )
     battery.cathode.propElectricalConnection.get.addConnection( wire1.terminal2 )
+     */
 
     /*
     battery.anode.propElectricalConnection.get.addConnection( lightbulb1.cathode )
