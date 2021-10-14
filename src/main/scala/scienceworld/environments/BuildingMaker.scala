@@ -4,7 +4,7 @@ import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, GlassCup, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
 import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
-import scienceworld.objects.electricalcomponent.LightBulb
+import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
 import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.misc.Picture
 import scienceworld.objects.portal.Door
@@ -186,6 +186,51 @@ object RoomMaker {
 
 
   /*
+   * Workshop
+   */
+  def mkWorkshop(): Room = {
+    // House
+    val room = new Room("workshop")
+
+    // Table
+    val table = new Table()
+    room.addObject( table )
+
+    // Electical
+    val lightbulb1 = new LightBulb()
+    lightbulb1.name = "light bulb 1"
+    table.addObject(lightbulb1)
+
+    val lightbulb2 = new LightBulb()
+    lightbulb2.name = "light bulb 2"
+    table.addObject(lightbulb2)
+
+    val lightbulb3 = new LightBulb()
+    lightbulb3.name = "light bulb 3"
+    table.addObject(lightbulb3)
+
+
+    val wire1 = new Wire()
+    wire1.name = "wire 1"
+    table.addObject(wire1)
+
+    val wire2 = new Wire()
+    wire2.name = "wire 2"
+    table.addObject(wire2)
+
+
+    val switch = new Switch()
+    table.addObject(switch)
+
+    val battery = new Battery()
+    table.addObject(battery)
+
+
+    // Return
+    room
+  }
+
+  /*
    * Helper functions
    */
   def mkDoor(location1:Location, location2:Location, isOpen:Boolean = false) {
@@ -227,6 +272,10 @@ object BuildingMaker {
     val roomBathroom = RoomMaker.mkBathroom(includeBathtub = true, sewer)
     universe.addObject(roomBathroom)
 
+    // Workshop
+    val roomWorkshop = RoomMaker.mkWorkshop()
+    universe.addObject(roomWorkshop)
+
     // Hallway
     val roomHallway = new Room("hallway")
     roomHallway.addObject( Picture.mkRandom() )
@@ -238,6 +287,8 @@ object BuildingMaker {
     RoomMaker.mkDoor(roomLivingRoom, roomHallway)
     RoomMaker.mkDoor(roomBedroom, roomHallway)
     RoomMaker.mkDoor(roomBathroom, roomKitchen)
+    RoomMaker.mkDoor(roomWorkshop, roomHallway)
+
   }
 
 

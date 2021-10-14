@@ -2,6 +2,7 @@ package scienceworld.objects.electricalcomponent
 
 import scienceworld.objects.electricalcomponent.ElectricalComponent.ROLE_VOLTAGE_USER
 import scienceworld.properties.IsNotActivableDeviceOff
+import scienceworld.struct.EnvObject._
 
 /*
  * Light Bulb
@@ -33,11 +34,11 @@ class LightBulb extends PolarizedElectricalComponent {
       os.append("off")
     }
 
-    //if (mode == MODE_DETAILED) {
-    os.append(". ")
-    os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
-    os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
-    //}
+    if (mode == MODE_DETAILED) {
+      os.append(". ")
+      os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
+      os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
+    }
 
     os.toString
   }

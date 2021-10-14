@@ -3,6 +3,7 @@ package scienceworld.objects.electricalcomponent
 import scienceworld.objects.electricalcomponent.ElectricalComponent.ROLE_VOLTAGE_SWITCH
 import scienceworld.properties.IsActivableDeviceOff
 import scienceworld.struct.EnvObject
+import scienceworld.struct.EnvObject._
 
 /*
  * Switches
@@ -38,9 +39,11 @@ class Switch extends PolarizedElectricalComponent {
 
     os.append("a " + this.name + ", which is ")
     if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
-    os.append(". ")
-    os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
-    os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
+    if (mode == MODE_DETAILED) {
+      os.append(". ")
+      os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
+      os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
+    }
 
 
 

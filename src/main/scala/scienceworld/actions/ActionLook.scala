@@ -63,7 +63,7 @@ object ActionLookAt {
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("look at", "examine")),
+      new ActionExprOR(List("look at", "look on", "examine")),
       new ActionExprIdentifier("obj")
     ))
 
@@ -94,7 +94,10 @@ class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
           os.append ("There is nothing in the " + obj.name + ".")
         } else {
           val objNames = containedObjs.map(_.name)
-          os.append ("Inside the " + obj.name + " is: " + objNames.mkString(", ") + ".")
+          os.append ("Inside the " + obj.name + " is: \n")
+          for (cObj <- containedObjs) {
+            os.append("\t" + cObj.getDescription(mode = MODE_CURSORY_DETAIL) + "\n")
+          }
         }
       }
     }

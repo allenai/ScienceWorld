@@ -61,8 +61,10 @@ class PolarizedElectricalComponent extends EnvObject {
     val os = new StringBuilder
 
     os.append("a " + this.name + ". ")
-    os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
-    os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
+    if (mode == MODE_DETAILED) {
+      os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
+      os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
+    }
 
     //if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
 
@@ -135,8 +137,10 @@ class UnpolarizedElectricalComponent extends EnvObject {
     val os = new StringBuilder
 
     os.append("a " + this.name + ". ")
-    os.append("its terminal 1 is connected to: " + this.terminal1.propElectricalConnection.get.getConnectedToStr() + ". ")
-    os.append("its terminal 2 is connected to: " + this.terminal2.propElectricalConnection.get.getConnectedToStr() + ". ")
+    if (mode == MODE_DETAILED) {
+      os.append("its terminal 1 is connected to: " + this.terminal1.propElectricalConnection.get.getConnectedToStr() + ". ")
+      os.append("its terminal 2 is connected to: " + this.terminal2.propElectricalConnection.get.getConnectedToStr() + ". ")
+    }
 
     //if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
 

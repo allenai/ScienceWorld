@@ -23,13 +23,24 @@ class Table extends Container {
 
     os.append("a " + this.name + ". ")
 
-    os.append("On the " + this.name + " is: ")
-    if (this.getContainedObjects().size > 0) {
-      os.append(this.getContainedObjectsAndPortals().map(_.getDescription()).mkString(", "))
-    } else {
-      os.append("nothing")
+    if (mode == MODE_CURSORY_DETAIL) {
+      os.append("On the " + this.name + " is: ")
+      if (this.getContainedObjects().size > 0) {
+        os.append(this.getContainedObjectsAndPortals().map(_.getDescription()).mkString(", "))
+      } else {
+        os.append("nothing")
+      }
+      os.append(".")
+    } else if (mode == MODE_DETAILED) {
+      os.append("On the " + this.name + " is: \n")
+      if (this.getContainedObjects().size > 0) {
+        for (cObj <- this.getContainedObjectsAndPortals()) {
+          os.append("\t" + cObj.getDescription(mode = MODE_DETAILED) + "\n")
+        }
+      } else {
+        os.append("nothing.")
+      }
     }
-    os.append(".")
 
     os.toString
   }
@@ -56,13 +67,24 @@ class Desk extends Container {
 
     os.append("a " + this.name + ". ")
 
-    os.append("On the " + this.name + " is: ")
-    if (this.getContainedObjects().size > 0) {
-      os.append(this.getContainedObjectsAndPortals().map(_.getDescription()).mkString(", "))
-    } else {
-      os.append("nothing")
+    if (mode == MODE_CURSORY_DETAIL) {
+      os.append("On the " + this.name + " is: ")
+      if (this.getContainedObjects().size > 0) {
+        os.append(this.getContainedObjectsAndPortals().map(_.getDescription()).mkString(", "))
+      } else {
+        os.append("nothing")
+      }
+      os.append(".")
+    } else if (mode == MODE_DETAILED) {
+      os.append("On the " + this.name + " is: \n")
+      if (this.getContainedObjects().size > 0) {
+        for (cObj <- this.getContainedObjectsAndPortals()) {
+          os.append("\t" + cObj.getDescription(mode = MODE_DETAILED) + "\n")
+        }
+      } else {
+        os.append("nothing.")
+      }
     }
-    os.append(".")
 
     os.toString
   }
@@ -88,13 +110,24 @@ class Counter extends Container {
 
     os.append("a " + this.name + ". ")
 
-    os.append("On the " + this.name + " is: ")
-    if (this.getContainedObjects().size > 0) {
-      os.append(this.getContainedObjectsAndPortals().map(_.getDescription()).mkString(", "))
-    } else {
-      os.append("nothing")
+    if (mode == MODE_CURSORY_DETAIL) {
+      os.append("On the " + this.name + " is: ")
+      if (this.getContainedObjects().size > 0) {
+        os.append(this.getContainedObjectsAndPortals().map(_.getDescription()).mkString(", "))
+      } else {
+        os.append("nothing")
+      }
+      os.append(".")
+    } else if (mode == MODE_DETAILED) {
+      os.append("On the " + this.name + " is: \n")
+      if (this.getContainedObjects().size > 0) {
+        for (cObj <- this.getContainedObjectsAndPortals()) {
+          os.append("\t" + cObj.getDescription(mode = MODE_DETAILED) + "\n")
+        }
+      } else {
+        os.append("nothing.")
+      }
     }
-    os.append(".")
 
     os.toString
   }
@@ -130,13 +163,24 @@ class Cupboard extends Container {
 
     if (this.propContainer.get.isOpen) {
       val contents = this.getContainedObjectsAndPortals().map(_.getDescription())
-      os.append("In the " + this.name + " is: ")
-      if (contents.size == 0) {
-        os.append("nothing")
-      } else {
-        os.append(contents.mkString(", "))
+      if (mode == MODE_CURSORY_DETAIL) {
+        os.append("In the " + this.name + " is: ")
+        if (contents.size == 0) {
+          os.append("nothing")
+        } else {
+          os.append(contents.mkString(", "))
+        }
+        os.append(".")
+      } else if (mode == MODE_DETAILED) {
+        os.append("In the " + this.name + " is: \n")
+        if (this.getContainedObjects().size > 0) {
+          for (cObj <- this.getContainedObjectsAndPortals()) {
+            os.append("\t" + cObj.getDescription(mode = MODE_DETAILED) + "\n")
+          }
+        } else {
+          os.append("nothing.")
+        }
       }
-      os.append(".")
     }
 
     os.toString
@@ -170,13 +214,24 @@ class Closet extends Container {
 
     if (this.propContainer.get.isOpen) {
       val contents = this.getContainedObjectsAndPortals().map(_.getDescription())
-      os.append("In the " + this.name + " is: ")
-      if (contents.size == 0) {
-        os.append("nothing")
-      } else {
-        os.append(contents.mkString(", "))
+      if (mode == MODE_CURSORY_DETAIL) {
+        os.append("In the " + this.name + " is: ")
+        if (contents.size == 0) {
+          os.append("nothing")
+        } else {
+          os.append(contents.mkString(", "))
+        }
+        os.append(".")
+      } else if (mode == MODE_DETAILED) {
+        os.append("In the " + this.name + " is: \n")
+        if (this.getContainedObjects().size > 0) {
+          for (cObj <- this.getContainedObjectsAndPortals()) {
+            os.append("\t" + cObj.getDescription(mode = MODE_DETAILED) + "\n")
+          }
+        } else {
+          os.append("nothing.")
+        }
       }
-      os.append(".")
     }
 
     os.toString
@@ -208,13 +263,25 @@ class Drawer extends Container {
       if (!this.propContainer.get.isOpen) {
         os.append(" The drawer is closed.")
       } else {
-        os.append("In the " + this.name + " is: ")
-        if (this.getContainedObjects().size > 0) {
-          os.append(this.getContainedObjectsAndPortals().map(_.getDescription()).mkString(", "))
-        } else {
-          os.append("nothing")
+        val contents = this.getContainedObjectsAndPortals().map(_.getDescription())
+        if (mode == MODE_CURSORY_DETAIL) {
+          os.append("In the " + this.name + " is: ")
+          if (contents.size == 0) {
+            os.append("nothing")
+          } else {
+            os.append(contents.mkString(", "))
+          }
+          os.append(".")
+        } else if (mode == MODE_DETAILED) {
+          os.append("In the " + this.name + " is: \n")
+          if (this.getContainedObjects().size > 0) {
+            for (cObj <- this.getContainedObjectsAndPortals()) {
+              os.append("\t" + cObj.getDescription(mode = MODE_DETAILED) + "\n")
+            }
+          } else {
+            os.append("nothing.")
+          }
         }
-        os.append(".")
       }
     }
 

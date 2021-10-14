@@ -2,6 +2,7 @@ package scienceworld.objects.electricalcomponent
 
 import scienceworld.objects.electricalcomponent.ElectricalComponent.{ROLE_VOLTAGE_GENERATOR, VOLTAGE_GENERATOR, VOLTAGE_GROUND}
 import scienceworld.properties.{IsActivableDeviceOn, IsNotActivableDeviceOn}
+import scienceworld.struct.EnvObject._
 
 /*
  *  Generators
@@ -33,10 +34,11 @@ class Generator extends PolarizedElectricalComponent {
     val os = new StringBuilder
 
     os.append("a " + this.name + "")
-    //if (mode == MODE_DETAILED) {
-    os.append(". ")
-    os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
-    os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
+    if (mode == MODE_DETAILED) {
+      os.append(". ")
+      os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
+      os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
+    }
     //}
 
     os.toString
