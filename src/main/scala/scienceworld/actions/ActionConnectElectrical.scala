@@ -41,7 +41,10 @@ class ActionConnectElectrical(action:ActionRequestDef, assignments:Map[String, E
     // Do connection
     terminalA.propElectricalConnection.get.addConnection(terminalB)
     terminalB.propElectricalConnection.get.addConnection(terminalA)
-    return terminalA.name + " is now connected to " + terminalB.name
+    val terminalAObj:String = terminalA.asInstanceOf[Terminal].parentObject.name
+    val terminalBObj:String = terminalA.asInstanceOf[Terminal].parentObject.name
+
+    return terminalA.name + " on " + terminalAObj + " is now connected to " + terminalB.name + " on " + terminalBObj
 
   }
 
@@ -73,16 +76,12 @@ class ActionDisconnectElectrical(action:ActionRequestDef, assignments:Map[String
     val obj = assignments("obj")
 
     obj match {
-      case x:PolarizedElectricalComponent => {
-        x.disconnectElectricalTerminals()
-        return obj.name + " has been disconnected"
-      }
-      case x:UnpolarizedElectricalComponent => {
-        x.disconnectElectricalTerminals()
-        return obj.name + " has been disconnected"
-      }
       case x:Terminal => {
         return "You must disconnect entire objects (such as " + x.parentObject.name + ") instead of just single terminals"
+      }
+      case x:EnvObject => {
+        x.disconnectElectricalTerminals()
+        return x.name + " has been disconnected"
       }
       case _ => "It's not clear how to disconnect that"
     }

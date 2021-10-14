@@ -5,7 +5,7 @@ import scienceworld.struct.EnvObject
 
 
 class ForkMetal extends EnvObject {
-  this.name = "fork"
+  this.name = "metal fork"
 
   this.propMaterial = Some(new SteelProp())
 
@@ -20,7 +20,7 @@ class ForkMetal extends EnvObject {
 }
 
 class ForkPlastic extends EnvObject {
-  this.name = "fork"
+  this.name = "plastic fork"
 
   this.propMaterial = Some(new PlasticProp())
 

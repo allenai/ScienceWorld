@@ -180,8 +180,9 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
 
 
   def disconnectElectricalTerminals() {
-    if (terminal1.isDefined) this.terminal1.get.disconnectElectricalTerminals()
-    if (terminal2.isDefined) this.terminal2.get.disconnectElectricalTerminals()
+    println ("### DISCONNECTING " + this.name)
+    if (terminal1.isDefined) this.terminal1.get.disconnect()
+    if (terminal2.isDefined) this.terminal2.get.disconnect()
   }
 
 

@@ -3,6 +3,7 @@ package scienceworld.processes
 import scienceworld.objects.electricalcomponent.ElectricalComponent.VOLTAGE_GENERATOR
 import scienceworld.struct.EnvObject
 import scienceworld.objects.electricalcomponent.ElectricalComponent._
+import scienceworld.objects.electricalcomponent.{PolarizedElectricalComponent, UnpolarizedElectricalComponent}
 
 
 
@@ -13,6 +14,25 @@ object ElectricalConductivity {
 
     // Only continue if this is an electrical component with unpolarized terminals
     if (!obj.hasUnpolarizedElectricalTerminals()) return
+
+    // Check if this device can be powered/serve as an electrical conductor
+    var isPossibleConductor:Boolean = false
+    if (obj.isInstanceOf[PolarizedElectricalComponent] || obj.isInstanceOf[UnpolarizedElectricalComponent]) {
+      // Electrical components are conductors
+      isPossibleConductor = true
+    } else if ((obj.propMaterial.isDefined) && (obj.propMaterial.get.electricallyConductive)) {
+      // Materials that are electrically conductive are conductors
+      if (obj.name.contains("fork")) println("##### " + obj.name + " IS AN ELECTRICAL CONDUCTOR!")
+
+      isPossibleConductor = true
+    }
+
+    // If not a conductor, then clear terminals
+    if (!isPossibleConductor) {
+      obj.terminal1.get.voltage = None
+      obj.terminal2.get.voltage = None
+      return
+    }
 
     // If this is an electrical component, check to see if it should be activated
     if (obj.electricalRole == ROLE_VOLTAGE_USER) {
