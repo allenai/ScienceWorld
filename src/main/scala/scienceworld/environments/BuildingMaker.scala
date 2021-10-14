@@ -6,7 +6,7 @@ import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Cou
 import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
 import scienceworld.objects.location.{Location, Room, Universe}
-import scienceworld.objects.misc.Picture
+import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
 import scienceworld.objects.portal.Door
 import scienceworld.struct.EnvObject
 
@@ -224,6 +224,11 @@ object RoomMaker {
 
     val battery = new Battery()
     table.addObject(battery)
+
+
+    // Add one metalic and one non-metalic object
+    room.addObject(new ForkMetal())
+    room.addObject(new ForkPlastic())
 
 
     // Return

@@ -41,6 +41,10 @@ object EnvironmentMaker {
 
     randomLocation.addObject(agent)
 
+    //## Specific start point in environment
+    for (location <- locations) if (location.name == "workshop") location.addObject(agent)
+
+
     // Return
     return (universe, agent)
   }

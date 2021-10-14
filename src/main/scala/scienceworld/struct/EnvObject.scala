@@ -39,6 +39,7 @@ class EnvObject(var name:String, var objType:String) {
   var propMoveable:Option[MoveableProperties] = Some( new MoveableProperties(isMovable = true) )
   var propElectricalConnection:Option[ElectricalConnectionProperties] = None
 
+
   /*
    * Portals
    */
