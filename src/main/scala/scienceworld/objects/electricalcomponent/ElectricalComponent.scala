@@ -1,6 +1,6 @@
 package scienceworld.objects.electricalcomponent
 
-import scienceworld.objects.electricalcomponent.ElectricalComponent.{ROLE_VOLTAGE_GENERATOR, ROLE_VOLTAGE_USER, VOLTAGE_GENERATOR, VOLTAGE_GROUND}
+import scienceworld.objects.electricalcomponent.ElectricalComponent.{ROLE_VOLTAGE_GENERATOR, ROLE_VOLTAGE_SWITCH, ROLE_VOLTAGE_USER, VOLTAGE_GENERATOR, VOLTAGE_GROUND}
 import scienceworld.properties.{ElectricalConnectionProperties, IsActivableDeviceOff, IsNotActivableDeviceOff, IsNotActivableDeviceOn, MoveableProperties}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
@@ -74,6 +74,7 @@ class PolarizedElectricalComponent extends EnvObject {
 object ElectricalComponent {
   val ROLE_VOLTAGE_GENERATOR    =   1
   val ROLE_VOLTAGE_USER         =   2
+  val ROLE_VOLTAGE_SWITCH       =   3
 
   val VOLTAGE_GROUND            =   0.0
   val VOLTAGE_GENERATOR         =   9.0
@@ -245,6 +246,54 @@ class LightBulb extends PolarizedElectricalComponent {
 
 }
 
+/*
+ * Switches
+ */
+class Switch extends PolarizedElectricalComponent {
+  this.name = "switch"
+  this.electricalRole = ROLE_VOLTAGE_SWITCH
+  this.propDevice = Some( new IsActivableDeviceOff() )
+
+  // Given one terminal, get the other (connected) terminal.
+  override def getOtherTerminal(terminalIn:EnvObject):Option[Terminal] = {
+    // If the switch is deactivated, do not allow any flow
+    if (!this.propDevice.get.isActivated) return None
+
+    if (terminalIn == anode) return Some(cathode)
+    if (terminalIn == cathode) return Some(anode)
+
+    // Otherwise
+    return None
+  }
+
+
+  override def tick():Boolean = {
+    println ("TICK: " + this.name)
+
+    super.tick()
+  }
+
+  override def getReferents(): Set[String] = {
+    Set("component", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    val os = new StringBuilder
+
+    os.append("a " + this.name + ", which is ")
+    //os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
+    //os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
+
+    if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
+
+    os.toString
+  }
+
+}
+
+/*
+ *  Generators
+ */
 
 class Battery extends PolarizedElectricalComponent {
   this.name = "battery"

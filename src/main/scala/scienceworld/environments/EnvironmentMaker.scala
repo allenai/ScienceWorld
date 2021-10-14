@@ -6,7 +6,7 @@ import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.furniture.{Desk, Table}
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.document.{BookFrankenstein, BookMobyDick}
-import scienceworld.objects.electricalcomponent.{Battery, LightBulb, PolarizedElectricalComponent}
+import scienceworld.objects.electricalcomponent.{Battery, LightBulb, PolarizedElectricalComponent, Switch}
 import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.misc.Picture
 import scienceworld.objects.portal.Door
@@ -61,7 +61,7 @@ object EnvironmentMaker {
     universe.addObject(sewer)
 
     // House
-    val room = RoomMaker.mkKitchen(sewer)
+    val room = new Room("workshop")
     universe.addObject(room)
 
     // Electical
@@ -73,12 +73,35 @@ object EnvironmentMaker {
     room.addObject(lightbulb2)
     lightbulb2.name = "light bulb 2"
 
+    val lightbulb3 = new LightBulb()
+    room.addObject(lightbulb3)
+    lightbulb3.name = "light bulb 3"
+
+    val switch = new Switch()
+    room.addObject(switch)
+
     val battery = new Battery()
     room.addObject(battery)
 
+    /*
     this.mkConnection(battery, lightbulb1)
     this.mkConnection(lightbulb1, lightbulb2)
     this.mkConnection(lightbulb2, battery)
+     */
+
+    /*
+    this.mkConnection(battery, lightbulb1)
+    this.mkConnection(lightbulb1, lightbulb2)
+    this.mkConnection(lightbulb2, lightbulb3)
+    this.mkConnection(lightbulb3, battery)
+     */
+
+    this.mkConnection(battery, lightbulb1)
+    this.mkConnection(lightbulb1, lightbulb2)
+    this.mkConnection(lightbulb2, switch)
+    //this.mkConnection(lightbulb3, switch)
+    this.mkConnection(switch, battery)
+
 
     /*
     battery.anode.propElectricalConnection.get.addConnection( lightbulb1.cathode )
