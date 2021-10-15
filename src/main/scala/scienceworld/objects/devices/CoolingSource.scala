@@ -2,6 +2,7 @@ package scienceworld.objects.devices
 
 import scienceworld.properties.{CoolingSourcePropertiesFreezer, CoolingSourcePropertiesFridge, HeatSourcePropertiesStove, IsActivableDeviceOn, IsContainer, IsOpenUnclosableContainer, MoveableProperties}
 import scienceworld.processes.HeatTransfer
+import util.StringHelpers
 
 class CoolingSource extends Device {
   this.name = "cooling source"
@@ -69,13 +70,8 @@ class Fridge extends CoolingSource {
     }
 
     if (this.propContainer.get.isOpen) {
-      val contents = this.getContainedObjects().map(_.getDescription())
       os.append("In the " + this.name + " is: ")
-      if (contents.size == 0) {
-        os.append("nothing")
-      } else {
-        os.append(contents.mkString(", "))
-      }
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
       os.append(".")
     }
 
@@ -129,13 +125,8 @@ class Freezer extends CoolingSource {
     }
 
     if (this.propContainer.get.isOpen) {
-      val contents = this.getContainedObjects().map(_.getDescription())
       os.append("In the " + this.name + " is: ")
-      if (contents.size == 0) {
-        os.append("nothing")
-      } else {
-        os.append(contents.mkString(", "))
-      }
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
       os.append(".")
     }
 

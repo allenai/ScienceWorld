@@ -5,6 +5,7 @@ import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.ActionHandler
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
+import util.StringHelpers
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -22,7 +23,7 @@ class ActionLookAround(action:ActionRequestDef, assignments:Map[String, EnvObjec
     }
 
     val container = agent.getContainer().get
-    return container.getDescription()
+    return container.getDescriptionSafe(mode = MODE_DETAILED).getOrElse("<ERROR: attempting to view hidden object>")
 
   }
 
@@ -53,7 +54,8 @@ class ActionLookAt(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
     val agent = assignments("agent")
     val obj = assignments("obj")
 
-    return obj.getDescription(mode = MODE_DETAILED)
+    return obj.getDescriptionSafe(mode = MODE_DETAILED).getOrElse("<ERROR: attempting to view hidden object>")
+
   }
 
 }
@@ -63,7 +65,7 @@ object ActionLookAt {
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("look at", "examine")),
+      new ActionExprOR(List("look at", "look on", "examine")),
       new ActionExprIdentifier("obj")
     ))
 
@@ -94,8 +96,10 @@ class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
           os.append ("There is nothing in the " + obj.name + ".")
         } else {
           val objNames = containedObjs.map(_.name)
-          os.append ("Inside the " + obj.name + " is: " + objNames.mkString(", ") + ".")
+          os.append ("Inside the " + obj.name + " is: \n")
+          os.append( StringHelpers.objectListToStringDescription(obj.getContainedObjects(), perspectiveContainer=agent, multiline = true)  )
         }
+        os.append("\n")
       }
     }
 
@@ -103,7 +107,8 @@ class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
       os.append(" You also see: ")
       val descriptions = new ArrayBuffer[String]
       for (portal <- obj.getPortals()) {
-        descriptions.append(portal.getDescription(mode = MODE_CURSORY_DETAIL, perspectiveContainer = obj))
+        val desc = portal.getDescriptionSafe(mode = MODE_CURSORY_DETAIL, perspectiveContainer = obj)
+        if (desc.isDefined) descriptions.append(desc.get)
       }
       os.append(descriptions.mkString(", "))
       os.append(".")

@@ -2,17 +2,19 @@ package scienceworld.struct
 
 import scienceworld.objects.portal.Portal
 import scienceworld.properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, ElectricalConnectionProperties, HeatSourceProperties, MaterialProperties, MoveableProperties, PortalProperties}
-import scienceworld.processes.{HeatTransfer, StateOfMatter}
+import scienceworld.processes.{ElectricalConductivity, HeatTransfer, StateOfMatter}
 import util.UniqueIdentifier
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import EnvObject._
+import scienceworld.objects.electricalcomponent.ElectricalComponent.ROLE_VOLTAGE_USER
+import scienceworld.objects.electricalcomponent.Terminal
 
 import scala.reflect.ClassTag
 
 
-class EnvObject(var name:String, var objType:String) {
+class EnvObject(var name:String, var objType:String, includeElectricalTerminals:Boolean = true) {
 
   // Alternate constructors
   def this() = this(name = "", objType = "")
@@ -23,6 +25,23 @@ class EnvObject(var name:String, var objType:String) {
 
   // Portals
   private val portals = mutable.Set[Portal]()
+
+  // Is this object visible, or a faux/hidden object?
+  private var _isHidden:Boolean = false
+
+  // Each (potentially) electrical component has two terminals
+  val terminal1:Option[Terminal] = if (includeElectricalTerminals) { Some( new Terminal(this, "terminal 1") ) } else { None }
+  val terminal2:Option[Terminal] = if (includeElectricalTerminals) { Some( new Terminal(this, "terminal 2") ) } else { None }
+  if (includeElectricalTerminals) {
+    // Terminals on normal objects are 'faux'/hidden
+    terminal1.get.setHidden(true)
+    terminal2.get.setHidden(true)
+
+    this.addObject(terminal1.get)
+    this.addObject(terminal2.get)
+  }
+  // Electrical role (generator, or consumer)
+  var electricalRole = ROLE_VOLTAGE_USER
 
 
   // Unique identifier
@@ -38,6 +57,7 @@ class EnvObject(var name:String, var objType:String) {
   var propPortal:Option[PortalProperties] = None
   var propMoveable:Option[MoveableProperties] = Some( new MoveableProperties(isMovable = true) )
   var propElectricalConnection:Option[ElectricalConnectionProperties] = None
+
 
   /*
    * Portals
@@ -143,6 +163,53 @@ class EnvObject(var name:String, var objType:String) {
 
   def setType(strIn:String) { this.objType = strIn }
 
+  // Visibility
+  def isHidden():Boolean = this._isHidden
+  def setHidden(value:Boolean) { this._isHidden = value }
+
+
+  /*
+   * Simulation methods (electrical conductivity)
+   */
+  def isElectricallyConnected():Boolean = {
+    if (terminal1.isDefined && terminal1.get.propElectricalConnection.get.size() > 0) return true
+    if (terminal2.isDefined && terminal2.get.propElectricalConnection.get.size() > 0) return true
+    return false
+  }
+
+  def hasUnpolarizedElectricalTerminals():Boolean = {
+    if (terminal1.isDefined && terminal2.isDefined) return true
+    // Otherwise
+    return false
+  }
+
+  // Given one terminal, get the other (connected) terminal.
+  def getOtherElectricalTerminal(terminalIn:EnvObject):Option[Terminal] = {
+    if ((terminal1.isEmpty) || (terminal2.isEmpty)) return None
+
+    if (terminalIn == terminal1.get) return terminal2
+    if (terminalIn == terminal2.get) return terminal1
+
+    // Otherwise
+    return None
+  }
+
+  def getUnconnectedElectricalTerminal():Option[Terminal] = {
+    if ((terminal1.isEmpty) || (terminal2.isEmpty)) return None
+
+    if (terminal1.get.propElectricalConnection.get.size() == 0) return terminal1
+    if (terminal2.get.propElectricalConnection.get.size() == 0) return terminal2
+
+    // Otherwise
+    return None
+  }
+
+  def disconnectElectricalTerminals() {
+    if (terminal1.isDefined) this.terminal1.get.disconnect()
+    if (terminal2.isDefined) this.terminal2.get.disconnect()
+  }
+
+
 
   /*
    * Text-based simulation methods
@@ -169,6 +236,10 @@ class EnvObject(var name:String, var objType:String) {
 
     // State of matter: Change state of matter based on temperature
     StateOfMatter.ChangeOfState(this)
+
+    // Electrical conductivity: Potentially conduct electricity, if an electrical conductor and connected to other conductors
+    ElectricalConductivity.unpolarizedElectricalConductivityTick(this, activateDeviceIfPowered = false)
+
 
     // Run tick for all objects further down in the object tree
     for (containedObj <- this.getContainedObjects()) {
@@ -215,6 +286,12 @@ class EnvObject(var name:String, var objType:String) {
 
   def getDescription(mode:Int = MODE_CURSORY_DETAIL):String = {
     return "An object, called " + this.name + ", of type " + this.objType
+  }
+
+  // If the object is hidden, returns None
+  def getDescriptionSafe(mode:Int = MODE_CURSORY_DETAIL):Option[String] = {
+    if (this.isHidden()) return None
+    Some(this.getDescription(mode))
   }
 
   /*

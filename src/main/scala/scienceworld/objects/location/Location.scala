@@ -4,6 +4,7 @@ import scienceworld.objects.Air
 import scienceworld.properties.{ContainerProperties, IsContainer, IsOpenUnclosableContainer, MoveableProperties}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
+import util.StringHelpers
 
 
 class Location extends EnvObject {
@@ -21,7 +22,7 @@ class Location extends EnvObject {
 
     os.append("A location. ")
     os.append("In this location, you see: ")
-    os.append( this.getContainedObjectsAndPortals().map(_.getDescription()).mkString(", ") )
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = true)  )
     os.append(".")
 
     os.toString()
@@ -43,7 +44,7 @@ class Universe extends Location {
 
     os.append("A Universe. ")
     os.append("In this Universe, you see: ")
-    os.append( this.getContainedObjectsAndPortals().map(_.getDescription()).mkString(", ") )
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = true)  )
     os.append(".")
 
     os.toString()
@@ -72,14 +73,10 @@ class Room(_name:String) extends Location {
 
     os.append("This room is called the " + this.name + ". ")
     os.append("In it, you see: \n")
-    for (containedObj <- this.getContainedObjects()) {
-      os.append( "\t" + containedObj.getDescription() + "\n")
-    }
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
 
     os.append("You also see:\n")
-    for (portalObj <- this.getPortals()) {
-      os.append("\t" + portalObj.getDescription(mode = MODE_CURSORY_DETAIL, perspectiveContainer = this) + "\n")
-    }
+    os.append( StringHelpers.portalListToStringDescription(this.getPortals(), perspectiveContainer=this, multiline = true)  )
 
     os.toString()
   }

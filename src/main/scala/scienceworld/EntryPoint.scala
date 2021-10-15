@@ -30,8 +30,8 @@ object EntryPoint {
 
     val actionHandler = ActionDefinitions.mkActionDefinitions()
 
-    //val (universe, agent) = EnvironmentMaker.mkKitchenEnvironment()
-    val (universe, agent) = EnvironmentMaker.mkElectricalEnvironment()
+    val (universe, agent) = EnvironmentMaker.mkKitchenEnvironment()
+    //val (universe, agent) = EnvironmentMaker.mkElectricalEnvironment()
 
     println(universe.getDescription())
 

@@ -4,6 +4,7 @@ import scienceworld.objects.containers.Container
 import scienceworld.properties.{CottonClothProp, IsOpenUnclosableContainer, WoodProp}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
+import util.StringHelpers
 
 import scala.util.Random
 
@@ -23,12 +24,9 @@ class Sittable extends Container {
 
     os.append("a " + this.name + ". ")
 
+
     os.append("On the " + this.name + " is: ")
-    if (this.getContainedObjects().size > 0) {
-      os.append(this.getContainedObjectsAndPortals().map(_.getDescription(mode = MODE_CURSORY_DETAIL)).mkString(", "))
-    } else {
-      os.append("nothing")
-    }
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
     os.append(".")
 
     os.toString

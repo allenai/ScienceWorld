@@ -3,6 +3,7 @@ package scienceworld.objects.containers.furniture
 import scienceworld.objects.containers.Container
 import scienceworld.properties.{IsContainer, IsOpenUnclosableContainer, WoodProp}
 import scienceworld.struct.EnvObject._
+import util.StringHelpers
 
 
 /*
@@ -23,13 +24,14 @@ class Table extends Container {
 
     os.append("a " + this.name + ". ")
 
-    os.append("On the " + this.name + " is: ")
-    if (this.getContainedObjects().size > 0) {
-      os.append(this.getContainedObjectsAndPortals().map(_.getDescription()).mkString(", "))
-    } else {
-      os.append("nothing")
+    if (mode == MODE_CURSORY_DETAIL) {
+      os.append("On the " + this.name + " is: ")
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
+      os.append(".")
+    } else if (mode == MODE_DETAILED) {
+      os.append("On the " + this.name + " is: \n")
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
     }
-    os.append(".")
 
     os.toString
   }
@@ -56,13 +58,14 @@ class Desk extends Container {
 
     os.append("a " + this.name + ". ")
 
-    os.append("On the " + this.name + " is: ")
-    if (this.getContainedObjects().size > 0) {
-      os.append(this.getContainedObjectsAndPortals().map(_.getDescription()).mkString(", "))
-    } else {
-      os.append("nothing")
+    if (mode == MODE_CURSORY_DETAIL) {
+      os.append("On the " + this.name + " is: ")
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
+      os.append(".")
+    } else if (mode == MODE_DETAILED) {
+      os.append("On the " + this.name + " is: \n")
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
     }
-    os.append(".")
 
     os.toString
   }
@@ -88,13 +91,14 @@ class Counter extends Container {
 
     os.append("a " + this.name + ". ")
 
-    os.append("On the " + this.name + " is: ")
-    if (this.getContainedObjects().size > 0) {
-      os.append(this.getContainedObjectsAndPortals().map(_.getDescription()).mkString(", "))
-    } else {
-      os.append("nothing")
+    if (mode == MODE_CURSORY_DETAIL) {
+      os.append("On the " + this.name + " is: ")
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
+      os.append(".")
+    } else if (mode == MODE_DETAILED) {
+      os.append("On the " + this.name + " is: \n")
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
     }
-    os.append(".")
 
     os.toString
   }
@@ -129,14 +133,14 @@ class Cupboard extends Container {
     }
 
     if (this.propContainer.get.isOpen) {
-      val contents = this.getContainedObjectsAndPortals().map(_.getDescription())
-      os.append("In the " + this.name + " is: ")
-      if (contents.size == 0) {
-        os.append("nothing")
-      } else {
-        os.append(contents.mkString(", "))
+      if (mode == MODE_CURSORY_DETAIL) {
+        os.append("In the " + this.name + " is: ")
+        os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
+        os.append(".")
+      } else if (mode == MODE_DETAILED) {
+        os.append("In the " + this.name + " is: \n")
+        os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
       }
-      os.append(".")
     }
 
     os.toString
@@ -169,14 +173,14 @@ class Closet extends Container {
     }
 
     if (this.propContainer.get.isOpen) {
-      val contents = this.getContainedObjectsAndPortals().map(_.getDescription())
-      os.append("In the " + this.name + " is: ")
-      if (contents.size == 0) {
-        os.append("nothing")
-      } else {
-        os.append(contents.mkString(", "))
+      if (mode == MODE_CURSORY_DETAIL) {
+        os.append("In the " + this.name + " is: ")
+        os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
+        os.append(".")
+      } else if (mode == MODE_DETAILED) {
+        os.append("In the " + this.name + " is: \n")
+        os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
       }
-      os.append(".")
     }
 
     os.toString
@@ -208,13 +212,14 @@ class Drawer extends Container {
       if (!this.propContainer.get.isOpen) {
         os.append(" The drawer is closed.")
       } else {
-        os.append("In the " + this.name + " is: ")
-        if (this.getContainedObjects().size > 0) {
-          os.append(this.getContainedObjectsAndPortals().map(_.getDescription()).mkString(", "))
-        } else {
-          os.append("nothing")
+        if (mode == MODE_CURSORY_DETAIL) {
+          os.append("In the " + this.name + " is: ")
+          os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
+          os.append(".")
+        } else if (mode == MODE_DETAILED) {
+          os.append("In the " + this.name + " is: \n")
+          os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
         }
-        os.append(".")
       }
     }
 

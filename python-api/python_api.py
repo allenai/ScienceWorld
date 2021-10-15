@@ -76,6 +76,10 @@ class VirtualEnv:
         self.gateway.shutdown()
 
 
+    # Get a list of valid tasks/environments
+    def getTaskNames(self):
+        return self.gateway.getTaskNames()
+
 
     # Get possible actions
     def getPossibleActions(self):

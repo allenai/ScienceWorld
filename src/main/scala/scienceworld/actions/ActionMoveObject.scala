@@ -41,8 +41,15 @@ class ActionMoveObject(action:ActionRequestDef, assignments:Map[String, EnvObjec
 
     // Move the agent through door
     container.addObject(objToMove)
-    return "You move the " + objToMove.name + " to the " + container.name + "."
+    // TODO: Also disconnect the object, if it's electrically connected
+    val os = new StringBuilder
+    if (objToMove.isElectricallyConnected()) {
+      os.append("(disconnecting " + objToMove.name + ")")
+      objToMove.disconnectElectricalTerminals()
+    }
+    os.append("You move the " + objToMove.name + " to the " + container.name + ".")
 
+    return os.toString()
   }
 
 }
@@ -126,18 +133,34 @@ class ActionPourObject(action:ActionRequestDef, assignments:Map[String, EnvObjec
     }
 
     // Do the pouring
+    val os = new StringBuilder
+
     if (pouringOutContainer) {
       // Pour all objects in the old container into the new container
       for (obj <- objToMove.getContainedObjects()) {
         if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable)) {
           // Move all movable objects
           container.addObject(obj)
+          // Electrically disconnect, if connected
+          if (obj.isElectricallyConnected()) {
+            os.append("(disconnecting " + obj.name + ")\n")
+            obj.disconnectElectricalTerminals()
+          }
         }
       }
-      return "You pour the contents of the " + objToMove.name + " into the " + container.name + "."
+      os.append("You pour the contents of the " + objToMove.name + " into the " + container.name + ".")
+      return os.toString()
+
     } else {
       container.addObject(objToMove)
-      return "You pour the " + objToMove.name + " into the " + container.name + "."
+      if (objToMove.isElectricallyConnected()) {
+        // Electrically disconnect, if connected
+        os.append("(disconnecting " + objToMove.name + ")\n")
+        objToMove.disconnectElectricalTerminals()
+      }
+      os.append("You pour the " + objToMove.name + " into the " + container.name + ".")
+      return os.toString()
+
     }
 
   }

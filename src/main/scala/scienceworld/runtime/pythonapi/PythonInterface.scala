@@ -29,6 +29,8 @@ class PythonInterface() {
   var score:Double = 0.0
   var isComplete:Boolean = false
 
+  var errorUnknownEnvironment:Boolean = false
+
   /*
    * Load/reset/shutdown server
    */
@@ -36,12 +38,22 @@ class PythonInterface() {
     this.environmentStr = environmentStr
 
     //## Currently, get a random task instead of using the environment string
-    val task = TaskMaker.getRandomTask()
+    var task:Option[Task] = None
+    if (environmentStr == "random") {
+      task = Some(TaskMaker.getRandomTask())
+    } else {
+      task = TaskMaker.getTask(environmentStr)
+    }
 
     val (universe, agent_) = EnvironmentMaker.mkKitchenEnvironment()
 
-    agent = Some(agent_)
-    agentInterface = Some( new AgentInterface(universe, agent.get, actionHandler, task) )
+    if (task.isDefined) {
+      this.errorUnknownEnvironment = false
+      agent = Some(agent_)
+      agentInterface = Some(new AgentInterface(universe, agent.get, actionHandler, task.get))
+    } else {
+      this.errorUnknownEnvironment = true
+    }
 
     curIter = 0
   }
@@ -52,6 +64,13 @@ class PythonInterface() {
 
   def shutdown(): Unit = {
     sys.exit(0)
+  }
+
+  /*
+   * Get valid tasks/environments
+   */
+  def getTaskNames():java.util.List[String] = {
+    TaskMaker.getAllTaskNames().toList.asJava
   }
 
   /*
@@ -75,6 +94,7 @@ class PythonInterface() {
   def getNumMoves():Integer = this.curIter
 
   def getTaskDescription():String = {
+    if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
     agentInterface.get.getTaskDescription()
   }
 
@@ -89,6 +109,7 @@ class PythonInterface() {
   def step(userInputString:String): String = {
     val outStr = new StringBuilder
     // Error checking
+    if (this.errorUnknownEnvironment) return "ERROR: Unknown environment (" + this.environmentStr + ")."
     if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
     if (agent.isEmpty) return "ERROR: No agent is marked as main."
     if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
