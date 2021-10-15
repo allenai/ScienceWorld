@@ -6,6 +6,7 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.Task
 import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
 
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.io.StdIn.readLine
 
@@ -42,12 +43,13 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
     return referents
   }
 
-  def getPossibleActionObjectCombinations(): Array[TemplateAction] = {
+  def getPossibleActionObjectCombinations(): (Array[TemplateAction], Map[Int, String]) = {
     val OBJ_PLACEHOLDER_TOKEN = "OBJ"
     val START_TOKEN = "START "
     val END_TOKEN = " END"
 
     val outTemplates = new ArrayBuffer[TemplateAction]
+    val outObjectIdxLUT = mutable.Map[Int, String]()
 
     val objects = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2)
 
@@ -75,12 +77,17 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
               val obj = perm(i)._2
               outStr.append(objReferent)
               outObjs.append(obj)
+
+              // Also add Object UUID and unique referent to LUT
+              val objUUID = obj.uuid.toInt
+              outObjectIdxLUT(objUUID) = objReferent
             }
           }
           // Remove start/end tokens
           val sanitizedOutStr = outStr.substring(START_TOKEN.length, outStr.length - END_TOKEN.length).trim
           val templateID = actionIdx      // TODO: This is just the index of the action in a name-stored array, rather than a unique ID for each action.  If different environments are run with different numbers of valid actions, this ID number would likely be different. (i.e. cross-action-space transfer would not work)
           val objectUUIDs = outObjs.map(_.uuid).map(_.toInt).toList
+
           // Pack
           val template = new TemplateAction(sanitizedOutStr, templateID, objectUUIDs)
 
@@ -91,18 +98,28 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
     }
 
     // Return
-    outTemplates.toArray
+    (outTemplates.toArray, outObjectIdxLUT.toMap)
   }
 
-  def getPossibleActionObjectCombinationsJSON():Array[String] = {
+  def getPossibleActionObjectCombinationsJSON():String = {
     // Step 1: Get templates
-    val templates = this.getPossibleActionObjectCombinations()
+    val (templates, uuidToRefLUT) = this.getPossibleActionObjectCombinations()
 
-    // Step 2: Serialize to JSON
+    // Step 2: Serialize templates to JSON
     val templatesJSON = templates.map(_.toJSON())
 
+    // Step 3: Serialize LUT to JSON
+    val jsonRecords = new ArrayBuffer[String]
+    for (uuid <- uuidToRefLUT.keys.toArray.sorted) {
+      jsonRecords.append("\"" + uuid + "\": \"" + uuidToRefLUT(uuid) + "\"")
+    }
+    val lutJSON = "{" + jsonRecords.mkString(",") + "}"
+
+    // Step 4: Join JSONs together
+    val outJSON = "{\"templates\": [" + templatesJSON.mkString(",") + "], \"lookUpTable\": " + lutJSON + "}"
+
     // Step 3: Return
-    return templatesJSON
+    return outJSON
   }
 
   def getTaskDescription():String = {

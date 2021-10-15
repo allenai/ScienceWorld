@@ -7,6 +7,7 @@ import scienceworld.objects.agent.Agent
 import scienceworld.runtime.AgentInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker}
+import util.UniqueIdentifier
 
 import collection.JavaConverters._
 import scala.util.control.Breaks.{break, breakable}
@@ -37,6 +38,9 @@ class PythonInterface() {
   def load(environmentStr:String): Unit = {
     this.environmentStr = environmentStr
 
+    // Reset UUID counter
+    UniqueIdentifier.reset()
+    
     //## Currently, get a random task instead of using the environment string
     var task:Option[Task] = None
     if (environmentStr == "random") {
@@ -86,9 +90,9 @@ class PythonInterface() {
     agentInterface.get.getPossibleObjects().toList.asJava
   }
 
-  def getPossibleActionObjectCombinationsJSON(): java.util.List[String] = {
-    if (!agentInterface.isDefined) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
-    agentInterface.get.getPossibleActionObjectCombinationsJSON().toList.asJava
+  def getPossibleActionObjectCombinationsJSON(): String = {
+    if (!agentInterface.isDefined) return ERROR_MESSAGE_UNINITIALIZED
+    agentInterface.get.getPossibleActionObjectCombinationsJSON()
   }
 
   def getNumMoves():Integer = this.curIter

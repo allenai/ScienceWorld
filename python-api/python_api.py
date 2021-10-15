@@ -92,13 +92,13 @@ class VirtualEnv:
         return self.gateway.getPossibleObjects()
 
     # Get possible action/object combinations
-    def getPossibleActionObjectCombinations(self):
-        templatesJSON = self.gateway.getPossibleActionObjectCombinationsJSON()
-        out = []
-        for templateJSON in templatesJSON:            
-            out.append( json.loads(templateJSON) )
+    def getPossibleActionObjectCombinations(self):        
+        combinedJSON = self.gateway.getPossibleActionObjectCombinationsJSON()
+        data = json.loads(combinedJSON)
+        templates = data['templates']
+        lookUpTable = data['lookUpTable']
 
-        return out
+        return (templates, lookUpTable)
 
     # Get the vocabulary of the model (at the current state)
     def getVocabulary(self):
@@ -180,7 +180,9 @@ def randomModel():
 
     print("Possible actions: " + str(env.getPossibleActions()) )
     print("Possible objects: " + str(env.getPossibleObjects()) )
-    #print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
+    templates, lut = env.getPossibleActionObjectCombinations()
+    print("Possible action/object combinations: " + str(templates))
+    print("Object IDX to Object Referent LUT: " + str(lut))
     
     score = 0.0
     isCompleted = False
@@ -201,10 +203,12 @@ def randomModel():
         if (isCompleted):
             break
 
-        # Randomly select action
+        # Randomly select action        
+        templates, lut = env.getPossibleActionObjectCombinations()
+        print("Possible action/object combinations: " + str(templates))
+        print("Object IDX to Object Referent LUT: " + str(lut))
 
-        possibleActionObjectCombinations = env.getPossibleActionObjectCombinations()
-        randomTemplate = random.choice( possibleActionObjectCombinations )        
+        randomTemplate = random.choice( templates )        
         print(randomTemplate)
         userInputStr = randomTemplate["action"]
 
@@ -238,7 +242,9 @@ def userConsole():
     
     print("Possible actions: " + str(env.getPossibleActions()) )
     print("Possible objects: " + str(env.getPossibleObjects()) )
-    print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()) )
+    templates, lut = env.getPossibleActionObjectCombinations()
+    print("Possible action/object combinations: " + str(templates))
+    print("Object IDX to Object Referent LUT: " + str(lut))
     print("Vocabulary: " + str(env.getVocabulary()) )
 
     userInputStr = "look around"        # First action

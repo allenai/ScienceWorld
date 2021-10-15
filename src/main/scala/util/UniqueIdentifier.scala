@@ -11,4 +11,8 @@ object UniqueIdentifier {
     count += 1
     return count
   }
+
+  def reset(): Unit = {
+    this.count = 0
+  }
 }

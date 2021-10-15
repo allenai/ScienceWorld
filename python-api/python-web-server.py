@@ -96,14 +96,13 @@ class VirtualEnv:
         return self.gateway.getPossibleObjects()
 
     # Get possible action/object combinations
-    def getPossibleActionObjectCombinations(self):
-        templatesJSON = self.gateway.getPossibleActionObjectCombinationsJSON()
-        out = []
-        for templateJSON in templatesJSON:            
-            out.append( json.loads(templateJSON) )
+    def getPossibleActionObjectCombinations(self):        
+        combinedJSON = self.gateway.getPossibleActionObjectCombinationsJSON()
+        data = json.loads(combinedJSON)
+        templates = data['templates']
+        lookUpTable = data['lookUpTable']
 
-        return out
-
+        return (templates, lookUpTable)
 
     # Get the vocabulary of the model (at the current state)
     def getVocabulary(self):
@@ -138,152 +137,6 @@ class VirtualEnv:
         return observation, score, isCompleted
 
 
-
-
-
-#
-#   Examples
-#
-
-# Example of creating an environment, then taking one step
-def example1(scriptFilename:str):    
-    env = VirtualEnv(scriptFilename)
-    initialObs, initialDict = env.reset()
-    observation, score, isCompleted = env.step("look around")
-    print(observation)
-
-
-def speedTest(scriptFilename:str):
-    exitCommands = ["quit", "exit"]
-    # Initialize environment
-    env = VirtualEnv(scriptFilename)
-    initialObs, initialDict = env.reset()
-
-    numEpochs = 1000
-
-    start = timeit.default_timer()
-    userInputStr = "look around"        # First action
-    for i in range(0, numEpochs):
-        # Send user input, get response
-        observation, score, isCompleted = env.step(userInputStr)
-
-    end = timeit.default_timer()
-    deltaTime = end - start
-    print("Runtime: " + str(deltaTime) + " seconds")
-    print("Rate: " + str(numEpochs / deltaTime) + " epochs/second")
-
-    print("Shutting down server...")    
-    #env.shutdown()
-
-    print("Completed.")
-
-# Example user input console, to play through a game. 
-def randomModel(scriptFilename:str):
-    exitCommands = ["quit", "exit"]
-    # Initialize environment
-    env = VirtualEnv(scriptFilename)
-    initialObs, initialDict = env.reset()
-    
-    print("Possible actions: " + str(env.getPossibleActions()) )
-    print("Possible objects: " + str(env.getPossibleObjects()) )
-    #print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
-    
-    score = 0.0
-    isCompleted = False
-    curIter = 0
-    maxIter = 1000
-
-    userInputStr = "look around"        # First action
-    while (userInputStr not in exitCommands) and (isCompleted == False) and (curIter < maxIter):
-        print("----------------------------------------------------------------")
-        print ("Iteration: " + str(curIter))
-
-        # Send user input, get response
-        observation, score, isCompleted = env.step(userInputStr)
-        print("\n>>> " + observation)
-        print("Score: " + str(score))
-        print("isCompleted: " + str(isCompleted))
-
-        if (isCompleted):
-            break
-
-        # Randomly select action
-        possibleActionObjectCombinations = env.getPossibleActionObjectCombinations()
-        randomTemplate = random.choice( possibleActionObjectCombinations )        
-        userInputStr = randomTemplate["action"]
-
-        # Sanitize input
-        userInputStr = userInputStr.lower().strip()
-        print("Choosing random action: " + str(userInputStr))
-
-        curIter += 1
-        
-    # Report progress of model
-    if (curIter == maxIter):
-        print("Maximum number of iterations reached (" + str(maxIter) + ")")
-    print ("Final score: " + str(score))
-    print ("isCompleted: " + str(isCompleted))
-
-    print("Shutting down server...")    
-    #env.shutdown()
-
-    print("Completed.")
-
-
-# Example user input console, to play through a game. 
-def userConsole(scriptFilename:str):
-    exitCommands = ["quit", "exit"]
-    # Initialize environment
-    env = VirtualEnv(scriptFilename)
-    initialObs, initialDict = env.reset()
-    
-    print("Possible actions: " + str(env.getPossibleActions()) )
-    print("Possible objects: " + str(env.getPossibleObjects()) )
-    print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
-    
-
-    userInputStr = "look around"        # First action
-    while (userInputStr not in exitCommands):
-        # Send user input, get response
-        observation, score, isCompleted = env.step(userInputStr)
-        print("\n" + observation)
-        print("Score: " + str(score))
-        print("isCompleted: " + str(isCompleted))
-
-        # Get user input
-        userInputStr = input('> ')
-        # Sanitize input
-        userInputStr = userInputStr.lower().strip()
-
-    print("Shutting down server...")    
-    #env.shutdown()
-
-    print("Completed.")
-
-
-
-
-#
-#   Main
-#
-def main():
-    scriptFilename = "../tests/test4.scala"
-
-    print("Virtual Text Environment API demo")
-
-    # Run a user console
-    #userConsole(scriptFilename)
-
-    # Run speed test
-    #speedTest(scriptFilename)
-
-    # Run a model that chooses random actions until successfully reaching the goal
-    randomModel(scriptFilename)
-
-    print("Exiting.")
-
-#if __name__ == "__main__":
-#    main()
 
 
 #
