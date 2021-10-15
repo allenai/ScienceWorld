@@ -97,8 +97,9 @@ class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
         } else {
           val objNames = containedObjs.map(_.name)
           os.append ("Inside the " + obj.name + " is: \n")
-          os.append( StringHelpers.objectListToStringDescription(obj.getContainedObjectsAndPortals(), multiline = true)  )
+          os.append( StringHelpers.objectListToStringDescription(obj.getContainedObjects(), perspectiveContainer=agent, multiline = true)  )
         }
+        os.append("\n")
       }
     }
 

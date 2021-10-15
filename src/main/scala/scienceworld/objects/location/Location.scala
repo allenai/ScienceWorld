@@ -22,7 +22,7 @@ class Location extends EnvObject {
 
     os.append("A location. ")
     os.append("In this location, you see: ")
-    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), multiline = true)  )
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = true)  )
     os.append(".")
 
     os.toString()
@@ -44,7 +44,7 @@ class Universe extends Location {
 
     os.append("A Universe. ")
     os.append("In this Universe, you see: ")
-    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), multiline = true)  )
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = true)  )
     os.append(".")
 
     os.toString()
@@ -73,10 +73,10 @@ class Room(_name:String) extends Location {
 
     os.append("This room is called the " + this.name + ". ")
     os.append("In it, you see: \n")
-    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), multiline = true)  )
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
 
     os.append("You also see:\n")
-    os.append( StringHelpers.objectListToStringDescription(this.getPortals().map(_.asInstanceOf[EnvObject]), multiline = true)  )
+    os.append( StringHelpers.portalListToStringDescription(this.getPortals(), perspectiveContainer=this, multiline = true)  )
 
     os.toString()
   }

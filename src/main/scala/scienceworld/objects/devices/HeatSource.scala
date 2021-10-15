@@ -57,7 +57,7 @@ class Stove extends HeatSource {
     os.append(". ")
 
     os.append("On the stove is: ")
-    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), multiline = false)  )
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
     os.append(".")
 
     os.toString()
@@ -97,7 +97,7 @@ class HotPlate extends HeatSource {
     os.append(". ")
 
     os.append("On the hot plate is: ")
-    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), multiline = false)  )
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
     os.append(".")
 
     os.toString()
@@ -137,7 +137,7 @@ class Oven extends HeatSource {
     os.append(". ")
 
     os.append("In the oven is: ")
-    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), multiline = false)  )
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
     os.append(".")
 
     os.toString()

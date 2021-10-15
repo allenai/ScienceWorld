@@ -76,7 +76,7 @@ class Sink(drainsTo:Option[EnvObject]) extends Device {
     }
     os.append(". ")
     os.append("In the sink is: ")
-    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), multiline = false)  )
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
     os.append(".")
 
     if (mode == MODE_DETAILED) {
@@ -162,7 +162,7 @@ class Bathtub(drainsTo:Option[EnvObject]) extends Device {
     }
     os.append(". ")
     os.append("In the tub is: ")
-    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), multiline = false)  )
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
     os.append(".")
 
     if (mode == MODE_DETAILED) {
@@ -264,7 +264,7 @@ class Toilet(drainsTo:EnvObject) extends Device {
 
     if (this.getContainedObjects().size > 0) {
       os.append("In the toilet is is: ")
-      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), multiline = false)  )
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
       os.append(".")
     }
 

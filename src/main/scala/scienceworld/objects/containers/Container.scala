@@ -3,6 +3,8 @@ package scienceworld.objects.containers
 import scienceworld.objects.document.Book
 import scienceworld.properties._
 import scienceworld.struct.EnvObject
+import scienceworld.struct.EnvObject._
+import util.StringHelpers
 
 import scala.util.Random
 
@@ -19,7 +21,7 @@ class Container extends EnvObject {
     if (containedObjects.size == 0) {
       return "an empty " + this.name
     } else {
-      return "a " + this.name + " (containing " + containedObjects.map(_.getName()).mkString(", ") + ")"
+      return "a " + this.name + " (containing " + StringHelpers.objectListToStringDescription(containedObjects, this, mode=MODE_CURSORY_DETAIL, multiline = false) + ")"
     }
   }
 

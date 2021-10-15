@@ -26,7 +26,7 @@ class Sittable extends Container {
 
 
     os.append("On the " + this.name + " is: ")
-    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), multiline = false)  )
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
     os.append(".")
 
     os.toString

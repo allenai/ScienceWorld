@@ -71,7 +71,7 @@ class Fridge extends CoolingSource {
 
     if (this.propContainer.get.isOpen) {
       os.append("In the " + this.name + " is: ")
-      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), multiline = false)  )
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
       os.append(".")
     }
 
@@ -126,7 +126,7 @@ class Freezer extends CoolingSource {
 
     if (this.propContainer.get.isOpen) {
       os.append("In the " + this.name + " is: ")
-      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), multiline = false)  )
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
       os.append(".")
     }
 
