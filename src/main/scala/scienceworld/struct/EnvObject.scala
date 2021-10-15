@@ -1,7 +1,7 @@
 package scienceworld.struct
 
 import scienceworld.objects.portal.Portal
-import scienceworld.properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, ElectricalConnectionProperties, HeatSourceProperties, MaterialProperties, MoveableProperties, PortalProperties}
+import scienceworld.properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, ElectricalConnectionProperties, HeatSourceProperties, LifeStageProperties, MaterialProperties, MoveableProperties, PortalProperties}
 import scienceworld.processes.{ElectricalConductivity, HeatTransfer, StateOfMatter}
 import util.UniqueIdentifier
 
@@ -57,6 +57,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   var propPortal:Option[PortalProperties] = None
   var propMoveable:Option[MoveableProperties] = Some( new MoveableProperties(isMovable = true) )
   var propElectricalConnection:Option[ElectricalConnectionProperties] = None
+  var propLifeStage:Option[LifeStageProperties] = None
 
 
   /*

@@ -40,7 +40,7 @@ class PythonInterface() {
 
     // Reset UUID counter
     UniqueIdentifier.reset()
-    
+
     //## Currently, get a random task instead of using the environment string
     var task:Option[Task] = None
     if (environmentStr == "random") {
