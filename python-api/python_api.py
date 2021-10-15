@@ -14,8 +14,8 @@ import json
 import py4j
 
 # Web interface
-from pywebio.input import *
-from pywebio.output import *
+#from pywebio.input import *
+#from pywebio.output import *
 
 class VirtualEnv:
 
@@ -32,7 +32,7 @@ class VirtualEnv:
         self.gateway = JavaGateway(gateway_parameters=GatewayParameters(auto_field=True))
 
         # Load the script
-        self.load()
+        self.load(self.scriptFilename)
 
     #
     #   Destructor
@@ -55,8 +55,10 @@ class VirtualEnv:
         time.sleep(1)
 
     # Ask the simulator to load an environment from a script
-    def load(self):
+    def load(self, taskName):
         # TODO: Error handling
+        self.scriptFilename = taskName
+
         print("Load: " + self.scriptFilename)
         self.gateway.load(self.scriptFilename)
 
@@ -98,6 +100,21 @@ class VirtualEnv:
 
         return out
 
+    # Get the vocabulary of the model (at the current state)
+    def getVocabulary(self):
+        vocab = set()        
+
+        # Action vocabulary
+        for actionStr in self.getPossibleActions():
+            for word in actionStr.split(" "):
+                vocab.add(word)
+
+        # Object vocabulary (keep as compound nouns?)                    
+        vocabObjects = self.getPossibleObjects()
+        vocab = vocab.union( set(vocabObjects) )
+        
+        return vocab
+
 
     def getNumMoves(self):
         return self.gateway.getNumMoves()
@@ -122,18 +139,14 @@ class VirtualEnv:
 #   Examples
 #
 
-# Example of creating an environment, then taking one step
-def example1(scriptFilename:str):    
-    env = VirtualEnv(scriptFilename)
-    initialObs, initialDict = env.reset()
-    observation, score, isCompleted = env.step("look around")
-    print(observation)
 
-
-def speedTest(scriptFilename:str):
+def speedTest():
     exitCommands = ["quit", "exit"]
+
     # Initialize environment
-    env = VirtualEnv(scriptFilename)
+    env = VirtualEnv("")
+    taskName = env.getTaskNames()[0]        # Just get first task    
+    env.load(taskName)
     initialObs, initialDict = env.reset()
 
     numEpochs = 1000
@@ -155,12 +168,16 @@ def speedTest(scriptFilename:str):
     print("Completed.")
 
 # Example user input console, to play through a game. 
-def randomModel(scriptFilename:str):
+def randomModel():
     exitCommands = ["quit", "exit"]
+
     # Initialize environment
-    env = VirtualEnv(scriptFilename)
+    env = VirtualEnv("")
+    taskName = env.getTaskNames()[0]        # Just get first task    
+    env.load(taskName)
     initialObs, initialDict = env.reset()
-    
+
+
     print("Possible actions: " + str(env.getPossibleActions()) )
     print("Possible objects: " + str(env.getPossibleObjects()) )
     #print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
@@ -185,6 +202,7 @@ def randomModel(scriptFilename:str):
             break
 
         # Randomly select action
+
         possibleActionObjectCombinations = env.getPossibleActionObjectCombinations()
         randomTemplate = random.choice( possibleActionObjectCombinations )        
         print(randomTemplate)
@@ -209,16 +227,19 @@ def randomModel(scriptFilename:str):
 
 
 # Example user input console, to play through a game. 
-def userConsole(scriptFilename:str):
+def userConsole():
     exitCommands = ["quit", "exit"]
+
     # Initialize environment
-    env = VirtualEnv(scriptFilename)
+    env = VirtualEnv("")
+    taskName = env.getTaskNames()[0]        # Just get first task    
+    env.load(taskName)
     initialObs, initialDict = env.reset()
     
     print("Possible actions: " + str(env.getPossibleActions()) )
     print("Possible objects: " + str(env.getPossibleObjects()) )
-    print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
-    
+    print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()) )
+    print("Vocabulary: " + str(env.getVocabulary()) )
 
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands):
@@ -244,19 +265,18 @@ def userConsole(scriptFilename:str):
 #
 #   Main
 #
-def main():
-    scriptFilename = "../tests/test4.scala"
+def main():    
 
     print("Virtual Text Environment API demo")
 
     # Run a user console
-    #userConsole(scriptFilename)
+    userConsole()
 
     # Run speed test
-    #speedTest(scriptFilename)
+    #speedTest()
 
     # Run a model that chooses random actions until successfully reaching the goal
-    randomModel(scriptFilename)
+    #randomModel()
 
     print("Exiting.")
 

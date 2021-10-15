@@ -105,6 +105,22 @@ class VirtualEnv:
         return out
 
 
+    # Get the vocabulary of the model (at the current state)
+    def getVocabulary(self):
+        vocab = set()        
+
+        # Action vocabulary
+        for actionStr in self.getPossibleActions():
+            for word in actionStr.split(" "):
+                vocab.add(word)
+
+        # Object vocabulary (keep as compound nouns?)                    
+        vocabObjects = self.getPossibleObjects()
+        vocab = vocab.union( set(vocabObjects) )
+        
+        return vocab
+
+
     def getNumMoves(self):
         return self.gateway.getNumMoves()
 
