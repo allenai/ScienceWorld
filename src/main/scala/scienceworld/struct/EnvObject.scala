@@ -1,7 +1,7 @@
 package scienceworld.struct
 
 import scienceworld.objects.portal.Portal
-import scienceworld.properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, ElectricalConnectionProperties, HeatSourceProperties, LifeStageProperties, MaterialProperties, MoveableProperties, PortalProperties}
+import scienceworld.properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, ElectricalConnectionProperties, HeatSourceProperties, LifeProperties, MaterialProperties, MoveableProperties, PortalProperties}
 import scienceworld.processes.{ElectricalConductivity, HeatTransfer, StateOfMatter}
 import util.UniqueIdentifier
 
@@ -57,7 +57,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   var propPortal:Option[PortalProperties] = None
   var propMoveable:Option[MoveableProperties] = Some( new MoveableProperties(isMovable = true) )
   var propElectricalConnection:Option[ElectricalConnectionProperties] = None
-  var propLifeStage:Option[LifeStageProperties] = None
+  var propLife:Option[LifeProperties] = None
 
 
   /*
@@ -167,6 +167,21 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   // Visibility
   def isHidden():Boolean = this._isHidden
   def setHidden(value:Boolean) { this._isHidden = value }
+
+
+  /*
+   * Delete (remove) object from simulation
+   */
+  def delete(): Unit = {
+    // Disconnect electrically (if connected)
+    this.disconnectElectricalTerminals()
+
+    // Remove from containers
+    this.removeAndResetContainer()
+
+    // Append special deleted flag, to notice the object when debugging if it happens to be left floating around in the simulation
+    this.name += " (deleted)"
+  }
 
 
   /*

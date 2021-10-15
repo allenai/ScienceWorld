@@ -50,35 +50,4 @@ object EnvironmentMaker {
     return (universe, agent)
   }
 
-
-  /*
-  def mkConnection(obj1:PolarizedElectricalComponent, obj2:PolarizedElectricalComponent): Unit = {
-    obj1.anode.propElectricalConnection.get.addConnection( obj2.cathode )
-    obj2.cathode.propElectricalConnection.get.addConnection( obj1.anode )
-  }
-   */
-
-/*
-  def mkElectricalEnvironment(): (EnvObject, EnvObject) = {
-    // Universe (object tree root)
-    val universe = new Universe()
-
-    // Sewer (for plumbing)
-    val sewer = new Sewer()
-    universe.addObject(sewer)
-
-
-    // Agent
-    val agent = new Agent()
-    // Place in a random location
-    val locations = universe.getContainedObjectsOfType[Location]().toArray
-    val randomLocation = locations( Random.nextInt(locations.length) )
-
-    randomLocation.addObject(agent)
-
-    // Return
-    return (universe, agent)
-  }
-*/
-
 }

@@ -18,7 +18,7 @@ class LifeCycle(lifeCycleName:String = "life cycle of the X organism") {
   def addStage(stage:LifeStage, isDefault:Boolean = false): Unit = {
     this.stages.append(stage)
     if (isDefault) {
-      this.curStage = this.stages.length
+      this.curStage = this.stages.length-1
     }
   }
 
@@ -37,6 +37,7 @@ class LifeCycle(lifeCycleName:String = "life cycle of the X organism") {
       if (stages(i).stageName == stageName) {
         println("* Living Thing is changing life cycle stage from (" + getCurStage().stageName + ") to (" + stageName + ")")      // Debug statement
         this.curStage = i
+        return
       }
     }
     // If we reach here, the stage wasn't found
