@@ -27,7 +27,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   private val portals = mutable.Set[Portal]()
 
   // Is this object visible, or a faux/hidden object?
-  private var _isHidden:Boolean = true
+  private var _isHidden:Boolean = false
 
   // Each (potentially) electrical component has two terminals
   val terminal1:Option[Terminal] = if (includeElectricalTerminals) { Some( new Terminal(this, "terminal 1") ) } else { None }

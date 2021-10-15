@@ -23,7 +23,7 @@ class ActionLookAround(action:ActionRequestDef, assignments:Map[String, EnvObjec
     }
 
     val container = agent.getContainer().get
-    return container.getDescriptionSafe(mode = MODE_DETAILED).getOrElse("<error>")
+    return container.getDescriptionSafe(mode = MODE_DETAILED).getOrElse("<ERROR: attempting to view hidden object>")
 
   }
 
@@ -54,7 +54,7 @@ class ActionLookAt(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
     val agent = assignments("agent")
     val obj = assignments("obj")
 
-    return obj.getDescriptionSafe(mode = MODE_DETAILED).getOrElse("<error>")
+    return obj.getDescriptionSafe(mode = MODE_DETAILED).getOrElse("<ERROR: attempting to view hidden object>")
 
   }
 
