@@ -26,10 +26,17 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   // Portals
   private val portals = mutable.Set[Portal]()
 
+  // Is this object visible, or a faux/hidden object?
+  private var _isHidden:Boolean = true
+
   // Each (potentially) electrical component has two terminals
   val terminal1:Option[Terminal] = if (includeElectricalTerminals) { Some( new Terminal(this, "terminal 1") ) } else { None }
   val terminal2:Option[Terminal] = if (includeElectricalTerminals) { Some( new Terminal(this, "terminal 2") ) } else { None }
   if (includeElectricalTerminals) {
+    // Terminals on normal objects are 'faux'/hidden
+    terminal1.get.setHidden(true)
+    terminal2.get.setHidden(true)
+
     this.addObject(terminal1.get)
     this.addObject(terminal2.get)
   }
@@ -156,6 +163,10 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
 
   def setType(strIn:String) { this.objType = strIn }
 
+  // Visibility
+  def isHidden():Boolean = this._isHidden
+  def setHidden(value:Boolean) { this._isHidden = value }
+
 
   /*
    * Simulation methods (electrical conductivity)
@@ -269,6 +280,12 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
 
   def getDescription(mode:Int = MODE_CURSORY_DETAIL):String = {
     return "An object, called " + this.name + ", of type " + this.objType
+  }
+
+  // If the object is hidden, returns None
+  def getDescriptionSafe(mode:Int = MODE_CURSORY_DETAIL):Option[String] = {
+    if (this.isHidden()) return None
+    Some(this.getDescription(mode))
   }
 
   /*

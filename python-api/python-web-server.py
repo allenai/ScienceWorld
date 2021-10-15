@@ -34,7 +34,7 @@ class VirtualEnv:
         self.gateway = JavaGateway(gateway_parameters=GatewayParameters(auto_field=True))
 
         # Load the script
-        self.load()
+        self.load(self.scriptFilename)
 
     #
     #   Destructor
@@ -57,8 +57,10 @@ class VirtualEnv:
         time.sleep(1)
 
     # Ask the simulator to load an environment from a script
-    def load(self):
+    def load(self, taskName):
         # TODO: Error handling
+        self.scriptFilename = taskName
+
         print("Load: " + self.scriptFilename)
         self.gateway.load(self.scriptFilename)
 
@@ -79,6 +81,10 @@ class VirtualEnv:
     def shutdown(self):
         self.gateway.shutdown()
 
+
+    # Get a list of valid tasks/environments
+    def getTaskNames(self):
+        return self.gateway.getTaskNames()
 
 
     # Get possible actions
@@ -273,15 +279,22 @@ def app():
     set_env(title='Awesome PyWebIO!!', auto_scroll_bottom=True)    
 
     # Initialize environment
-    scriptFilename = "../test4.txt"     ## TODO
+    scriptFilename = ""     ## TODO
 
     env = VirtualEnv(scriptFilename)
+
+    put_markdown('## Science World (Text Simulation)')
+
+    taskName = select("Select a task:", env.getTaskNames())
+
+    # Load environment
+    env.load(taskName)
     initialObs, initialDict = env.reset()
     
     #print("Possible actions: " + str(env.getPossibleActions()) )
     #print("Possible objects: " + str(env.getPossibleObjects()) )
     #print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
-    put_markdown('## Science World (Text Simulation)')
+
     put_table([
         ["Task", env.getTaskDescription()]
     ])
@@ -289,7 +302,7 @@ def app():
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands):
         put_markdown("### Move " + str(env.getNumMoves()) )
-        
+
         # Send user input, get response
         observation, score, isCompleted = env.step(userInputStr)        
         

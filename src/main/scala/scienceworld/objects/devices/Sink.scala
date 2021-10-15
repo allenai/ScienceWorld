@@ -5,6 +5,7 @@ import scienceworld.objects.portal.LiquidDrain
 import scienceworld.properties.{CeramicProp, IsActivableDeviceOff, IsOpenUnclosableContainer, MoveableProperties, SteelProp}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
+import util.StringHelpers
 
 /*
  * Sink
@@ -75,11 +76,7 @@ class Sink(drainsTo:Option[EnvObject]) extends Device {
     }
     os.append(". ")
     os.append("In the sink is: ")
-    if (this.getContainedObjects().size > 0) {
-      os.append(this.getContainedObjects().map(_.getDescription()).mkString(", "))
-    } else {
-      os.append("nothing")
-    }
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), multiline = false)  )
     os.append(".")
 
     if (mode == MODE_DETAILED) {
@@ -165,11 +162,7 @@ class Bathtub(drainsTo:Option[EnvObject]) extends Device {
     }
     os.append(". ")
     os.append("In the tub is: ")
-    if (this.getContainedObjects().size > 0) {
-      os.append(this.getContainedObjects().map(_.getDescription()).mkString(", "))
-    } else {
-      os.append("nothing")
-    }
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), multiline = false)  )
     os.append(".")
 
     if (mode == MODE_DETAILED) {
@@ -271,8 +264,8 @@ class Toilet(drainsTo:EnvObject) extends Device {
 
     if (this.getContainedObjects().size > 0) {
       os.append("In the toilet is is: ")
-      os.append(this.getContainedObjects().map(_.getDescription()).mkString(", "))
-      os.append(". ")
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), multiline = false)  )
+      os.append(".")
     }
 
     os.toString

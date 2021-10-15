@@ -13,8 +13,9 @@ class Switch extends PolarizedElectricalComponent {
   this.electricalRole = ROLE_VOLTAGE_SWITCH
   this.propDevice = Some( new IsActivableDeviceOff() )
 
+
   // Given one terminal, get the other (connected) terminal.
-  override def getOtherTerminal(terminalIn:EnvObject):Option[Terminal] = {
+  override def getOtherElectricalTerminal(terminalIn: EnvObject): Option[Terminal] =  {
     // If the switch is deactivated, do not allow any flow
     if (!this.propDevice.get.isActivated) return None
 

@@ -2,6 +2,7 @@ package scienceworld.objects.devices
 
 import scienceworld.properties.{HeatSourceProperties, HeatSourcePropertiesOven, HeatSourcePropertiesStove, IsContainer, IsOpenUnclosableContainer, MoveableProperties}
 import scienceworld.processes.HeatTransfer
+import util.StringHelpers
 
 class HeatSource extends Device {
   this.name = "heat source"
@@ -56,11 +57,7 @@ class Stove extends HeatSource {
     os.append(". ")
 
     os.append("On the stove is: ")
-    if (this.getContainedObjects().size > 0) {
-      os.append(this.getContainedObjects().map(_.getDescription()).mkString(", "))
-    } else {
-      os.append("nothing")
-    }
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), multiline = false)  )
     os.append(".")
 
     os.toString()
@@ -100,11 +97,7 @@ class HotPlate extends HeatSource {
     os.append(". ")
 
     os.append("On the hot plate is: ")
-    if (this.getContainedObjects().size > 0) {
-      os.append(this.getContainedObjects().map(_.getDescription()).mkString(", "))
-    } else {
-      os.append("nothing")
-    }
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), multiline = false)  )
     os.append(".")
 
     os.toString()
@@ -144,11 +137,7 @@ class Oven extends HeatSource {
     os.append(". ")
 
     os.append("In the oven is: ")
-    if (this.getContainedObjects().size > 0) {
-      os.append(this.getContainedObjects().map(_.getDescription()).mkString(", "))
-    } else {
-      os.append("nothing")
-    }
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), multiline = false)  )
     os.append(".")
 
     os.toString()

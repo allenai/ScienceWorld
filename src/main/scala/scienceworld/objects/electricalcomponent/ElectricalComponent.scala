@@ -84,6 +84,10 @@ class UnpolarizedElectricalComponent extends EnvObject {
   // Electrical role (generator, or consumer)
   electricalRole = ROLE_VOLTAGE_USER
 
+  // Terminals on normal objects are 'faux'/hidden, but are not hidden on actual electrical components
+  terminal1.get.setHidden(false)
+  terminal2.get.setHidden(false)
+
 
   override def tick():Boolean = {
     //println ("TICK: " + this.name)

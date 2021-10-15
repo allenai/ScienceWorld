@@ -80,7 +80,7 @@ object TaskMaker {
    */
   def mkTaskTurnOnLightbulb():Task = {
     val taskName = "task-2-lightbulb"
-    val description = "Your task is to turn on light bulb 1, by creating an electrical circuit.  Light bulb 1 is in the workshop. "
+    val description = "Your task is to turn on light bulb 1.  First, focus on light bulb 1, which is in the workshop.  Then, create an electrical circuit that powers it on.  When the light bulb is on, the score will switch to 1.  To reset, type 'reset task'. "
 
     val goalSequence = new GoalSequence(Array(
       new GoalActivateDevice(deviceName = "light bulb 1"),              // Be in any state but a gas
@@ -96,6 +96,9 @@ object TaskMaker {
    * Helper functions
    */
 
+  def getAllTaskNames():Array[String] = {
+    tasks.map(_._1).toArray
+  }
 
   // Add a task
   def addTask(task:Task): Unit = {

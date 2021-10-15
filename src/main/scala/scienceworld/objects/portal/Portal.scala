@@ -84,6 +84,11 @@ class Portal (val _isOpen:Boolean, val connectsFrom:EnvObject, val connectsTo:En
     return "A " + this.name + " that connects the " + connectsFrom.name + " to the " + connectsTo.name
   }
 
+  def getDescriptionSafe(mode:Int, perspectiveContainer:EnvObject):Option[String] = {
+    if (this.isHidden()) return None
+    return Some(this.getDescription(mode, perspectiveContainer))
+  }
+
 }
 
 
