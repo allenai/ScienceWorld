@@ -22,6 +22,12 @@ class PolarizedElectricalComponent() extends EnvObject(name = "", objType = "", 
   electricalRole = ROLE_VOLTAGE_USER
 
 
+  override def isElectricallyConnected():Boolean = {
+    if (anode.propElectricalConnection.get.size() > 0) return true
+    if (cathode.propElectricalConnection.get.size() > 0) return true
+    return false
+  }
+
   // Given one terminal, get the other (connected) terminal.
   override def getOtherElectricalTerminal(terminalIn:EnvObject):Option[Terminal] = {
     if (terminalIn == anode) return Some(cathode)

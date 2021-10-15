@@ -171,6 +171,12 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   /*
    * Simulation methods (electrical conductivity)
    */
+  def isElectricallyConnected():Boolean = {
+    if (terminal1.isDefined && terminal1.get.propElectricalConnection.get.size() > 0) return true
+    if (terminal2.isDefined && terminal2.get.propElectricalConnection.get.size() > 0) return true
+    return false
+  }
+
   def hasUnpolarizedElectricalTerminals():Boolean = {
     if (terminal1.isDefined && terminal2.isDefined) return true
     // Otherwise
