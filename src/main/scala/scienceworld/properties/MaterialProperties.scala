@@ -418,3 +418,34 @@ class PlantMatterProp extends MaterialProperties {
   electricallyConductive          = false
 
 }
+
+class FlowerMatterProp extends MaterialProperties {
+  substanceName                   = "flower matter"
+  color                           = "purple"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 200.0f
+  // Electrical
+  electricallyConductive          = false
+
+}
+
+class PollenMatterProp extends MaterialProperties {
+  substanceName                   = "pollen matter"
+  color                           = "yellow"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 200.0f
+  // Electrical
+  electricallyConductive          = false
+
+}
+
