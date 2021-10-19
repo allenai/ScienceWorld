@@ -384,3 +384,37 @@ class OrangeJuiceProp extends MaterialProperties {
   // Electrical
   electricallyConductive          = false
 }
+
+
+/*
+ * Plants/Soil
+ */
+class SoilProp extends MaterialProperties {
+  substanceName                   = "soil"
+  color                           = "brown"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 10000.0f
+  // Electrical
+  electricallyConductive          = false
+
+}
+
+class PlantMatterProp extends MaterialProperties {
+  substanceName                   = "plant matter"
+  color                           = "green"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 200.0f
+  // Electrical
+  electricallyConductive          = false
+
+}

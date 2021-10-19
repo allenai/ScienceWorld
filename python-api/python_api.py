@@ -181,8 +181,8 @@ def randomModel():
     print("Possible actions: " + str(env.getPossibleActions()) )
     print("Possible objects: " + str(env.getPossibleObjects()) )
     templates, lut = env.getPossibleActionObjectCombinations()
-    print("Possible action/object combinations: " + str(templates))
-    print("Object IDX to Object Referent LUT: " + str(lut))
+    #print("Possible action/object combinations: " + str(templates))
+    #print("Object IDX to Object Referent LUT: " + str(lut))
     
     score = 0.0
     isCompleted = False
@@ -193,6 +193,13 @@ def randomModel():
     while (userInputStr not in exitCommands) and (isCompleted == False) and (curIter < maxIter):
         print("----------------------------------------------------------------")
         print ("Iteration: " + str(curIter))
+
+        ## DEBUG
+        if (curIter % 30 == 0):
+            initialObs, initialDict = env.reset()
+            print("RESETTING")
+            print(initialObs)
+
 
         # Send user input, get response
         observation, score, isCompleted = env.step(userInputStr)
@@ -205,8 +212,8 @@ def randomModel():
 
         # Randomly select action        
         templates, lut = env.getPossibleActionObjectCombinations()
-        print("Possible action/object combinations: " + str(templates))
-        print("Object IDX to Object Referent LUT: " + str(lut))
+        #print("Possible action/object combinations: " + str(templates))
+        #print("Object IDX to Object Referent LUT: " + str(lut))
 
         randomTemplate = random.choice( templates )        
         print(randomTemplate)
@@ -217,6 +224,10 @@ def randomModel():
         print("Choosing random action: " + str(userInputStr))
 
         curIter += 1
+
+        if (curIter > 30):
+            time.sleep(1)
+
         
     # Report progress of model
     if (curIter == maxIter):
@@ -276,13 +287,13 @@ def main():
     print("Virtual Text Environment API demo")
 
     # Run a user console
-    userConsole()
+    #userConsole()
 
     # Run speed test
     #speedTest()
 
     # Run a model that chooses random actions until successfully reaching the goal
-    #randomModel()
+    randomModel()
 
     print("Exiting.")
 

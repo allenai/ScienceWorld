@@ -1,10 +1,11 @@
 package scienceworld.environments
 
 import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water}
-import scienceworld.objects.containers.{BookShelf, CeramicCup, GlassCup, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
+import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
 import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
+import scienceworld.objects.livingthing.{Plant, Soil}
 import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
 import scienceworld.objects.portal.Door
@@ -179,6 +180,15 @@ object RoomMaker {
     val chair = new Chair()
     room.addObject(chair)
 
+
+    // debug (plant)
+    val plant = new Plant()
+    val soil = new Soil()
+    val flowerpot = new FlowerPot()
+
+    flowerpot.addObject(soil)
+    flowerpot.addObject(plant)
+    room.addObject(flowerpot)
 
     // Return
     room
