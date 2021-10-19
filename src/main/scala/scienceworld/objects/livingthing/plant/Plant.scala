@@ -149,6 +149,33 @@ class Flower(parentPlant:Plant) extends EnvObject {
     return true
   }
 
+  // Adds this plant's pollen to this flower, if it doesn't have any
+  def addPollen(): Unit = {
+
+    // Step 1: Check if some of this plant's pollen already exists in this flower
+    for (cObj <- this.getContainedObjects()) {
+      cObj match {
+        case p:Pollen => {
+          if (p.parentPlant.uuid == this.parentPlant.uuid) {
+            // Some of this plant's pollen is already in this flower
+            return
+          }
+        }
+        case _ => { }
+      }
+    }
+
+    // Step 2: If we reach here, we need to add pollen
+    val pollen = new Pollen(parentPlant = this.parentPlant)
+    this.addObject(pollen)
+
+  }
+
+
+  /*
+   * Regular functions
+   */
+
   override def tick():Boolean = {
     // Flower tick
 
@@ -163,7 +190,11 @@ class Flower(parentPlant:Plant) extends EnvObject {
       }
 
     } else {
-      // Step 2: If not pollinated, Check if any of the things in the flower contain (valid) pollen -- if so, start the pollination process.
+      // If not pollenated:
+      // Step 2A: Add pollen of this plant, if needed
+      this.addPollen()
+
+      // Step 2B: Check if any of the things in the flower contain (valid) pollen -- if so, start the pollination process.
       breakable {
         for (cObj <- this.getContainedObjects()) { // For every object in the flower
           cObj match {
@@ -188,8 +219,6 @@ class Flower(parentPlant:Plant) extends EnvObject {
 
       }
     }
-
-
 
     super.tick()
   }
