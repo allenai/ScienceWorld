@@ -288,7 +288,7 @@ class PlantLifeStageReproduction(obj:Plant, lifecycle:LifeCycle) extends LifeSta
 
     ticksMeetingCriteria += 1
     if (ticksMeetingCriteria >= stageDuration) {
-      val maxFlowers = 3
+      val maxFlowers = 1
 
       // Create a flower
       val existingFlowers = obj.getContainedObjectsOfType[Flower]()

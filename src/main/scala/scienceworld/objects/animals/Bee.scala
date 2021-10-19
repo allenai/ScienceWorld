@@ -27,9 +27,11 @@ class WanderingAnimal extends LivingThing {
 
     if (passablePortals.size == 0) {
       // There do not appear to be any portals here. Check if we're currently in an open container.  If we are, then exit out of the container?
-      println ("no passable portals")
+
+      // If we're already in a Location, don't try to jump out of it through going to the parent container
+      if (currentLocation.isInstanceOf[Location]) return false
+
       if ((currentLocation.propContainer.isDefined) && (currentLocation.propContainer.get.isOpen)) {
-        println ("in")
         val parentContainer = currentLocation.getContainerRecursiveOfType[Location]()         // Make sure the container is a 'Location'
         println ("### Possible parent container: " + parentContainer)
         if (parentContainer.isEmpty) return false

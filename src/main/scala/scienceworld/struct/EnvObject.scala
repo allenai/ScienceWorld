@@ -235,7 +235,12 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   /*
    * Delete (remove) object from simulation
    */
-  def delete(): Unit = {
+  def delete(expelContents:Boolean = false): Unit = {
+    // Expel the contents to the parent container (if enabled)
+    if ((expelContents) && (this.getContainer().isDefined)) {
+      this.moveAllContainedObjects( this.getContainer().get )
+    }
+
     // Disconnect electrically (if connected)
     this.disconnectElectricalTerminals()
 

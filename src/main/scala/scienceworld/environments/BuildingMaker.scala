@@ -255,7 +255,7 @@ object RoomMaker {
     flowerpot1.addObject(plant1)
     room.addObject(flowerpot1)
 
-    /*
+
     // debug (plant)
     val plant2 = new Plant()
     plant2.name = "plant 2"
@@ -277,7 +277,7 @@ object RoomMaker {
     flowerpot3.addObject(soil3)
     flowerpot3.addObject(plant3)
     room.addObject(flowerpot3)
-*/
+
 
     val bee = new Bee()
     room.addObject(bee)

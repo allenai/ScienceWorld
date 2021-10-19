@@ -1,5 +1,7 @@
 package scienceworld.objects.livingthing.plant
 
+import scienceworld.objects.Apple
+import scienceworld.objects.devices.Stove
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.processes.lifestage.PlantLifeStages
 import scienceworld.properties.{FlowerMatterProp, IsNotContainer, IsOpenUnclosableContainer, LifePropertiesPlant, PlantMatterProp, PollenMatterProp, PollinationProperties}
@@ -186,6 +188,13 @@ class Flower(parentPlant:Plant) extends EnvObject {
 
       if (this.propPollination.get.pollinationStep > this.propPollination.get.stepsUntilFruitingBodyForms) {
         // TODO: Change into fruit
+        if (this.getContainer().isDefined) {
+          println("FRUIT MADE")
+          // Create fruit
+          this.getContainer().get.addObject(new Apple())
+          // Delete flower
+          this.delete(expelContents = true)
+        }
 
       }
 
@@ -210,7 +219,7 @@ class Flower(parentPlant:Plant) extends EnvObject {
                     // Check to see if this is valid pollen, and if so, begin the pollination process
                     if (this.pollinate(p) == true) break()
                   }
-                  case _ => {}
+                  case _ => { }
                 }
               }
             }
