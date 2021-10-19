@@ -1,6 +1,6 @@
-package scienceworld.objects.livingthing
+package scienceworld.objects.livingthing.plant
 
-import scienceworld.properties.{Edible, SoilProp}
+import scienceworld.properties.SoilProp
 import scienceworld.struct.EnvObject
 
 class Soil extends EnvObject {

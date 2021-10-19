@@ -1,7 +1,7 @@
 package scienceworld.struct
 
 import scienceworld.objects.portal.Portal
-import scienceworld.properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, ElectricalConnectionProperties, HeatSourceProperties, LifeProperties, MaterialProperties, MoveableProperties, PortalProperties}
+import scienceworld.properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, ElectricalConnectionProperties, HeatSourceProperties, LifeProperties, MaterialProperties, MoveableProperties, PollinationProperties, PortalProperties}
 import scienceworld.processes.{ElectricalConductivity, HeatTransfer, StateOfMatter}
 import util.UniqueIdentifier
 
@@ -58,6 +58,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   var propMoveable:Option[MoveableProperties] = Some( new MoveableProperties(isMovable = true) )
   var propElectricalConnection:Option[ElectricalConnectionProperties] = None
   var propLife:Option[LifeProperties] = None
+  var propPollination:Option[PollinationProperties] = None
 
 
   /*
@@ -85,6 +86,10 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
 
   def getContainedObjects():Set[EnvObject] = this.containedObjects.toSet
 
+  def getContainedObjectsNotHidden():Set[EnvObject] = {
+    this.containedObjects.filter(_.isHidden() == false).toSet
+  }
+
   def getContainedObjectsOfType[T:ClassTag]():Set[EnvObject] = {
     val out = mutable.Set[EnvObject]()
     for (obj <- this.containedObjects) {
@@ -95,6 +100,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     }
     return out.toSet
   }
+
 
   // Add an object to this container
   def addObject(objIn:EnvObject): Unit = {
@@ -124,6 +130,13 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     }
     // Update this object's back reference to show that it has no container
     this.inContainer = None
+  }
+
+  // Moves all contained objects out of this container
+  def moveAllContainedObjects(newContainer:EnvObject): Unit = {
+    for (cObj <- this.getContainedObjects()) {
+      newContainer.addObject(cObj)
+    }
   }
 
   // Check to see if an object is in this container

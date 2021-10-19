@@ -5,7 +5,7 @@ import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassC
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
 import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
-import scienceworld.objects.livingthing.{Plant, Soil}
+import scienceworld.objects.livingthing.plant.{Plant, Soil}
 import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
 import scienceworld.objects.portal.Door
@@ -181,15 +181,6 @@ object RoomMaker {
     room.addObject(chair)
 
 
-    // debug (plant)
-    val plant = new Plant()
-    val soil = new Soil()
-    val flowerpot = new FlowerPot()
-
-    flowerpot.addObject(soil)
-    flowerpot.addObject(plant)
-    room.addObject(flowerpot)
-
     // Return
     room
   }
@@ -246,6 +237,53 @@ object RoomMaker {
   }
 
   /*
+   * Greenhouse
+   */
+  def mkGreenhouse(): Room = {
+    // House
+    val room = new Room("green house")
+
+    // debug (plant)
+    val plant1 = new Plant()
+    plant1.name = "plant 1"
+    val soil1 = new Soil()
+    val flowerpot1 = new FlowerPot()
+    flowerpot1.name = "flower pot 1"
+
+    flowerpot1.addObject(soil1)
+    flowerpot1.addObject(plant1)
+    room.addObject(flowerpot1)
+
+    // debug (plant)
+    val plant2 = new Plant()
+    plant2.name = "plant 2"
+    val soil2 = new Soil()
+    val flowerpot2 = new FlowerPot()
+    flowerpot2.name = "flower pot 2"
+
+    flowerpot2.addObject(soil2)
+    flowerpot2.addObject(plant2)
+    room.addObject(flowerpot2)
+
+    // debug (plant)
+    val plant3 = new Plant()
+    plant3.name = "plant 3"
+    val soil3 = new Soil()
+    val flowerpot3 = new FlowerPot()
+    flowerpot3.name = "flower pot 3"
+
+    flowerpot3.addObject(soil3)
+    flowerpot3.addObject(plant3)
+    room.addObject(flowerpot3)
+
+
+
+    // Return
+    room
+  }
+
+
+  /*
    * Helper functions
    */
   def mkDoor(location1:Location, location2:Location, isOpen:Boolean = false) {
@@ -291,6 +329,10 @@ object BuildingMaker {
     val roomWorkshop = RoomMaker.mkWorkshop()
     universe.addObject(roomWorkshop)
 
+    // Green House
+    val roomGreenhouse = RoomMaker.mkGreenhouse()
+    universe.addObject(roomGreenhouse)
+
     // Hallway
     val roomHallway = new Room("hallway")
     roomHallway.addObject( Picture.mkRandom() )
@@ -303,6 +345,7 @@ object BuildingMaker {
     RoomMaker.mkDoor(roomBedroom, roomHallway)
     RoomMaker.mkDoor(roomBathroom, roomKitchen)
     RoomMaker.mkDoor(roomWorkshop, roomHallway)
+    RoomMaker.mkDoor(roomGreenhouse, roomHallway)
 
   }
 
