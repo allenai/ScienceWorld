@@ -1,5 +1,6 @@
 package scienceworld.environments
 
+import scienceworld.objects.animals.Bee
 import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
@@ -254,6 +255,7 @@ object RoomMaker {
     flowerpot1.addObject(plant1)
     room.addObject(flowerpot1)
 
+
     // debug (plant)
     val plant2 = new Plant()
     plant2.name = "plant 2"
@@ -276,6 +278,9 @@ object RoomMaker {
     flowerpot3.addObject(plant3)
     room.addObject(flowerpot3)
 
+
+    val bee = new Bee()
+    room.addObject(bee)
 
 
     // Return

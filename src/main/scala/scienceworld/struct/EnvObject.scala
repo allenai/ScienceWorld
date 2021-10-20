@@ -29,6 +29,9 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   // Is this object visible, or a faux/hidden object?
   private var _isHidden:Boolean = false
 
+  // Has this object been processed this tick?
+  var tickCompleted:Boolean = false
+
   // Each (potentially) electrical component has two terminals
   val terminal1:Option[Terminal] = if (includeElectricalTerminals) { Some( new Terminal(this, "terminal 1") ) } else { None }
   val terminal2:Option[Terminal] = if (includeElectricalTerminals) { Some( new Terminal(this, "terminal 2") ) } else { None }
@@ -90,9 +93,35 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     this.containedObjects.filter(_.isHidden() == false).toSet
   }
 
+  def getContainedAccessibleObjects():Set[EnvObject] = {
+    val out = mutable.Set[EnvObject]()
+    // Contained objects in this container
+    for (cObj <- this.getContainedObjects()) {
+      if (!cObj.isHidden()) {   // If object is not hidden
+        out.add(cObj)           // Add it
+        if ((cObj.propContainer.isDefined) && (cObj.propContainer.get.isOpen)) {      // If the object is an open container, add it's contents
+          out ++= cObj.getContainedAccessibleObjects()
+        }
+      }
+    }
+    // Return
+    out.toSet
+  }
+
   def getContainedObjectsOfType[T:ClassTag]():Set[EnvObject] = {
     val out = mutable.Set[EnvObject]()
     for (obj <- this.containedObjects) {
+      obj match {
+        case x:T => out.add(obj)
+        case _ => {}
+      }
+    }
+    return out.toSet
+  }
+
+  def getContainedAccessibleObjectsOfType[T:ClassTag]():Set[EnvObject] = {
+    val out = mutable.Set[EnvObject]()
+    for (obj <- this.getContainedAccessibleObjects()) {
       obj match {
         case x:T => out.add(obj)
         case _ => {}
@@ -167,6 +196,27 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   }
 
   /*
+   * Get container of type (recursive), as long as it's accessible
+   */
+  def getContainerRecursiveOfType[T:ClassTag]():Option[EnvObject] = {
+    // Step 1: Check this object's container
+    val container = this.getContainer()
+    if (container.isEmpty) return None
+    container.get match {
+      case x:T => return Some(x)
+      case _ => { }
+    }
+
+    // Step 2: Recurse, if this container is open/accessible
+    if ((this.propContainer.isDefined) && (this.propContainer.get.isOpen)) {
+      return this.getContainer().get.getContainerRecursiveOfType[T]()
+    }
+
+    // Default return
+    None
+  }
+
+  /*
    * Helpers
    */
   def getName():String = this.name
@@ -185,7 +235,12 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   /*
    * Delete (remove) object from simulation
    */
-  def delete(): Unit = {
+  def delete(expelContents:Boolean = false): Unit = {
+    // Expel the contents to the parent container (if enabled)
+    if ((expelContents) && (this.getContainer().isDefined)) {
+      this.moveAllContainedObjects( this.getContainer().get )
+    }
+
     // Disconnect electrically (if connected)
     this.disconnectElectricalTerminals()
 
@@ -247,7 +302,29 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     return (false, "")
   }
 
+  // Tick completion
+  def setTickProcessed() { this.tickCompleted = true }
+  def clearTickProcessed() { this.tickCompleted = false }
+  def wasTickProcessed():Boolean = this.tickCompleted
+
+  def clearTickProcessedRecursive(indentLevel:Int = 0): Unit = {
+    // Clear for this object
+    this.clearTickProcessed()
+
+    // Run tick for all objects further down in the object tree
+    for (containedObj <- this.getContainedObjects()) {
+      containedObj.clearTickProcessedRecursive(indentLevel+1)
+    }
+    for (portalObj <- this.getPortals()) {
+      portalObj.clearTickProcessedRecursive(indentLevel+1)
+    }
+  }
+
+
   def tick():Boolean = {
+    // Was tick already processed
+    if (this.wasTickProcessed()) return false
+
     // Heat transfer: Conductive heat transfer between this container and all objects in the container (container to obj)
     for (containedObj <- this.getContainedObjects()) {
       HeatTransfer.heatTransferTouchingObjects(this, containedObj)
@@ -278,6 +355,9 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
       portalObj.tick()
     }
 
+
+    // Set tick processed
+    this.setTickProcessed()
 
     // Return
     true

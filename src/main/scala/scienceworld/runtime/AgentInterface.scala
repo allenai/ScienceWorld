@@ -172,6 +172,7 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
     userOutStr.append(actionOutStr)
 
     // Run universe tick
+    universe.clearTickProcessedRecursive()
     universe.tick()
 
     // Check whether the goal conditions are met

@@ -1,5 +1,7 @@
 package scienceworld.objects.livingthing.plant
 
+import scienceworld.objects.Apple
+import scienceworld.objects.devices.Stove
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.processes.lifestage.PlantLifeStages
 import scienceworld.properties.{FlowerMatterProp, IsNotContainer, IsOpenUnclosableContainer, LifePropertiesPlant, PlantMatterProp, PollenMatterProp, PollinationProperties}
@@ -149,6 +151,33 @@ class Flower(parentPlant:Plant) extends EnvObject {
     return true
   }
 
+  // Adds this plant's pollen to this flower, if it doesn't have any
+  def addPollen(): Unit = {
+
+    // Step 1: Check if some of this plant's pollen already exists in this flower
+    for (cObj <- this.getContainedObjects()) {
+      cObj match {
+        case p:Pollen => {
+          if (p.parentPlant.uuid == this.parentPlant.uuid) {
+            // Some of this plant's pollen is already in this flower
+            return
+          }
+        }
+        case _ => { }
+      }
+    }
+
+    // Step 2: If we reach here, we need to add pollen
+    val pollen = new Pollen(parentPlant = this.parentPlant)
+    this.addObject(pollen)
+
+  }
+
+
+  /*
+   * Regular functions
+   */
+
   override def tick():Boolean = {
     // Flower tick
 
@@ -159,11 +188,22 @@ class Flower(parentPlant:Plant) extends EnvObject {
 
       if (this.propPollination.get.pollinationStep > this.propPollination.get.stepsUntilFruitingBodyForms) {
         // TODO: Change into fruit
+        if (this.getContainer().isDefined) {
+          println("FRUIT MADE")
+          // Create fruit
+          this.getContainer().get.addObject(new Apple())
+          // Delete flower
+          this.delete(expelContents = true)
+        }
 
       }
 
     } else {
-      // Step 2: If not pollinated, Check if any of the things in the flower contain (valid) pollen -- if so, start the pollination process.
+      // If not pollenated:
+      // Step 2A: Add pollen of this plant, if needed
+      this.addPollen()
+
+      // Step 2B: Check if any of the things in the flower contain (valid) pollen -- if so, start the pollination process.
       breakable {
         for (cObj <- this.getContainedObjects()) { // For every object in the flower
           cObj match {
@@ -179,7 +219,7 @@ class Flower(parentPlant:Plant) extends EnvObject {
                     // Check to see if this is valid pollen, and if so, begin the pollination process
                     if (this.pollinate(p) == true) break()
                   }
-                  case _ => {}
+                  case _ => { }
                 }
               }
             }
@@ -188,8 +228,6 @@ class Flower(parentPlant:Plant) extends EnvObject {
 
       }
     }
-
-
 
     super.tick()
   }

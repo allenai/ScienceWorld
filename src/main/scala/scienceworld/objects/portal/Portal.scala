@@ -16,6 +16,13 @@ class Portal (val _isOpen:Boolean, val connectsFrom:EnvObject, val connectsTo:En
     return "closed"
   }
 
+  // Check to see if this portal is currently passable
+  def isCurrentlyPassable():Boolean = {
+    if (this.propPortal.get.isOpen) return true
+    // Else
+    return false
+  }
+
   /*
    * Connects from/to
    */
