@@ -38,7 +38,8 @@ def randomModel():
     exitCommands = ["quit", "exit"]
 
     # Initialize environment
-    env = VirtualEnv("")
+    jarPath ="/home/ruoyao/Documents/projects/virtualenv-scala2/python-api/virtualenv-scala-assembly-1.0.jar"
+    env = VirtualEnv("", jarPath)
 
     taskName = env.getTaskNames()[0]        # Just get first task    
     env.load(taskName)
