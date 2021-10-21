@@ -23,6 +23,21 @@ class Portal (val _isOpen:Boolean, val connectsFrom:EnvObject, val connectsTo:En
     return false
   }
 
+  // A message that handles all the error cases for why this portal might not be passable.
+  def getUnpassableErrorMessage():String = {
+    if (isCurrentlyPassable()) return "This " + this.name + " is passable."
+
+    // Check that the door is open
+    if (!this.propPortal.get.isOpen) {
+      return "The " + this.name + " is not open."
+    }
+    if (!this.propPortal.get.isLocked) {
+      return "The " + this.name + " is locked."
+    }
+    // Catch all
+    return "The " + this.name + " is not currently passable."
+  }
+
   /*
    * Connects from/to
    */
@@ -75,7 +90,6 @@ class Portal (val _isOpen:Boolean, val connectsFrom:EnvObject, val connectsTo:En
     return Set(this.name, this.name + " from " + connectsFrom.name + " to " + connectsTo.name, this.name + " from " + connectsTo.name + " to " + connectsFrom.name)
   }
 
-
   override def getDescription(mode: Int): String = {
     return "ERROR: SHOULD USE OVERRIDE FOR PORTAL."
   }
@@ -84,11 +98,26 @@ class Portal (val _isOpen:Boolean, val connectsFrom:EnvObject, val connectsTo:En
     val os = new StringBuilder
     val connectsToContainer = this.getConnectsTo(perspectiveContainer)
     if (connectsToContainer.isDefined) {
-      return "A " + this.name + " to the " + connectsToContainer.get.name
+      os.append("A " + this.name + " to the " + connectsToContainer.get.name + " (that is ")
+      if (this.propPortal.get.isOpen) {
+        os.append("open")
+      } else {
+        os.append("closed")
+      }
+      os.append(")")
+
+      return os.toString()
     }
 
     // Catch all
-    return "A " + this.name + " that connects the " + connectsFrom.name + " to the " + connectsTo.name
+    os.append("A " + this.name + " that connects the " + connectsFrom.name + " to the " + connectsTo.name + " (that is ")
+    if (this.propPortal.get.isOpen) {
+      os.append("open")
+    } else {
+      os.append("closed")
+    }
+    os.append(")")
+    return os.toString()
   }
 
   def getDescriptionSafe(mode:Int, perspectiveContainer:EnvObject):Option[String] = {

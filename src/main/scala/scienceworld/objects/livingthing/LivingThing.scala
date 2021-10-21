@@ -1,10 +1,14 @@
 package scienceworld.objects.livingthing
 
+import scienceworld.processes.lifestage.LifeCycle
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 
 class LivingThing extends EnvObject {
   this.name = "living thing"
+
+  // Life cycle
+  var lifecycle:Option[LifeCycle] = None
 
   override def tick():Boolean = {
     super.tick()

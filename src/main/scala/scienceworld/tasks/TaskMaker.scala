@@ -1,8 +1,8 @@
 package scienceworld.tasks
 
 import scienceworld.tasks.goals.GoalSequence
-import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalChangeStateOfMatter, GoalFocusOnAnimal, GoalFocusOnLivingThing, GoalFocusOnNonlivingThing, GoalFocusOnPlant, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter, GoalObjectInContainer}
-
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalChangeStateOfMatter, GoalFocusOnAnimal, GoalFocusOnLivingThing, GoalFocusOnNonlivingThing, GoalFocusOnPlant, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter, GoalLifeStage, GoalObjectInContainer}
+import scienceworld.processes.lifestage.PlantLifeStages._
 import scala.collection.mutable
 import scala.util.Random
 
@@ -23,7 +23,7 @@ object TaskMaker {
 
   // Test goal sequence: Change the state of some matter into any other state
   def mkTaskChangeOfState():Task = {
-    val taskName = "task-1-any"
+    val taskName = "task-1a-any-change-of-state"
     val description = "Your task is to change the state of matter of a substance.  First, focus on a substance.  Then, make changes that will cause it to change its state of matter.  To reset, type 'reset task'. "
     val goalSequence = new GoalSequence(Array(
       new GoalIsStateOfMatter(),              // Be in any state
@@ -36,7 +36,7 @@ object TaskMaker {
 
   // Test goal sequence: Change the state of some matter into gas
   def mkTaskChangeOfStateSolid():Task = {
-    val taskName = "task-1-freeze"
+    val taskName = "task-1b-freeze"
     val description = "Your task is to freeze a substance.  First, focus on a substance that is in liquid or gas form (e.g. 'focus <substanceName>').  Then, make changes to the environment that will cause it to boil.  When the substance changes to a solid state, the score will switch to 1.  To reset, type 'reset task'. "
     val goalSequence = new GoalSequence(Array(
       new GoalIsNotStateOfMatter("solid"),              // Be in any state but a solid
@@ -49,7 +49,7 @@ object TaskMaker {
 
   // Test goal sequence: Change the state of some matter into gas
   def mkTaskChangeOfStateLiquid():Task = {
-    val taskName = "task-1-melt"
+    val taskName = "task-1c-melt"
     val description = "Your task is to melt or condense a substance.  First, focus on a substance that is in solid or gas form (e.g. 'focus <substanceName>').  Then, make changes to the environment that will cause it to melt or condense.  When the substance changes to a liquid state, the score will switch to 1.  To reset, type 'reset task'. "
     val goalSequence = new GoalSequence(Array(
       new GoalIsNotStateOfMatter("liquid"),              // Be in any state but a liquid
@@ -62,7 +62,7 @@ object TaskMaker {
 
   // Test goal sequence: Change the state of some matter into gas
   def mkTaskChangeOfStateGas():Task = {
-    val taskName = "task-1-boil"
+    val taskName = "task-1d-boil"
     val description = "Your task is to boil a substance.  First, focus on a substance that is in solid or liquid form (e.g. 'focus <substanceName>').  Then, make changes to the environment that will cause it to boil.  When the substance changes to a gas state, the score will switch to 1.  To reset, type 'reset task'. "
     val goalSequence = new GoalSequence(Array(
       new GoalIsNotStateOfMatter("gas"),              // Be in any state but a gas
@@ -79,7 +79,7 @@ object TaskMaker {
    * Electrical
    */
   def mkTaskTurnOnLightbulb():Task = {
-    val taskName = "task-2-lightbulb"
+    val taskName = "task-2a-lightbulb"
     val description = "Your task is to turn on light bulb 1.  First, focus on light bulb 1, which is in the workshop.  Then, create an electrical circuit that powers it on.  When the light bulb is on, the score will switch to 1.  To reset, type 'reset task'. "
 
     val goalSequence = new GoalSequence(Array(
@@ -136,11 +136,30 @@ object TaskMaker {
 
   // Test goal sequence: Change the state of some matter into gas
   def mkTaskFindPlant():Task = {
-    val taskName = "task-3-find-plant"
+    val taskName = "task-3d-find-plant"
     val description = "Your task is to find a plant.  First, focus on a plant.  Then, move that plant the blue box.  To reset, type 'reset task'. "
     val goalSequence = new GoalSequence(Array(
       new GoalFocusOnPlant(),                             // Focus on a living thing
       new GoalObjectInContainer(containerName = "blue box")     // Move it into the blue box
+    ))
+
+    // Return
+    new Task(taskName, description, goalSequence)
+  }
+
+
+  /*
+   * Living things (grow a plant from seed)
+   */
+  // Test goal sequence: Change the state of some matter into gas
+  def mkTaskGrowPlant():Task = {
+    val taskName = "task-4a-grow-plant"
+    val description = "Your task is to grow a plant from seed. First, focus on a seed.  Then, make changes to the environment that grow the plant until it reaches the reproduction life stage.  To reset, type 'reset task'. "
+    val goalSequence = new GoalSequence(Array(
+      new GoalLifeStage(lifeStageName = PLANT_STAGE_SEED),
+      new GoalLifeStage(lifeStageName = PLANT_STAGE_SEEDLING),
+      new GoalLifeStage(lifeStageName = PLANT_STAGE_ADULT_PLANT),
+      new GoalLifeStage(lifeStageName = PLANT_STAGE_REPRODUCING)
     ))
 
     // Return
@@ -154,7 +173,7 @@ object TaskMaker {
    */
 
   def getAllTaskNames():Array[String] = {
-    tasks.map(_._1).toArray
+    tasks.map(_._1).toArray.sorted
   }
 
   // Add a task
@@ -177,20 +196,20 @@ object TaskMaker {
 
   // Register Tasks
   def registerTasks(): Unit = {
-    /*
+
     this.addTask( mkTaskChangeOfState() )
     this.addTask( mkTaskChangeOfStateSolid() )
     this.addTask( mkTaskChangeOfStateLiquid() )
     this.addTask( mkTaskChangeOfStateGas() )
 
     this.addTask( mkTaskTurnOnLightbulb() )
-     */
 
     this.addTask( mkTaskFindLivingThing() )
     this.addTask( mkTaskFindNonlivingThing() )
     this.addTask( mkTaskFindAnimal() )
     this.addTask( mkTaskFindPlant() )
 
+    this.addTask( mkTaskGrowPlant() )
   }
 
 

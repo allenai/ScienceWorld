@@ -424,6 +424,14 @@ object InputParser {
       }
     }
 
+    // Step 2A: Also add the destination locations of any portals
+    for (portal <- objectTreeRoot.getPortals()) {
+      val destination = portal.getConnectsTo(perspectiveContainer = objectTreeRoot)
+      if (destination.isDefined) {
+        out.add(destination.get)
+      }
+    }
+
     // Step 2: Add children recursively
     if (includeHidden || !objectTreeRoot.isHidden()) {
       for (obj <- objectTreeRoot.getContainedObjectsAndPortals()) {

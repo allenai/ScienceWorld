@@ -23,20 +23,20 @@ class Plant extends LivingThing {
   this.propContainer = Some(new IsOpenUnclosableContainer())
 
   // Life cycle
-  val lifecycle = PlantLifeStages.mkPlantLifeCycle(this)
+  lifecycle = Some( PlantLifeStages.mkPlantLifeCycle(this) )
 
 
   override def tick():Boolean = {
     // Life cycle tick
     println ("### TICK!")
-    lifecycle.tick()
+    lifecycle.get.tick()
 
 
     super.tick()
   }
 
   override def getReferents(): Set[String] = {
-    val out = Set("living thing", "organism", this.name, this.name + " in the " + lifecycle.getCurStageName() + " stage", lifecycle.getCurStageName() + " plant")
+    val out = Set("living thing", "organism", this.name, this.name + " in the " + lifecycle.get.getCurStageName() + " stage", lifecycle.get.getCurStageName() + " plant")
 
     // If ill, append ill referents too
     if (this.propLife.get.isSickly) {
@@ -58,7 +58,7 @@ class Plant extends LivingThing {
     }
 
     // If alive, give a verbose name
-    os.append("a " + this.name + " in the " + lifecycle.getCurStageName() + " stage")
+    os.append("a " + this.name + " in the " + lifecycle.get.getCurStageName() + " stage")
     if (propLife.get.isSickly) os.append(" (that looks unwell)")
 
     val cObjs = this.getContainedObjectsNotHidden()
