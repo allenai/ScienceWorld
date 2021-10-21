@@ -11,6 +11,4 @@ class Task(val taskName:String, val description:String, val goalSequence:GoalSeq
 
 object Task {
 
-
-
 }

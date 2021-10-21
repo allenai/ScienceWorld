@@ -10,6 +10,7 @@ import scienceworld.objects.livingthing.plant.{Plant, Soil}
 import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
 import scienceworld.objects.portal.Door
+import scienceworld.objects.taskitems.AnswerBox
 import scienceworld.struct.EnvObject
 
 import scala.util.Random
@@ -182,6 +183,7 @@ object RoomMaker {
     room.addObject(chair)
 
 
+
     // Return
     room
   }
@@ -281,6 +283,11 @@ object RoomMaker {
 
     val bee = new Bee()
     room.addObject(bee)
+
+
+    //## DEBUG
+    // Answer box
+    room.addObject( new AnswerBox("blue") )
 
 
     // Return

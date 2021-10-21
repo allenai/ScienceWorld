@@ -3,6 +3,8 @@ package scienceworld.objects.taskitems
 import scienceworld.objects.Water
 import scienceworld.objects.containers.Container
 import scienceworld.properties.{CeramicProp, IsOpenUnclosableContainer}
+import scienceworld.struct.EnvObject.MODE_CURSORY_DETAIL
+import util.StringHelpers
 
 /*
  *  A box intended for being an "answer box", that the agent moves specific items into to answer/complete a task.
@@ -19,10 +21,6 @@ class AnswerBox(colourName:String) extends Container {
 
   override def getReferents(): Set[String] = {
     Set(this.name)
-  }
-
-  override def getDescription(mode: Int): String = {
-    return "a " + this.name
   }
 
 }

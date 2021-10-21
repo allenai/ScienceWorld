@@ -1,7 +1,7 @@
 package scienceworld.tasks
 
 import scienceworld.tasks.goals.GoalSequence
-import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalChangeStateOfMatter, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalChangeStateOfMatter, GoalFocusOnAnimal, GoalFocusOnLivingThing, GoalFocusOnNonlivingThing, GoalFocusOnPlant, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter, GoalObjectInContainer}
 
 import scala.collection.mutable
 import scala.util.Random
@@ -91,6 +91,63 @@ object TaskMaker {
   }
 
 
+  /*
+   * Living things (categorization)
+   */
+  // Test goal sequence: Change the state of some matter into gas
+  def mkTaskFindLivingThing():Task = {
+    val taskName = "task-3a-find-living-thing"
+    val description = "Your task is to find a living thing.  First, focus on a living thing.  Then, move that living thing into the blue box.  To reset, type 'reset task'. "
+    val goalSequence = new GoalSequence(Array(
+      new GoalFocusOnLivingThing(),                             // Focus on a living thing
+      new GoalObjectInContainer(containerName = "blue box")     // Move it into the blue box
+    ))
+
+    // Return
+    new Task(taskName, description, goalSequence)
+  }
+
+  // Test goal sequence: Change the state of some matter into gas
+  def mkTaskFindNonlivingThing():Task = {
+    val taskName = "task-3b-find-nonliving-thing"
+    val description = "Your task is to find a non-living thing.  First, focus on a non-living thing.  Then, move that non-living thing into the blue box.  To reset, type 'reset task'. "
+    val goalSequence = new GoalSequence(Array(
+      new GoalFocusOnNonlivingThing(),                             // Focus on a living thing
+      new GoalObjectInContainer(containerName = "blue box")     // Move it into the blue box
+    ))
+
+    // Return
+    new Task(taskName, description, goalSequence)
+  }
+
+
+  // Test goal sequence: Change the state of some matter into gas
+  def mkTaskFindAnimal():Task = {
+    val taskName = "task-3c-find-animal"
+    val description = "Your task is to find an animal.  First, focus on an animal.  Then, move that animal into the blue box.  To reset, type 'reset task'. "
+    val goalSequence = new GoalSequence(Array(
+      new GoalFocusOnAnimal(),                             // Focus on a living thing
+      new GoalObjectInContainer(containerName = "blue box")     // Move it into the blue box
+    ))
+
+    // Return
+    new Task(taskName, description, goalSequence)
+  }
+
+  // Test goal sequence: Change the state of some matter into gas
+  def mkTaskFindPlant():Task = {
+    val taskName = "task-3-find-plant"
+    val description = "Your task is to find a plant.  First, focus on a plant.  Then, move that plant the blue box.  To reset, type 'reset task'. "
+    val goalSequence = new GoalSequence(Array(
+      new GoalFocusOnPlant(),                             // Focus on a living thing
+      new GoalObjectInContainer(containerName = "blue box")     // Move it into the blue box
+    ))
+
+    // Return
+    new Task(taskName, description, goalSequence)
+  }
+
+
 
   /*
    * Helper functions
@@ -120,12 +177,20 @@ object TaskMaker {
 
   // Register Tasks
   def registerTasks(): Unit = {
+    /*
     this.addTask( mkTaskChangeOfState() )
     this.addTask( mkTaskChangeOfStateSolid() )
     this.addTask( mkTaskChangeOfStateLiquid() )
     this.addTask( mkTaskChangeOfStateGas() )
 
     this.addTask( mkTaskTurnOnLightbulb() )
+     */
+
+    this.addTask( mkTaskFindLivingThing() )
+    this.addTask( mkTaskFindNonlivingThing() )
+    this.addTask( mkTaskFindAnimal() )
+    this.addTask( mkTaskFindPlant() )
+
   }
 
 
