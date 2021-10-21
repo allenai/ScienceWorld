@@ -39,7 +39,7 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
   }
 
   def getPossibleObjects(): Array[String] = {
-    val referents = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2).map(_._1)
+    val referents = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2, includeHidden = false).map(_._1)
     return referents
   }
 
@@ -51,7 +51,7 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
     val outTemplates = new ArrayBuffer[TemplateAction]
     val outObjectIdxLUT = mutable.Map[Int, String]()
 
-    val objects = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2)
+    val objects = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2, includeHidden = false)
 
     val allActions = this.getPossibleActions()
     for (actionIdx <- 0 until allActions.length) {

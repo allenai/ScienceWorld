@@ -72,7 +72,7 @@ object EntryPoint {
         // DEBUG
         //val referents = agentInterface.inputParser.getAllReferents(agentInterface.getAgentVisibleObjects()._2)
 
-        val referents = agentInterface.inputParser.getAllUniqueReferents(agentInterface.getAgentVisibleObjects()._2).map(_._1)
+        val referents = agentInterface.inputParser.getAllUniqueReferents(agentInterface.getAgentVisibleObjects()._2, includeHidden = false).map(_._1)
 
 
         println("Possible referents: " + referents.mkString(", "))

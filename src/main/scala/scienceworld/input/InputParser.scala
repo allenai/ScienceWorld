@@ -17,9 +17,9 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   val stopWords = Array("a", "the")
 
   // Get a list of all referents
-  def getAllReferents(objTreeRoot:EnvObject):Array[String] = {
+  def getAllReferents(objTreeRoot:EnvObject, includeHidden:Boolean):Array[String] = {
     val out = mutable.Set[String]()
-    val allObjs = InputParser.collectObjects(objTreeRoot).toArray
+    val allObjs = InputParser.collectObjects(objTreeRoot, includeHidden).toArray
     for (obj <- allObjs) {
       out ++= obj.getReferentsWithContainers(perspectiveContainer = objTreeRoot)
     }
@@ -28,10 +28,10 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   }
 
   // Get a list of all referents
-  def getAllUniqueReferents(objTreeRoot:EnvObject):Array[(String, EnvObject)] = {
+  def getAllUniqueReferents(objTreeRoot:EnvObject, includeHidden:Boolean):Array[(String, EnvObject)] = {
     // Step 1: Collect a list of all referents for each object
     val objReferents = new ArrayBuffer[Array[String]]()
-    val allObjs = InputParser.collectObjects(objTreeRoot).toArray
+    val allObjs = InputParser.collectObjects(objTreeRoot, includeHidden).toArray
     for (obj <- allObjs) {
       objReferents.append( obj.getReferentsWithContainers(perspectiveContainer = objTreeRoot).toArray.sorted )
     }
@@ -103,7 +103,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   def parse(inputStr:String, objTreeRoot:EnvObject, agent:EnvObject, objMonitor:ObjMonitor, goalSequence:GoalSequence, perspectiveContainer:EnvObject): (Boolean, String, String, Option[Action]) = {      // (Success, errorMessage, userString)
     // TODO: Only include observable objects in the list of all objects
     val tokens = this.tokenize(inputStr.toLowerCase)
-    val allObjs = InputParser.collectObjects(objTreeRoot).toArray
+    val allObjs = InputParser.collectObjects(objTreeRoot, includeHidden = true).toArray
 
     //println ("inputStr: " + inputStr)
 
@@ -414,16 +414,22 @@ object InputParser {
    */
 
   // Collect all objects in the object tree into a flat set
-  def collectObjects(objectTreeRoot:EnvObject):mutable.Set[EnvObject] = {
+  def collectObjects(objectTreeRoot:EnvObject, includeHidden:Boolean = false):mutable.Set[EnvObject] = {
     val out = mutable.Set[EnvObject]()
 
     // Step 1: Add this object
-    if (!out.contains(objectTreeRoot)) out.add(objectTreeRoot)
+    if (!out.contains(objectTreeRoot)) {
+      if (includeHidden || !objectTreeRoot.isHidden()) {
+        out.add(objectTreeRoot)
+      }
+    }
 
     // Step 2: Add children recursively
-    for (obj <- objectTreeRoot.getContainedObjectsAndPortals()) {
-      if (!out.contains(obj)) {
-        out ++= this.collectObjects(obj)
+    if (includeHidden || !objectTreeRoot.isHidden()) {
+      for (obj <- objectTreeRoot.getContainedObjectsAndPortals()) {
+        if (!out.contains(obj)) {
+          out ++= this.collectObjects(obj, includeHidden)
+        }
       }
     }
 
