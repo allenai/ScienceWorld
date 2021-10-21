@@ -1,8 +1,9 @@
 package scienceworld.tasks
 
 import scienceworld.tasks.goals.GoalSequence
-import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalChangeStateOfMatter, GoalFocusOnAnimal, GoalFocusOnLivingThing, GoalFocusOnNonlivingThing, GoalFocusOnPlant, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter, GoalLifeStage, GoalObjectInContainer}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalChangeStateOfMatter, GoalFind, GoalFocusOnAnimal, GoalFocusOnLivingThing, GoalFocusOnNonlivingThing, GoalFocusOnPlant, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter, GoalLifeStage, GoalObjectInContainer}
 import scienceworld.processes.lifestage.PlantLifeStages._
+
 import scala.collection.mutable
 import scala.util.Random
 
@@ -79,7 +80,7 @@ object TaskMaker {
    * Electrical
    */
   def mkTaskTurnOnLightbulb():Task = {
-    val taskName = "task-2a-lightbulb"
+    val taskName = "task-2a-circuit-lightbulb"
     val description = "Your task is to turn on light bulb 1.  First, focus on light bulb 1, which is in the workshop.  Then, create an electrical circuit that powers it on.  When the light bulb is on, the score will switch to 1.  To reset, type 'reset task'. "
 
     val goalSequence = new GoalSequence(Array(
@@ -166,6 +167,19 @@ object TaskMaker {
     new Task(taskName, description, goalSequence)
   }
 
+  /*
+   * Living things (grow a fruit from seed)
+   */
+  def mkTaskGrowFruit():Task = {
+    val taskName = "task-4b-grow-fruit-pollinator"
+    val description = "Your task is to grow an apple.  This will require growing several plants, and them being crosspollinated to produce fruit.  To complete the ask, focus on the apple.  To reset, type 'reset task'. "
+    val goalSequence = new GoalSequence(Array(
+      new GoalFind("apple")
+    ))
+
+    // Return
+    new Task(taskName, description, goalSequence)
+  }
 
 
   /*
@@ -210,6 +224,8 @@ object TaskMaker {
     this.addTask( mkTaskFindPlant() )
 
     this.addTask( mkTaskGrowPlant() )
+    this.addTask( mkTaskGrowFruit() )
+    
   }
 
 

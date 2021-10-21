@@ -126,6 +126,16 @@ class WoodBowl extends Container {
 
 }
 
+class WaterJug extends Container {
+  this.name = "water jug"
+  this.propContainer = Some(new IsOpenUnclosableContainer())
+  this.propMaterial = Some(new PlasticProp())
+
+  override def getReferents(): Set[String] = {
+    Set("jug", "water jug", this.name)
+  }
+
+}
 
 /*
  * Flower pot
@@ -137,10 +147,12 @@ class FlowerPot extends Container {
 
   override def tick(): Boolean = {
     // DEBUG: Add water if there is none
+    /*
     println ("### FLOWER POT: Infinite water")
     if (this.getContainedObjectsOfType[Water]().size == 0) {
       this.addObject( new Water() )
     }
+     */
 
     super.tick()
   }

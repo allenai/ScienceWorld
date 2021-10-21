@@ -2,7 +2,7 @@ package scienceworld.environments
 
 import scienceworld.objects.livingthing.animals.Bee
 import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water}
-import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
+import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, MetalPot, Sewer, TinCup, WaterJug, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
 import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
@@ -242,9 +242,15 @@ object RoomMaker {
   /*
    * Greenhouse
    */
-  def mkGreenhouse(): Room = {
+  def mkGreenhouse(sewer:EnvObject): Room = {
     // House
     val room = new Room("green house")
+
+
+    // Water jug
+    val waterJug = new WaterJug()
+    room.addObject(waterJug)
+
 
     // debug (plant)
     val plant1 = new Plant()
@@ -284,6 +290,10 @@ object RoomMaker {
     val bee = new Bee()
     room.addObject(bee)
 
+
+    // Also add a sink, to fill up the water jug
+    val sink = new Sink(drainsTo=Some(sewer) )
+    room.addObject(sink)
 
     //## DEBUG
     // Answer box
@@ -342,7 +352,7 @@ object BuildingMaker {
     universe.addObject(roomWorkshop)
 
     // Green House
-    val roomGreenhouse = RoomMaker.mkGreenhouse()
+    val roomGreenhouse = RoomMaker.mkGreenhouse(sewer)
     universe.addObject(roomGreenhouse)
 
     // Hallway

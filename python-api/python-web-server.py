@@ -137,13 +137,48 @@ class VirtualEnv:
         return observation, score, isCompleted
 
 
+class OutputLog:
+    #
+    # Constructor
+    #
+    def __init__(self):
+        self.out = ""
+        self.title = ""
 
+    def setTitle(self, titleStr:str):
+        self.title = titleStr
+
+    def addHeading(self, strIn:str):
+        self.out += "<h1>" + strIn + "</h1>\n"
+
+    def addSubheading(self, strIn:str):
+        self.out += "<h2>" + strIn + "</h2>\n"
+
+    def addHorizontalRule(self):
+        self.out += "<hr>\n"
+
+    def addPreformattedText(self, strIn:str):
+        self.out += "<pre>\n" + strIn + "\n</pre>\n"
+
+    def addStr(self, strIn:str):
+        self.out += strIn + "\n"
+
+    def getHTML(self):
+        out = "<html>"
+        out += "<head><title>" + self.title + "</title></head>\n"
+        out += "<body>\n"
+        out += self.out
+        out += "</body>\n"
+        out += "</html>\n"
+
+        return out
 
 #
 #   Web server main
 #
 def app():
     exitCommands = ["quit", "exit"]
+    htmlLog = OutputLog()
 
     set_env(title='Awesome PyWebIO!!', auto_scroll_bottom=True)    
 
@@ -153,8 +188,12 @@ def app():
     env = VirtualEnv(scriptFilename)
 
     put_markdown('## Science World (Text Simulation)')
+    #put_button("Click here to export transcript", onclick=lambda: , color='success', outline=True)
 
-    taskName = select("Select a task:", env.getTaskNames())
+    htmlLog.addHeading("Science World (Text Simulation)")
+    htmlLog.addHorizontalRule()    
+
+    taskName = select("Select a task:", env.getTaskNames())    
 
     # Load environment
     env.load(taskName)
@@ -168,18 +207,34 @@ def app():
         ["Task", env.getTaskDescription()]
     ])
 
+    htmlLog.addStr("<b>Task:</b> " + env.getTaskDescription() + "<br>")
+    htmlLog.addHorizontalRule()
+
+
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands):
         put_markdown("### Move " + str(env.getNumMoves()) )
+        htmlLog.addSubheading("Move " + str(env.getNumMoves()))
 
         # Send user input, get response
         observation, score, isCompleted = env.step(userInputStr)        
         
+        # Output (server)
         put_text(observation)
         put_table([
             ["Score:", str(score)],
             ["isCompleted:", str(isCompleted)]
         ])
+
+        # Output (log)
+        htmlLog.addPreformattedText(observation)
+        if (score >= 1.0):
+            htmlLog.addStr("<font color=green>Task Score: " + str(score) + "  (isCompleted: " + str(isCompleted) + ") </font><br><br>")
+        else:
+            htmlLog.addStr("<font color=grey>Task Score: " + str(score) + "  (isCompleted: " + str(isCompleted) + ") </font><br><br>")
+        
+        logFilename = "log-" + taskName + ".html"
+        put_file(logFilename, htmlLog.getHTML().encode(), '(click here to export transcript)')
 
         #print("\n" + observation)
         #print("Score: " + str(score))
@@ -191,7 +246,16 @@ def app():
         # Sanitize input
         userInputStr = userInputStr.lower().strip()
 
+        put_text("> " + userInputStr)
+        htmlLog.addStr("User Input:<br>")
+        htmlLog.addStr("<i> > " + userInputStr + "</i><br>")
+
+        
+
         time.sleep(1)
+
+        print(htmlLog.getHTML())
+
 
     print("Shutting down server...")    
     #env.shutdown()

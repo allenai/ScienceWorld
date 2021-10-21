@@ -128,7 +128,9 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     return this.task.description
   }
 
-  def getCurIterations():Int = this.curIter
+  def getCurIterations():Int = {
+    return this.curIter
+  }
 
 
   /*
@@ -186,10 +188,11 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
         // Check whether the goal conditions are met
         task.goalSequence.tick(objMonitor)
 
+        // Increment the number of iterations
+        this.curIter += 1
+
         // If the agent is not waiting, then break.  But if the agent is waiting, continue cycling through until the agent is finished waiting X number of ticks. (wait time is automatically decreased in the agent's wait function)
         if (!agent.isWaiting()) break
-
-        this.curIter += 1
       }
     }
 
