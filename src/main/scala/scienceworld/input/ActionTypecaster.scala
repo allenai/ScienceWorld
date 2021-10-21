@@ -1,6 +1,6 @@
 package scienceworld.input
 
-import scienceworld.actions.{Action, ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionLookAround, ActionLookAt, ActionLookIn, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPourObject, ActionRead, ActionResetTask, ActionUseDevice}
+import scienceworld.actions.{Action, ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionLookAround, ActionLookAt, ActionLookIn, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPourObject, ActionRead, ActionResetTask, ActionUseDevice, ActionWait}
 import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
 
 object ActionTypecaster {
@@ -29,6 +29,7 @@ object ActionTypecaster {
       case ActionFlush.ACTION_NAME => new ActionFlush(action, assignments)
       case ActionConnectElectrical.ACTION_NAME => new ActionConnectElectrical(action, assignments)
       case ActionDisconnectElectrical.ACTION_NAME => new ActionDisconnectElectrical(action, assignments)
+      case ActionWait.ACTION_NAME => new ActionWait(action, assignments)
 
       case _ => throw new RuntimeException("ERROR: Unknown action name: " + action.name)
     }

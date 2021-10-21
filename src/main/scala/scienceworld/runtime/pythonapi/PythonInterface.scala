@@ -21,11 +21,10 @@ class PythonInterface() {
   val ERROR_MESSAGE_UNINITIALIZED = "ERROR: Interface is not initialized -- call reset() before beginning."
 
   var agentInterface:Option[AgentInterface] = None
-  var agent:Option[EnvObject] = None
+  var agent:Option[Agent] = None
   val actionHandler = ActionDefinitions.mkActionDefinitions()
 
   var environmentStr:String = ""
-  var curIter:Int = 0
 
   var score:Double = 0.0
   var isComplete:Boolean = false
@@ -59,7 +58,6 @@ class PythonInterface() {
       this.errorUnknownEnvironment = true
     }
 
-    curIter = 0
   }
 
   def reset() = {
@@ -95,7 +93,10 @@ class PythonInterface() {
     agentInterface.get.getPossibleActionObjectCombinationsJSON()
   }
 
-  def getNumMoves():Integer = this.curIter
+  def getNumMoves():Integer = {
+    if (agentInterface.isEmpty) return 0
+    agentInterface.get.getCurIterations()
+  }
 
   def getTaskDescription():String = {
     if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
@@ -151,7 +152,6 @@ class PythonInterface() {
     }
     //outStr.append("\nPossible referents: " + referents.mkString(", "))
 
-    curIter += 1
     // Return
     return outStr.toString()
   }

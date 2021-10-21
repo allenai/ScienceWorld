@@ -1,6 +1,7 @@
 package scienceworld.runtime
 
 import scienceworld.input.{ActionHandler, InputParser}
+import scienceworld.objects.agent.Agent
 import scienceworld.runtime.pythonapi.TemplateAction
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.Task
@@ -9,11 +10,12 @@ import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.io.StdIn.readLine
+import scala.util.control.Breaks._
 
-class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHandler, task:Task) {
+class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandler, task:Task) {
   val inputParser = new InputParser(actionHandler.getActions())
   val objMonitor = new ObjMonitor()
-
+  private var curIter:Int = 0
 
   /*
    * Objects visible to the agent
@@ -126,6 +128,9 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
     return this.task.description
   }
 
+  def getCurIterations():Int = this.curIter
+
+
   /*
    * User Input
    */
@@ -167,16 +172,27 @@ class AgentInterface(universe:EnvObject, agent:EnvObject, actionHandler:ActionHa
       userOutStr.append("Input: " + statusStr + "\n\n")
     }
 
-    // Run queued actions
-    val actionOutStr = actionHandler.runQueuedActions()
-    userOutStr.append(actionOutStr)
 
-    // Run universe tick
-    universe.clearTickProcessedRecursive()
-    universe.tick()
+    breakable {
+      while (true) {
+        // Run queued actions
+        val actionOutStr = actionHandler.runQueuedActions()
+        userOutStr.append(actionOutStr)
 
-    // Check whether the goal conditions are met
-    task.goalSequence.tick(objMonitor)
+        // Run universe tick
+        universe.clearTickProcessedRecursive()
+        universe.tick()
+
+        // Check whether the goal conditions are met
+        task.goalSequence.tick(objMonitor)
+
+        // If the agent is not waiting, then break.  But if the agent is waiting, continue cycling through until the agent is finished waiting X number of ticks. (wait time is automatically decreased in the agent's wait function)
+        if (!agent.isWaiting()) break
+
+        this.curIter += 1
+      }
+    }
+
     val score = task.goalSequence.score()
     val isCompleted = task.goalSequence.isCompleted()
 

@@ -41,14 +41,15 @@ object EntryPoint {
     val task = TaskMaker.getRandomTask()
 
     val agentInterface = new AgentInterface(universe, agent, actionHandler, task)
-    var curIter = 0
 
     println ("Task: " + agentInterface.getTaskDescription() )
     // DEBUG: Set the task/goals
+    var curIter:Int = 0
 
     breakable {
       var userInputString:String = "look around"
       while (true) {
+        curIter = agentInterface.getCurIterations()
         println("")
         println("---------------------------------------")
         println(" Iteration " + curIter)
@@ -95,7 +96,6 @@ object EntryPoint {
         }
 
         if ((userInputString.trim.toLowerCase == "quit") || (userInputString.trim.toLowerCase == "exit")) break()
-        curIter += 1
 
       }
     }

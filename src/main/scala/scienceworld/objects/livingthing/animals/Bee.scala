@@ -1,4 +1,4 @@
-package scienceworld.objects.animals
+package scienceworld.objects.livingthing.animals
 
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.livingthing.plant.{Flower, Pollen}
@@ -8,8 +8,12 @@ import scienceworld.struct.EnvObject._
 
 import scala.util.Random
 
+class Animal extends LivingThing {
+  this.name = "animal"
 
-class WanderingAnimal extends LivingThing {
+}
+
+class WanderingAnimal extends Animal {
   this.name = "wandering animal"
 
   /*

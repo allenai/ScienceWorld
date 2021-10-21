@@ -1,6 +1,6 @@
 package scienceworld.environments
 
-import scienceworld.objects.animals.Bee
+import scienceworld.objects.livingthing.animals.Bee
 import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}

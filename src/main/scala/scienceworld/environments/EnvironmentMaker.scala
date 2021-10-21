@@ -21,7 +21,7 @@ class EnvironmentMaker {
 object EnvironmentMaker {
 
 
-  def mkKitchenEnvironment(): (EnvObject, EnvObject) = {
+  def mkKitchenEnvironment(): (EnvObject, Agent) = {
     // Universe (object tree root)
     val universe = new Universe()
 
