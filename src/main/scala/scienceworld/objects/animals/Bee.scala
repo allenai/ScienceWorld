@@ -92,6 +92,8 @@ class Bee extends WanderingAnimal {
 
   val maxPollen:Int = 5
 
+  // Movable: not movable except by other means (e.g. catching in a net?)
+
   /*
    * Actions
    */
