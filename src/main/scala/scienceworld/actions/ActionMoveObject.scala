@@ -4,7 +4,11 @@ import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, Act
 import scienceworld.objects.portal.Door
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.ActionHandler
+import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
+
+import scala.collection.mutable
+
 
 /*
  * Action: Move Object
@@ -71,6 +75,70 @@ object ActionMoveObject {
   }
 
 }
+
+/*
+ * Action: Pick up object and place it in inventory
+ */
+object ActionPickUpObjectIntoInventory {
+  val ACTION_NAME = "pick up"
+
+  def registerAction(actionHandler:ActionHandler) {
+    // Action: Move
+    val triggerPhrase = new ActionTrigger(List(
+      new ActionExprOR(List("pick up", "get", "take")),
+      new ActionExprIdentifier("obj"),
+    ))
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    actionHandler.addAction(action)
+
+  }
+
+  def remap(assignments:Map[String, EnvObject], agent:Agent):Map[String, EnvObject] = {
+    val out = mutable.Map[String, EnvObject]()
+    // Copy existing map
+    for (key <- assignments.keySet) out(key) = assignments(key)
+    // Add new keys
+    out("moveTo") = agent.getInventoryContainer()
+
+    out.toMap
+  }
+
+}
+
+/*
+ * Action: Put down object and place it in agent's current container
+ */
+object ActionPutDownObjectIntoInventory {
+  val ACTION_NAME = "put down"
+
+  def registerAction(actionHandler:ActionHandler) {
+    // Action: Move
+    val triggerPhrase = new ActionTrigger(List(
+      new ActionExprOR(List("put down", "drop")),
+      new ActionExprIdentifier("obj"),
+    ))
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    actionHandler.addAction(action)
+
+  }
+
+  def remap(assignments:Map[String, EnvObject], agent:Agent):Map[String, EnvObject] = {
+    val out = mutable.Map[String, EnvObject]()
+    // Copy existing map
+    for (key <- assignments.keySet) out(key) = assignments(key)
+    // Add new keys
+    if (agent.getContainer().isEmpty) {
+      println ("ERROR: Agent should always be in a container. Defaulting to returning to inventory.")
+      out("moveTo") = agent.getInventoryContainer()
+    } else {
+      out("moveTo") = agent.getContainer().get
+    }
+
+    out.toMap
+  }
+
+}
+
 
 
 /*

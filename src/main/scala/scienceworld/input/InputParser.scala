@@ -4,6 +4,7 @@ import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionReq
 import language.runtime.runners.{ActionRunner, PredicateRunner}
 import language.struct.{DynamicValue, ScopedVariableLUT}
 import scienceworld.actions.Action
+import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
 
@@ -100,7 +101,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
 
   // Main entry point
   // Perspective container: The container where the agent is located
-  def parse(inputStr:String, objTreeRoot:EnvObject, agent:EnvObject, objMonitor:ObjMonitor, goalSequence:GoalSequence, perspectiveContainer:EnvObject): (Boolean, String, String, Option[Action]) = {      // (Success, errorMessage, userString)
+  def parse(inputStr:String, objTreeRoot:EnvObject, agent:Agent, objMonitor:ObjMonitor, goalSequence:GoalSequence, perspectiveContainer:EnvObject): (Boolean, String, String, Option[Action]) = {      // (Success, errorMessage, userString)
     // TODO: Only include observable objects in the list of all objects
     val tokens = this.tokenize(inputStr.toLowerCase)
     val allObjs = (InputParser.collectObjects(objTreeRoot, includeHidden = true) ++ InputParser.collectObjects(agent, includeHidden = true)).toArray
@@ -159,7 +160,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
       //## TODO: val (success, errorStr) = actionRunner.setActionRequest(oneMatch.get.actionRequestDef.get, oneMatch.get.varLUT)
       // Convert from InputMatch to Action
       var oneAction:Option[Action] = None
-      if (oneMatch.isDefined) oneAction = Some( ActionTypecaster.typecastAction(oneMatch.get, objMonitor, goalSequence) )
+      if (oneMatch.isDefined) oneAction = Some( ActionTypecaster.typecastAction(oneMatch.get, objMonitor, goalSequence, agent) )
 
       val success = true
       var errorStr = ""

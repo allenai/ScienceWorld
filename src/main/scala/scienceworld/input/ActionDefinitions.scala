@@ -1,7 +1,7 @@
 package scienceworld.input
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
-import scienceworld.actions.{ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPourObject, ActionRead, ActionResetTask, ActionUseDevice, ActionWait}
+import scienceworld.actions.{ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionUseDevice, ActionWait}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -75,6 +75,8 @@ object ActionDefinitions {
 
     // Inventory
     ActionInventory.registerAction(actionHandler)
+    ActionPickUpObjectIntoInventory.registerAction(actionHandler)
+    ActionPutDownObjectIntoInventory.registerAction(actionHandler)
 
     // Return
     actionHandler
