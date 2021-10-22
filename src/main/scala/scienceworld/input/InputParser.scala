@@ -103,7 +103,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   def parse(inputStr:String, objTreeRoot:EnvObject, agent:EnvObject, objMonitor:ObjMonitor, goalSequence:GoalSequence, perspectiveContainer:EnvObject): (Boolean, String, String, Option[Action]) = {      // (Success, errorMessage, userString)
     // TODO: Only include observable objects in the list of all objects
     val tokens = this.tokenize(inputStr.toLowerCase)
-    val allObjs = InputParser.collectObjects(objTreeRoot, includeHidden = true).toArray
+    val allObjs = (InputParser.collectObjects(objTreeRoot, includeHidden = true) ++ InputParser.collectObjects(agent, includeHidden = true)).toArray
 
     //println ("inputStr: " + inputStr)
 

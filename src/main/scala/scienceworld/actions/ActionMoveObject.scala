@@ -62,7 +62,7 @@ object ActionMoveObject {
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("move", "put")),
       new ActionExprIdentifier("obj"),
-      new ActionExprOR(List("to", "in", "into")),
+      new ActionExprOR(List("to", "in", "into", "on")),
       new ActionExprIdentifier("moveTo")
     ))
     val action = mkActionRequest(ACTION_NAME, triggerPhrase)
@@ -184,3 +184,6 @@ object ActionPourObject {
   }
 
 }
+
+
+//## TODO: Dunk container in liquid?

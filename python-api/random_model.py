@@ -10,7 +10,8 @@ def speedTest():
     exitCommands = ["quit", "exit"]
 
     # Initialize environment
-    env = VirtualEnv("")
+    jarPath ="virtualenv-scala-assembly-1.0.jar"
+    env = VirtualEnv("", jarPath)
     taskName = env.getTaskNames()[0]        # Just get first task    
     env.load(taskName)
     initialObs, initialDict = env.reset()
@@ -20,9 +21,9 @@ def speedTest():
     start = timeit.default_timer()
     userInputStr = "look around"        # First action
     for i in range(0, numEpochs):
-        # Send user input, get response
-        observation, score, isCompleted = env.step(userInputStr)
-
+        # Send user input, get response    
+        observation, score, isCompleted, _ = env.step(userInputStr)
+        
     end = timeit.default_timer()
     deltaTime = end - start
     print("Runtime: " + str(deltaTime) + " seconds")
@@ -161,10 +162,10 @@ def main():
     #userConsole()
 
     # Run speed test
-    #speedTest()
+    speedTest()
 
     # Run a model that chooses random actions until successfully reaching the goal
-    randomModel()
+    #randomModel()
 
     print("Exiting.")
 

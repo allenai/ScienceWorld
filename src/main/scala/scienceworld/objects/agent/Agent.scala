@@ -1,6 +1,10 @@
 package scienceworld.objects.agent
 
+import scienceworld.objects.Orange
+import scienceworld.objects.containers.Container
+import scienceworld.properties.IsOpenUnclosableContainer
 import scienceworld.struct.EnvObject
+import scienceworld.struct.EnvObject._
 
 
 
@@ -10,6 +14,22 @@ class Agent extends EnvObject {
   // Waiting (e.g. from wait command)
   var waitingCounter:Int = 0
 
+  // Inventory
+  val inventory = new InventoryContainer()
+  this.addObject(inventory)
+
+  /*
+   * Inventory methods
+   */
+  def getInventoryContainer():EnvObject = this.inventory
+
+  //## debug
+  this.inventory.addObject( new Orange() )
+
+
+  /*
+   * Waiting methods
+   */
   def setWait(numIterations:Int) = {
     waitingCounter = numIterations
   }
@@ -49,5 +69,29 @@ class Agent extends EnvObject {
   override def getDescription(mode:Int): String = {
     return ("the agent")
   }
+
+}
+
+
+
+
+class InventoryContainer extends Container {
+  this.name = "inventory"
+
+  this.propContainer = Some( new IsOpenUnclosableContainer )
+
+
+  override def tick(): Boolean = {
+    super.tick()
+  }
+
+  override def getReferents(): Set[String] = {
+    Set("inventory", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    super.getDescription(mode = MODE_DETAILED)
+  }
+
 
 }
