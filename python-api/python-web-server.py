@@ -249,12 +249,10 @@ def app():
         put_text("> " + userInputStr)
         htmlLog.addStr("User Input:<br>")
         htmlLog.addStr("<i> > " + userInputStr + "</i><br>")
-
-        
-
+    
         time.sleep(1)
 
-        print(htmlLog.getHTML())
+        #print(htmlLog.getHTML())
 
 
     print("Shutting down server...")    
