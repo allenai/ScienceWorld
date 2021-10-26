@@ -18,7 +18,8 @@ class GoalFocusOnLivingThing() extends Goal {
       return GoalReturn.mkSubgoalSuccess()
     }
 
-    return GoalReturn.mkSubgoalUnsuccessful()
+    // If we've focused on something different, the task has failed
+    return GoalReturn.mkTaskFailure()
   }
 
 }
@@ -31,7 +32,8 @@ class GoalFocusOnNonlivingThing() extends Goal {
       return GoalReturn.mkSubgoalSuccess()
     }
 
-    return GoalReturn.mkSubgoalUnsuccessful()
+    // If we've focused on something different, the task has failed
+    return GoalReturn.mkTaskFailure()
   }
 
 }
@@ -46,7 +48,8 @@ class GoalFocusOnAnimal() extends Goal {
       return GoalReturn.mkSubgoalSuccess()
     }
 
-    return GoalReturn.mkSubgoalUnsuccessful()
+    // If we've focused on something different, the task has failed
+    return GoalReturn.mkTaskFailure()
   }
 
 }
@@ -60,7 +63,8 @@ class GoalFocusOnPlant() extends Goal {
       return GoalReturn.mkSubgoalSuccess()
     }
 
-    return GoalReturn.mkSubgoalUnsuccessful()
+    // If we've focused on something different, the task has failed
+    return GoalReturn.mkTaskFailure()
   }
 
 }
@@ -74,12 +78,20 @@ class GoalFocusOnPlant() extends Goal {
  */
 
 // Object must be in the container
-class GoalObjectInDirectContainer(containerName:String = "") extends Goal {
+// If the focus object is in one of the containers listed in 'failureContainers', then it causes task failure.
+class GoalObjectInDirectContainer(containerName:String = "", failureContainers:List[EnvObject] = List.empty[EnvObject]) extends Goal {
 
   override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (lastGoal.isDefined) {
       if (lastGoal.get.satisfiedWithObject.get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+    }
+
+    // Check if the object is in one of the incorrect (failure) containers that would cause task failure
+    if (obj.getContainer().isDefined) {
+      for (failContainer <- failureContainers) {
+        if (obj.getContainer().get.name == failContainer.name) return GoalReturn.mkTaskFailure()
+      }
     }
 
     // Check that the object's container name is set to the desired container
@@ -96,12 +108,26 @@ class GoalObjectInDirectContainer(containerName:String = "") extends Goal {
 
 
 // Object could be in the container, or a container within that container
-class GoalObjectInContainer(containerName:String = "") extends Goal {
+// If the focus object is in one of the containers listed in 'failureContainers', then it causes task failure.
+class GoalObjectInContainer(containerName:String = "", failureContainers:List[EnvObject] = List.empty[EnvObject]) extends Goal {
 
   override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (lastGoal.isDefined) {
       if (lastGoal.get.satisfiedWithObject.get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+    }
+
+    // Check if the object is in one of the incorrect (failure) containers that would cause task failure
+    if (obj.getContainer().isDefined) {
+      for (failContainer <- failureContainers) {
+        // First, start at the direct container
+        var failContainer1:Option[EnvObject] = Some(failContainer)
+        // Also check recursive containers by recusing down to object tree root
+        while (failContainer1.isDefined) {
+          if (obj.getContainer().get.name == failContainer1.get.name) return GoalReturn.mkTaskFailure()
+          failContainer1 = failContainer1.get.getContainer()
+        }
+      }
     }
 
     // Check that the object's container name is set to the desired container
