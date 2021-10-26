@@ -71,9 +71,32 @@ class ActionHandler {
     out.sorted.toArray
   }
 
+  def getActionExamplesPlainTextWithID(): Array[ExampleAction] = {
+    val out = new ArrayBuffer[ExampleAction]
+
+    for (action <- this.getActions()) {
+      val example = new ExampleAction(action.mkHumanReadableExample(), action.uniqueActionID)
+      out.append( example )
+    }
+
+    // Return
+    out.toArray
+  }
+
+
 }
 
 
 object ActionHandler {
+
+}
+
+
+// Storage class for an example of an action, and that action template's unique ID
+class ExampleAction(val exampleStr:String, val actionID:Int) {
+
+  def toJSON():String = {
+    return "{\"action_example\":\"" + exampleStr + "\", \"template_id\":" + actionID + "}"
+  }
 
 }
