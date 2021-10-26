@@ -7,8 +7,8 @@ import scala.util.control.Breaks._
 trait Goal {
   var satisfiedWithObject:Option[EnvObject] = None
 
-  def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):Boolean = {
-    return false
+  def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
+    return GoalReturn.mkSubgoalUnsuccessful()
   }
 
 }
@@ -18,6 +18,7 @@ trait Goal {
 class GoalSequence(val subgoals:Array[Goal]) {
 
   var curSubgoalIdx:Int = 0
+  var failed:Boolean = false
   this.reset()
 
 
@@ -33,6 +34,9 @@ class GoalSequence(val subgoals:Array[Goal]) {
 
   // Generate a normalized score (0-1) representing progress on this sequence of goals
   def score():Double = {
+    // If the task has failed, return a negative score
+    if (this.isFailed()) return -1.0f
+    // If the task has not failed, return normally calculated progress score
     return curSubgoalIdx.toDouble / subgoals.length.toDouble
   }
 
@@ -43,8 +47,18 @@ class GoalSequence(val subgoals:Array[Goal]) {
     return false
   }
 
+  // Returns true if the goal has failed
+  def isFailed():Boolean = {
+    return this.failed
+  }
+
+  def setFailed() = {
+    this.failed = true
+  }
+
   def reset() {
     this.curSubgoalIdx = 0
+    this.failed = false
   }
 
   /*
@@ -59,16 +73,22 @@ class GoalSequence(val subgoals:Array[Goal]) {
       if (!curSubgoal.isDefined) return
 
       // Check each object in the set of monitored objects to see if it meets a subgoal condition
-      var isConditionSatisfied: Boolean = false
+      var goalReturn:GoalReturn = GoalReturn.mkSubgoalUnsuccessful()
       breakable {
         for (obj <- objMonitor.getMonitoredObjects()) {
           println("Checking obj (" + obj.toStringMinimal() + ") against subgoal " + curSubgoalIdx)
-          isConditionSatisfied = curSubgoal.get.isGoalConditionSatisfied(obj, lastSubgoal)
-          if (isConditionSatisfied) break()
+          goalReturn = curSubgoal.get.isGoalConditionSatisfied(obj, lastSubgoal)
+          if (goalReturn.subgoalSuccess) break()
+          if (goalReturn.taskFailure) break()
         }
       }
 
-      if (isConditionSatisfied) {
+      if (goalReturn.taskFailure) {
+        println ("Task failure.")
+        this.setFailed()
+      }
+
+      if (goalReturn.subgoalSuccess) {
         // Current goal condition is satisfied -- test next goal condition until we find one that we don't satisfy, or complete the list.
         println("Subgoal satisfied.")
         curSubgoalIdx += 1
@@ -79,6 +99,28 @@ class GoalSequence(val subgoals:Array[Goal]) {
       }
 
     }
+  }
+
+}
+
+
+// Storage class for return values
+class GoalReturn(val subgoalSuccess:Boolean, val taskFailure:Boolean) {
+
+}
+
+object GoalReturn {
+
+  def mkSubgoalSuccess():GoalReturn = {
+    new GoalReturn(subgoalSuccess = true, taskFailure = false)
+  }
+
+  def mkTaskFailure():GoalReturn = {
+    new GoalReturn(subgoalSuccess = false, taskFailure = true)
+  }
+
+  def mkSubgoalUnsuccessful():GoalReturn = {
+    new GoalReturn(subgoalSuccess = false, taskFailure = false)
   }
 
 }

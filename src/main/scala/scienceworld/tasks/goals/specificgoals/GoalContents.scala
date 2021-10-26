@@ -4,7 +4,7 @@ import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.livingthing.animals.Animal
 import scienceworld.objects.livingthing.plant.Plant
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.goals.Goal
+import scienceworld.tasks.goals.{Goal, GoalReturn}
 
 /*
  * Focus on specific classes of objects
@@ -12,26 +12,26 @@ import scienceworld.tasks.goals.Goal
 
 class GoalFocusOnLivingThing() extends Goal {
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):Boolean = {
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
     if (obj.isInstanceOf[LivingThing]) {
       this.satisfiedWithObject = Some(obj)
-      return true
+      return GoalReturn.mkSubgoalSuccess()
     }
 
-    return false
+    return GoalReturn.mkSubgoalUnsuccessful()
   }
 
 }
 
 class GoalFocusOnNonlivingThing() extends Goal {
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):Boolean = {
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
     if (!obj.isInstanceOf[LivingThing]) {
       this.satisfiedWithObject = Some(obj)
-      return true
+      return GoalReturn.mkSubgoalSuccess()
     }
 
-    return false
+    return GoalReturn.mkSubgoalUnsuccessful()
   }
 
 }
@@ -40,13 +40,13 @@ class GoalFocusOnNonlivingThing() extends Goal {
 
 class GoalFocusOnAnimal() extends Goal {
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):Boolean = {
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
     if (obj.isInstanceOf[Animal]) {
       this.satisfiedWithObject = Some(obj)
-      return true
+      return GoalReturn.mkSubgoalSuccess()
     }
 
-    return false
+    return GoalReturn.mkSubgoalUnsuccessful()
   }
 
 }
@@ -54,13 +54,13 @@ class GoalFocusOnAnimal() extends Goal {
 
 class GoalFocusOnPlant() extends Goal {
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):Boolean = {
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
     if (obj.isInstanceOf[Plant]) {
       this.satisfiedWithObject = Some(obj)
-      return true
+      return GoalReturn.mkSubgoalSuccess()
     }
 
-    return false
+    return GoalReturn.mkSubgoalUnsuccessful()
   }
 
 }
@@ -76,20 +76,20 @@ class GoalFocusOnPlant() extends Goal {
 // Object must be in the container
 class GoalObjectInDirectContainer(containerName:String = "") extends Goal {
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):Boolean = {
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (lastGoal.isDefined) {
-      if (lastGoal.get.satisfiedWithObject.get != obj) return false
+      if (lastGoal.get.satisfiedWithObject.get != obj) return GoalReturn.mkSubgoalUnsuccessful()
     }
 
     // Check that the object's container name is set to the desired container
-    if (obj.getContainer().isEmpty) return false
-    if (obj.getContainer().get.name.toLowerCase != containerName.toLowerCase) return false
+    if (obj.getContainer().isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+    if (obj.getContainer().get.name.toLowerCase != containerName.toLowerCase) return GoalReturn.mkSubgoalUnsuccessful()
 
 
     // If we reach here, the condition is satisfied
     this.satisfiedWithObject = Some(obj)
-    return true
+    return GoalReturn.mkSubgoalSuccess()
   }
 
 }
@@ -98,10 +98,10 @@ class GoalObjectInDirectContainer(containerName:String = "") extends Goal {
 // Object could be in the container, or a container within that container
 class GoalObjectInContainer(containerName:String = "") extends Goal {
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):Boolean = {
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (lastGoal.isDefined) {
-      if (lastGoal.get.satisfiedWithObject.get != obj) return false
+      if (lastGoal.get.satisfiedWithObject.get != obj) return GoalReturn.mkSubgoalUnsuccessful()
     }
 
     // Check that the object's container name is set to the desired container
@@ -110,7 +110,7 @@ class GoalObjectInContainer(containerName:String = "") extends Goal {
       // Check to see if this container is the query container
       if (container.get.name.toLowerCase == containerName.toLowerCase()) {
         this.satisfiedWithObject = Some(obj)
-        return true
+        return GoalReturn.mkSubgoalSuccess()
       }
 
       // If not, recurse
@@ -118,7 +118,7 @@ class GoalObjectInContainer(containerName:String = "") extends Goal {
     }
 
     // If we reach here, the condition was not satisfied
-    return false
+    return GoalReturn.mkSubgoalUnsuccessful()
   }
 
 }
