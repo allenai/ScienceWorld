@@ -24,13 +24,13 @@ class VirtualEnv:
         self.scriptFilename = scriptFilename
 
         # Define the port number
-        self.portNum = 25335 + threadNum
+        self.portNum = 25335 + threadNum        
 
         # Launch the server
         self.launchServer(serverPath)
 
         # Connect to the JVM
-        self.gateway = JavaGateway(gateway_parameters=GatewayParameters(auto_field=True))
+        self.gateway = JavaGateway(gateway_parameters=GatewayParameters(auto_field=True, port=self.portNum))
 
         # Load the script
         self.load(self.scriptFilename)
