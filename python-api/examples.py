@@ -1,16 +1,21 @@
 #
 #   Examples
 #
+#   conda create --name virtualenv-scala python=3.8
+#   conda activate virtualenv-scala
+#   pip install py4j                                (for scala-python interface)
+#   pip install -U pywebio                          (for web server)
+
+
 from python_api import VirtualEnv
 import random
 import timeit
 import time
 
-def speedTest():
+def speedTest(jarPath:str):
     exitCommands = ["quit", "exit"]
 
-    # Initialize environment
-    jarPath ="virtualenv-scala-assembly-1.0.jar"
+    # Initialize environment    
     env = VirtualEnv("", jarPath)
     taskName = env.getTaskNames()[0]        # Just get first task    
     env.load(taskName)
@@ -35,11 +40,10 @@ def speedTest():
     print("Completed.")
 
 # Example user input console, to play through a game. 
-def randomModel():
+def randomModel(jarPath:str):
     exitCommands = ["quit", "exit"]
 
-    # Initialize environment
-    jarPath ="/home/ruoyao/Documents/projects/virtualenv-scala2/python-api/virtualenv-scala-assembly-1.0.jar"
+    # Initialize environment    
     env = VirtualEnv("", jarPath)
 
     taskName = env.getTaskNames()[0]        # Just get first task    
@@ -97,8 +101,8 @@ def randomModel():
 
         curIter += 1
 
-        if (curIter > 30):
-            time.sleep(1)
+        #if (curIter > 30):
+        #    time.sleep(1)
 
         
     # Report progress of model
@@ -114,11 +118,11 @@ def randomModel():
 
 
 # Example user input console, to play through a game. 
-def userConsole():
+def userConsole(jarPath:str):
     exitCommands = ["quit", "exit"]
 
     # Initialize environment
-    env = VirtualEnv("")
+    env = VirtualEnv("", jarPath)
     taskName = env.getTaskNames()[0]        # Just get first task    
     env.load(taskName)
     initialObs, initialDict = env.reset()
@@ -130,13 +134,17 @@ def userConsole():
     print("Object IDX to Object Referent LUT: " + str(lut))
     print("Vocabulary: " + str(env.getVocabulary()) )
 
+    print("\n")
+    print("Task Description: " + str(env.getTaskDescription()) )    
+
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands):
         # Send user input, get response
-        observation, score, isCompleted = env.step(userInputStr)
+        observation, score, isCompleted, additionalInfo = env.step(userInputStr)
         print("\n" + observation)
         print("Score: " + str(score))
         print("isCompleted: " + str(isCompleted))
+        print("AdditionalInfo: " + str(additionalInfo))
 
         # Get user input
         userInputStr = input('> ')
@@ -155,17 +163,19 @@ def userConsole():
 #   Main
 #
 def main():    
+    jarPath = "virtualenv-scala-assembly-1.0.jar"
+    #jarPath = "/home/ruoyao/Documents/projects/virtualenv-scala2/python-api/virtualenv-scala-assembly-1.0.jar"
 
     print("Virtual Text Environment API demo")
 
     # Run a user console
-    #userConsole()
+    userConsole(jarPath)
 
     # Run speed test
-    speedTest()
+    #speedTest(jarPath)
 
     # Run a model that chooses random actions until successfully reaching the goal
-    #randomModel()
+    #randomModel(jarPath)
 
     print("Exiting.")
 

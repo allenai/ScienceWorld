@@ -1,4 +1,4 @@
-# python-api.py
+# python-web-server.py
 #
 #   conda create --name virtualenv-scala python=3.8
 #   conda activate virtualenv-scala
@@ -249,12 +249,10 @@ def app():
         put_text("> " + userInputStr)
         htmlLog.addStr("User Input:<br>")
         htmlLog.addStr("<i> > " + userInputStr + "</i><br>")
-
-        
-
+    
         time.sleep(1)
 
-        print(htmlLog.getHTML())
+        #print(htmlLog.getHTML())
 
 
     print("Shutting down server...")    
