@@ -10,16 +10,39 @@ class ActionDefinitions {
 }
 
 object ActionDefinitions {
+  val ACTION_ID_OPEN          = 0
+  val ACTION_ID_CLOSE         = 1
+  val ACTION_ID_MOVETHRUDOOR  = 2
+  val ACTION_ID_LOOK_AROUND   = 3
+  val ACTION_ID_LOOK_AT       = 4
+  val ACTION_ID_LOOK_IN       = 5
+  val ACTION_ID_ACTIVATE      = 6
+  val ACTION_ID_DEACTIVATE    = 7
+  val ACTION_ID_EAT           = 8
+  val ACTION_ID_MOVEOBJECT    = 9
+  val ACTION_ID_POUROBJECT    = 10
+  val ACTION_ID_FOCUS         = 11
+  val ACTION_ID_RESETTASK     = 12
+  val ACTION_ID_USEDEVICE     = 13
+  val ACTION_ID_READ          = 14
+  val ACTION_ID_FLUSH         = 15
+  val ACTION_ID_CONNECT       = 16
+  val ACTION_ID_DISCONNECT    = 17
+  val ACTION_ID_WAIT          = 18
+  val ACTION_ID_INVENTORY     = 19
+  val ACTION_ID_PICKUP        = 20
+  val ACTION_ID_PUTDOWN       = 21
+
 
   /*
    * Helper functions
    */
-  def mkActionRequest(name:String, triggerPhrase:List[ActionTrigger]):ActionRequestDef = {
-    new ActionRequestDef(name, new ParamSigList(List.empty[ParamSig]), triggerPhrase)
+  def mkActionRequest(name:String, triggerPhrase:List[ActionTrigger], uniqueActionID:Int):ActionRequestDef = {
+    new ActionRequestDef(name, new ParamSigList(List.empty[ParamSig]), triggerPhrase, uniqueActionID)
   }
 
-  def mkActionRequest(name:String, triggerPhrase:ActionTrigger):ActionRequestDef = {
-    new ActionRequestDef(name, new ParamSigList(List.empty[ParamSig]), List(triggerPhrase))
+  def mkActionRequest(name:String, triggerPhrase:ActionTrigger, uniqueActionID:Int):ActionRequestDef = {
+    new ActionRequestDef(name, new ParamSigList(List.empty[ParamSig]), List(triggerPhrase), uniqueActionID)
   }
 
 

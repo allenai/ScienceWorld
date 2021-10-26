@@ -17,8 +17,8 @@ class ActionHandler {
    */
   def getActions():Array[ActionRequestDef] = this.actions.map(_._2).toArray
 
-  def addAction(actionName:String, triggerPhrase:List[ActionTrigger]): Unit = {
-    actions(actionName) = new ActionRequestDef(actionName, new ParamSigList(List.empty[ParamSig]), triggerPhrase)
+  def addAction(actionName:String, triggerPhrase:List[ActionTrigger], uniqueActionID:Int): Unit = {
+    actions(actionName) = new ActionRequestDef(actionName, new ParamSigList(List.empty[ParamSig]), triggerPhrase, uniqueActionID)
   }
 
   def addAction(actionDef:ActionRequestDef): Unit = {

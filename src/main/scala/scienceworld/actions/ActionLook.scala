@@ -2,7 +2,7 @@ package scienceworld.actions
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
-import scienceworld.input.ActionHandler
+import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 import util.StringHelpers
@@ -31,13 +31,14 @@ class ActionLookAround(action:ActionRequestDef, assignments:Map[String, EnvObjec
 
 object ActionLookAround {
   val ACTION_NAME = "look around"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_LOOK_AROUND
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("look around", "look"))
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 
@@ -62,6 +63,7 @@ class ActionLookAt(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
 
 object ActionLookAt {
   val ACTION_NAME = "look at"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_LOOK_AT
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -69,7 +71,7 @@ object ActionLookAt {
       new ActionExprIdentifier("obj")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 
@@ -123,6 +125,7 @@ class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
 
 object ActionLookIn {
   val ACTION_NAME = "look in"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_LOOK_IN
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -130,7 +133,7 @@ object ActionLookIn {
       new ActionExprIdentifier("obj")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 

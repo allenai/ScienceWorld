@@ -2,7 +2,7 @@ package scienceworld.actions
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
-import scienceworld.input.ActionHandler
+import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.document.Document
 import scienceworld.struct.EnvObject
 
@@ -26,6 +26,7 @@ class ActionRead(action:ActionRequestDef, assignments:Map[String, EnvObject]) ex
 
 object ActionRead {
   val ACTION_NAME = "read"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_READ
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -33,7 +34,7 @@ object ActionRead {
       new ActionExprIdentifier("document")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 

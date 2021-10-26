@@ -108,7 +108,7 @@ class Parser extends StandardTokenParsers {
    * Action Requests
    */
   def actionReqDef: Parser[ActionRequestDef] = "action" ~> ident ~ paramSigList ~ ("{" ~> rep(actionTrigger) <~ "}") ^^ {
-    case name ~ paramlist ~ triggers => new ActionRequestDef(name, paramlist, triggers)
+    case name ~ paramlist ~ triggers => new ActionRequestDef(name, paramlist, triggers, uniqueActionID = -1)
   }
 
   def actionTrigger:Parser[ActionTrigger] = ("trigger" ~ ":" ~> actionExprTerm) ~ rep("+" ~> actionExprTerm) ^^ {

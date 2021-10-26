@@ -2,7 +2,7 @@ package scienceworld.actions
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
-import scienceworld.input.ActionHandler
+import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
 
@@ -25,6 +25,7 @@ class ActionFocus(action:ActionRequestDef, assignments:Map[String, EnvObject], o
 
 object ActionFocus {
   val ACTION_NAME = "focus on"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_FOCUS
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -32,7 +33,7 @@ object ActionFocus {
       new ActionExprIdentifier("obj")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 
@@ -56,13 +57,14 @@ class ActionResetTask(action:ActionRequestDef, assignments:Map[String, EnvObject
 
 object ActionResetTask {
   val ACTION_NAME = "reset task"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_RESETTASK
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("reset task")),
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 

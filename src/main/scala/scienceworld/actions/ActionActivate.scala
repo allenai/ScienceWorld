@@ -2,7 +2,7 @@ package scienceworld.actions
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
-import scienceworld.input.ActionHandler
+import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.struct.EnvObject
 
 /*
@@ -33,6 +33,7 @@ class ActionActivate(action:ActionRequestDef, assignments:Map[String, EnvObject]
 
 object ActionActivate {
   val ACTION_NAME = "activate"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_ACTIVATE
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -40,7 +41,7 @@ object ActionActivate {
       new ActionExprIdentifier("device")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 
@@ -76,6 +77,7 @@ class ActionDeactivate(action:ActionRequestDef, assignments:Map[String, EnvObjec
 
 object ActionDeactivate {
   val ACTION_NAME = "deactivate"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_DEACTIVATE
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -83,7 +85,7 @@ object ActionDeactivate {
       new ActionExprIdentifier("device")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 

@@ -2,7 +2,7 @@ package scienceworld.actions
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
-import scienceworld.input.ActionHandler
+import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.struct.EnvObject
 
 /*
@@ -37,6 +37,7 @@ class ActionEat(action:ActionRequestDef, assignments:Map[String, EnvObject]) ext
 
 object ActionEat {
   val ACTION_NAME = "eat"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_EAT
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -44,7 +45,7 @@ object ActionEat {
       new ActionExprIdentifier("food")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 

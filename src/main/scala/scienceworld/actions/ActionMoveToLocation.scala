@@ -3,9 +3,10 @@ package scienceworld.actions
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.objects.portal.Door
 import scienceworld.input.ActionDefinitions.mkActionRequest
-import scienceworld.input.ActionHandler
+import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.location.Location
 import scienceworld.struct.EnvObject
+
 import scala.util.control.Breaks._
 
 
@@ -79,6 +80,7 @@ class ActionMoveThroughDoor(action:ActionRequestDef, assignments:Map[String, Env
 
 object ActionMoveThroughDoor {
   val ACTION_NAME = "move through door"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_MOVETHRUDOOR
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move through door
@@ -86,7 +88,7 @@ object ActionMoveThroughDoor {
       new ActionExprOR(List("go through", "walk through", "move through", "go to", "walk to", "move to", "go into", "move into")),
       new ActionExprIdentifier("doorOrLocation")
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 

@@ -3,7 +3,7 @@ package scienceworld.actions
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.objects.portal.Door
 import scienceworld.input.ActionDefinitions.mkActionRequest
-import scienceworld.input.ActionHandler
+import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 
@@ -60,6 +60,7 @@ class ActionMoveObject(action:ActionRequestDef, assignments:Map[String, EnvObjec
 
 object ActionMoveObject {
   val ACTION_NAME = "move object"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_MOVEOBJECT
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
@@ -69,7 +70,7 @@ object ActionMoveObject {
       new ActionExprOR(List("to", "in", "into", "on")),
       new ActionExprIdentifier("moveTo")
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
 
   }
@@ -81,6 +82,7 @@ object ActionMoveObject {
  */
 object ActionPickUpObjectIntoInventory {
   val ACTION_NAME = "pick up"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_PICKUP
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
@@ -88,7 +90,7 @@ object ActionPickUpObjectIntoInventory {
       new ActionExprOR(List("pick up", "get", "take")),
       new ActionExprIdentifier("obj"),
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
 
   }
@@ -110,6 +112,7 @@ object ActionPickUpObjectIntoInventory {
  */
 object ActionPutDownObjectIntoInventory {
   val ACTION_NAME = "put down"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_PUTDOWN
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
@@ -117,7 +120,7 @@ object ActionPutDownObjectIntoInventory {
       new ActionExprOR(List("put down", "drop")),
       new ActionExprIdentifier("obj"),
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
 
   }
@@ -237,6 +240,7 @@ class ActionPourObject(action:ActionRequestDef, assignments:Map[String, EnvObjec
 
 object ActionPourObject {
   val ACTION_NAME = "pour object"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_POUROBJECT
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
@@ -246,7 +250,7 @@ object ActionPourObject {
       new ActionExprOR(List("in", "into", "on")),
       new ActionExprIdentifier("moveTo")
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
 
   }
