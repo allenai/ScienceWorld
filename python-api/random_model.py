@@ -6,6 +6,8 @@ import random
 import timeit
 import time
 
+jarPath ="/home/ruoyao/Documents/projects/virtualenv-scala2/python-api/virtualenv-scala-assembly-1.0.jar"
+
 def speedTest():
     exitCommands = ["quit", "exit"]
 
@@ -39,7 +41,7 @@ def randomModel():
     exitCommands = ["quit", "exit"]
 
     # Initialize environment
-    jarPath ="/home/ruoyao/Documents/projects/virtualenv-scala2/python-api/virtualenv-scala-assembly-1.0.jar"
+    
     env = VirtualEnv("", jarPath)
 
     taskName = env.getTaskNames()[0]        # Just get first task    
@@ -118,7 +120,7 @@ def userConsole():
     exitCommands = ["quit", "exit"]
 
     # Initialize environment
-    env = VirtualEnv("")
+    env = VirtualEnv("", jarPath)
     taskName = env.getTaskNames()[0]        # Just get first task    
     env.load(taskName)
     initialObs, initialDict = env.reset()
@@ -133,10 +135,12 @@ def userConsole():
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands):
         # Send user input, get response
-        observation, score, isCompleted = env.step(userInputStr)
+        observation, score, isCompleted, info = env.step(userInputStr)
         print("\n" + observation)
         print("Score: " + str(score))
         print("isCompleted: " + str(isCompleted))
+        print("total_objects: " + str(len(env.getPossibleObjects())))
+        print("another total objects: " + str(env.getPossibleActionObjectCombinations()[1]))
 
         # Get user input
         userInputStr = input('> ')
@@ -159,13 +163,13 @@ def main():
     print("Virtual Text Environment API demo")
 
     # Run a user console
-    #userConsole()
+    userConsole()
 
     # Run speed test
     speedTest()
 
     # Run a model that chooses random actions until successfully reaching the goal
-    #randomModel()
+    # randomModel()
 
     print("Exiting.")
 
