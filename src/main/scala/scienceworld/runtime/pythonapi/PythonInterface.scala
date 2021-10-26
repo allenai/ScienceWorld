@@ -83,6 +83,11 @@ class PythonInterface() {
     agentInterface.get.getPossibleActions().toList.asJava
   }
 
+  def getPossibleActionsWithIDs(): String = {
+    if (!agentInterface.isDefined) return ERROR_MESSAGE_UNINITIALIZED
+    agentInterface.get.getPossibleActionsWithIDsJSON()
+  }
+
   def getPossibleObjects(): java.util.List[String] = {
     if (!agentInterface.isDefined) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
     agentInterface.get.getPossibleObjects().toList.asJava

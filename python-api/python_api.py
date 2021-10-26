@@ -86,6 +86,12 @@ class VirtualEnv:
     def getPossibleActions(self):
         return self.gateway.getPossibleActions()
 
+    # Get possible actions (and also include the template IDs for those actions)
+    def getPossibleActionsWithIDs(self):
+        jsonStr = self.gateway.getPossibleActionsWithIDs()
+        data = json.loads(jsonStr)
+        return data
+
     # Get possible objects
     def getPossibleObjects(self):
         return self.gateway.getPossibleObjects()

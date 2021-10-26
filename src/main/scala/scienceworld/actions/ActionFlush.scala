@@ -2,7 +2,7 @@ package scienceworld.actions
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
-import scienceworld.input.ActionHandler
+import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.devices.Toilet
 import scienceworld.struct.EnvObject
 
@@ -32,6 +32,7 @@ class ActionFlush(action:ActionRequestDef, assignments:Map[String, EnvObject]) e
 
 object ActionFlush {
   val ACTION_NAME = "flush"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_FLUSH
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -39,7 +40,7 @@ object ActionFlush {
       new ActionExprIdentifier("device")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 

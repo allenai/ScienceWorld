@@ -2,7 +2,7 @@ package scienceworld.actions
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
-import scienceworld.input.ActionHandler
+import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.document.Document
 import scienceworld.struct.EnvObject
@@ -30,13 +30,14 @@ class ActionWait(action:ActionRequestDef, assignments:Map[String, EnvObject]) ex
 
 object ActionWait {
   val ACTION_NAME = "wait"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_WAIT
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("wait")),
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 

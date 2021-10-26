@@ -2,7 +2,7 @@ package scienceworld.actions
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
-import scienceworld.input.ActionHandler
+import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
@@ -35,13 +35,14 @@ class ActionInventory(action:ActionRequestDef, assignments:Map[String, EnvObject
 
 object ActionInventory {
   val ACTION_NAME = "view inventory"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_INVENTORY
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("inventory")),
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
 
   }

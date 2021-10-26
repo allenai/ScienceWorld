@@ -2,7 +2,7 @@ package scienceworld.actions
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
-import scienceworld.input.ActionHandler
+import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.devices.Device
 import scienceworld.struct.EnvObject
 
@@ -30,6 +30,7 @@ class ActionUseDevice(action:ActionRequestDef, assignments:Map[String, EnvObject
 
 object ActionUseDevice {
   val ACTION_NAME = "use object"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_USEDEVICE
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
@@ -39,7 +40,7 @@ object ActionUseDevice {
       new ActionExprOR(List("on", "with")),
       new ActionExprIdentifier("patient")
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
 
   }

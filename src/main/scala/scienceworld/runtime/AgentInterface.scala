@@ -1,6 +1,6 @@
 package scienceworld.runtime
 
-import scienceworld.input.{ActionHandler, InputParser}
+import scienceworld.input.{ActionHandler, ExampleAction, InputParser}
 import scienceworld.objects.agent.Agent
 import scienceworld.runtime.pythonapi.TemplateAction
 import scienceworld.struct.EnvObject
@@ -40,6 +40,21 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     actionHandler.getActionExamplesPlainText().sorted
   }
 
+  def getPossibleActionsWithIDs(): Array[ExampleAction] = {
+    actionHandler.getActionExamplesPlainTextWithID()
+  }
+
+  def getPossibleActionsWithIDsJSON(): String = {
+    val os = new StringBuilder
+
+    val templates = actionHandler.getActionExamplesPlainTextWithID()
+    val templateJSON = templates.map(_.toJSON())
+    os.append("[" + templateJSON.mkString(", ") + "]")
+
+    os.toString()
+  }
+
+
   def getPossibleObjects(): Array[String] = {
     val referents = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2, includeHidden = false).map(_._1)
     return referents
@@ -55,9 +70,9 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
 
     val objects = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2, includeHidden = false)
 
-    val allActions = this.getPossibleActions()
+    val allActions = this.getPossibleActionsWithIDs()
     for (actionIdx <- 0 until allActions.length) {
-      val actionStr = allActions(actionIdx)
+      val actionStr = allActions(actionIdx).exampleStr
 
       val actionStr1 = START_TOKEN + actionStr + END_TOKEN
       val split = actionStr1.split(OBJ_PLACEHOLDER_TOKEN)
@@ -87,7 +102,7 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
           }
           // Remove start/end tokens
           val sanitizedOutStr = outStr.substring(START_TOKEN.length, outStr.length - END_TOKEN.length).trim
-          val templateID = actionIdx      // TODO: This is just the index of the action in a name-stored array, rather than a unique ID for each action.  If different environments are run with different numbers of valid actions, this ID number would likely be different. (i.e. cross-action-space transfer would not work)
+          val templateID = allActions(actionIdx).actionID   // Fetch unique template ID for this action template
           val objectUUIDs = outObjs.map(_.uuid).map(_.toInt).toList
 
           // Pack

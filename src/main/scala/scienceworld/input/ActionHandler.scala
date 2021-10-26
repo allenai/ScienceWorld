@@ -17,8 +17,8 @@ class ActionHandler {
    */
   def getActions():Array[ActionRequestDef] = this.actions.map(_._2).toArray
 
-  def addAction(actionName:String, triggerPhrase:List[ActionTrigger]): Unit = {
-    actions(actionName) = new ActionRequestDef(actionName, new ParamSigList(List.empty[ParamSig]), triggerPhrase)
+  def addAction(actionName:String, triggerPhrase:List[ActionTrigger], uniqueActionID:Int): Unit = {
+    actions(actionName) = new ActionRequestDef(actionName, new ParamSigList(List.empty[ParamSig]), triggerPhrase, uniqueActionID)
   }
 
   def addAction(actionDef:ActionRequestDef): Unit = {
@@ -71,9 +71,32 @@ class ActionHandler {
     out.sorted.toArray
   }
 
+  def getActionExamplesPlainTextWithID(): Array[ExampleAction] = {
+    val out = new ArrayBuffer[ExampleAction]
+
+    for (action <- this.getActions()) {
+      val example = new ExampleAction(action.mkHumanReadableExample(), action.uniqueActionID)
+      out.append( example )
+    }
+
+    // Return
+    out.toArray
+  }
+
+
 }
 
 
 object ActionHandler {
+
+}
+
+
+// Storage class for an example of an action, and that action template's unique ID
+class ExampleAction(val exampleStr:String, val actionID:Int) {
+
+  def toJSON():String = {
+    return "{\"action_example\":\"" + exampleStr + "\", \"template_id\":" + actionID + "}"
+  }
 
 }

@@ -3,7 +3,7 @@ package language.model
 import scala.collection.mutable.ArrayBuffer
 import scala.util.parsing.input.Positional
 
-case class ActionRequestDef(val name:String, val paramSigList:ParamSigList, val triggers:List[ActionTrigger]) extends Statement {
+case class ActionRequestDef(val name:String, val paramSigList:ParamSigList, val triggers:List[ActionTrigger], val uniqueActionID:Int) extends Statement {
 
   def getVarType(varName:String):String = {
     paramSigList.getVarType(varName)

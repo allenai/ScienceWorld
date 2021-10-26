@@ -3,7 +3,7 @@ package scienceworld.actions
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.objects.portal.Door
 import scienceworld.input.ActionDefinitions.mkActionRequest
-import scienceworld.input.ActionHandler
+import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.struct.EnvObject
 
 /*
@@ -54,13 +54,14 @@ class ActionOpenDoor(action:ActionRequestDef, assignments:Map[String, EnvObject]
 
 object ActionOpenDoor {
   val ACTION_NAME = "open door"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_OPEN
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("open")),
       new ActionExprIdentifier("door")
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 
@@ -116,13 +117,14 @@ class ActionCloseDoor(action:ActionRequestDef, assignments:Map[String, EnvObject
 
 object ActionCloseDoor {
   val ACTION_NAME = "close door"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_CLOSE
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("close")),
       new ActionExprIdentifier("door")
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
   }
 
