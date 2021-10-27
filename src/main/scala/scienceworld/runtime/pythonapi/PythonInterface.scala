@@ -7,7 +7,7 @@ import scienceworld.objects.agent.Agent
 import scienceworld.runtime.AgentInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker}
-import util.UniqueIdentifier
+import util.{UniqueIdentifier, UniqueTypeID}
 
 import collection.JavaConverters._
 import scala.util.control.Breaks.{break, breakable}
@@ -96,6 +96,10 @@ class PythonInterface() {
   def getPossibleActionObjectCombinationsJSON(): String = {
     if (!agentInterface.isDefined) return ERROR_MESSAGE_UNINITIALIZED
     agentInterface.get.getPossibleActionObjectCombinationsJSON()
+  }
+
+  def getObjectTypesLUTJSON(): String = {
+    UniqueTypeID.toJSON()
   }
 
   def getNumMoves():Integer = {

@@ -134,6 +134,7 @@ def userConsole(jarPath:str):
     print("Object IDX to Object Referent LUT: " + str(lut))
     print("Vocabulary: " + str(env.getVocabulary()) )
     print("Possible actions (with IDs): " + str(env.getPossibleActionsWithIDs()))
+    print("Possible object types: " + str(env.getObjectTypes()))    
 
     print("\n")
     print("Task Description: " + str(env.getTaskDescription()) )    

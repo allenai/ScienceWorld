@@ -3,6 +3,7 @@ package util
 import java.io.PrintWriter
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 
 /*
@@ -65,6 +66,18 @@ object UniqueTypeID {
     }
 
     return out
+  }
+
+  // Dump the look-up-table to a JSON dictionary
+  def toJSON():String = {
+    val elements = new ArrayBuffer[String]
+    for (key <- this.lut.keySet) {
+      val str = "\"" + key + "\":" + this.lut(key)
+      elements.append(str)
+    }
+
+    val jsonOut = "{" + elements.mkString(", ") + "}"
+    return jsonOut
   }
 
 }
