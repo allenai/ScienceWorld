@@ -2,7 +2,7 @@ package scienceworld.objects.agent
 
 import scienceworld.objects.Orange
 import scienceworld.objects.containers.Container
-import scienceworld.properties.IsOpenUnclosableContainer
+import scienceworld.properties.{IsOpenUnclosableContainer, MoveableProperties}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 
@@ -10,6 +10,8 @@ import scienceworld.struct.EnvObject._
 
 class Agent extends EnvObject {
   this.name = "agent"
+
+  this.propMoveable = Some( new MoveableProperties(isMovable = false) )
 
   // Waiting (e.g. from wait command)
   var waitingCounter:Int = 0
