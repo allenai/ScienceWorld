@@ -3,7 +3,7 @@ package scienceworld.struct
 import scienceworld.objects.portal.Portal
 import scienceworld.properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, ElectricalConnectionProperties, HeatSourceProperties, LifeProperties, MaterialProperties, MoveableProperties, PollinationProperties, PortalProperties}
 import scienceworld.processes.{ElectricalConductivity, HeatTransfer, StateOfMatter}
-import util.UniqueIdentifier
+import util.{UniqueIdentifier, UniqueTypeID}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -62,6 +62,12 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   var propElectricalConnection:Option[ElectricalConnectionProperties] = None
   var propLife:Option[LifeProperties] = None
   var propPollination:Option[PollinationProperties] = None
+
+  /*
+   * Typing
+   */
+  val className = this.getClass().getCanonicalName()
+  val typeID:Long = UniqueTypeID.getID(className)
 
 
   /*
