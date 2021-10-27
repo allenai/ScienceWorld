@@ -97,7 +97,7 @@ object TaskMaker {
 
   def mkTaskIsElectricallyConductive():Task = {
     val taskName = "task-2b-electrical-conductivity"
-    val description = "Your task is to determine if the unknown substance in the workshop is electrically conductive.  First, focus on the unknown substance.  If it is conductive, place it in the green box.  If it is not conductive, place it in the red box.  To reset, type 'reset task'. "
+    val description = "Your task is to determine if the unknown substance in the agent's inventory is electrically conductive.  First, focus on the unknown substance.  If it is conductive, place it in the green box.  If it is not conductive, place it in the red box.  To reset, type 'reset task'. "
 
     // Create task objects
     val taskObjects = new ArrayBuffer[EnvObject]
