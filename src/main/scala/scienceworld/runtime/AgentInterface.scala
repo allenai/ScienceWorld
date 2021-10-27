@@ -15,6 +15,13 @@ import scala.util.control.Breaks._
 class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandler, task:Task) {
   val inputParser = new InputParser(actionHandler.getActions())
   val objMonitor = new ObjMonitor()
+
+  // Add any task-specific objects to the agent's inventory
+  // TODO: Currently places task objects in agents inventory
+  for (taskObject <- task.taskObjects) {
+    agent.getInventoryContainer().addObject(taskObject)
+  }
+
   private var curIter:Int = 0
 
   /*

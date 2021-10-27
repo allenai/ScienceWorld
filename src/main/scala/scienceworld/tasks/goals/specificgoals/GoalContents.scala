@@ -121,11 +121,13 @@ class GoalObjectInContainer(containerName:String = "", failureContainers:List[En
     if (obj.getContainer().isDefined) {
       for (failContainer <- failureContainers) {
         // First, start at the direct container
-        var failContainer1:Option[EnvObject] = Some(failContainer)
+        var objContainer:Option[EnvObject] = obj.getContainer()
         // Also check recursive containers by recusing down to object tree root
-        while (failContainer1.isDefined) {
-          if (obj.getContainer().get.name == failContainer1.get.name) return GoalReturn.mkTaskFailure()
-          failContainer1 = failContainer1.get.getContainer()
+        while (objContainer.isDefined) {
+          if (objContainer.get.name == failContainer.name) {
+            return GoalReturn.mkTaskFailure()
+          }
+          objContainer = objContainer.get.getContainer()
         }
       }
     }

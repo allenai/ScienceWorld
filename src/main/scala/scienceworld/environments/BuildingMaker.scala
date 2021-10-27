@@ -10,7 +10,7 @@ import scienceworld.objects.livingthing.plant.{Plant, Soil}
 import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
 import scienceworld.objects.portal.Door
-import scienceworld.objects.taskitems.AnswerBox
+import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalConductivity}
 import scienceworld.struct.EnvObject
 
 import scala.util.Random
@@ -229,10 +229,19 @@ object RoomMaker {
     val battery = new Battery()
     table.addObject(battery)
 
+    // Add a randomly generated substance that may or may not be electrically conductive
+    val unknownSubstance = UnknownSubstanceElectricalConductivity.mkRandomSubstanceElectricalConductive()
+    table.addObject(unknownSubstance)
 
     // Add one metalic and one non-metalic object
     room.addObject(new ForkMetal())
     room.addObject(new ForkPlastic())
+
+    // Answer box
+    room.addObject( new AnswerBox("green") )
+    room.addObject( new AnswerBox("red") )
+
+
 
 
     // Return
