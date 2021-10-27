@@ -20,14 +20,17 @@ class VirtualEnv:
     #
     # Constructor
     #
-    def __init__(self, scriptFilename, serverPath):
+    def __init__(self, scriptFilename, serverPath, threadNum=0):
         self.scriptFilename = scriptFilename
+
+        # Define the port number
+        self.portNum = 25335 + threadNum        
 
         # Launch the server
         self.launchServer(serverPath)
 
         # Connect to the JVM
-        self.gateway = JavaGateway(gateway_parameters=GatewayParameters(auto_field=True))
+        self.gateway = JavaGateway(gateway_parameters=GatewayParameters(auto_field=True, port=self.portNum))
 
         # Load the script
         self.load(self.scriptFilename)
@@ -48,7 +51,7 @@ class VirtualEnv:
     # Launches the PY4J server
     def launchServer(self, serverPath):
         # /home/ruoyao/Documents/projects/virtualenv-scala2/python-api/virtualenv-scala-assembly-1.0.jar            
-        cmd = f"nohup java -cp {serverPath} scienceworld.runtime.pythonapi.PythonInterface >/dev/null 2>&1 &"
+        cmd = f"nohup java -cp {serverPath} scienceworld.runtime.pythonapi.PythonInterface " + str(self.portNum) + " >/dev/null 2>&1 &"
         #"nohup usr/local/bin/otherscript.pl {0} >/dev/null 2>&1 &", shell=True
         subprocess.Popen(cmd, shell=True)
         time.sleep(1)

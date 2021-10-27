@@ -166,12 +166,36 @@ class PythonInterface() {
 
 object PythonInterface {
 
+  def printUsage(): Unit = {
+    println("Usage: PythonInterface <portNumber>")
+  }
+
   def main(args:Array[String]): Unit = {
     println ("Initializing Virtual Environment Python Server...")
     val obj = new PythonInterface()
 
-    val server = new GatewayServer(obj)
+    // Parse command line argument for port
+    var port:Int = 25335      // Default port (if not specified)
+    if (args.length == 1) {
+      try {
+        port = args(0).toInt
+      } catch {
+        case e:Throwable => {
+          printUsage()
+          throw new RuntimeException("ERROR: Unable to parse port number into integer(" + args(0) + ").")
+        }
+      }
+    } else if (args.length > 1) {
+      printUsage()
+      sys.exit(1)
+    }
+
+    println ("Starting server on port " + port + ".")
+
+    val server = new GatewayServer(obj, port)
     server.start()
+
+    println ("Server started... ")
 
   }
 

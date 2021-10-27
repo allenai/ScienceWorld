@@ -16,7 +16,7 @@ def speedTest(jarPath:str):
     exitCommands = ["quit", "exit"]
 
     # Initialize environment    
-    env = VirtualEnv("", jarPath)
+    env = VirtualEnv("", jarPath, threadNum = 0)
     taskName = env.getTaskNames()[0]        # Just get first task    
     env.load(taskName)
     initialObs, initialDict = env.reset()
@@ -44,7 +44,7 @@ def randomModel(jarPath:str):
     exitCommands = ["quit", "exit"]
 
     # Initialize environment    
-    env = VirtualEnv("", jarPath)
+    env = VirtualEnv("", jarPath, threadNum = 0)
 
     taskName = env.getTaskNames()[0]        # Just get first task    
     env.load(taskName)
@@ -122,7 +122,7 @@ def userConsole(jarPath:str):
     exitCommands = ["quit", "exit"]
 
     # Initialize environment
-    env = VirtualEnv("", jarPath)
+    env = VirtualEnv("", jarPath, threadNum = 0)
     taskName = env.getTaskNames()[0]        # Just get first task    
     env.load(taskName)
     initialObs, initialDict = env.reset()

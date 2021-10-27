@@ -2,15 +2,15 @@ package scienceworld.tasks.goals.specificgoals
 
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.goals.Goal
+import scienceworld.tasks.goals.{Goal, GoalReturn}
 
 // Object must be in the container
 class GoalLifeStage(lifeStageName:String = "", sameAsLastObj:Boolean = true) extends Goal {
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):Boolean = {
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (sameAsLastObj && lastGoal.isDefined) {
-      if (lastGoal.get.satisfiedWithObject.get != obj) return false
+      if (lastGoal.get.satisfiedWithObject.get != obj) return GoalReturn.mkSubgoalUnsuccessful()
     }
 
     // Check that the object is in a given life stage
@@ -21,18 +21,18 @@ class GoalLifeStage(lifeStageName:String = "", sameAsLastObj:Boolean = true) ext
           if (curLifeStage.toLowerCase == lifeStageName.toLowerCase) {
             // If we reach here, the condition is satisfied
             this.satisfiedWithObject = Some(obj)
-            return true
+            return GoalReturn.mkSubgoalSuccess()
           } else {
-            return false
+            return GoalReturn.mkSubgoalUnsuccessful()
           }
         }
       }
       case _ => {
-        return false
+        return GoalReturn.mkSubgoalUnsuccessful()
       }
     }
 
-    return false
+    return GoalReturn.mkSubgoalUnsuccessful()
   }
 
 }
