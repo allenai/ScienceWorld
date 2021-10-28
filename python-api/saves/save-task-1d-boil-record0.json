@@ -1,0 +1,126 @@
+{
+    "taskName": "task-1d-boil",
+    "taskDesc": "Your task is to boil a substance.  First, focus on a substance that is in solid or liquid form (e.g. 'focus <substanceName>').  Then, make changes to the environment that will cause it to boil.  When the substance changes to a gas state, the score will switch to 1.  To reset, type 'reset task'. ",
+    "history": [
+        {
+            "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the hallway. In it, you see: \n\ta painting\n\tthe agent\n\ta substance called air\nYou also see:\n\tA door to the workshop (that is closed)\n\tA door to the kitchen (that is closed)\n\tA door to the living room (that is closed)\n\tA door to the green house (that is closed)\n\tA door to the bedroom (that is closed)\n",
+            "input": "look around",
+            "score": 0.0,
+            "iterations": 0
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (open door).\n\n(open door):\nThe door is now open.",
+            "input": "open kitchen door",
+            "score": 0.0,
+            "iterations": 1
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (move through door).\n\n(move through door):\nYou move to the kitchen.",
+            "input": "move to kitchen",
+            "score": 0.0,
+            "iterations": 2
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the kitchen. In it, you see: \n\ta freezer. The freezer door is closed. \n\ta chair. On the chair is: nothing.\n\ta substance called air\n\ta fridge. The fridge door is closed. \n\ta counter. On the counter is: a bowl (containing a banana, a red apple, an orange, a potato), a drawer.\n\ta cupboard. The cupboard door is closed. \n\ta table. On the table is: a glass cup (containing nothing).\n\ta sink, which is turned off. In the sink is: nothing.\n\ta picture\n\tthe agent\n\ta stove, which is turned off. On the stove is: nothing.\n\ta thermometer, currently reading a temperature of 10 degrees celsius\nYou also see:\n\tA door to the hallway (that is open)\n\tA door to the bathroom (that is closed)\n",
+            "input": "look",
+            "score": 0.0,
+            "iterations": 3
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (open door).\n\n(open door):\nThe cupboard is now open.",
+            "input": "open cupboard",
+            "score": 0.0,
+            "iterations": 4
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the kitchen. In it, you see: \n\ta freezer. The freezer door is closed. \n\ta chair. On the chair is: nothing.\n\ta substance called air\n\ta fridge. The fridge door is closed. \n\ta counter. On the counter is: a bowl (containing a banana, a red apple, an orange, a potato), a drawer.\n\ta cupboard. The cupboard door is open. In the cupboard is: a drawer, a ceramic cup (containing nothing), a tin cup (containing nothing), a metal pot (containing nothing).\n\ta table. On the table is: a glass cup (containing nothing).\n\ta sink, which is turned off. In the sink is: nothing.\n\ta picture\n\tthe agent\n\ta stove, which is turned off. On the stove is: nothing.\n\ta thermometer, currently reading a temperature of 10 degrees celsius\nYou also see:\n\tA door to the hallway (that is open)\n\tA door to the bathroom (that is closed)\n",
+            "input": "look",
+            "score": 0.0,
+            "iterations": 5
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (look in).\n\n(look in):\nInside the cupboard is: \n\ta drawer\n\ta ceramic cup (containing nothing)\n\ta tin cup (containing nothing)\n\ta metal pot (containing nothing)\n\n",
+            "input": "look in cupboard",
+            "score": 0.0,
+            "iterations": 6
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (move object).\n\n(move object):\nYou move the metal pot to the sink.",
+            "input": "move metal pot to sink",
+            "score": 0.0,
+            "iterations": 7
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (activate).\n\n(activate):\nThe sink is now activated.",
+            "input": "turn on sink",
+            "score": 0.0,
+            "iterations": 8
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the kitchen. In it, you see: \n\ta freezer. The freezer door is closed. \n\ta chair. On the chair is: nothing.\n\ta substance called air\n\ta fridge. The fridge door is closed. \n\ta counter. On the counter is: a bowl (containing a banana, a red apple, an orange, a potato), a drawer.\n\ta cupboard. The cupboard door is open. In the cupboard is: a drawer, a ceramic cup (containing nothing), a tin cup (containing nothing).\n\ta table. On the table is: a glass cup (containing nothing).\n\ta sink, which is turned on. In the sink is: a metal pot (containing a substance called water).\n\ta picture\n\tthe agent\n\ta stove, which is turned off. On the stove is: nothing.\n\ta thermometer, currently reading a temperature of 10 degrees celsius\nYou also see:\n\tA door to the hallway (that is open)\n\tA door to the bathroom (that is closed)\n",
+            "input": "look",
+            "score": 0.0,
+            "iterations": 9
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (deactivate).\n\n(deactivate):\nThe sink is now deactivated.",
+            "input": "turn off sink",
+            "score": 0.0,
+            "iterations": 10
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (move object).\n\n(move object):\nYou move the metal pot to the stove.",
+            "input": "move metal pot to stove",
+            "score": 0.0,
+            "iterations": 11
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (focus on).\n\n(focus on):\nYou focus on the water.",
+            "input": "focus on water",
+            "score": 0.5,
+            "iterations": 12
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the kitchen. In it, you see: \n\ta freezer. The freezer door is closed. \n\ta chair. On the chair is: nothing.\n\ta substance called air\n\ta fridge. The fridge door is closed. \n\ta counter. On the counter is: a bowl (containing a banana, a red apple, an orange, a potato), a drawer.\n\ta cupboard. The cupboard door is open. In the cupboard is: a drawer, a ceramic cup (containing nothing), a tin cup (containing nothing).\n\ta table. On the table is: a glass cup (containing nothing).\n\ta sink, which is turned off. In the sink is: nothing.\n\ta picture\n\tthe agent\n\ta stove, which is turned off. On the stove is: a metal pot (containing a substance called water).\n\ta thermometer, currently reading a temperature of 10 degrees celsius\nYou also see:\n\tA door to the hallway (that is open)\n\tA door to the bathroom (that is closed)\n",
+            "input": "look",
+            "score": 0.5,
+            "iterations": 13
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (activate).\n\n(activate):\nThe stove is now activated.",
+            "input": "turn on stove",
+            "score": 0.5,
+            "iterations": 14
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (use object).\n\n(use object):\nthe thermometer measures a temperature of 11 degrees celsius",
+            "input": "use thermometer on water",
+            "score": 0.5,
+            "iterations": 15
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (use object).\n\n(use object):\nthe thermometer measures a temperature of 13 degrees celsius",
+            "input": "use thermometer on water",
+            "score": 0.5,
+            "iterations": 16
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (wait).\n\n(wait):\nYou decide to wait for 10 iterations.",
+            "input": "wait",
+            "score": 0.5,
+            "iterations": 17
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (wait).\n\n(wait):\nYou decide to wait for 10 iterations.",
+            "input": "wait",
+            "score": 1.0,
+            "iterations": 18
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (use object).\n\n(use object):\nthe thermometer measures a temperature of 111 degrees celsius",
+            "input": "use thermometer on water",
+            "score": 1.0,
+            "iterations": 19
+        }
+    ]
+}

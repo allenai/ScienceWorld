@@ -1,0 +1,114 @@
+{
+    "taskName": "task-2a-circuit-lightbulb",
+    "taskDesc": "Your task is to turn on light bulb 1.  First, focus on light bulb 1, which is in the workshop.  Then, create an electrical circuit that powers it on.  When the light bulb is on, the score will switch to 1.  To reset, type 'reset task'. ",
+    "history": [
+        {
+            "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the bathroom. In it, you see: \n\ta bath tub, which is turned off. In the tub is: nothing.\n\ta sink, which is turned off. In the sink is: nothing.\n\ta toilet. In the toilet is is: a substance called water, A drain, which is closed.\n\tthe agent\n\ta substance called air\n\ta drawing\n\ta glass cup (containing nothing)\nYou also see:\n\tA door to the kitchen (that is closed)\n",
+            "input": "look around",
+            "score": 0.0,
+            "iterations": 0
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (open door).\n\n(open door):\nThe door is now open.",
+            "input": "open door",
+            "score": 0.0,
+            "iterations": 1
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the bathroom. In it, you see: \n\ta bath tub, which is turned off. In the tub is: nothing.\n\ta sink, which is turned off. In the sink is: nothing.\n\ta toilet. In the toilet is is: a substance called water, A drain, which is closed.\n\tthe agent\n\ta substance called air\n\ta drawing\n\ta glass cup (containing nothing)\nYou also see:\n\tA door to the kitchen (that is open)\n",
+            "input": "look",
+            "score": 0.0,
+            "iterations": 2
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (move through door).\n\n(move through door):\nYou move to the kitchen.",
+            "input": "go to kitchen",
+            "score": 0.0,
+            "iterations": 3
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the kitchen. In it, you see: \n\ta cupboard. The cupboard door is closed. \n\ta sink, which is turned off. In the sink is: nothing.\n\ta table. On the table is: a glass cup (containing nothing).\n\ta thermometer, currently reading a temperature of 10 degrees celsius\n\tthe agent\n\ta freezer. The freezer door is closed. \n\ta fridge. The fridge door is closed. \n\ta counter. On the counter is: a drawer, a bowl (containing a potato, a banana, a red apple, an orange).\n\ta substance called air\n\ta stove, which is turned off. On the stove is: nothing.\n\ta finger painting\n\ta chair. On the chair is: nothing.\nYou also see:\n\tA door to the hallway (that is closed)\n\tA door to the bathroom (that is open)\n",
+            "input": "look",
+            "score": 0.0,
+            "iterations": 4
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (open door).\n\n(open door):\nThe door is now open.",
+            "input": "open hallway door",
+            "score": 0.0,
+            "iterations": 5
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (move through door).\n\n(move through door):\nYou move to the hallway.",
+            "input": "go to hallway",
+            "score": 0.0,
+            "iterations": 6
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the hallway. In it, you see: \n\ta substance called air\n\ta picture\n\tthe agent\nYou also see:\n\tA door to the workshop (that is closed)\n\tA door to the living room (that is closed)\n\tA door to the kitchen (that is open)\n\tA door to the green house (that is closed)\n\tA door to the bedroom (that is closed)\n",
+            "input": "look",
+            "score": 0.0,
+            "iterations": 7
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (open door).\n\n(open door):\nThe door is now open.",
+            "input": "open workshop door",
+            "score": 0.0,
+            "iterations": 8
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (move through door).\n\n(move through door):\nYou move to the workshop.",
+            "input": "go to workshop",
+            "score": 0.0,
+            "iterations": 9
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the workshop. In it, you see: \n\tA steel fork\n\ta green box (containing nothing)\n\tthe agent\n\ta red box (containing nothing)\n\ta substance called air\n\ta table. On the table is: a light bulb 1, which is off, a wire 2. , a light bulb 3, which is off, a battery, a switch, which is off, a wire 1. , a light bulb 2, which is off, unknown substance o.\n\tA plastic fork\nYou also see:\n\tA door to the hallway (that is open)\n",
+            "input": "look",
+            "score": 0.0,
+            "iterations": 10
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (look at).\n\n(look at):\na light bulb 1, which is off. its anode is connected to: nothing. its cathode is connected to: nothing. ",
+            "input": "look at light bulb 1",
+            "score": 0.0,
+            "iterations": 11
+        },
+        {
+            "observation": "Input: No known action matches that input.\n\n",
+            "input": "connect light bulb anode to battery cathode",
+            "score": 0.0,
+            "iterations": 12
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (connect electrically).\n\n(connect electrically):\nanode on light bulb 1 is now connected to cathode on light bulb 1",
+            "input": "connect light bulb 1 anode to battery cathode",
+            "score": 0.0,
+            "iterations": 13
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (focus on).\n\n(focus on):\nYou focus on the light bulb 1.",
+            "input": "focus on light bulb 1",
+            "score": 0.0,
+            "iterations": 14
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (connect electrically).\n\n(connect electrically):\ncathode on light bulb 1 is now connected to anode on light bulb 1",
+            "input": "connect light bulb 1 cathode to battery anode",
+            "score": 1.0,
+            "iterations": 15
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the workshop. In it, you see: \n\tA steel fork\n\ta green box (containing nothing)\n\tthe agent\n\ta red box (containing nothing)\n\ta substance called air\n\ta table. On the table is: a light bulb 1, which is on, a wire 2. , a light bulb 3, which is off, a battery, a switch, which is off, a wire 1. , a light bulb 2, which is off, unknown substance o.\n\tA plastic fork\nYou also see:\n\tA door to the hallway (that is open)\n",
+            "input": "look",
+            "score": 1.0,
+            "iterations": 16
+        },
+        {
+            "observation": "Input: Successfully parsed input into single action (look at).\n\n(look at):\na light bulb 1, which is on. its anode is connected to: a cathode on battery. its cathode is connected to: a anode on battery. ",
+            "input": "look at light bulb 1",
+            "score": 1.0,
+            "iterations": 17
+        }
+    ]
+}
