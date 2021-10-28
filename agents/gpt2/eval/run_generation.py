@@ -159,6 +159,11 @@ def adjust_length_to_model(length, max_sequence_length):
     return length
 
 
+def pack(taskDesc, observation, userInput):
+    oneline = "TASK: " + taskDesc + " OBS: " + observation + " RESP: " + userInput
+    return oneline
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -233,7 +238,7 @@ def main():
 
     # Initialize ScienceWorld environment
     env = VirtualEnv("", jarPath, threadNum = 0)
-    taskName = env.getTaskNames()[0]        # Just get first task    
+    taskName = env.getTaskNames()[1]        # Just get second task    
     env.load(taskName)
     initialObs, initialDict = env.reset()
     taskDescription = env.getTaskDescription()
@@ -243,7 +248,7 @@ def main():
     # Current number of iterations
     curIter = 0
     # Maximum number of iterations before stopping
-    maxIter = 10
+    maxIter = 100
     # Observation (from the environment)
     observation = initialObs
     # Score
@@ -262,7 +267,8 @@ def main():
         print(observation)
 
         # Step 1: Prepare prompt text to cue model with
-        prompt_text = observation
+        #prompt_text = observation
+        prompt_text = pack(taskDescription, observation, "")
 
         # Step 1A: Do preprocessing on prompt text
         # Different models need different input formatting and/or extra arguments
@@ -325,7 +331,22 @@ def main():
             #print(total_sequence)
 
             # Just store the generated sequence, without the prompt (since we're going to use it as input to the virtual environment)
+            # Filter out everything before 'RESP: '
+            lastIdx = text.rfind("RESP: ")
+            text = text[lastIdx+len("RESP: "):]
+
+            # Filter out everything after "END:"
+            fields = text.split("END:")
+            text = fields[0].strip()
+
+            # Filter out everything after first line
+            fields = text.split("\n")
+            text = fields[0].strip()
+
             generated_sequences.append(text)
+
+
+
             print("=====")
             print(text)
             print("=====")
