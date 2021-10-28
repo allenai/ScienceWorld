@@ -39,6 +39,14 @@ from transformers import (
     XLNetTokenizer,
 )
 
+# ScienceWorld API
+SCIENCEWORLD_API_PATH = "../../../python-api/"
+jarPath = SCIENCEWORLD_API_PATH + "/virtualenv-scala-assembly-1.0.jar"
+import sys
+sys.path.insert(1, SCIENCEWORLD_API_PATH)           ## TODO: Fix
+from python_api import VirtualEnv
+
+
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
@@ -223,11 +231,40 @@ def main():
     logger.info(args)
 
 
-    while (True):
-        prompt_text = args.prompt if args.prompt else input("Model prompt >>> ")
-        if (prompt_text.lower() == "exit"):
-            exit(1)
+    # Initialize ScienceWorld environment
+    env = VirtualEnv("", jarPath, threadNum = 0)
+    taskName = env.getTaskNames()[0]        # Just get first task    
+    env.load(taskName)
+    initialObs, initialDict = env.reset()
+    taskDescription = env.getTaskDescription()
 
+    print("Task Description: " + str(taskDescription) )    
+
+    # Current number of iterations
+    curIter = 0
+    # Maximum number of iterations before stopping
+    maxIter = 10
+    # Observation (from the environment)
+    observation = initialObs
+    # Score
+    score = 0.0
+
+
+    # Main environment loop
+    while (curIter < maxIter):
+        print("------------------------------")
+        print("   Iteration " + str(curIter) + " / " + str(maxIter))
+        print("------------------------------")
+        print("")
+
+        #prompt_text = args.prompt if args.prompt else input("Model prompt >>> ")
+        print("Observation: ")
+        print(observation)
+
+        # Step 1: Prepare prompt text to cue model with
+        prompt_text = observation
+
+        # Step 1A: Do preprocessing on prompt text
         # Different models need different input formatting and/or extra arguments
         requires_preprocessing = args.model_type in PREPROCESSING_FUNCTIONS.keys()
         if requires_preprocessing:
@@ -252,6 +289,7 @@ def main():
         else:
             input_ids = encoded_prompt
 
+        # Step 2: Generate output from model
         output_sequences = model.generate(
             input_ids=input_ids,
             max_length=args.length + len(encoded_prompt[0]),
@@ -263,12 +301,12 @@ def main():
             num_return_sequences=args.num_return_sequences,
         )
 
+        # Step 3: Post-process model-generated output
         # Remove the batch dimension when returning multiple sequences
         if len(output_sequences.shape) > 2:
             output_sequences.squeeze_()
-
+        
         generated_sequences = []
-
         for generated_sequence_idx, generated_sequence in enumerate(output_sequences):
             print(f"=== GENERATED SEQUENCE {generated_sequence_idx + 1} ===")
             generated_sequence = generated_sequence.tolist()
@@ -280,15 +318,41 @@ def main():
             text = text[: text.find(args.stop_token) if args.stop_token else None]
 
             # Add the prompt at the beginning of the sequence. Remove the excess text that was used for pre-processing
-            total_sequence = (
-                prompt_text + text[len(tokenizer.decode(encoded_prompt[0], clean_up_tokenization_spaces=True)) :]
-            )
+            #total_sequence = (
+            #    prompt_text + text[len(tokenizer.decode(encoded_prompt[0], clean_up_tokenization_spaces=True)) :]
+            #)            
+            #generated_sequences.append(total_sequence)
+            #print(total_sequence)
 
-            generated_sequences.append(total_sequence)
-            print(total_sequence)
+            # Just store the generated sequence, without the prompt (since we're going to use it as input to the virtual environment)
+            generated_sequences.append(text)
+            print("=====")
+            print(text)
+            print("=====")
+
         
+
+        # Step 4: Feed the generated sequence back into the virtual environment as the next command
+        userInputStr = generated_sequences[0]       # Just grab the first generated sequence as input (if there is more than one)
+
+        print("Model Generated Input: ")
+        print(">>> " + userInputStr)
+        print("--------")
+        # Do tick
+        observation, score, isCompleted, additionalInfo = env.step(userInputStr)
+        print("\n" + observation)
+        print("Score: " + str(score))
+        print("isCompleted: " + str(isCompleted))
+
+
+        # Increment current iteration
+        curIter += 1
+
         #return generated_sequences
 
+    # Display last observation/score
+    print("Last Observation: ")
+    print(observation)
 
 if __name__ == "__main__":
     main()
