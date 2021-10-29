@@ -3,6 +3,7 @@ package scienceworld.actions
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
+import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 
 /*
@@ -10,28 +11,46 @@ import scienceworld.struct.EnvObject
  */
 class ActionActivate(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
+  // This action is essentially always valid
   override def isValidAction(): (String, Boolean) = {
-    // Unimplemented
-    return ("", true)
-  }
-
-  override def runAction(): String = {
     val agent = assignments("agent")
     val obj = assignments("device")
 
-    // Check that the object is openable
+    // Check 1: Check that agent is valid
+    agent match {
+      case a:Agent => { }
+      case _ => return ("I'm not sure what that means", false)
+    }
+
+    // Check 2: Check that the object is activable
     if ((obj.propDevice.isEmpty) || (obj.propDevice.get.isActivable == false)) {
-      return "The " + obj.name + " is not something that can be activated."
+      return ("The " + obj.name + " is not something that can be activated.", false)
     }
 
-    // Open
+    // Check 3: Check that the object is not already activated
     if (obj.propDevice.get.isActivated) {
-      return "The " + obj.name + " is already activated."
-    } else {
-      obj.propDevice.get.isActivated = true
-      return "The " + obj.name + " is now activated."
+      return ("The " + obj.name + " is already activated.", false)
     }
 
+    // Checks complete -- if we reach here, the action is valid
+    return ("", true)
+  }
+
+  override def runAction(): (String, Boolean) = {
+    val agent = assignments("agent")
+    val obj = assignments("device")
+
+    // Do checks for valid action
+    val (invalidStr, isValid) = this.isValidAction()
+    if (!isValid) return (invalidStr, false)
+
+    // Activate
+    if (!obj.propDevice.get.isActivated) {
+      obj.propDevice.get.isActivated = true
+      return ("The " + obj.name + " is now activated.", true)
+    }
+
+    return (Action.MESSAGE_UNKNOWN_CATCH, false)
   }
 
 }
@@ -59,27 +78,44 @@ object ActionActivate {
 class ActionDeactivate(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
   override def isValidAction(): (String, Boolean) = {
-    // Unimplemented
-    return ("", true)
-  }
-
-  override def runAction(): String = {
     val agent = assignments("agent")
     val obj = assignments("device")
 
-    // Check that the object is openable
-    if ((obj.propDevice.isEmpty) || (obj.propDevice.get.isActivable == false)) {
-      return "The " + obj.name + " is not something that can be deactivated."
+    // Check 1: Check that agent is valid
+    agent match {
+      case a:Agent => { }
+      case _ => return ("I'm not sure what that means", false)
     }
+
+    // Check 2: Check that the object is activable
+    if ((obj.propDevice.isEmpty) || (obj.propDevice.get.isActivable == false)) {
+      return ("The " + obj.name + " is not something that can be activated.", false)
+    }
+
+    // Check 3: Check that the object is not already activated
+    if (!obj.propDevice.get.isActivated) {
+      return ("The " + obj.name + " is already deactivated.", false)
+    }
+
+    // Checks complete -- if we reach here, the action is valid
+    return ("", true)
+  }
+
+  override def runAction(): (String, Boolean) = {
+    val agent = assignments("agent")
+    val obj = assignments("device")
+
+    // Do checks for valid action
+    val (invalidStr, isValid) = this.isValidAction()
+    if (!isValid) return (invalidStr, false)
 
     // Open
-    if (!obj.propDevice.get.isActivated) {
-      return "The " + obj.name + " is already deactivated."
-    } else {
+    if (obj.propDevice.get.isActivated) {
       obj.propDevice.get.isActivated = false
-      return "The " + obj.name + " is now deactivated."
+      return ("The " + obj.name + " is now deactivated.", true)
     }
 
+    return (Action.MESSAGE_UNKNOWN_CATCH, false)
   }
 
 

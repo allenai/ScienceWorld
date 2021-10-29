@@ -21,3 +21,7 @@ class Action(val action:ActionRequestDef, val assignments:Map[String, EnvObject]
 }
 
 
+object Action {
+  val MESSAGE_UNKNOWN_CATCH       = "<unknown catch>"
+}
+
