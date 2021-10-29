@@ -48,7 +48,7 @@ class ActionHandler {
     for (action <- actionsToRun) {
       println ("Running action: " + action.name)
 
-      val resultDesc = action.runAction()
+      val (resultDesc, success) = action.runAction()
       out.append("(" + action.name + "):\n" + resultDesc)
     }
 
