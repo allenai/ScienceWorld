@@ -256,6 +256,8 @@ def main():
 
 
     # Main environment loop
+    history = []
+    
     while (curIter < maxIter):
         print("------------------------------")
         print("   Iteration " + str(curIter) + " / " + str(maxIter))

@@ -24,6 +24,7 @@ import sys
 from dataclasses import dataclass, field
 from typing import Optional
 
+import json
 import datasets
 import nltk  # Here to have a nice missing dependency error message early on
 import numpy as np
@@ -46,6 +47,14 @@ from transformers.file_utils import is_offline_mode
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version
 from transformers.utils.versions import require_version
+
+
+# ScienceWorld API
+SCIENCEWORLD_API_PATH = "../../../python-api/"
+jarPath = SCIENCEWORLD_API_PATH + "/virtualenv-scala-assembly-1.0.jar"
+import sys
+sys.path.insert(1, SCIENCEWORLD_API_PATH)           ## TODO: Fix
+from python_api import VirtualEnv
 
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
@@ -273,6 +282,11 @@ def mkPredict(model_inputs, data_args, training_args, text_column, summary_colum
         )
 
     return predict_dataset
+
+
+def pack(taskDesc, observation, userInput):
+    oneline = "TASK: " + taskDesc + " OBS: " + observation + " RESP: " + userInput
+    return oneline
 
 
 def main():
@@ -634,72 +648,165 @@ def main():
 
     if training_args.do_predict:
         
-        inputStr = "cat"
+        # Initialize ScienceWorld environment
+        env = VirtualEnv("", jarPath, threadNum = 0)
+        taskName = env.getTaskNames()[1]        # Just get second task    
+        env.load(taskName)
+        initialObs, initialDict = env.reset()
+        taskDescription = env.getTaskDescription()
+
+        print("Task Description: " + str(taskDescription) )    
+
+        # Current number of iterations
+        curIter = 0
+        # Maximum number of iterations before stopping
+        maxIter = 50
+        # Observation (from the environment)
+        observation = initialObs
+        # Score
+        score = 0.0
+        # History/recording
+        history = []
+
+        # Main environment loop
+        while (curIter < maxIter):
+            print("------------------------------")
+            print("   Iteration " + str(curIter) + " / " + str(maxIter))
+            print("------------------------------")
+            print("")
+
+            #prompt_text = args.prompt if args.prompt else input("Model prompt >>> ")
+            print("Observation: ")
+            print(observation)
+
+            # Step 1: Prepare prompt text to cue model with
+            #prompt_text = observation
+            prompt_text = pack(taskDescription, observation, "")            
+            #prompt_text = "cat"
+
+            # Pack
+            max_target_length = data_args.val_max_target_length
+            rawDataset = {
+                "source": [prompt_text],
+                "target": [""]
+            }
+            predict_dataset = Dataset.from_dict(rawDataset)
+
+            if data_args.max_predict_samples is not None:
+                predict_dataset = predict_dataset.select(range(data_args.max_predict_samples))
+            with training_args.main_process_first(desc="prediction dataset map pre-processing"):
+                predict_dataset = predict_dataset.map(
+                    preprocess_function,
+                    batched=True,
+                    num_proc=data_args.preprocessing_num_workers,
+                    remove_columns=column_names,
+                    load_from_cache_file=not data_args.overwrite_cache,
+                    desc="Running tokenizer on prediction dataset",
+                )
+
+
+            print("PREDICT DATASET:")
+            print(predict_dataset)
+
+            logger.info("*** Predict ***")
+
+            predict_results = trainer.predict(
+                predict_dataset, metric_key_prefix="predict", max_length=max_length, num_beams=num_beams
+            )
+            metrics = predict_results.metrics
+            max_predict_samples = (
+                data_args.max_predict_samples if data_args.max_predict_samples is not None else len(predict_dataset)
+            )
+            metrics["predict_samples"] = min(max_predict_samples, len(predict_dataset))
+
+            trainer.log_metrics("predict", metrics)
+            trainer.save_metrics("predict", metrics)
+
+            predictions = []
+            if trainer.is_world_process_zero():
+                if training_args.predict_with_generate:
+                    predictions = tokenizer.batch_decode(
+                        predict_results.predictions, skip_special_tokens=True, clean_up_tokenization_spaces=True
+                    )
+                    predictions = [pred.strip() for pred in predictions]
+
+                    # Sanitize predictions
+                    for i in range(0, len(predictions)):
+                        # Filter out everything after "END:"
+                        fields = predictions[i].split("END:")
+                        text = fields[0].strip()
+
+                        # Filter out everything after first line
+                        fields = text.split("\n")
+                        text = fields[0].strip()
+                        predictions[i] = text
+
+                    # output_prediction_file = os.path.join(training_args.output_dir, "generated_predictions.txt")
+                    # with open(output_prediction_file, "w") as writer:
+                    #     writer.write("\n".join(predictions))
+
+            # Step 4: Feed the generated sequence back into the virtual environment as the next command
+            userInputStr = predictions[0]       # Just grab the first generated sequence as input (if there is more than one)
+
+            # Step 4A: Store user input/observation in history
+            historyElem = {
+                'observation': observation,
+                'input': userInputStr,
+                'score': score,
+                'iterations': curIter
+            }
+            history.append(historyElem)
+
+            # Step 4B: Feed input into environment, get output (observation) from environment
+            print("Model Generated Input: ")
+            print(">>> " + userInputStr)
+            print("--------")
+            # Do tick
+            observation, score, isCompleted, additionalInfo = env.step(userInputStr)
+            print("\n" + observation)
+            print("Score: " + str(score))
+            print("isCompleted: " + str(isCompleted))
+
+            # Increment current iteration
+            curIter += 1
+
+
+        #
+        # Save session history
+        # 
+        savePath = ""
+        fileIdx = 0
+        saveFilename = savePath + "save-" + str(taskName) + "-t5-record" + str(fileIdx) + ".json"
+        print("Writing " + saveFilename)
 
         # Pack
-        max_target_length = data_args.val_max_target_length
-        rawDataset = {
-            "source": [inputStr],
-            "target": [""]
+        packed = {
+            'taskName': taskName,
+            'taskDesc': taskDescription,
+            'history': history
         }
-        predict_dataset = Dataset.from_dict(rawDataset)
 
-        if data_args.max_predict_samples is not None:
-            predict_dataset = predict_dataset.select(range(data_args.max_predict_samples))
-        with training_args.main_process_first(desc="prediction dataset map pre-processing"):
-            predict_dataset = predict_dataset.map(
-                preprocess_function,
-                batched=True,
-                num_proc=data_args.preprocessing_num_workers,
-                remove_columns=column_names,
-                load_from_cache_file=not data_args.overwrite_cache,
-                desc="Running tokenizer on prediction dataset",
-            )
+        # Save file
+        with open(saveFilename, 'w') as f:
+            json.dump(packed, f, indent=4)
 
 
 
-        print("PREDICT DATASET:")
-        print(predict_dataset)
+    # kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "summarization"}
+    # if data_args.dataset_name is not None:
+    #     kwargs["dataset_tags"] = data_args.dataset_name
+    #     if data_args.dataset_config_name is not None:
+    #         kwargs["dataset_args"] = data_args.dataset_config_name
+    #         kwargs["dataset"] = f"{data_args.dataset_name} {data_args.dataset_config_name}"
+    #     else:
+    #         kwargs["dataset"] = data_args.dataset_name
 
-        logger.info("*** Predict ***")
+    # if training_args.push_to_hub:
+    #     trainer.push_to_hub(**kwargs)
+    # else:
+    #     trainer.create_model_card(**kwargs)
 
-        predict_results = trainer.predict(
-            predict_dataset, metric_key_prefix="predict", max_length=max_length, num_beams=num_beams
-        )
-        metrics = predict_results.metrics
-        max_predict_samples = (
-            data_args.max_predict_samples if data_args.max_predict_samples is not None else len(predict_dataset)
-        )
-        metrics["predict_samples"] = min(max_predict_samples, len(predict_dataset))
-
-        trainer.log_metrics("predict", metrics)
-        trainer.save_metrics("predict", metrics)
-
-        if trainer.is_world_process_zero():
-            if training_args.predict_with_generate:
-                predictions = tokenizer.batch_decode(
-                    predict_results.predictions, skip_special_tokens=True, clean_up_tokenization_spaces=True
-                )
-                predictions = [pred.strip() for pred in predictions]
-                output_prediction_file = os.path.join(training_args.output_dir, "generated_predictions.txt")
-                with open(output_prediction_file, "w") as writer:
-                    writer.write("\n".join(predictions))
-
-    kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "summarization"}
-    if data_args.dataset_name is not None:
-        kwargs["dataset_tags"] = data_args.dataset_name
-        if data_args.dataset_config_name is not None:
-            kwargs["dataset_args"] = data_args.dataset_config_name
-            kwargs["dataset"] = f"{data_args.dataset_name} {data_args.dataset_config_name}"
-        else:
-            kwargs["dataset"] = data_args.dataset_name
-
-    if training_args.push_to_hub:
-        trainer.push_to_hub(**kwargs)
-    else:
-        trainer.create_model_card(**kwargs)
-
-    return results
+    # return results
 
 
 def _mp_fn(index):
