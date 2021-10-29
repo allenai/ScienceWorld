@@ -3,6 +3,7 @@ package scienceworld.actions
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
+import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 
 /*
@@ -10,25 +11,43 @@ import scienceworld.struct.EnvObject
  */
 class ActionEat(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
-  override def runAction(): String = {
+  override def isValidAction(): (String, Boolean) = {
     val agent = assignments("agent")
     val food = assignments("food")
 
-    // Case 1: Food is not edible
-    if ((food.propEdibility.isEmpty) || (food.propEdibility.get.isEdible == false)) {
-      return "The " + food.name + " is not edible."
+    // Check 1: Check that agent is valid
+    agent match {
+      case a:Agent => { }
+      case _ => return ("I'm not sure what that means", false)
     }
+
+    // Case 2: Food is not edible
+    if ((food.propEdibility.isEmpty) || (food.propEdibility.get.isEdible == false)) {
+      return ("The " + food.name + " is not edible.", false)
+    }
+
+    // Unimplemented
+    return ("", true)
+  }
+
+  override def runAction(): (String, Boolean) = {
+    val agent = assignments("agent")
+    val food = assignments("food")
+
+    // Do checks for valid action
+    val (invalidStr, isValid) = this.isValidAction()
+    if (!isValid) return (invalidStr, false)
 
     // Case 2: Poisonous?
     if (food.propEdibility.get.isPoisonous) {
       food.removeAndResetContainer()
-      return "You don't feel well."
+      return ("You don't feel well.", true)
       //TODO: Health?
     }
 
     // Case 3: Food is edible
     food.removeAndResetContainer()
-    return "The " + food.name + " was delicious."
+    return ("The " + food.name + " was delicious.", true)
     // TODO: Increase health/nutrients/etc
 
   }

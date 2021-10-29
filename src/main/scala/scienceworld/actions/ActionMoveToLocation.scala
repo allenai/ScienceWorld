@@ -4,6 +4,7 @@ import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, Act
 import scienceworld.objects.portal.Door
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
+import scienceworld.objects.agent.Agent
 import scienceworld.objects.location.Location
 import scienceworld.struct.EnvObject
 
@@ -15,37 +16,43 @@ import scala.util.control.Breaks._
  */
 class ActionMoveThroughDoor(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
-  override def runAction(): String = {
+  override def isValidAction(): (String, Boolean) = {
     val agent = assignments("agent")
     val doorOrLocation = assignments("doorOrLocation")
 
+    // Check 1: Check that agent is valid
+    agent match {
+      case a:Agent => { }
+      case _ => return ("I'm not sure what that means", false)
+    }
+
+    // Step 2: Check that it's a valid thing to move through
     doorOrLocation match {
       // Case 1: Moving through door
       case door:Door => {
+        // Check to make sure the door is passable
         if (!door.isCurrentlyPassable()) {
           // Return a human-readable message for why the door isn't passable
-          return door.getUnpassableErrorMessage()
+          return (door.getUnpassableErrorMessage(), false)
         }
 
-        // Move the agent through door
-
+        // Make sure the door goes somewhere valid
         // First, check which side of the door we're on
         val door1 = door.asInstanceOf[Door]
         val agentContainer = agent.getContainer().get
         var connectsTo = door1.getConnectsTo(agentContainer)
         if (connectsTo.isEmpty) {
-          return "The door doesn't appear to go anywhere."
+          return ("The door doesn't appear to go anywhere.", false)
         }
 
-        // Then, move the agent to the other side
-        connectsTo.get.addObject(agent)
-        return "You move through the " + door.name + " to the " + connectsTo.get.name + "."
+        // If we reach here, the action is valid
+        return ("", true)
 
       }
       case location:Location => {
         // Try to find a portal that goes from the current location to the requested location
         val agentLocation = agent.getContainerRecursiveOfType[Location]()
-        if (agentLocation.isEmpty) return "<ERROR> The agent doesn't appear to be in a valid location."
+        if (agentLocation.isEmpty) return ("<ERROR> The agent doesn't appear to be in a valid location.", false)
 
         for (portal <- agentLocation.get.getPortals()) {
           breakable {
@@ -57,23 +64,72 @@ class ActionMoveThroughDoor(action:ActionRequestDef, assignments:Map[String, Env
             if (connectsToLocationReferents.contains(location.name)) {
               if (!portal.isCurrentlyPassable()) {
                 // Return a human-readable message for why the door isn't passable
-                return portal.getUnpassableErrorMessage()
+                return (portal.getUnpassableErrorMessage(), false)
               }
-
-              // If we reach here, move the agent through the portal
-              location.addObject(agent)
-              return "You move to the " + location.name + "."
+              // If we reach here, the action is valid
+              return ("", true)
             }
           }
         }
 
-        return "It's not clear how to get there from here."
+        return ("It's not clear how to get there from here.", false)
       }
       case _ => {
-        return "Its not clear how to go to/through a " + doorOrLocation.name + "."
+        return ("Its not clear how to go to/through a " + doorOrLocation.name + ".", false)
       }
     }
 
+    // Catch-all
+    return ("Its not clear how to go to/through a " + doorOrLocation.name + ".", false)
+  }
+
+  override def runAction(): (String, Boolean) = {
+    val agent = assignments("agent")
+    val doorOrLocation = assignments("doorOrLocation")
+
+    // Do checks for valid action
+    val (invalidStr, isValid) = this.isValidAction()
+    if (!isValid) return (invalidStr, false)
+
+    doorOrLocation match {
+      // Case 1: Moving through door
+      case door:Door => {
+        // Move the agent through door
+
+        // First, check which side of the door we're on
+        val door1 = door.asInstanceOf[Door]
+        val agentContainer = agent.getContainer().get
+        var connectsTo = door1.getConnectsTo(agentContainer)
+
+        // Then, move the agent to the other side
+        connectsTo.get.addObject(agent)
+        return ("You move through the " + door.name + " to the " + connectsTo.get.name + ".", true)
+
+      }
+      case location:Location => {
+        // Try to find a portal that goes from the current location to the requested location
+        val agentLocation = agent.getContainerRecursiveOfType[Location]()
+        for (portal <- agentLocation.get.getPortals()) {
+          breakable {
+            // Find a list of the referent names that this portal connects to
+            val connectsTo = portal.getConnectsTo(perspectiveContainer = agentLocation.get)
+            if (connectsTo.isEmpty) break
+            val connectsToLocationReferents = connectsTo.get.getReferents()
+            // If one of the referents is the same as the location we're looking for, then try to go through that poral
+            if (connectsToLocationReferents.contains(location.name)) {
+              // If we reach here, move the agent through the portal
+              location.addObject(agent)
+              return ("You move to the " + location.name + ".", true)
+            }
+          }
+        }
+
+      }
+      case _ => {
+        return (Action.MESSAGE_UNKNOWN_CATCH, false)
+      }
+    }
+    return (Action.MESSAGE_UNKNOWN_CATCH, false)
   }
 
 }

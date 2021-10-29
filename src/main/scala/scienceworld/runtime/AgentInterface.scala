@@ -111,9 +111,10 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
           val sanitizedOutStr = outStr.substring(START_TOKEN.length, outStr.length - END_TOKEN.length).trim
           val templateID = allActions(actionIdx).actionID   // Fetch unique template ID for this action template
           val objectUUIDs = outObjs.map(_.uuid).map(_.toInt).toList
+          val objectTypeIDs = outObjs.map(_.typeID).map(_.toInt).toList
 
           // Pack
-          val template = new TemplateAction(sanitizedOutStr, templateID, objectUUIDs)
+          val template = new TemplateAction(sanitizedOutStr, templateID, objectUUIDs, objectTypeIDs)
 
           // Store
           outTemplates.append(template)

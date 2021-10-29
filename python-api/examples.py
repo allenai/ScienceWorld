@@ -131,10 +131,11 @@ def userConsole(jarPath:str):
     print("Possible objects: " + str(env.getPossibleObjects()) )
     templates, lut = env.getPossibleActionObjectCombinations()
     print("Possible action/object combinations: " + str(templates))
-    print("Object IDX to Object Referent LUT: " + str(lut))
+    #print("Object IDX to Object Referent LUT: " + str(lut))
     print("Vocabulary: " + str(env.getVocabulary()) )
     print("Possible actions (with IDs): " + str(env.getPossibleActionsWithIDs()))
-
+    print("Possible object types: " + str(env.getObjectTypes()))    
+    print("Object IDX to Object Referent LUT: " + str(lut))
     print("\n")
     print("Task Description: " + str(env.getTaskDescription()) )    
 

@@ -108,6 +108,12 @@ class VirtualEnv:
 
         return (templates, lookUpTable)
 
+    # Get a list of object types and their IDs
+    def getObjectTypes(self):
+        jsonStr = self.gateway.getObjectTypesLUTJSON()
+        data = json.loads(jsonStr)
+        return data
+
     # Get the vocabulary of the model (at the current state)
     def getVocabulary(self):
         vocab = set()        
