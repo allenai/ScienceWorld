@@ -67,8 +67,11 @@ def loadAsJSONL(filename):
 
         sourceStr = packSource(taskDesc, observation)
         targetStr = packTarget(userInput)
-        
-        jsonStr = "{\"source\": \"" + sourceStr + "\", \"target\":\"" + targetStr + "\"}"
+        packed = {
+            'source': sourceStr,
+            'target': targetStr,
+        }
+        jsonStr = json.dumps(packed)
 
         out.append(jsonStr)
         
