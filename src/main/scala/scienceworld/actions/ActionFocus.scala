@@ -33,6 +33,7 @@ class ActionFocus(action:ActionRequestDef, assignments:Map[String, EnvObject], o
     val (invalidStr, isValid) = this.isValidAction()
     if (!isValid) return (invalidStr, false)
 
+    // Do action
     objMonitor.clearMonitoredObjects()
     objMonitor.addMonitor(obj)
 

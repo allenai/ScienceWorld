@@ -16,39 +16,53 @@ import scala.collection.mutable
 class ActionMoveObject(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
   override def isValidAction(): (String, Boolean) = {
-    // Unimplemented
-    return ("", true)
-  }
-
-  override def runAction(): String = {
     val agent = assignments("agent")
     val objToMove = assignments("obj")
     val container = assignments("moveTo")
 
+    // Check 1: Check that agent is valid
+    agent match {
+      case a:Agent => { }
+      case _ => return ("I'm not sure what that means", false)
+    }
+
     // Check that the object is moveable
     if ((objToMove.propMoveable.isEmpty) || (!objToMove.propMoveable.get.isMovable)) {
-      return "The " + objToMove.name + " is not moveable."
+      return ("The " + objToMove.name + " is not moveable.", false)
     }
 
     // Check that the object is not a liquid or a gas (which can't be directly held by the agent)
     if (objToMove.propMaterial.isDefined) {
       if (objToMove.propMaterial.get.stateOfMatter == "liquid") {
-        return "You can't pick up a liquid directly.  Try pouring it from one container to another, or dunking empty containers into containers filled with the liquid."
+        return ("You can't pick up a liquid directly.  Try pouring it from one container to another, or dunking empty containers into containers filled with the liquid.", false)
       } else if (objToMove.propMaterial.get.stateOfMatter == "gas") {
-        return "You can't pick up a gas directly. "
+        return ("You can't pick up a gas directly.", false)
       }
     }
 
     // Check that if the container is a proper container, that it's open
     if (container.propContainer.isEmpty) {
-      return "That can't be moved there."
+      return ("That can't be moved there.", false)
     }
 
     if (!container.propContainer.get.isOpen) {
-      return "That can't be moved there, because the " + container.name + " isn't open."
+      return ("That can't be moved there, because the " + container.name + " isn't open.", false)
     }
 
-    // Move the agent through door
+    // If we reach here, all tests have passed
+    return ("", true)
+  }
+
+  override def runAction(): (String, Boolean) = {
+    val agent = assignments("agent")
+    val objToMove = assignments("obj")
+    val container = assignments("moveTo")
+
+    // Do checks for valid action
+    val (invalidStr, isValid) = this.isValidAction()
+    if (!isValid) return (invalidStr, false)
+
+    // Move the object
     container.addObject(objToMove)
     // TODO: Also disconnect the object, if it's electrically connected
     val os = new StringBuilder
@@ -58,7 +72,7 @@ class ActionMoveObject(action:ActionRequestDef, assignments:Map[String, EnvObjec
     }
     os.append("You move the " + objToMove.name + " to the " + container.name + ".")
 
-    return os.toString()
+    return (os.toString(), true)
   }
 
 }
@@ -155,63 +169,82 @@ object ActionPutDownObjectIntoInventory {
 class ActionPourObject(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
   override def isValidAction(): (String, Boolean) = {
-    // Unimplemented
-    return ("", true)
-  }
-
-  override def runAction(): String = {
     val agent = assignments("agent")
     val objToMove = assignments("obj")
     val container = assignments("moveTo")
 
-    var pouringOutContainer:Boolean = false
+    // Check 1: Check that agent is valid
+    agent match {
+      case a:Agent => { }
+      case _ => return ("I'm not sure what that means", false)
+    }
+
     // Check to see if we're pouring out a container
+    var pouringOutContainer:Boolean = false
     if ((objToMove.propContainer.isDefined) && (objToMove.propContainer.get.isContainer)) pouringOutContainer = true
 
     // Check that the object is moveable
     if ((objToMove.propMoveable.isEmpty) || (!objToMove.propMoveable.get.isMovable)) {
-      return "The " + objToMove.name + " is not moveable."
+      return ("The " + objToMove.name + " is not moveable.", false)
     }
     // If we're pouring out something in a container, check that the container is movable too
     if (!pouringOutContainer) {
       val curContainer = objToMove.getContainer()
-      if (curContainer.isEmpty) return "The " + objToMove.name + " can't be poured out because it doesn't appear to be in a container."     // ERROR
+      if (curContainer.isEmpty) return ("The " + objToMove.name + " can't be poured out because it doesn't appear to be in a container.", false)
 
       if ((curContainer.get.propMoveable.isEmpty) || (!curContainer.get.propMoveable.get.isMovable)) {
-        return "The " + curContainer.get.name + " the " + objToMove.name + " is in is not movable."
+        return ("The " + curContainer.get.name + " the " + objToMove.name + " is in is not movable.", false)
       }
     }
 
 
     if (pouringOutContainer) {
       if (!objToMove.propContainer.get.isOpen) {
-        return "The " + objToMove.name + " can't be poured out, because it's not open."
+        return ("The " + objToMove.name + " can't be poured out, because it's not open.", false)
       }
     } else  {
       // Check that the object is not a liquid or a gas (which can't be directly held by the agent)
       if (objToMove.propMaterial.isDefined) {
         if (objToMove.propMaterial.get.stateOfMatter == "solid") {
-          return "I'm not sure how to pour a solid. "
+          return ("I'm not sure how to pour a solid. ", false)
         } else if (objToMove.propMaterial.get.stateOfMatter == "gas") {
-          return "You can't pour a gas directly. "
+          return ("You can't pour a gas directly. ", false)
         }
       }
     }
 
     // Check that if the container is a proper container, that it's open
     if (container.propContainer.isEmpty) {
-      return "That can't be moved there, because it's not a container."
+      return ("That can't be moved there, because it's not a container.", false)
     }
 
     if (!container.propContainer.get.isOpen) {
-      return "That can't be moved there, because the " + container.name + " isn't open."
+      return ("That can't be moved there, because the " + container.name + " isn't open.", false)
     }
 
     if (pouringOutContainer) {
       if (objToMove.getContainedObjects().size == 0) {
-        return "The " + objToMove.name + " is empty, so there's nothing to pour."
+        return ("The " + objToMove.name + " is empty, so there's nothing to pour.", false)
       }
     }
+
+    // If we reach here, the action is valid
+    return ("", true)
+  }
+
+  override def runAction(): (String, Boolean) = {
+    val agent = assignments("agent")
+    val objToMove = assignments("obj")
+    val container = assignments("moveTo")
+
+    // Do checks for valid action
+    val (invalidStr, isValid) = this.isValidAction()
+    if (!isValid) return (invalidStr, false)
+
+    // Check to see if we're pouring out a container
+    var pouringOutContainer:Boolean = false
+    if ((objToMove.propContainer.isDefined) && (objToMove.propContainer.get.isContainer)) pouringOutContainer = true
+
 
     // Do the pouring
     val os = new StringBuilder
@@ -230,7 +263,7 @@ class ActionPourObject(action:ActionRequestDef, assignments:Map[String, EnvObjec
         }
       }
       os.append("You pour the contents of the " + objToMove.name + " into the " + container.name + ".")
-      return os.toString()
+      return (os.toString(), true)
 
     } else {
       container.addObject(objToMove)
@@ -240,10 +273,12 @@ class ActionPourObject(action:ActionRequestDef, assignments:Map[String, EnvObjec
         objToMove.disconnectElectricalTerminals()
       }
       os.append("You pour the " + objToMove.name + " into the " + container.name + ".")
-      return os.toString()
+      return (os.toString(), true)
 
     }
 
+
+    return (Action.MESSAGE_UNKNOWN_CATCH, false)
   }
 
 }
