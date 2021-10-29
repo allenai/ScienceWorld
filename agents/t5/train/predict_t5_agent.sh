@@ -5,7 +5,7 @@ export MODEL_DIR=/tmp/test-t5
 #export MODEL_DIR=t5-base
 export OUTPUT_DIR=/tmp/out
 
-python run_summarization.py \
+python run_predict_agent.py \
     --model_name_or_path ${MODEL_DIR} \
     --do_eval \
     --do_predict true \

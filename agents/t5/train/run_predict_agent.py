@@ -28,6 +28,7 @@ import datasets
 import nltk  # Here to have a nice missing dependency error message early on
 import numpy as np
 from datasets import load_dataset, load_metric
+from datasets import Dataset
 
 import transformers
 from filelock import FileLock
@@ -247,6 +248,31 @@ summarization_name_mapping = {
     "xsum": ("document", "summary"),
     "wiki_summary": ("article", "highlights"),
 }
+
+
+# Make a dataset with a single element
+def mkPredict(model_inputs, data_args, training_args, text_column, summary_column, column_names):
+
+    max_target_length = data_args.val_max_target_length
+    rawDataset = {
+        "source": [inputStr],
+        "target": [""]
+    }
+    predict_dataset = Dataset.from_dict(rawDataset)
+
+    if data_args.max_predict_samples is not None:
+        predict_dataset = predict_dataset.select(range(data_args.max_predict_samples))
+    with training_args.main_process_first(desc="prediction dataset map pre-processing"):
+        predict_dataset = predict_dataset.map(
+            preprocess_function,
+            batched=True,
+            num_proc=data_args.preprocessing_num_workers,
+            remove_columns=column_names,
+            load_from_cache_file=not data_args.overwrite_cache,
+            desc="Running tokenizer on prediction dataset",
+        )
+
+    return predict_dataset
 
 
 def main():
@@ -492,7 +518,16 @@ def main():
         max_target_length = data_args.val_max_target_length
         if "test" not in raw_datasets:
             raise ValueError("--do_predict requires a test dataset")
-        predict_dataset = raw_datasets["test"]
+        rawDataset = {
+            "source": ["cat", "dog", "bus"],
+            "target": ["food", "food", "fuel"]
+        }
+        #predict_dataset = raw_datasets["test"]
+        predict_dataset = Dataset.from_dict(rawDataset)
+        print("###")
+        print(predict_dataset)
+        #predict_dataset = ["cat", "dog", "bus"]
+
         if data_args.max_predict_samples is not None:
             predict_dataset = predict_dataset.select(range(data_args.max_predict_samples))
         with training_args.main_process_first(desc="prediction dataset map pre-processing"):
@@ -560,27 +595,27 @@ def main():
         compute_metrics=compute_metrics if training_args.predict_with_generate else None,
     )
 
-    # Training
-    if training_args.do_train:
-        checkpoint = None
-        if training_args.resume_from_checkpoint is not None:
-            checkpoint = training_args.resume_from_checkpoint
-        elif last_checkpoint is not None:
-            checkpoint = last_checkpoint
-        train_result = trainer.train(resume_from_checkpoint=checkpoint)
-        trainer.save_model()  # Saves the tokenizer too for easy upload
+    # # Training
+    # if training_args.do_train:
+    #     checkpoint = None
+    #     if training_args.resume_from_checkpoint is not None:
+    #         checkpoint = training_args.resume_from_checkpoint
+    #     elif last_checkpoint is not None:
+    #         checkpoint = last_checkpoint
+    #     train_result = trainer.train(resume_from_checkpoint=checkpoint)
+    #     trainer.save_model()  # Saves the tokenizer too for easy upload
 
-        metrics = train_result.metrics
-        max_train_samples = (
-            data_args.max_train_samples if data_args.max_train_samples is not None else len(train_dataset)
-        )
-        metrics["train_samples"] = min(max_train_samples, len(train_dataset))
+    #     metrics = train_result.metrics
+    #     max_train_samples = (
+    #         data_args.max_train_samples if data_args.max_train_samples is not None else len(train_dataset)
+    #     )
+    #     metrics["train_samples"] = min(max_train_samples, len(train_dataset))
 
-        trainer.log_metrics("train", metrics)
-        trainer.save_metrics("train", metrics)
-        trainer.save_state()
+    #     trainer.log_metrics("train", metrics)
+    #     trainer.save_metrics("train", metrics)
+    #     trainer.save_state()
 
-    # Evaluation
+    # # Evaluation
     results = {}
     max_length = (
         training_args.generation_max_length
@@ -588,16 +623,44 @@ def main():
         else data_args.val_max_target_length
     )
     num_beams = data_args.num_beams if data_args.num_beams is not None else training_args.generation_num_beams
-    if training_args.do_eval:
-        logger.info("*** Evaluate ***")
-        metrics = trainer.evaluate(max_length=max_length, num_beams=num_beams, metric_key_prefix="eval")
-        max_eval_samples = data_args.max_eval_samples if data_args.max_eval_samples is not None else len(eval_dataset)
-        metrics["eval_samples"] = min(max_eval_samples, len(eval_dataset))
+    # if training_args.do_eval:
+    #     logger.info("*** Evaluate ***")
+    #     metrics = trainer.evaluate(max_length=max_length, num_beams=num_beams, metric_key_prefix="eval")
+    #     max_eval_samples = data_args.max_eval_samples if data_args.max_eval_samples is not None else len(eval_dataset)
+    #     metrics["eval_samples"] = min(max_eval_samples, len(eval_dataset))
 
-        trainer.log_metrics("eval", metrics)
-        trainer.save_metrics("eval", metrics)
+    #     trainer.log_metrics("eval", metrics)
+    #     trainer.save_metrics("eval", metrics)
 
     if training_args.do_predict:
+        
+        inputStr = "cat"
+
+        # Pack
+        max_target_length = data_args.val_max_target_length
+        rawDataset = {
+            "source": [inputStr],
+            "target": [""]
+        }
+        predict_dataset = Dataset.from_dict(rawDataset)
+
+        if data_args.max_predict_samples is not None:
+            predict_dataset = predict_dataset.select(range(data_args.max_predict_samples))
+        with training_args.main_process_first(desc="prediction dataset map pre-processing"):
+            predict_dataset = predict_dataset.map(
+                preprocess_function,
+                batched=True,
+                num_proc=data_args.preprocessing_num_workers,
+                remove_columns=column_names,
+                load_from_cache_file=not data_args.overwrite_cache,
+                desc="Running tokenizer on prediction dataset",
+            )
+
+
+
+        print("PREDICT DATASET:")
+        print(predict_dataset)
+
         logger.info("*** Predict ***")
 
         predict_results = trainer.predict(
