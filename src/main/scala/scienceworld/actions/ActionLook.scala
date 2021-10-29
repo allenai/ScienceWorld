@@ -3,6 +3,7 @@ package scienceworld.actions
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
+import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 import util.StringHelpers
@@ -15,20 +16,31 @@ import scala.collection.mutable.ArrayBuffer
  */
 class ActionLookAround(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
+  // This action is essentially always valid
   override def isValidAction(): (String, Boolean) = {
-    // Unimplemented
+    // Check 1: Check that agent is valid
+    val agent = assignments("agent")
+    agent match {
+      case a:Agent => {
+        if (a.getContainer().isEmpty) return ("<ERROR> The agent is not in a container (this should never happen)", false)
+      }
+      case _ => return ("<ERROR> Invalid agent.", false)
+    }
+
+    // Checks complete -- if we reach here, the action is valid
     return ("", true)
   }
 
-  override def runAction(): String = {
+  override def runAction(): (String, Boolean) = {
     val agent = assignments("agent")
 
-    if (agent.getContainer().isEmpty) {
-      return "The agent is not in a container (this should never happen)."
-    }
+    // Do checks for valid action
+    val (invalidStr, isValid) = this.isValidAction()
+    if (!isValid) return (invalidStr, false)
 
     val container = agent.getContainer().get
-    return container.getDescriptionSafe(mode = MODE_DETAILED).getOrElse("<ERROR: attempting to view hidden object>")
+    val containerDescription = container.getDescriptionSafe(mode = MODE_DETAILED).getOrElse("<ERROR: attempting to view hidden object>")    //## TODO: Arguable whether the error case here should be caught by checks above
+    return (containerDescription, true)
 
   }
 
@@ -56,16 +68,31 @@ object ActionLookAround {
  */
 class ActionLookAt(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
+  // This action is essentially always valid
   override def isValidAction(): (String, Boolean) = {
-    // Unimplemented
+    // Check 1: Check that agent is valid
+    val agent = assignments("agent")
+    agent match {
+      case a:Agent => {
+        if (a.getContainer().isEmpty) return ("<ERROR> The agent is not in a container (this should never happen)", false)
+      }
+      case _ => return ("<ERROR> Invalid agent.", false)
+    }
+
+    // Checks complete -- if we reach here, the action is valid
     return ("", true)
   }
 
-  override def runAction(): String = {
+  override def runAction(): (String, Boolean) = {
     val agent = assignments("agent")
     val obj = assignments("obj")
 
-    return obj.getDescriptionSafe(mode = MODE_DETAILED).getOrElse("<ERROR: attempting to view hidden object>")
+    // Do checks for valid action
+    val (invalidStr, isValid) = this.isValidAction()
+    if (!isValid) return (invalidStr, false)
+
+    val objDescription = obj.getDescriptionSafe(mode = MODE_DETAILED).getOrElse("<ERROR: attempting to view hidden object>")    //## TODO: Arguable whether the error case here should be caught by checks above
+    return (objDescription, true)
 
   }
 
@@ -93,20 +120,45 @@ object ActionLookAt {
  */
 class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
+  // This action is essentially always valid
   override def isValidAction(): (String, Boolean) = {
-    // Unimplemented
-    return ("", true)
+    // Check 1: Check that agent is valid
+    val agent = assignments("agent")
+    val obj = assignments("obj")
+
+    agent match {
+      case a:Agent => {
+        if (a.getContainer().isEmpty) return ("<ERROR> The agent is not in a container (this should never happen)", false)
+      }
+      case _ => return ("<ERROR> Invalid agent.", false)
+    }
+
+    // Check 2: If it's a container, check that it's open
+    if (obj.propContainer.isDefined) {
+      if (!obj.propContainer.get.isOpen) {
+        // Unopen container -- fail
+        return ("The " + obj.name + " isn't open, so you can't see inside.", false)
+      }
+      // Open container -- OK
+      return ("", true)
+    }
+
+    // If we reach here, it's not a container, so we can't look in it
+    return ("It's not clear how to look inside of that.", false)
   }
 
-  override def runAction(): String = {
+  override def runAction(): (String, Boolean) = {
     val agent = assignments("agent")
     val obj = assignments("obj")
     val os = new StringBuilder()
 
+    // Do checks for valid action
+    val (invalidStr, isValid) = this.isValidAction()
+    if (!isValid) return (invalidStr, false)
+
+    // Run action
     if (obj.propContainer.isDefined) {
-      if (!obj.propContainer.get.isOpen) {
-        return "The " + obj.name + " isn't open, so you can't see inside."
-      } else {
+      if (obj.propContainer.get.isOpen) {
         // Normal case -- look inside the container
         val containedObjs = obj.getContainedObjects()
         if (containedObjs.size == 0) {
@@ -118,22 +170,21 @@ class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
         }
         os.append("\n")
       }
-    }
 
-    if (obj.getPortals().size > 0) {
-      os.append(" You also see: ")
-      val descriptions = new ArrayBuffer[String]
-      for (portal <- obj.getPortals()) {
-        val desc = portal.getDescriptionSafe(mode = MODE_CURSORY_DETAIL, perspectiveContainer = obj)
-        if (desc.isDefined) descriptions.append(desc.get)
+      if (obj.getPortals().size > 0) {
+        os.append(" You also see: ")
+        val descriptions = new ArrayBuffer[String]
+        for (portal <- obj.getPortals()) {
+          val desc = portal.getDescriptionSafe(mode = MODE_CURSORY_DETAIL, perspectiveContainer = obj)
+          if (desc.isDefined) descriptions.append(desc.get)
+        }
+        os.append(descriptions.mkString(", "))
+        os.append(".")
       }
-      os.append(descriptions.mkString(", "))
-      os.append(".")
     }
-    if (os.length > 0) return os.toString
 
-    // Otherwise
-    return "It's not clear how to look inside of that."
+    // Return
+    return (os.toString, true)
   }
 
 }
