@@ -15,6 +15,11 @@ import scala.collection.mutable
  */
 class ActionMoveObject(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
+  override def isValidAction(): (String, Boolean) = {
+    // Unimplemented
+    return ("", true)
+  }
+
   override def runAction(): String = {
     val agent = assignments("agent")
     val objToMove = assignments("obj")
@@ -148,6 +153,11 @@ object ActionPutDownObjectIntoInventory {
  * Action: Pour (liquid, or contents of containers)
  */
 class ActionPourObject(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
+
+  override def isValidAction(): (String, Boolean) = {
+    // Unimplemented
+    return ("", true)
+  }
 
   override def runAction(): String = {
     val agent = assignments("agent")

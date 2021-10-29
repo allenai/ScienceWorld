@@ -11,6 +11,11 @@ import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
  */
 class ActionFocus(action:ActionRequestDef, assignments:Map[String, EnvObject], objMonitor:ObjMonitor) extends Action(action, assignments) {
 
+  override def isValidAction(): (String, Boolean) = {
+    // Unimplemented
+    return ("", true)
+  }
+
   override def runAction(): String = {
     val agent = assignments("agent")
     val obj = assignments("obj")

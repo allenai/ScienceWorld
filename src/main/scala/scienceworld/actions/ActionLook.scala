@@ -15,6 +15,11 @@ import scala.collection.mutable.ArrayBuffer
  */
 class ActionLookAround(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
+  override def isValidAction(): (String, Boolean) = {
+    // Unimplemented
+    return ("", true)
+  }
+
   override def runAction(): String = {
     val agent = assignments("agent")
 
@@ -51,6 +56,11 @@ object ActionLookAround {
  */
 class ActionLookAt(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
+  override def isValidAction(): (String, Boolean) = {
+    // Unimplemented
+    return ("", true)
+  }
+
   override def runAction(): String = {
     val agent = assignments("agent")
     val obj = assignments("obj")
@@ -82,6 +92,11 @@ object ActionLookAt {
  * Action: Look Around
  */
 class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
+
+  override def isValidAction(): (String, Boolean) = {
+    // Unimplemented
+    return ("", true)
+  }
 
   override def runAction(): String = {
     val agent = assignments("agent")

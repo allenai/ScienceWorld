@@ -10,6 +10,11 @@ import scienceworld.struct.EnvObject
  */
 class ActionActivate(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
+  override def isValidAction(): (String, Boolean) = {
+    // Unimplemented
+    return ("", true)
+  }
+
   override def runAction(): String = {
     val agent = assignments("agent")
     val obj = assignments("device")
@@ -52,6 +57,11 @@ object ActionActivate {
  * Action: Deactivate
  */
 class ActionDeactivate(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
+
+  override def isValidAction(): (String, Boolean) = {
+    // Unimplemented
+    return ("", true)
+  }
 
   override def runAction(): String = {
     val agent = assignments("agent")

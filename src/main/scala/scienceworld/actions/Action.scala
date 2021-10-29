@@ -8,8 +8,14 @@ import scienceworld.struct.EnvObject
 class Action(val action:ActionRequestDef, val assignments:Map[String, EnvObject]) {
   def name:String = action.name
 
-  def runAction():String = {
-    return "Empty action (" + this.name + ")."
+  // Returns (User error message (if applicable), whether the action could be executed or not)
+  def isValidAction():(String, Boolean) = {
+    return ("error message", false)
+  }
+
+  // Returns: (User message, whether the action was successful or not)
+  def runAction():(String, Boolean) = {
+    return ("Empty action (" + this.name + ").", false)
   }
 
 }

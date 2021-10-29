@@ -12,6 +12,11 @@ import scienceworld.struct.EnvObject
  */
 class ActionWait(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
+  override def isValidAction(): (String, Boolean) = {
+    // Unimplemented
+    return ("", true)
+  }
+
   override def runAction(): String = {
     val agent = assignments("agent")
     val waitTime:Int = 10     // Number of iterations to wait for
