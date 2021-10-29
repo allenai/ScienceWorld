@@ -25,3 +25,15 @@ object Action {
   val MESSAGE_UNKNOWN_CATCH       = "<unknown catch>"
 }
 
+
+
+class PossibleAction(val sequence:Array[ActionExpr]) {
+
+  def mkHumanReadableStr():String = {
+    return sequence.map(_.mkHumanReadableExample()).mkString(" ")
+  }
+
+  override def toString():String = {
+    this.mkHumanReadableStr()
+  }
+}

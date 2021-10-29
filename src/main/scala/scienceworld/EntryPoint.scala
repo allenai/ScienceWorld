@@ -90,6 +90,19 @@ object EntryPoint {
             //agentInterface.printDebugDisplay()
           } else if (userInputString == "help") {
             println("Possible Actions: \n" + agentInterface.getPossibleActions().mkString("\n"))
+          } else if (userInputString == "validactions") {
+            // Collect all objects visible to the agent
+            val visibleObjTreeRoot = agentInterface.getAgentVisibleObjects()._2
+            val agentInventory = agent.getInventoryContainer()
+            val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList ++ InputParser.collectObjects(agentInventory, includeHidden = false).toList
+            // Generate all possible valid actions
+            val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray)
+
+            println("Valid actions (length = " + validActions.length + ")")
+            for (i <- 0 until validActions.length) {
+              println (i + ": \t" + validActions(i).toString())
+            }
+
           } else {
             validInput = true
           }
