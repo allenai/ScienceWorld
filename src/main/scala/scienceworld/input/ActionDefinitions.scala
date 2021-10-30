@@ -130,10 +130,9 @@ object ActionDefinitions {
     out.insertAll(out.length, ActionActivate.generatePossibleValidActions(agent, visibleObjects))
     out.insertAll(out.length, ActionDeactivate.generatePossibleValidActions(agent, visibleObjects))
 
-    /*
     // Eat
     out.insertAll(out.length, ActionEat.generatePossibleValidActions(agent, visibleObjects))
-
+/*
     // Move an object to a new container
     out.insertAll(out.length, ActionMoveObject.generatePossibleValidActions(agent, visibleObjects))
     out.insertAll(out.length, ActionPourObject.generatePossibleValidActions(agent, visibleObjects))
@@ -147,10 +146,11 @@ object ActionDefinitions {
 
     // Read
     out.insertAll(out.length, ActionRead.generatePossibleValidActions(agent, visibleObjects))
+*/
 
     // Flush
     out.insertAll(out.length, ActionFlush.generatePossibleValidActions(agent, visibleObjects))
-
+/*
     // Connect (electrically)
     out.insertAll(out.length, ActionConnectElectrical.generatePossibleValidActions(agent, visibleObjects))
     out.insertAll(out.length, ActionDisconnectElectrical.generatePossibleValidActions(agent, visibleObjects))
