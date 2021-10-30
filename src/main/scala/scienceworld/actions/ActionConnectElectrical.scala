@@ -1,19 +1,70 @@
 package scienceworld.actions
 
-import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
+import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionExprObject, ActionExprText, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.electricalcomponent.{PolarizedElectricalComponent, Terminal, UnpolarizedElectricalComponent}
 import scienceworld.struct.EnvObject
 
+import scala.collection.mutable.ArrayBuffer
+
 
 /*
  * Action: Connect (Electrically)
  */
 class ActionConnectElectrical(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
-  // This action is essentially always valid
-  override def isValidAction(): (String, Boolean) = {
+
+  override def runAction(): (String, Boolean) = {
+    val agent = assignments("agent")
+    var terminalA = assignments("terminalA")
+    var terminalB = assignments("terminalB")
+
+    // Do checks for valid action
+    val (invalidStr, isValid) = ActionConnectElectrical.isValidAction(assignments)
+    if (!isValid) return (invalidStr, false)
+
+    // Get terminals (this is repeated in this.isValidAction()... )
+
+    // Make sure the specified terminal is valid (terminal A)
+    val (_terminalA, errStrA, successA) = ActionConnectElectrical.getTerminal(terminalA)
+    if (!successA) return (errStrA, false)
+    terminalA = _terminalA
+    // Make sure the specified terminal is valid (terminal B)
+    val (_terminalB, errStrB, successB) = ActionConnectElectrical.getTerminal(terminalB)
+    if (!successB) return (errStrB, false)
+    terminalB = _terminalB
+
+
+    // Do connection
+    terminalA.propElectricalConnection.get.addConnection(terminalB)
+    terminalB.propElectricalConnection.get.addConnection(terminalA)
+    val terminalAObj:String = terminalA.asInstanceOf[Terminal].parentObject.name
+    val terminalBObj:String = terminalA.asInstanceOf[Terminal].parentObject.name
+
+    return (terminalA.name + " on " + terminalAObj + " is now connected to " + terminalB.name + " on " + terminalBObj, true)
+  }
+
+}
+
+object ActionConnectElectrical {
+  val ACTION_NAME = "connect electrically"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_CONNECT
+
+  def registerAction(actionHandler:ActionHandler) {
+    // Action: Move
+    val triggerPhrase = new ActionTrigger(List(
+      new ActionExprOR(List("connect")),
+      new ActionExprIdentifier("terminalA"),
+      new ActionExprOR(List("to", "in", "into")),
+      new ActionExprIdentifier("terminalB")
+    ))
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    actionHandler.addAction(action)
+
+  }
+
+  def isValidAction(assignments:Map[String, EnvObject]): (String, Boolean) = {
     val agent = assignments("agent")
     var terminalA = assignments("terminalA")
     var terminalB = assignments("terminalB")
@@ -81,53 +132,33 @@ class ActionConnectElectrical(action:ActionRequestDef, assignments:Map[String, E
     }
   }
 
-  override def runAction(): (String, Boolean) = {
-    val agent = assignments("agent")
-    var terminalA = assignments("terminalA")
-    var terminalB = assignments("terminalB")
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
 
-    // Do checks for valid action
-    val (invalidStr, isValid) = this.isValidAction()
-    if (!isValid) return (invalidStr, false)
+    for (obj1 <- visibleObjects) {
+      for (obj2 <- visibleObjects) {
+        // Pack for check
+        val assignments = Map(
+          "agent" -> agent,
+          "terminalA" -> obj1,
+          "terminalB" -> obj2
+        )
 
-    // Get terminals (this is repeated in this.isValidAction()... )
+        // Do check
+        if (this.isValidAction(assignments)._2 == true) {
+          // Pack and store
+          val pa = new PossibleAction(Array[ActionExpr](
+            new ActionExprText("connect"),
+            new ActionExprObject(obj1),
+            new ActionExprText("to"),
+            new ActionExprObject(obj2)
+          ))
+          out.append(pa)
+        }
+      }
+    }
 
-    // Make sure the specified terminal is valid (terminal A)
-    val (_terminalA, errStrA, successA) = this.getTerminal(terminalA)
-    if (!successA) return (errStrA, false)
-    terminalA = _terminalA
-    // Make sure the specified terminal is valid (terminal B)
-    val (_terminalB, errStrB, successB) = this.getTerminal(terminalB)
-    if (!successB) return (errStrB, false)
-    terminalB = _terminalB
-
-
-    // Do connection
-    terminalA.propElectricalConnection.get.addConnection(terminalB)
-    terminalB.propElectricalConnection.get.addConnection(terminalA)
-    val terminalAObj:String = terminalA.asInstanceOf[Terminal].parentObject.name
-    val terminalBObj:String = terminalA.asInstanceOf[Terminal].parentObject.name
-
-    return (terminalA.name + " on " + terminalAObj + " is now connected to " + terminalB.name + " on " + terminalBObj, true)
-  }
-
-}
-
-object ActionConnectElectrical {
-  val ACTION_NAME = "connect electrically"
-  val ACTION_ID   = ActionDefinitions.ACTION_ID_CONNECT
-
-  def registerAction(actionHandler:ActionHandler) {
-    // Action: Move
-    val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("connect")),
-      new ActionExprIdentifier("terminalA"),
-      new ActionExprOR(List("to", "in", "into")),
-      new ActionExprIdentifier("terminalB")
-    ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
-    actionHandler.addAction(action)
-
+    return out.toArray
   }
 
 }
@@ -135,7 +166,42 @@ object ActionConnectElectrical {
 
 class ActionDisconnectElectrical(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
-  override def isValidAction(): (String, Boolean) = {
+  override def runAction(): (String, Boolean) = {
+    val agent = assignments("agent")
+    val obj = assignments("obj")
+
+    // Do checks for valid action
+    val (invalidStr, isValid) = ActionDisconnectElectrical.isValidAction(assignments)
+    if (!isValid) return (invalidStr, false)
+
+    // Do disconnection
+    obj match {
+      case x:EnvObject => {
+        x.disconnectElectricalTerminals()
+        return (x.name + " has been disconnected", false)
+      }
+    }
+
+  }
+
+}
+
+object ActionDisconnectElectrical {
+  val ACTION_NAME = "disconnect electrically"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_DISCONNECT
+
+  def registerAction(actionHandler:ActionHandler) {
+    // Action: Move
+    val triggerPhrase = new ActionTrigger(List(
+      new ActionExprOR(List("disconnect")),
+      new ActionExprIdentifier("obj"),
+    ))
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    actionHandler.addAction(action)
+
+  }
+
+  def isValidAction(assignments:Map[String, EnvObject]): (String, Boolean) = {
     val agent = assignments("agent")
     val obj = assignments("obj")
 
@@ -159,40 +225,28 @@ class ActionDisconnectElectrical(action:ActionRequestDef, assignments:Map[String
     return (Action.MESSAGE_UNKNOWN_CATCH, false)
   }
 
-  override def runAction(): (String, Boolean) = {
-    val agent = assignments("agent")
-    val obj = assignments("obj")
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
 
-    // Do checks for valid action
-    val (invalidStr, isValid) = this.isValidAction()
-    if (!isValid) return (invalidStr, false)
+    for (obj <- visibleObjects) {
+      // Pack for check
+      val assignments = Map(
+        "agent" -> agent,
+        "obj" -> obj
+      )
 
-    // Do disconnection
-    obj match {
-      case x:EnvObject => {
-        x.disconnectElectricalTerminals()
-        return (x.name + " has been disconnected", false)
+      // Do check
+      if (this.isValidAction(assignments)._2 == true) {
+        // Pack and store
+        val pa = new PossibleAction(Array[ActionExpr](
+          new ActionExprText("disconnect"),
+          new ActionExprObject(obj)
+        ))
+        out.append(pa)
       }
     }
 
-
-  }
-
-}
-
-object ActionDisconnectElectrical {
-  val ACTION_NAME = "disconnect electrically"
-  val ACTION_ID   = ActionDefinitions.ACTION_ID_DISCONNECT
-
-  def registerAction(actionHandler:ActionHandler) {
-    // Action: Move
-    val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("disconnect")),
-      new ActionExprIdentifier("obj"),
-    ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
-    actionHandler.addAction(action)
-
+    return out.toArray
   }
 
 }

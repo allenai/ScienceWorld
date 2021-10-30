@@ -149,11 +149,11 @@ object ActionDefinitions {
 
     // Flush
     out.insertAll(out.length, ActionFlush.generatePossibleValidActions(agent, visibleObjects))
-/*
+
     // Connect (electrically)
     out.insertAll(out.length, ActionConnectElectrical.generatePossibleValidActions(agent, visibleObjects))
     out.insertAll(out.length, ActionDisconnectElectrical.generatePossibleValidActions(agent, visibleObjects))
-*/
+
     // Wait
     out.insertAll(out.length, ActionWait.generatePossibleValidActions(agent, visibleObjects))
 
