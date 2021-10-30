@@ -141,7 +141,7 @@ object ActionDefinitions {
     out.insertAll(out.length, ActionResetTask.generatePossibleValidActions(agent, visibleObjects))
 
     // Use device
-//    out.insertAll(out.length, ActionUseDevice.generatePossibleValidActions(agent, visibleObjects))
+    out.insertAll(out.length, ActionUseDevice.generatePossibleValidActions(agent, visibleObjects))
 
     // Read
     out.insertAll(out.length, ActionRead.generatePossibleValidActions(agent, visibleObjects))
