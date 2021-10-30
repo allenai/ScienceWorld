@@ -83,6 +83,29 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     return "{" + elems.mkString(", ") + "}"
   }
 
+  def getAllObjectTypesLUT():Map[Long, Long] = {
+    val allObjs = InputParser.collectObjects(universe, includeHidden=true).toArray
+
+    val lut = mutable.Map[Long, Long]()
+    for (obj <- allObjs) {
+      lut(obj.uuid) = obj.typeID
+    }
+
+    return lut.toMap
+  }
+
+  def getAllObjectTypesLUTJSON():String = {
+    val uuid2typeLUT = this.getAllObjectTypesLUT()
+
+    val elems = new ArrayBuffer[String]
+    for (key <- uuid2typeLUT.keySet) {
+      elems.append( "\"" + key + "\": \"" + uuid2typeLUT(key) + "\"")
+    }
+
+    return "{" + elems.mkString(", ") + "}"
+
+  }
+
   // Returns a list of only the valid action-agent combinations
   def getValidActionObjectCombinations(): Array[String] = {
     // Collect all objects visible to the agent

@@ -109,6 +109,12 @@ class VirtualEnv:
     def getValidActionObjectCombinations(self):
         return self.gateway.getValidActionObjectCombinations()
 
+    # Get a LUT of object_id to type_id
+    def getAllObjectTypesLUTJSON(self):
+        jsonStr = self.gateway.getAllObjectTypesLUTJSON()
+        data = json.loads(jsonStr)
+        return data        
+
     # Get possible action/object combinations
     def getPossibleActionObjectCombinations(self):        
         combinedJSON = self.gateway.getPossibleActionObjectCombinationsJSON()
