@@ -137,6 +137,11 @@ def userConsole(jarPath:str):
     print("Possible object types: " + str(env.getObjectTypes()))    
     print("Object IDX to Object Referent LUT: " + str(lut))
     print("\n")
+    print("Possible object referents LUT: " + str(env.getPossibleObjectReferentLUT()))
+    print("\n")
+    print("Valid action-object combinations: " + str(env.getValidActionObjectCombinations()))
+    print("\n")
+
     print("Task Description: " + str(env.getTaskDescription()) )    
 
     userInputStr = "look around"        # First action

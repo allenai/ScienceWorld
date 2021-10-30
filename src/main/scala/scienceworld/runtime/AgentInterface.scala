@@ -1,6 +1,6 @@
 package scienceworld.runtime
 
-import scienceworld.input.{ActionHandler, ExampleAction, InputParser}
+import scienceworld.input.{ActionDefinitions, ActionHandler, ExampleAction, InputParser}
 import scienceworld.objects.agent.Agent
 import scienceworld.runtime.pythonapi.TemplateAction
 import scienceworld.struct.EnvObject
@@ -65,6 +65,37 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
   def getPossibleObjects(): Array[String] = {
     val referents = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2, includeHidden = false).map(_._1)
     return referents
+  }
+
+  def getPossibleObjectReferentLUT():Map[Long, String] = {
+    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(this.getAgentVisibleObjects()._2, includeHidden = false)
+    return uuid2referentLUT
+  }
+
+  def getPossibleObjectReferentLUTJSON():String = {
+    val uuid2referentLUT = this.getPossibleObjectReferentLUT()
+
+    val elems = new ArrayBuffer[String]
+    for (key <- uuid2referentLUT.keySet) {
+      elems.append( "\"" + key + "\": \"" + uuid2referentLUT(key) + "\"")
+    }
+
+    return "{" + elems.mkString(", ") + "}"
+  }
+
+  // Returns a list of only the valid action-agent combinations
+  def getValidActionObjectCombinations(): Array[String] = {
+    // Collect all objects visible to the agent
+    val visibleObjTreeRoot = this.getAgentVisibleObjects()._2
+    val agentInventory = agent.getInventoryContainer()
+    val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList
+    // Collect UUID -> Unique Referent LUT
+    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=false)
+
+    // Generate all possible valid actions
+    val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
+
+    return validActions.map(_.mkHumanReadableStr())
   }
 
   def getPossibleActionObjectCombinations(): (Array[TemplateAction], Map[Int, String]) = {

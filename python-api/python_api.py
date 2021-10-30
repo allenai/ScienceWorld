@@ -99,6 +99,16 @@ class VirtualEnv:
     def getPossibleObjects(self):
         return self.gateway.getPossibleObjects()
 
+    # Get a list of object_ids to unique referents
+    def getPossibleObjectReferentLUT(self):
+        jsonStr = self.gateway.getPossibleObjectReferentLUTJSON()
+        data = json.loads(jsonStr)
+        return data       
+
+    # Get a list of *valid* agent-object combinations
+    def getValidActionObjectCombinations(self):
+        return self.gateway.getValidActionObjectCombinations()
+
     # Get possible action/object combinations
     def getPossibleActionObjectCombinations(self):        
         combinedJSON = self.gateway.getPossibleActionObjectCombinationsJSON()
