@@ -131,12 +131,12 @@ object ActionDefinitions {
 
     // Eat
     out.insertAll(out.length, ActionEat.generatePossibleValidActions(agent, visibleObjects))
-/*
+
     // Move an object to a new container
     out.insertAll(out.length, ActionMoveObject.generatePossibleValidActions(agent, visibleObjects))
     out.insertAll(out.length, ActionPourObject.generatePossibleValidActions(agent, visibleObjects))
 
-*/
+
     // Focus on object
     out.insertAll(out.length, ActionFocus.generatePossibleValidActions(agent, visibleObjects))
     out.insertAll(out.length, ActionResetTask.generatePossibleValidActions(agent, visibleObjects))
