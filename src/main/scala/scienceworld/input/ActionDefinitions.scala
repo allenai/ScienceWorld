@@ -118,7 +118,7 @@ object ActionDefinitions {
     out.insertAll(out.length, ActionCloseDoor.generatePossibleValidActions(agent, visibleObjects))
 
     // Move through door
-//    out.insertAll(out.length, ActionMoveThroughDoor.generatePossibleValidActions(agent, visibleObjects))
+    out.insertAll(out.length, ActionMoveThroughDoor.generatePossibleValidActions(agent, visibleObjects))
 
     // Look around
     out.insertAll(out.length, ActionLookAround.generatePossibleValidActions(agent, visibleObjects))
