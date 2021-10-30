@@ -2,6 +2,7 @@ package scienceworld.input
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
 import scienceworld.actions.{ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionUseDevice, ActionWait, PossibleAction}
+import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 
 import scala.collection.mutable.ArrayBuffer
@@ -109,7 +110,7 @@ object ActionDefinitions {
   /*
    * Make possible actions
    */
-  def mkPossibleActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def mkPossibleActions(agent:Agent, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     // Open/close door
@@ -160,8 +161,8 @@ object ActionDefinitions {
 
     // Inventory
     out.insertAll(out.length, ActionInventory.generatePossibleValidActions(agent, visibleObjects))
-    //out.insertAll(out.length, ActionPickUpObjectIntoInventory.generatePossibleValidActions(agent, visibleObjects))
-    //out.insertAll(out.length, ActionPutDownObjectIntoInventory.generatePossibleValidActions(agent, visibleObjects))
+    out.insertAll(out.length, ActionPickUpObjectIntoInventory.generatePossibleValidActions(agent, visibleObjects))
+    out.insertAll(out.length, ActionPutDownObjectIntoInventory.generatePossibleValidActions(agent, visibleObjects))
 
 
     // Return

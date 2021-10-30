@@ -1,6 +1,8 @@
 package scienceworld.actions
 
 import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionExprObject, ActionExprText, ActionRequestDef, ActionTrigger}
+import scienceworld.actions.ActionPickUpObjectIntoInventory.remap
+import scienceworld.actions.ActionPutDownObjectIntoInventory.remap
 import scienceworld.objects.portal.Door
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
@@ -155,6 +157,54 @@ object ActionPickUpObjectIntoInventory {
     out.toMap
   }
 
+  def isValidAction(assignments:Map[String, EnvObject], agent:Agent): (String, Boolean) = {
+    val (errStr, success) = ActionMoveObject.isValidAction( remap(assignments, agent) )
+    if (!success) return (errStr, success)
+
+    // If success, do secondary checks
+    val agent1 = assignments("agent")
+    val objToMove = assignments("obj")
+
+    agent1 match {
+      case a:Agent => {
+        val inventoryContents = a.getInventoryContainer().getContainedObjectsNotHidden()
+        if (!inventoryContents.contains(objToMove)) {
+          // Inventory does not contain the object to pick up -- is a valid action
+          return ("", true)
+        } else {
+          return ("That object already appears to be in the inventory.", false)
+        }
+      }
+    }
+
+    return (Action.MESSAGE_UNKNOWN_CATCH, false)
+  }
+
+  def generatePossibleValidActions(agent:Agent, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
+
+    for (obj1 <- visibleObjects) {
+      // Pack for check
+      val assignments = Map(
+        "agent" -> agent,
+        "obj" -> obj1,
+      )
+
+      // Do check
+      if (this.isValidAction(assignments, agent)._2 == true) {
+        // Pack and store
+        val pa = new PossibleAction(Array[ActionExpr](
+          new ActionExprText("pick up"),
+          new ActionExprObject(obj1)
+        ))
+        out.append(pa)
+      }
+    }
+
+    return out.toArray
+  }
+
+
 }
 
 /*
@@ -188,6 +238,53 @@ object ActionPutDownObjectIntoInventory {
     }
 
     out.toMap
+  }
+
+  def isValidAction(assignments:Map[String, EnvObject], agent:Agent): (String, Boolean) = {
+    val (errStr, success) = ActionMoveObject.isValidAction( remap(assignments, agent) )
+    if (!success) return (errStr, success)
+
+    // If success, do secondary checks
+    val agent1 = assignments("agent")
+    val objToMove = assignments("obj")
+
+    agent1 match {
+      case a:Agent => {
+        val inventoryContents = a.getInventoryContainer().getContainedObjectsNotHidden()
+        if (inventoryContents.contains(objToMove)) {
+          // Inventory contains the object to drop -- is a valid action
+          return ("", true)
+        } else {
+          return ("That object does not appear to be in the inventory.", false)
+        }
+      }
+    }
+
+    return (Action.MESSAGE_UNKNOWN_CATCH, false)
+  }
+
+  def generatePossibleValidActions(agent:Agent, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
+
+    for (obj1 <- visibleObjects) {
+      // Pack for check
+      val assignments = Map(
+        "agent" -> agent,
+        "obj" -> obj1,
+      )
+
+      // Do check
+      if (this.isValidAction(assignments, agent)._2 == true) {
+        // Pack and store
+        val pa = new PossibleAction(Array[ActionExpr](
+          new ActionExprText("put down"),
+          new ActionExprObject(obj1)
+        ))
+        out.append(pa)
+      }
+    }
+
+    return out.toArray
   }
 
 }
