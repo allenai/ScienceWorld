@@ -71,7 +71,7 @@ object ActionActivate {
     return ("", true)
   }
 
-  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     for (obj <- visibleObjects) {
@@ -86,7 +86,7 @@ object ActionActivate {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("activate"),
-          new ActionExprObject(obj)
+          new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
         ))
         out.append(pa)
       }
@@ -161,7 +161,7 @@ object ActionDeactivate {
     return ("", true)
   }
 
-  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     for (obj <- visibleObjects) {
@@ -176,7 +176,7 @@ object ActionDeactivate {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("deactivate"),
-          new ActionExprObject(obj)
+          new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
         ))
         out.append(pa)
       }

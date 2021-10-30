@@ -98,7 +98,7 @@ object ActionMoveObject {
     return ("", true)
   }
 
-  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     for (obj1 <- visibleObjects) {
@@ -115,9 +115,9 @@ object ActionMoveObject {
           // Pack and store
           val pa = new PossibleAction(Array[ActionExpr](
             new ActionExprText("move"),
-            new ActionExprObject(obj1),
+            new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid)),
             new ActionExprText("to"),
-            new ActionExprObject(obj2)
+            new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid))
           ))
           out.append(pa)
         }
@@ -180,7 +180,7 @@ object ActionPickUpObjectIntoInventory {
     return (Action.MESSAGE_UNKNOWN_CATCH, false)
   }
 
-  def generatePossibleValidActions(agent:Agent, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:Agent, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     for (obj1 <- visibleObjects) {
@@ -195,7 +195,7 @@ object ActionPickUpObjectIntoInventory {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("pick up"),
-          new ActionExprObject(obj1)
+          new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid))
         ))
         out.append(pa)
       }
@@ -263,7 +263,7 @@ object ActionPutDownObjectIntoInventory {
     return (Action.MESSAGE_UNKNOWN_CATCH, false)
   }
 
-  def generatePossibleValidActions(agent:Agent, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:Agent, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     for (obj1 <- visibleObjects) {
@@ -278,7 +278,7 @@ object ActionPutDownObjectIntoInventory {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("put down"),
-          new ActionExprObject(obj1)
+          new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid))
         ))
         out.append(pa)
       }
@@ -428,7 +428,7 @@ object ActionPourObject {
     return ("", true)
   }
 
-  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     for (obj1 <- visibleObjects) {
@@ -445,9 +445,9 @@ object ActionPourObject {
           // Pack and store
           val pa = new PossibleAction(Array[ActionExpr](
             new ActionExprText("pour"),
-            new ActionExprObject(obj1),
+            new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid)),
             new ActionExprText("into"),
-            new ActionExprObject(obj2)
+            new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid))
           ))
           out.append(pa)
         }

@@ -95,8 +95,11 @@ object EntryPoint {
             val visibleObjTreeRoot = agentInterface.getAgentVisibleObjects()._2
             val agentInventory = agent.getInventoryContainer()
             val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList ++ InputParser.collectObjects(agentInventory, includeHidden = false).toList
+            // Collect UUID -> Unique Referent LUT
+            val uuid2referentLUT = agentInterface.inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=false)
+
             // Generate all possible valid actions
-            val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray)
+            val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
 
             println("Valid actions (length = " + validActions.length + ")")
             for (i <- 0 until validActions.length) {

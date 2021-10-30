@@ -51,6 +51,21 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     out.toArray.sortBy(_._1)
   }
 
+  def getAllUniqueReferentsLUT(objTreeRoot:EnvObject, includeHidden:Boolean):Map[Long, String] = {
+    val out = mutable.Map[Long, String]()
+
+    val tuples = this.getAllUniqueReferents(objTreeRoot, includeHidden)
+    for (tuple <- tuples) {
+      val referent = tuple._1
+      val obj = tuple._2
+      val uuid = obj.uuid
+
+      out(uuid) = referent
+    }
+
+    return out.toMap
+  }
+
   private def chooseUniqueReferents(objReferents:Array[Array[String]]): Array[Int] = {
     // Array of referent indicies
     val indices = Array.fill[Int](objReferents.length)(0)

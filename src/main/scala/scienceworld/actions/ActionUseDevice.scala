@@ -71,7 +71,7 @@ object ActionUseDevice {
     return ("", true)
   }
 
-  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     for (obj1 <- visibleObjects) {
@@ -88,9 +88,9 @@ object ActionUseDevice {
           // Pack and store
           val pa = new PossibleAction(Array[ActionExpr](
             new ActionExprText("use"),
-            new ActionExprObject(obj1),
+            new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid)),
             new ActionExprText("on"),
-            new ActionExprObject(obj2)
+            new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid))
           ))
           out.append(pa)
         }

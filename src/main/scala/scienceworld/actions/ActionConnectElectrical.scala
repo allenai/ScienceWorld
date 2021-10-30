@@ -132,7 +132,7 @@ object ActionConnectElectrical {
     }
   }
 
-  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     for (obj1 <- visibleObjects) {
@@ -149,9 +149,9 @@ object ActionConnectElectrical {
           // Pack and store
           val pa = new PossibleAction(Array[ActionExpr](
             new ActionExprText("connect"),
-            new ActionExprObject(obj1),
+            new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid)),
             new ActionExprText("to"),
-            new ActionExprObject(obj2)
+            new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid))
           ))
           out.append(pa)
         }
@@ -225,7 +225,7 @@ object ActionDisconnectElectrical {
     return (Action.MESSAGE_UNKNOWN_CATCH, false)
   }
 
-  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     for (obj <- visibleObjects) {
@@ -240,7 +240,7 @@ object ActionDisconnectElectrical {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("disconnect"),
-          new ActionExprObject(obj)
+          new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
         ))
         out.append(pa)
       }

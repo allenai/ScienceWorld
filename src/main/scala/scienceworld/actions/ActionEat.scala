@@ -71,7 +71,7 @@ object ActionEat {
     return ("", true)
   }
 
-  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     for (obj <- visibleObjects) {
@@ -86,7 +86,7 @@ object ActionEat {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("eat"),
-          new ActionExprObject(obj)
+          new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
         ))
         out.append(pa)
       }

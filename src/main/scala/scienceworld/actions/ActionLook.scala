@@ -59,7 +59,7 @@ object ActionLookAround {
     return ("", true)
   }
 
-  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     // Single possible valid action
     val pa = new PossibleAction(Array[ActionExpr](
       new ActionExprText("look around")
@@ -119,7 +119,7 @@ object ActionLookAt {
     return ("", true)
   }
 
-  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     for (obj <- visibleObjects) {
@@ -134,7 +134,7 @@ object ActionLookAt {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("look at"),
-          new ActionExprObject(obj)
+          new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
         ))
         out.append(pa)
       }
@@ -234,7 +234,7 @@ object ActionLookIn {
     return ("It's not clear how to look inside of that.", false)
   }
 
-  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     for (obj <- visibleObjects) {
@@ -249,7 +249,7 @@ object ActionLookIn {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("look in"),
-          new ActionExprObject(obj)
+          new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
         ))
         out.append(pa)
       }

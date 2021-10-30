@@ -77,10 +77,10 @@ case class ActionExprIdentifier(val identifier:String) extends ActionExpr {
 }
 
 // Storage class for holding an object match in PossibleAction
-case class ActionExprObject(val obj:EnvObject) extends ActionExpr {
+case class ActionExprObject(val obj:EnvObject, val referent:String) extends ActionExpr {
   override def mkHumanReadableExample(): String = {
-    // TODO: Return unique referent
-    return obj.name
+    //return obj.name
+    return referent
   }
 }
 

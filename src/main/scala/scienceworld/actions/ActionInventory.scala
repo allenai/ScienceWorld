@@ -62,7 +62,7 @@ object ActionInventory {
   }
 
 
-  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     // Single possible valid action
     val pa = new PossibleAction(Array[ActionExpr](
       new ActionExprText("inventory")
