@@ -116,15 +116,14 @@ object ActionDefinitions {
     // Open/close door
     out.insertAll(out.length, ActionOpenDoor.generatePossibleValidActions(agent, visibleObjects))
     out.insertAll(out.length, ActionCloseDoor.generatePossibleValidActions(agent, visibleObjects))
-/*
+
     // Move through door
-    out.insertAll(out.length, ActionMoveThroughDoor.generatePossibleValidActions(agent, visibleObjects))
+//    out.insertAll(out.length, ActionMoveThroughDoor.generatePossibleValidActions(agent, visibleObjects))
 
     // Look around
     out.insertAll(out.length, ActionLookAround.generatePossibleValidActions(agent, visibleObjects))
     out.insertAll(out.length, ActionLookAt.generatePossibleValidActions(agent, visibleObjects))
     out.insertAll(out.length, ActionLookIn.generatePossibleValidActions(agent, visibleObjects))
-*/
 
     // Activate/Deactivate
     out.insertAll(out.length, ActionActivate.generatePossibleValidActions(agent, visibleObjects))
@@ -136,7 +135,6 @@ object ActionDefinitions {
     // Move an object to a new container
     out.insertAll(out.length, ActionMoveObject.generatePossibleValidActions(agent, visibleObjects))
     out.insertAll(out.length, ActionPourObject.generatePossibleValidActions(agent, visibleObjects))
-
 
     // Focus on object
     out.insertAll(out.length, ActionFocus.generatePossibleValidActions(agent, visibleObjects))
