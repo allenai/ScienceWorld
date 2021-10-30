@@ -112,11 +112,10 @@ object ActionDefinitions {
   def mkPossibleActions(agent:EnvObject, visibleObjects:Array[EnvObject]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
-    /*
     // Open/close door
     out.insertAll(out.length, ActionOpenDoor.generatePossibleValidActions(agent, visibleObjects))
     out.insertAll(out.length, ActionCloseDoor.generatePossibleValidActions(agent, visibleObjects))
-
+/*
     // Move through door
     out.insertAll(out.length, ActionMoveThroughDoor.generatePossibleValidActions(agent, visibleObjects))
 
@@ -137,16 +136,17 @@ object ActionDefinitions {
     out.insertAll(out.length, ActionMoveObject.generatePossibleValidActions(agent, visibleObjects))
     out.insertAll(out.length, ActionPourObject.generatePossibleValidActions(agent, visibleObjects))
 
+*/
     // Focus on object
     out.insertAll(out.length, ActionFocus.generatePossibleValidActions(agent, visibleObjects))
     out.insertAll(out.length, ActionResetTask.generatePossibleValidActions(agent, visibleObjects))
 
     // Use device
-    out.insertAll(out.length, ActionUseDevice.generatePossibleValidActions(agent, visibleObjects))
+//    out.insertAll(out.length, ActionUseDevice.generatePossibleValidActions(agent, visibleObjects))
 
     // Read
     out.insertAll(out.length, ActionRead.generatePossibleValidActions(agent, visibleObjects))
-*/
+
 
     // Flush
     out.insertAll(out.length, ActionFlush.generatePossibleValidActions(agent, visibleObjects))
