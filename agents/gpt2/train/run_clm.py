@@ -37,7 +37,7 @@ from transformers import (
     MODEL_FOR_CAUSAL_LM_MAPPING,
     AutoConfig,
     AutoModelForCausalLM,
-    AutoTokenizer,
+    GPT2Tokenizer,
     HfArgumentParser,
     Trainer,
     TrainingArguments,
@@ -356,7 +356,7 @@ def main():
     #     logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
 
     model = AutoModelForCausalLM.from_pretrained(model_args.model_name_or_path)
-    tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name)
+    tokenizer = GPT2Tokenizer.from_pretrained(model_args.tokenizer_name)
 
     model.resize_token_embeddings(len(tokenizer))
 
