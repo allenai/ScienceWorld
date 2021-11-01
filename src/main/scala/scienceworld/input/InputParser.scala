@@ -451,9 +451,7 @@ object InputParser {
     // Step 2: Add children recursively
     if (includeHidden || !objectTreeRoot.isHidden()) {
       for (obj <- objectTreeRoot.getContainedObjectsAndPortals()) {
-        if (!out.contains(obj)) {
-          out ++= this.collectObjects(obj, includeHidden)
-        }
+        out ++= this.collectObjects(obj, includeHidden)
       }
     }
 

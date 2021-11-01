@@ -80,6 +80,11 @@ object EntryPoint {
         //println("Possible actions:\n\t" + actionHandler.getActionExamplesPlainText().mkString("\n\t"))
         //println("Possible Combinations:\n\t" + agentInterface.getPossibleActionObjectCombinations().mkString("\n\t") )
 
+        /*
+        println("TEST: ")
+        println(agentInterface.getAllObjectIdsTypesReferentsLUTJSON())
+        println("")
+         */
 
         // Get (and process) next user action
         var validInput:Boolean = false

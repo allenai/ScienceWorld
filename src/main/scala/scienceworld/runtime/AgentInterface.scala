@@ -112,6 +112,7 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
 
     val elems = new ArrayBuffer[String]
     for (obj <- allObjs) {
+      println(obj.name)
       val uuid = obj.uuid
       val typeId = obj.typeID
       val referents = obj.getReferents()
