@@ -106,6 +106,28 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
 
   }
 
+  // Get a LUT of {object_id: {type_id, referent:[]} values for the entire universe.
+  def getAllObjectIdsTypesReferentsLUTJSON(): String = {
+    val allObjs = InputParser.collectObjects(universe, includeHidden=true).toArray
+
+    val elems = new ArrayBuffer[String]
+    for (obj <- allObjs) {
+      val uuid = obj.uuid
+      val typeId = obj.typeID
+      val referents = obj.getReferents()
+      val referentsProcessed = new ArrayBuffer[String]
+      for (referent <- referents) {
+        referentsProcessed.append("\"" + referent + "\"")
+      }
+
+      val json = "\"" + uuid + "\":{ \"type_id\":" + typeId + ", \"referents\":[" + referentsProcessed.mkString(", ") + "] }"
+      elems.append(json)
+    }
+
+    val jsonOut = "{ " + elems.mkString(", ") + " }"
+    return jsonOut
+  }
+
   // Returns a list of only the valid action-agent combinations
   def getValidActionObjectCombinations(): Array[String] = {
     // Collect all objects visible to the agent

@@ -143,6 +143,8 @@ def userConsole(jarPath:str):
     print("\n")
     print("Object_ids to type_ids: " + str(env.getAllObjectTypesLUTJSON()))
     print("\n")
+    print("All objects, their ids, types, and referents: " + str(env.getAllObjectIdsTypesReferentsLUTJSON() ))
+    print("\n")
     print("Task Description: " + str(env.getTaskDescription()) )    
 
     userInputStr = "look around"        # First action

@@ -115,6 +115,12 @@ class VirtualEnv:
         data = json.loads(jsonStr)
         return data        
 
+    # Get a LUT of {object_id: {type_id, referent:[]} } tuples
+    def getAllObjectIdsTypesReferentsLUTJSON(self):
+        jsonStr = self.gateway.getAllObjectIdsTypesReferentsLUTJSON()
+        data = json.loads(jsonStr)
+        return data        
+
     # Get possible action/object combinations
     def getPossibleActionObjectCombinations(self):        
         combinedJSON = self.gateway.getPossibleActionObjectCombinationsJSON()

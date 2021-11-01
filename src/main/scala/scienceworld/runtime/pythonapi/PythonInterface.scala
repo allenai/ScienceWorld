@@ -117,6 +117,11 @@ class PythonInterface() {
     agentInterface.get.getAllObjectTypesLUTJSON()
   }
 
+  def getAllObjectIdsTypesReferentsLUTJSON(): String = {
+    if (!agentInterface.isDefined) return ERROR_MESSAGE_UNINITIALIZED
+    agentInterface.get.getAllObjectIdsTypesReferentsLUTJSON()
+  }
+
   def getNumMoves():Integer = {
     if (agentInterface.isEmpty) return 0
     agentInterface.get.getCurIterations()
