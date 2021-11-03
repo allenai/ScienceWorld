@@ -80,6 +80,11 @@ object EntryPoint {
         //println("Possible actions:\n\t" + actionHandler.getActionExamplesPlainText().mkString("\n\t"))
         //println("Possible Combinations:\n\t" + agentInterface.getPossibleActionObjectCombinations().mkString("\n\t") )
 
+        /*
+        println("TEST: ")
+        println(agentInterface.getAllObjectIdsTypesReferentsLUTJSON())
+        println("")
+         */
 
         // Get (and process) next user action
         var validInput:Boolean = false
@@ -90,6 +95,22 @@ object EntryPoint {
             //agentInterface.printDebugDisplay()
           } else if (userInputString == "help") {
             println("Possible Actions: \n" + agentInterface.getPossibleActions().mkString("\n"))
+          } else if (userInputString == "validactions") {
+            // Collect all objects visible to the agent
+            val visibleObjTreeRoot = agentInterface.getAgentVisibleObjects()._2
+            val agentInventory = agent.getInventoryContainer()
+            val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList ++ InputParser.collectObjects(agentInventory, includeHidden = false).toList
+            // Collect UUID -> Unique Referent LUT
+            val uuid2referentLUT = agentInterface.inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=false)
+
+            // Generate all possible valid actions
+            val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
+
+            println("Valid actions (length = " + validActions.length + ")")
+            for (i <- 0 until validActions.length) {
+              println (i + ": \t" + validActions(i).toString())
+            }
+
           } else {
             validInput = true
           }

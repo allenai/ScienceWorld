@@ -1,6 +1,6 @@
 package scienceworld.actions
 
-import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
+import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionExprObject, ActionExprText, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.agent.Agent
@@ -16,26 +16,11 @@ import scala.collection.mutable.ArrayBuffer
  */
 class ActionLookAround(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
-  // This action is essentially always valid
-  override def isValidAction(): (String, Boolean) = {
-    // Check 1: Check that agent is valid
-    val agent = assignments("agent")
-    agent match {
-      case a:Agent => {
-        if (a.getContainer().isEmpty) return ("<ERROR> The agent is not in a container (this should never happen)", false)
-      }
-      case _ => return ("<ERROR> Invalid agent.", false)
-    }
-
-    // Checks complete -- if we reach here, the action is valid
-    return ("", true)
-  }
-
   override def runAction(): (String, Boolean) = {
     val agent = assignments("agent")
 
     // Do checks for valid action
-    val (invalidStr, isValid) = this.isValidAction()
+    val (invalidStr, isValid) = ActionLookAround.isValidAction(assignments)
     if (!isValid) return (invalidStr, false)
 
     val container = agent.getContainer().get
@@ -59,17 +44,8 @@ object ActionLookAround {
     actionHandler.addAction(action)
   }
 
-}
-
-
-
-/*
- * Action: Look Around
- */
-class ActionLookAt(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
-
   // This action is essentially always valid
-  override def isValidAction(): (String, Boolean) = {
+  def isValidAction(assignments:Map[String, EnvObject]): (String, Boolean) = {
     // Check 1: Check that agent is valid
     val agent = assignments("agent")
     agent match {
@@ -83,12 +59,28 @@ class ActionLookAt(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
     return ("", true)
   }
 
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    // Single possible valid action
+    val pa = new PossibleAction(Array[ActionExpr](
+      new ActionExprText("look around")
+    ))
+    return Array( pa )
+  }
+}
+
+
+
+/*
+ * Action: Look at object
+ */
+class ActionLookAt(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
+
   override def runAction(): (String, Boolean) = {
     val agent = assignments("agent")
     val obj = assignments("obj")
 
     // Do checks for valid action
-    val (invalidStr, isValid) = this.isValidAction()
+    val (invalidStr, isValid) = ActionLookAt.isValidAction(assignments)
     if (!isValid) return (invalidStr, false)
 
     val objDescription = obj.getDescriptionSafe(mode = MODE_DETAILED).getOrElse("<ERROR: attempting to view hidden object>")    //## TODO: Arguable whether the error case here should be caught by checks above
@@ -112,20 +104,10 @@ object ActionLookAt {
     actionHandler.addAction(action)
   }
 
-}
-
-
-/*
- * Action: Look Around
- */
-class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
-
   // This action is essentially always valid
-  override def isValidAction(): (String, Boolean) = {
+  def isValidAction(assignments:Map[String, EnvObject]): (String, Boolean) = {
     // Check 1: Check that agent is valid
     val agent = assignments("agent")
-    val obj = assignments("obj")
-
     agent match {
       case a:Agent => {
         if (a.getContainer().isEmpty) return ("<ERROR> The agent is not in a container (this should never happen)", false)
@@ -133,19 +115,41 @@ class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
       case _ => return ("<ERROR> Invalid agent.", false)
     }
 
-    // Check 2: If it's a container, check that it's open
-    if (obj.propContainer.isDefined) {
-      if (!obj.propContainer.get.isOpen) {
-        // Unopen container -- fail
-        return ("The " + obj.name + " isn't open, so you can't see inside.", false)
+    // Checks complete -- if we reach here, the action is valid
+    return ("", true)
+  }
+
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
+
+    for (obj <- visibleObjects) {
+      // Pack for check
+      val assignments = Map(
+        "agent" -> agent,
+        "obj" -> obj
+      )
+
+      // Do check
+      if (this.isValidAction(assignments)._2 == true) {
+        // Pack and store
+        val pa = new PossibleAction(Array[ActionExpr](
+          new ActionExprText("look at"),
+          new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
+        ))
+        out.append(pa)
       }
-      // Open container -- OK
-      return ("", true)
     }
 
-    // If we reach here, it's not a container, so we can't look in it
-    return ("It's not clear how to look inside of that.", false)
+    return out.toArray
   }
+
+}
+
+
+/*
+ * Action: Look in object
+ */
+class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
   override def runAction(): (String, Boolean) = {
     val agent = assignments("agent")
@@ -153,7 +157,7 @@ class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
     val os = new StringBuilder()
 
     // Do checks for valid action
-    val (invalidStr, isValid) = this.isValidAction()
+    val (invalidStr, isValid) = ActionLookIn.isValidAction(assignments)
     if (!isValid) return (invalidStr, false)
 
     // Run action
@@ -203,4 +207,54 @@ object ActionLookIn {
     actionHandler.addAction(action)
   }
 
+  // This action is essentially always valid
+  def isValidAction(assignments:Map[String, EnvObject]): (String, Boolean) = {
+    // Check 1: Check that agent is valid
+    val agent = assignments("agent")
+    val obj = assignments("obj")
+
+    agent match {
+      case a:Agent => {
+        if (a.getContainer().isEmpty) return ("<ERROR> The agent is not in a container (this should never happen)", false)
+      }
+      case _ => return ("<ERROR> Invalid agent.", false)
+    }
+
+    // Check 2: If it's a container, check that it's open
+    if (obj.propContainer.isDefined) {
+      if (!obj.propContainer.get.isOpen) {
+        // Unopen container -- fail
+        return ("The " + obj.name + " isn't open, so you can't see inside.", false)
+      }
+      // Open container -- OK
+      return ("", true)
+    }
+
+    // If we reach here, it's not a container, so we can't look in it
+    return ("It's not clear how to look inside of that.", false)
+  }
+
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
+
+    for (obj <- visibleObjects) {
+      // Pack for check
+      val assignments = Map(
+        "agent" -> agent,
+        "obj" -> obj
+      )
+
+      // Do check
+      if (this.isValidAction(assignments)._2 == true) {
+        // Pack and store
+        val pa = new PossibleAction(Array[ActionExpr](
+          new ActionExprText("look in"),
+          new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
+        ))
+        out.append(pa)
+      }
+    }
+
+    return out.toArray
+  }
 }

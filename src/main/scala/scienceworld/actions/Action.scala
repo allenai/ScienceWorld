@@ -10,11 +10,13 @@ class Action(val action:ActionRequestDef, val assignments:Map[String, EnvObject]
 
   // Returns (User error message (if applicable), whether the action could be executed or not)
   def isValidAction():(String, Boolean) = {
+    throw new RuntimeException("ERROR: Action.isValidAction() base class method called.")
     return ("error message", false)
   }
 
   // Returns: (User message, whether the action was successful or not)
   def runAction():(String, Boolean) = {
+    throw new RuntimeException("ERROR: Action.runAction() base class method called.")
     return ("Empty action (" + this.name + ").", false)
   }
 
@@ -25,3 +27,15 @@ object Action {
   val MESSAGE_UNKNOWN_CATCH       = "<unknown catch>"
 }
 
+
+
+class PossibleAction(val sequence:Array[ActionExpr]) {
+
+  def mkHumanReadableStr():String = {
+    return sequence.map(_.mkHumanReadableExample()).mkString(" ")
+  }
+
+  override def toString():String = {
+    this.mkHumanReadableStr()
+  }
+}

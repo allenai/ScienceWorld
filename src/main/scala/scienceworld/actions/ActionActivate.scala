@@ -1,47 +1,24 @@
 package scienceworld.actions
 
-import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
+import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionExprObject, ActionExprText, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
+
+import scala.collection.mutable.ArrayBuffer
 
 /*
  * Action: Activate
  */
 class ActionActivate(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
-  // This action is essentially always valid
-  override def isValidAction(): (String, Boolean) = {
-    val agent = assignments("agent")
-    val obj = assignments("device")
-
-    // Check 1: Check that agent is valid
-    agent match {
-      case a:Agent => { }
-      case _ => return ("I'm not sure what that means", false)
-    }
-
-    // Check 2: Check that the object is activable
-    if ((obj.propDevice.isEmpty) || (obj.propDevice.get.isActivable == false)) {
-      return ("The " + obj.name + " is not something that can be activated.", false)
-    }
-
-    // Check 3: Check that the object is not already activated
-    if (obj.propDevice.get.isActivated) {
-      return ("The " + obj.name + " is already activated.", false)
-    }
-
-    // Checks complete -- if we reach here, the action is valid
-    return ("", true)
-  }
-
   override def runAction(): (String, Boolean) = {
     val agent = assignments("agent")
     val obj = assignments("device")
 
     // Do checks for valid action
-    val (invalidStr, isValid) = this.isValidAction()
+    val (invalidStr, isValid) = ActionActivate.isValidAction(assignments)
     if (!isValid) return (invalidStr, false)
 
     // Activate
@@ -69,15 +46,8 @@ object ActionActivate {
     actionHandler.addAction(action)
   }
 
-}
 
-
-/*
- * Action: Deactivate
- */
-class ActionDeactivate(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
-
-  override def isValidAction(): (String, Boolean) = {
+  def isValidAction(assignments:Map[String, EnvObject]): (String, Boolean) = {
     val agent = assignments("agent")
     val obj = assignments("device")
 
@@ -93,20 +63,51 @@ class ActionDeactivate(action:ActionRequestDef, assignments:Map[String, EnvObjec
     }
 
     // Check 3: Check that the object is not already activated
-    if (!obj.propDevice.get.isActivated) {
-      return ("The " + obj.name + " is already deactivated.", false)
+    if (obj.propDevice.get.isActivated) {
+      return ("The " + obj.name + " is already activated.", false)
     }
 
     // Checks complete -- if we reach here, the action is valid
     return ("", true)
   }
 
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
+
+    for (obj <- visibleObjects) {
+      // Pack for check
+      val assignments = Map(
+        "agent" -> agent,
+        "device" -> obj
+      )
+
+      // Do check
+      if (this.isValidAction(assignments)._2 == true) {
+        // Pack and store
+        val pa = new PossibleAction(Array[ActionExpr](
+          new ActionExprText("activate"),
+          new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
+        ))
+        out.append(pa)
+      }
+    }
+
+    return out.toArray
+  }
+}
+
+
+/*
+ * Action: Deactivate
+ */
+class ActionDeactivate(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
+
   override def runAction(): (String, Boolean) = {
     val agent = assignments("agent")
     val obj = assignments("device")
 
     // Do checks for valid action
-    val (invalidStr, isValid) = this.isValidAction()
+    val (invalidStr, isValid) = ActionDeactivate.isValidAction(assignments)
     if (!isValid) return (invalidStr, false)
 
     // Open
@@ -133,6 +134,55 @@ object ActionDeactivate {
 
     val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
+  }
+
+
+  def isValidAction(assignments:Map[String, EnvObject]): (String, Boolean) = {
+    val agent = assignments("agent")
+    val obj = assignments("device")
+
+    // Check 1: Check that agent is valid
+    agent match {
+      case a:Agent => { }
+      case _ => return ("I'm not sure what that means", false)
+    }
+
+    // Check 2: Check that the object is activable
+    if ((obj.propDevice.isEmpty) || (obj.propDevice.get.isActivable == false)) {
+      return ("The " + obj.name + " is not something that can be activated.", false)
+    }
+
+    // Check 3: Check that the object is not already activated
+    if (!obj.propDevice.get.isActivated) {
+      return ("The " + obj.name + " is already deactivated.", false)
+    }
+
+    // Checks complete -- if we reach here, the action is valid
+    return ("", true)
+  }
+
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
+
+    for (obj <- visibleObjects) {
+      // Pack for check
+      val assignments = Map(
+        "agent" -> agent,
+        "device" -> obj
+      )
+
+      // Do check
+      if (this.isValidAction(assignments)._2 == true) {
+        // Pack and store
+        val pa = new PossibleAction(Array[ActionExpr](
+          new ActionExprText("deactivate"),
+          new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
+        ))
+        out.append(pa)
+      }
+    }
+
+    return out.toArray
   }
 
 }

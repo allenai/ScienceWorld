@@ -37,7 +37,7 @@ from transformers import (
     MODEL_FOR_CAUSAL_LM_MAPPING,
     AutoConfig,
     AutoModelForCausalLM,
-    AutoTokenizer,
+    GPT2Tokenizer,
     HfArgumentParser,
     Trainer,
     TrainingArguments,
@@ -309,51 +309,54 @@ def main():
     # The .from_pretrained methods guarantee that only one local process can concurrently
     # download model & vocab.
 
-    config_kwargs = {
-        "cache_dir": model_args.cache_dir,
-        "revision": model_args.model_revision,
-        "use_auth_token": True if model_args.use_auth_token else None,
-    }
-    if model_args.config_name:
-        config = AutoConfig.from_pretrained(model_args.config_name, **config_kwargs)
-    elif model_args.model_name_or_path:
-        config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
-    else:
-        config = CONFIG_MAPPING[model_args.model_type]()
-        logger.warning("You are instantiating a new config instance from scratch.")
-        if model_args.config_overrides is not None:
-            logger.info(f"Overriding config: {model_args.config_overrides}")
-            config.update_from_string(model_args.config_overrides)
+    # config_kwargs = {
+    #     "cache_dir": model_args.cache_dir,
+    #     "revision": model_args.model_revision,
+    #     "use_auth_token": True if model_args.use_auth_token else None,
+    # }
+    # if model_args.config_name:
+    #     config = AutoConfig.from_pretrained(model_args.config_name, **config_kwargs)
+    # elif model_args.model_name_or_path:
+    #     config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
+    # else:
+    #     config = CONFIG_MAPPING[model_args.model_type]()
+    #     logger.warning("You are instantiating a new config instance from scratch.")
+    #     if model_args.config_overrides is not None:
+    #         logger.info(f"Overriding config: {model_args.config_overrides}")
+    #         config.update_from_string(model_args.config_overrides)
 
-    tokenizer_kwargs = {
-        "cache_dir": model_args.cache_dir,
-        "use_fast": model_args.use_fast_tokenizer,
-        "revision": model_args.model_revision,
-        "use_auth_token": True if model_args.use_auth_token else None,
-    }
-    if model_args.tokenizer_name:
-        tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name, **tokenizer_kwargs)
-    elif model_args.model_name_or_path:
-        tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, **tokenizer_kwargs)
-    else:
-        raise ValueError(
-            "You are instantiating a new tokenizer from scratch. This is not supported by this script."
-            "You can do it from another script, save it, and load it from here, using --tokenizer_name."
-        )
+    # tokenizer_kwargs = {
+    #     "cache_dir": model_args.cache_dir,
+    #     "use_fast": model_args.use_fast_tokenizer,
+    #     "revision": model_args.model_revision,
+    #     "use_auth_token": True if model_args.use_auth_token else None,
+    # }
+    # if model_args.tokenizer_name:
+    #     tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name, **tokenizer_kwargs)
+    # elif model_args.model_name_or_path:
+    #     tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, **tokenizer_kwargs)
+    # else:
+    #     raise ValueError(
+    #         "You are instantiating a new tokenizer from scratch. This is not supported by this script."
+    #         "You can do it from another script, save it, and load it from here, using --tokenizer_name."
+    #     )
 
-    if model_args.model_name_or_path:
-        model = AutoModelForCausalLM.from_pretrained(
-            model_args.model_name_or_path,
-            from_tf=bool(".ckpt" in model_args.model_name_or_path),
-            config=config,
-            cache_dir=model_args.cache_dir,
-            revision=model_args.model_revision,
-            use_auth_token=True if model_args.use_auth_token else None,
-        )
-    else:
-        model = AutoModelForCausalLM.from_config(config)
-        n_params = sum(dict((p.data_ptr(), p.numel()) for p in model.parameters()).values())
-        logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
+    # if model_args.model_name_or_path:
+    #     model = AutoModelForCausalLM.from_pretrained(
+    #         model_args.model_name_or_path,
+    #         from_tf=bool(".ckpt" in model_args.model_name_or_path),
+    #         config=config,
+    #         cache_dir=model_args.cache_dir,
+    #         revision=model_args.model_revision,
+    #         use_auth_token=True if model_args.use_auth_token else None,
+    #     )
+    # else:
+    #     model = AutoModelForCausalLM.from_config(config)
+    #     n_params = sum(dict((p.data_ptr(), p.numel()) for p in model.parameters()).values())
+    #     logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
+
+    model = AutoModelForCausalLM.from_pretrained(model_args.model_name_or_path)
+    tokenizer = GPT2Tokenizer.from_pretrained(model_args.tokenizer_name)
 
     model.resize_token_embeddings(len(tokenizer))
 

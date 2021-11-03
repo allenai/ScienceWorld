@@ -1,6 +1,6 @@
 package scienceworld.runtime
 
-import scienceworld.input.{ActionHandler, ExampleAction, InputParser}
+import scienceworld.input.{ActionDefinitions, ActionHandler, ExampleAction, InputParser}
 import scienceworld.objects.agent.Agent
 import scienceworld.runtime.pythonapi.TemplateAction
 import scienceworld.struct.EnvObject
@@ -65,6 +65,83 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
   def getPossibleObjects(): Array[String] = {
     val referents = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2, includeHidden = false).map(_._1)
     return referents
+  }
+
+  def getPossibleObjectReferentLUT():Map[Long, String] = {
+    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(this.getAgentVisibleObjects()._2, includeHidden = false)
+    return uuid2referentLUT
+  }
+
+  def getPossibleObjectReferentLUTJSON():String = {
+    val uuid2referentLUT = this.getPossibleObjectReferentLUT()
+
+    val elems = new ArrayBuffer[String]
+    for (key <- uuid2referentLUT.keySet) {
+      elems.append( "\"" + key + "\": \"" + uuid2referentLUT(key) + "\"")
+    }
+
+    return "{" + elems.mkString(", ") + "}"
+  }
+
+  def getAllObjectTypesLUT():Map[Long, Long] = {
+    val allObjs = InputParser.collectObjects(universe, includeHidden=true).toArray
+
+    val lut = mutable.Map[Long, Long]()
+    for (obj <- allObjs) {
+      lut(obj.uuid) = obj.typeID
+    }
+
+    return lut.toMap
+  }
+
+  def getAllObjectTypesLUTJSON():String = {
+    val uuid2typeLUT = this.getAllObjectTypesLUT()
+
+    val elems = new ArrayBuffer[String]
+    for (key <- uuid2typeLUT.keySet) {
+      elems.append( "\"" + key + "\": \"" + uuid2typeLUT(key) + "\"")
+    }
+
+    return "{" + elems.mkString(", ") + "}"
+
+  }
+
+  // Get a LUT of {object_id: {type_id, referent:[]} values for the entire universe.
+  def getAllObjectIdsTypesReferentsLUTJSON(): String = {
+    val allObjs = InputParser.collectObjects(universe, includeHidden=true).toArray
+
+    val elems = new ArrayBuffer[String]
+    for (obj <- allObjs) {
+      println(obj.name)
+      val uuid = obj.uuid
+      val typeId = obj.typeID
+      val referents = obj.getReferents()
+      val referentsProcessed = new ArrayBuffer[String]
+      for (referent <- referents) {
+        referentsProcessed.append("\"" + referent + "\"")
+      }
+
+      val json = "\"" + uuid + "\":{ \"type_id\":" + typeId + ", \"referents\":[" + referentsProcessed.mkString(", ") + "] }"
+      elems.append(json)
+    }
+
+    val jsonOut = "{ " + elems.mkString(", ") + " }"
+    return jsonOut
+  }
+
+  // Returns a list of only the valid action-agent combinations
+  def getValidActionObjectCombinations(): Array[String] = {
+    // Collect all objects visible to the agent
+    val visibleObjTreeRoot = this.getAgentVisibleObjects()._2
+    val agentInventory = agent.getInventoryContainer()
+    val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList
+    // Collect UUID -> Unique Referent LUT
+    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=false)
+
+    // Generate all possible valid actions
+    val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
+
+    return validActions.map(_.mkHumanReadableStr())
   }
 
   def getPossibleActionObjectCombinations(): (Array[TemplateAction], Map[Int, String]) = {

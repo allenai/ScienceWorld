@@ -1,41 +1,24 @@
 package scienceworld.actions
 
-import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
+import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionExprObject, ActionExprText, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
+
+import scala.collection.mutable.ArrayBuffer
 
 /*
  * Action: Eat
  */
 class ActionEat(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
-  override def isValidAction(): (String, Boolean) = {
-    val agent = assignments("agent")
-    val food = assignments("food")
-
-    // Check 1: Check that agent is valid
-    agent match {
-      case a:Agent => { }
-      case _ => return ("I'm not sure what that means", false)
-    }
-
-    // Case 2: Food is not edible
-    if ((food.propEdibility.isEmpty) || (food.propEdibility.get.isEdible == false)) {
-      return ("The " + food.name + " is not edible.", false)
-    }
-
-    // Unimplemented
-    return ("", true)
-  }
-
   override def runAction(): (String, Boolean) = {
     val agent = assignments("agent")
     val food = assignments("food")
 
     // Do checks for valid action
-    val (invalidStr, isValid) = this.isValidAction()
+    val (invalidStr, isValid) = ActionEat.isValidAction(assignments)
     if (!isValid) return (invalidStr, false)
 
     // Case 2: Poisonous?
@@ -66,6 +49,50 @@ object ActionEat {
 
     val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
+  }
+
+
+  def isValidAction(assignments:Map[String, EnvObject]): (String, Boolean) = {
+    val agent = assignments("agent")
+    val food = assignments("food")
+
+    // Check 1: Check that agent is valid
+    agent match {
+      case a:Agent => { }
+      case _ => return ("I'm not sure what that means", false)
+    }
+
+    // Case 2: Food is not edible
+    if ((food.propEdibility.isEmpty) || (food.propEdibility.get.isEdible == false)) {
+      return ("The " + food.name + " is not edible.", false)
+    }
+
+    // Unimplemented
+    return ("", true)
+  }
+
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
+
+    for (obj <- visibleObjects) {
+      // Pack for check
+      val assignments = Map(
+        "agent" -> agent,
+        "food" -> obj
+      )
+
+      // Do check
+      if (this.isValidAction(assignments)._2 == true) {
+        // Pack and store
+        val pa = new PossibleAction(Array[ActionExpr](
+          new ActionExprText("eat"),
+          new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
+        ))
+        out.append(pa)
+      }
+    }
+
+    return out.toArray
   }
 
 }

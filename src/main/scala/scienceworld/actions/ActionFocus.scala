@@ -1,36 +1,25 @@
 package scienceworld.actions
 
-import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
+import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionExprObject, ActionExprText, ActionRequestDef, ActionTrigger}
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
 
+import scala.collection.mutable.ArrayBuffer
+
 /*
  * Action: Focus
  */
 class ActionFocus(action:ActionRequestDef, assignments:Map[String, EnvObject], objMonitor:ObjMonitor) extends Action(action, assignments) {
-
-  // This action is essentially always valid
-  override def isValidAction(): (String, Boolean) = {
-    // Check 1: Check that agent is valid
-    val agent = assignments("agent")
-    agent match {
-      case a:Agent => { }
-      case _ => return ("I'm not sure what that means", false)
-    }
-
-    // Checks complete -- if we reach here, the action is valid
-    return ("", true)
-  }
 
   override def runAction(): (String, Boolean) = {
     val agent = assignments("agent")
     val obj = assignments("obj")
 
     // Do checks for valid action
-    val (invalidStr, isValid) = this.isValidAction()
+    val (invalidStr, isValid) = ActionFocus.isValidAction(assignments)
     if (!isValid) return (invalidStr, false)
 
     // Do action
@@ -56,14 +45,8 @@ object ActionFocus {
     actionHandler.addAction(action)
   }
 
-}
 
-/*
- * Action: Focus
- */
-class ActionResetTask(action:ActionRequestDef, assignments:Map[String, EnvObject], objMonitor:ObjMonitor, goalSequence:GoalSequence) extends Action(action, assignments) {
-  // This action is essentially always valid
-  override def isValidAction(): (String, Boolean) = {
+  def isValidAction(assignments:Map[String, EnvObject]): (String, Boolean) = {
     // Check 1: Check that agent is valid
     val agent = assignments("agent")
     agent match {
@@ -75,12 +58,41 @@ class ActionResetTask(action:ActionRequestDef, assignments:Map[String, EnvObject
     return ("", true)
   }
 
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
+
+    for (obj <- visibleObjects) {
+      // Pack for check
+      val assignments = Map(
+        "agent" -> agent,
+        "obj" -> obj
+      )
+
+      // Do check
+      if (this.isValidAction(assignments)._2 == true) {
+        // Pack and store
+        val pa = new PossibleAction(Array[ActionExpr](
+          new ActionExprText("focus on"),
+          new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
+        ))
+        out.append(pa)
+      }
+    }
+
+    return out.toArray
+  }
+}
+
+/*
+ * Action: Focus
+ */
+class ActionResetTask(action:ActionRequestDef, assignments:Map[String, EnvObject], objMonitor:ObjMonitor, goalSequence:GoalSequence) extends Action(action, assignments) {
 
   override def runAction(): (String, Boolean) = {
     val agent = assignments("agent")
 
     // Do checks for valid action
-    val (invalidStr, isValid) = this.isValidAction()
+    val (invalidStr, isValid) = ActionResetTask.isValidAction(assignments)
     if (!isValid) return (invalidStr, false)
 
     goalSequence.reset()
@@ -102,6 +114,27 @@ object ActionResetTask {
 
     val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
     actionHandler.addAction(action)
+  }
+
+  // This action is essentially always valid
+  def isValidAction(assignments:Map[String, EnvObject]): (String, Boolean) = {
+    // Check 1: Check that agent is valid
+    val agent = assignments("agent")
+    agent match {
+      case a:Agent => { }
+      case _ => return ("I'm not sure what that means", false)
+    }
+
+    // Checks complete -- if we reach here, the action is valid
+    return ("", true)
+  }
+
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    // Single possible valid action
+    val pa = new PossibleAction(Array[ActionExpr](
+      new ActionExprText("reset task")
+    ))
+    return Array( pa )
   }
 
 }

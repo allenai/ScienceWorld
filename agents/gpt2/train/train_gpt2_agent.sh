@@ -4,7 +4,8 @@ export OUTPUT_DIR=/tmp/test-clm
 
 
 python run_clm.py \
-    --model_name_or_path gpt2-medium \
+    --model_name_or_path /data/ai2-mosaic-public/comet-distill \
+    --tokenizer_name /data/ai2-mosaic-public/comet-distill-tokenizer \
     --train_file ${DATAIN} \
     --validation_file ${DATAIN} \
     --do_train \

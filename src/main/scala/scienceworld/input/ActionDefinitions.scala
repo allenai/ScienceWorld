@@ -1,7 +1,9 @@
 package scienceworld.input
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
-import scienceworld.actions.{ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionUseDevice, ActionWait}
+import scienceworld.actions.{ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionUseDevice, ActionWait, PossibleAction}
+import scienceworld.objects.agent.Agent
+import scienceworld.struct.EnvObject
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -103,6 +105,65 @@ object ActionDefinitions {
 
     // Return
     actionHandler
+  }
+
+  /*
+   * Make possible actions
+   */
+  def mkPossibleActions(agent:Agent, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
+
+    // Open/close door
+    out.insertAll(out.length, ActionOpenDoor.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+    out.insertAll(out.length, ActionCloseDoor.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+    // Move through door
+    out.insertAll(out.length, ActionMoveThroughDoor.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+    // Look around
+    out.insertAll(out.length, ActionLookAround.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+    out.insertAll(out.length, ActionLookAt.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+    out.insertAll(out.length, ActionLookIn.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+    // Activate/Deactivate
+    out.insertAll(out.length, ActionActivate.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+    out.insertAll(out.length, ActionDeactivate.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+    // Eat
+    out.insertAll(out.length, ActionEat.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+    // Move an object to a new container
+    out.insertAll(out.length, ActionMoveObject.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+    out.insertAll(out.length, ActionPourObject.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+    // Focus on object
+    out.insertAll(out.length, ActionFocus.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+    out.insertAll(out.length, ActionResetTask.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+    // Use device
+    out.insertAll(out.length, ActionUseDevice.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+    // Read
+    out.insertAll(out.length, ActionRead.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+    // Flush
+    out.insertAll(out.length, ActionFlush.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+    // Connect (electrically)
+    out.insertAll(out.length, ActionConnectElectrical.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+    out.insertAll(out.length, ActionDisconnectElectrical.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+    // Wait
+    out.insertAll(out.length, ActionWait.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+    // Inventory
+    out.insertAll(out.length, ActionInventory.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+    out.insertAll(out.length, ActionPickUpObjectIntoInventory.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+    out.insertAll(out.length, ActionPutDownObjectIntoInventory.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+
+    // Return
+    return out.toArray
   }
 
 

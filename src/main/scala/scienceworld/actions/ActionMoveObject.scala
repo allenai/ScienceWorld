@@ -1,6 +1,8 @@
 package scienceworld.actions
 
-import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger}
+import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionExprObject, ActionExprText, ActionRequestDef, ActionTrigger}
+import scienceworld.actions.ActionPickUpObjectIntoInventory.remap
+import scienceworld.actions.ActionPutDownObjectIntoInventory.remap
 import scienceworld.objects.portal.Door
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
@@ -8,6 +10,7 @@ import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 
 /*
@@ -15,7 +18,49 @@ import scala.collection.mutable
  */
 class ActionMoveObject(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
-  override def isValidAction(): (String, Boolean) = {
+  override def runAction(): (String, Boolean) = {
+    val agent = assignments("agent")
+    val objToMove = assignments("obj")
+    val container = assignments("moveTo")
+
+    // Do checks for valid action
+    val (invalidStr, isValid) = ActionMoveObject.isValidAction(assignments)
+    if (!isValid) return (invalidStr, false)
+
+    // Move the object
+    container.addObject(objToMove)
+    // TODO: Also disconnect the object, if it's electrically connected
+    val os = new StringBuilder
+    if (objToMove.isElectricallyConnected()) {
+      os.append("(disconnecting " + objToMove.name + ")")
+      objToMove.disconnectElectricalTerminals()
+    }
+    os.append("You move the " + objToMove.name + " to the " + container.name + ".")
+
+    return (os.toString(), true)
+  }
+
+}
+
+object ActionMoveObject {
+  val ACTION_NAME = "move object"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_MOVEOBJECT
+
+  def registerAction(actionHandler:ActionHandler) {
+    // Action: Move
+    val triggerPhrase = new ActionTrigger(List(
+      new ActionExprOR(List("move", "put")),
+      new ActionExprIdentifier("obj"),
+      new ActionExprOR(List("to", "in", "into", "on")),
+      new ActionExprIdentifier("moveTo")
+    ))
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    actionHandler.addAction(action)
+
+  }
+
+
+  def isValidAction(assignments:Map[String, EnvObject]): (String, Boolean) = {
     val agent = assignments("agent")
     val objToMove = assignments("obj")
     val container = assignments("moveTo")
@@ -53,45 +98,33 @@ class ActionMoveObject(action:ActionRequestDef, assignments:Map[String, EnvObjec
     return ("", true)
   }
 
-  override def runAction(): (String, Boolean) = {
-    val agent = assignments("agent")
-    val objToMove = assignments("obj")
-    val container = assignments("moveTo")
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
 
-    // Do checks for valid action
-    val (invalidStr, isValid) = this.isValidAction()
-    if (!isValid) return (invalidStr, false)
+    for (obj1 <- visibleObjects) {
+      for (obj2 <- visibleObjects) {
+        // Pack for check
+        val assignments = Map(
+          "agent" -> agent,
+          "obj" -> obj1,
+          "moveTo" -> obj2
+        )
 
-    // Move the object
-    container.addObject(objToMove)
-    // TODO: Also disconnect the object, if it's electrically connected
-    val os = new StringBuilder
-    if (objToMove.isElectricallyConnected()) {
-      os.append("(disconnecting " + objToMove.name + ")")
-      objToMove.disconnectElectricalTerminals()
+        // Do check
+        if (this.isValidAction(assignments)._2 == true) {
+          // Pack and store
+          val pa = new PossibleAction(Array[ActionExpr](
+            new ActionExprText("move"),
+            new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid)),
+            new ActionExprText("to"),
+            new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid))
+          ))
+          out.append(pa)
+        }
+      }
     }
-    os.append("You move the " + objToMove.name + " to the " + container.name + ".")
 
-    return (os.toString(), true)
-  }
-
-}
-
-object ActionMoveObject {
-  val ACTION_NAME = "move object"
-  val ACTION_ID   = ActionDefinitions.ACTION_ID_MOVEOBJECT
-
-  def registerAction(actionHandler:ActionHandler) {
-    // Action: Move
-    val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("move", "put")),
-      new ActionExprIdentifier("obj"),
-      new ActionExprOR(List("to", "in", "into", "on")),
-      new ActionExprIdentifier("moveTo")
-    ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
-    actionHandler.addAction(action)
-
+    return out.toArray
   }
 
 }
@@ -123,6 +156,54 @@ object ActionPickUpObjectIntoInventory {
 
     out.toMap
   }
+
+  def isValidAction(assignments:Map[String, EnvObject], agent:Agent): (String, Boolean) = {
+    val (errStr, success) = ActionMoveObject.isValidAction( remap(assignments, agent) )
+    if (!success) return (errStr, success)
+
+    // If success, do secondary checks
+    val agent1 = assignments("agent")
+    val objToMove = assignments("obj")
+
+    agent1 match {
+      case a:Agent => {
+        val inventoryContents = a.getInventoryContainer().getContainedObjectsNotHidden()
+        if (!inventoryContents.contains(objToMove)) {
+          // Inventory does not contain the object to pick up -- is a valid action
+          return ("", true)
+        } else {
+          return ("That object already appears to be in the inventory.", false)
+        }
+      }
+    }
+
+    return (Action.MESSAGE_UNKNOWN_CATCH, false)
+  }
+
+  def generatePossibleValidActions(agent:Agent, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
+
+    for (obj1 <- visibleObjects) {
+      // Pack for check
+      val assignments = Map(
+        "agent" -> agent,
+        "obj" -> obj1,
+      )
+
+      // Do check
+      if (this.isValidAction(assignments, agent)._2 == true) {
+        // Pack and store
+        val pa = new PossibleAction(Array[ActionExpr](
+          new ActionExprText("pick up"),
+          new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid))
+        ))
+        out.append(pa)
+      }
+    }
+
+    return out.toArray
+  }
+
 
 }
 
@@ -159,6 +240,53 @@ object ActionPutDownObjectIntoInventory {
     out.toMap
   }
 
+  def isValidAction(assignments:Map[String, EnvObject], agent:Agent): (String, Boolean) = {
+    val (errStr, success) = ActionMoveObject.isValidAction( remap(assignments, agent) )
+    if (!success) return (errStr, success)
+
+    // If success, do secondary checks
+    val agent1 = assignments("agent")
+    val objToMove = assignments("obj")
+
+    agent1 match {
+      case a:Agent => {
+        val inventoryContents = a.getInventoryContainer().getContainedObjectsNotHidden()
+        if (inventoryContents.contains(objToMove)) {
+          // Inventory contains the object to drop -- is a valid action
+          return ("", true)
+        } else {
+          return ("That object does not appear to be in the inventory.", false)
+        }
+      }
+    }
+
+    return (Action.MESSAGE_UNKNOWN_CATCH, false)
+  }
+
+  def generatePossibleValidActions(agent:Agent, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
+
+    for (obj1 <- visibleObjects) {
+      // Pack for check
+      val assignments = Map(
+        "agent" -> agent,
+        "obj" -> obj1,
+      )
+
+      // Do check
+      if (this.isValidAction(assignments, agent)._2 == true) {
+        // Pack and store
+        val pa = new PossibleAction(Array[ActionExpr](
+          new ActionExprText("put down"),
+          new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid))
+        ))
+        out.append(pa)
+      }
+    }
+
+    return out.toArray
+  }
+
 }
 
 
@@ -168,7 +296,75 @@ object ActionPutDownObjectIntoInventory {
  */
 class ActionPourObject(action:ActionRequestDef, assignments:Map[String, EnvObject]) extends Action(action, assignments) {
 
-  override def isValidAction(): (String, Boolean) = {
+  override def runAction(): (String, Boolean) = {
+    val agent = assignments("agent")
+    val objToMove = assignments("obj")
+    val container = assignments("moveTo")
+
+    // Do checks for valid action
+    val (invalidStr, isValid) = ActionPourObject.isValidAction(assignments)
+    if (!isValid) return (invalidStr, false)
+
+    // Check to see if we're pouring out a container
+    var pouringOutContainer:Boolean = false
+    if ((objToMove.propContainer.isDefined) && (objToMove.propContainer.get.isContainer)) pouringOutContainer = true
+
+
+    // Do the pouring
+    val os = new StringBuilder
+
+    if (pouringOutContainer) {
+      // Pour all objects in the old container into the new container
+      for (obj <- objToMove.getContainedObjects()) {
+        if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable)) {
+          // Move all movable objects
+          container.addObject(obj)
+          // Electrically disconnect, if connected
+          if (obj.isElectricallyConnected()) {
+            os.append("(disconnecting " + obj.name + ")\n")
+            obj.disconnectElectricalTerminals()
+          }
+        }
+      }
+      os.append("You pour the contents of the " + objToMove.name + " into the " + container.name + ".")
+      return (os.toString(), true)
+
+    } else {
+      container.addObject(objToMove)
+      if (objToMove.isElectricallyConnected()) {
+        // Electrically disconnect, if connected
+        os.append("(disconnecting " + objToMove.name + ")\n")
+        objToMove.disconnectElectricalTerminals()
+      }
+      os.append("You pour the " + objToMove.name + " into the " + container.name + ".")
+      return (os.toString(), true)
+
+    }
+
+
+    return (Action.MESSAGE_UNKNOWN_CATCH, false)
+  }
+
+}
+
+object ActionPourObject {
+  val ACTION_NAME = "pour object"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_POUROBJECT
+
+  def registerAction(actionHandler:ActionHandler) {
+    // Action: Move
+    val triggerPhrase = new ActionTrigger(List(
+      new ActionExprOR(List("pour")),
+      new ActionExprIdentifier("obj"),
+      new ActionExprOR(List("in", "into", "on")),
+      new ActionExprIdentifier("moveTo")
+    ))
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    actionHandler.addAction(action)
+
+  }
+
+  def isValidAction(assignments:Map[String, EnvObject]): (String, Boolean) = {
     val agent = assignments("agent")
     val objToMove = assignments("obj")
     val container = assignments("moveTo")
@@ -232,74 +428,34 @@ class ActionPourObject(action:ActionRequestDef, assignments:Map[String, EnvObjec
     return ("", true)
   }
 
-  override def runAction(): (String, Boolean) = {
-    val agent = assignments("agent")
-    val objToMove = assignments("obj")
-    val container = assignments("moveTo")
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
 
-    // Do checks for valid action
-    val (invalidStr, isValid) = this.isValidAction()
-    if (!isValid) return (invalidStr, false)
+    for (obj1 <- visibleObjects) {
+      for (obj2 <- visibleObjects) {
+        // Pack for check
+        val assignments = Map(
+          "agent" -> agent,
+          "obj" -> obj1,
+          "moveTo" -> obj2
+        )
 
-    // Check to see if we're pouring out a container
-    var pouringOutContainer:Boolean = false
-    if ((objToMove.propContainer.isDefined) && (objToMove.propContainer.get.isContainer)) pouringOutContainer = true
-
-
-    // Do the pouring
-    val os = new StringBuilder
-
-    if (pouringOutContainer) {
-      // Pour all objects in the old container into the new container
-      for (obj <- objToMove.getContainedObjects()) {
-        if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable)) {
-          // Move all movable objects
-          container.addObject(obj)
-          // Electrically disconnect, if connected
-          if (obj.isElectricallyConnected()) {
-            os.append("(disconnecting " + obj.name + ")\n")
-            obj.disconnectElectricalTerminals()
-          }
+        // Do check
+        if (this.isValidAction(assignments)._2 == true) {
+          // Pack and store
+          val pa = new PossibleAction(Array[ActionExpr](
+            new ActionExprText("pour"),
+            new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid)),
+            new ActionExprText("into"),
+            new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid))
+          ))
+          out.append(pa)
         }
       }
-      os.append("You pour the contents of the " + objToMove.name + " into the " + container.name + ".")
-      return (os.toString(), true)
-
-    } else {
-      container.addObject(objToMove)
-      if (objToMove.isElectricallyConnected()) {
-        // Electrically disconnect, if connected
-        os.append("(disconnecting " + objToMove.name + ")\n")
-        objToMove.disconnectElectricalTerminals()
-      }
-      os.append("You pour the " + objToMove.name + " into the " + container.name + ".")
-      return (os.toString(), true)
-
     }
 
-
-    return (Action.MESSAGE_UNKNOWN_CATCH, false)
+    return out.toArray
   }
-
-}
-
-object ActionPourObject {
-  val ACTION_NAME = "pour object"
-  val ACTION_ID   = ActionDefinitions.ACTION_ID_POUROBJECT
-
-  def registerAction(actionHandler:ActionHandler) {
-    // Action: Move
-    val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("pour")),
-      new ActionExprIdentifier("obj"),
-      new ActionExprOR(List("in", "into", "on")),
-      new ActionExprIdentifier("moveTo")
-    ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
-    actionHandler.addAction(action)
-
-  }
-
 }
 
 

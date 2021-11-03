@@ -1,5 +1,7 @@
 package language.model
 
+import scienceworld.struct.EnvObject
+
 import scala.collection.mutable.ArrayBuffer
 import scala.util.parsing.input.Positional
 
@@ -72,4 +74,19 @@ case class ActionExprIdentifier(val identifier:String) extends ActionExpr {
   }
 
   override def toString():String = return "ActionExprIdentifier(identifier: " + identifier + ")"
+}
+
+// Storage class for holding an object match in PossibleAction
+case class ActionExprObject(val obj:EnvObject, val referent:String) extends ActionExpr {
+  override def mkHumanReadableExample(): String = {
+    //return obj.name
+    return referent
+  }
+}
+
+// Storage class for holding specific text in PossibleAction
+case class ActionExprText(val text:String) extends ActionExpr {
+  override def mkHumanReadableExample(): String = {
+    return text
+  }
 }
