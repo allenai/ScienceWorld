@@ -66,7 +66,7 @@ object ActionInventory {
     // Single possible valid action
     val pa = new PossibleAction(Array[ActionExpr](
       new ActionExprText("inventory")
-    ))
+    ), this.ACTION_ID)
     return Array( pa )
   }
 

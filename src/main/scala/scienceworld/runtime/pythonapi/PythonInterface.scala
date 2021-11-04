@@ -103,6 +103,11 @@ class PythonInterface() {
     agentInterface.get.getValidActionObjectCombinations().toList.asJava
   }
 
+  def getValidActionObjectCombinationsJSON():String = {
+    if (!agentInterface.isDefined) return ERROR_MESSAGE_UNINITIALIZED
+    agentInterface.get.getValidActionObjectCombinationsJSON()
+  }
+
   def getPossibleActionObjectCombinationsJSON(): String = {
     if (!agentInterface.isDefined) return ERROR_MESSAGE_UNINITIALIZED
     agentInterface.get.getPossibleActionObjectCombinationsJSON()

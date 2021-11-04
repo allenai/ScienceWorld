@@ -91,7 +91,7 @@ object ActionUseDevice {
             new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid)),
             new ActionExprText("on"),
             new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid))
-          ))
+          ), this.ACTION_ID)
           out.append(pa)
         }
       }

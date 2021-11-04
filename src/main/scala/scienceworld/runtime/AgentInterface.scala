@@ -144,6 +144,29 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     return validActions.map(_.mkHumanReadableStr())
   }
 
+  def getValidActionObjectCombinationsJSON(): String = {
+    // Collect all objects visible to the agent
+    val visibleObjTreeRoot = this.getAgentVisibleObjects()._2
+    val agentInventory = agent.getInventoryContainer()
+    val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList
+    // Collect UUID -> Unique Referent LUT
+    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=false)
+
+    // Generate all possible valid actions
+    val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
+
+    // To templates
+    val validActionsTemplates = validActions.map(_.toTemplate())
+    val validActionTemplatesJSON = validActionsTemplates.map(_.toJSON())
+
+    // To JSON
+    val outJSON = "{\"validActions\": [" + validActionTemplatesJSON.mkString(",") + "]" + "}"
+
+    return outJSON
+  }
+
+
+
   def getPossibleActionObjectCombinations(): (Array[TemplateAction], Map[Int, String]) = {
     val OBJ_PLACEHOLDER_TOKEN = "OBJ"
     val START_TOKEN = "START "

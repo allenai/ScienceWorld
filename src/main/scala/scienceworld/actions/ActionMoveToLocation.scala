@@ -165,7 +165,7 @@ object ActionMoveThroughDoor {
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("go to"),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
-        ))
+        ), this.ACTION_ID)
         out.append(pa)
       }
     }

@@ -87,7 +87,7 @@ object ActionActivate {
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("activate"),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
-        ))
+        ), this.ACTION_ID)
         out.append(pa)
       }
     }
@@ -177,7 +177,7 @@ object ActionDeactivate {
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("deactivate"),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
-        ))
+        ), this.ACTION_ID)
         out.append(pa)
       }
     }
