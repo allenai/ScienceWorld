@@ -5,6 +5,7 @@ trait DeviceProperties {
   var isActivable:Boolean               = false
   var isActivated:Boolean               = false
   var isUsable:Boolean                  = false
+  var isBroken:Boolean                  = false       // For devices that are broken (e.g. for environment ablations)
 }
 
 
