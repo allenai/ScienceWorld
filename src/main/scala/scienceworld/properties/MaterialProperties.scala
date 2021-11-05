@@ -2,6 +2,7 @@ package scienceworld.properties
 
 trait MaterialProperties {
   var substanceName:String            = "none"
+  var nameInStateOfMatter:Map[String, String] = Map("solid" -> "none", "liquid" -> "none", "gas" -> "none")
   var color:String                    = "clear"
   // Thermal (all temperatures in C)
   var temperatureC:Double             = 0.0f
@@ -17,6 +18,7 @@ trait MaterialProperties {
 
 class AirProp extends MaterialProperties {
   substanceName                   = "air"
+  nameInStateOfMatter             = Map("solid" -> "solid air", "liquid" -> "liquid air", "gas" -> "air")
   color                           = "clear"
   // Thermal
   temperatureC                    = 10.0f
@@ -35,6 +37,7 @@ class AirProp extends MaterialProperties {
  */
 class MetalProp extends MaterialProperties {
   substanceName                   = "metal"
+  nameInStateOfMatter             = Map("solid" -> "metal", "liquid" -> "liquid metal", "gas" -> "gaseous metal")
   color                           = "grey"
   // Thermal
   temperatureC                    = 10.0f
@@ -49,6 +52,7 @@ class MetalProp extends MaterialProperties {
 
 class AluminumProp extends MetalProp {
   substanceName                   = "aluminum"
+  nameInStateOfMatter             = Map("solid" -> "aluminum", "liquid" -> "liquid aluminum", "gas" -> "gaseous aluminum")
   color                           = "grey"
   // Thermal
   temperatureC                    = 10.0f
@@ -64,6 +68,7 @@ class AluminumProp extends MetalProp {
 
 class BrassProp extends MetalProp {
   substanceName                   = "brass"
+  nameInStateOfMatter             = Map("solid" -> "brass", "liquid" -> "liquid brass", "gas" -> "gaseous brass")
   color                           = "brown"
   // Thermal
   temperatureC                    = 10.0f
@@ -79,6 +84,7 @@ class BrassProp extends MetalProp {
 
 class BronzeProp extends MetalProp {
   substanceName                   = "bronze"
+  nameInStateOfMatter             = Map("solid" -> "bronze", "liquid" -> "liquid bronze", "gas" -> "gaseous bronze")
   color                           = "brown"
   // Thermal
   temperatureC                    = 10.0f
@@ -94,6 +100,7 @@ class BronzeProp extends MetalProp {
 
 class CopperProp extends MetalProp {
   substanceName                   = "copper"
+  nameInStateOfMatter             = Map("solid" -> "copper", "liquid" -> "liquid copper", "gas" -> "gaseous copper")
   color                           = "brown"
   // Thermal
   temperatureC                    = 10.0f
@@ -109,6 +116,7 @@ class CopperProp extends MetalProp {
 
 class GoldProp extends MetalProp {
   substanceName                   = "gold"
+  nameInStateOfMatter             = Map("solid" -> "gold", "liquid" -> "liquid gold", "gas" -> "gaseous gold")
   color                           = "brown"
   // Thermal
   temperatureC                    = 10.0f
@@ -124,6 +132,7 @@ class GoldProp extends MetalProp {
 
 class IronProp extends MetalProp {
   substanceName                   = "iron"
+  nameInStateOfMatter             = Map("solid" -> "iron", "liquid" -> "liquid iron", "gas" -> "gaseous iron")
   color                           = "grey"
   // Thermal
   temperatureC                    = 10.0f
@@ -139,6 +148,7 @@ class IronProp extends MetalProp {
 
 class LeadProp extends MetalProp {
   substanceName                   = "lead"
+  nameInStateOfMatter             = Map("solid" -> "lead", "liquid" -> "liquid lead", "gas" -> "gaseous lead")
   color                           = "grey"
   // Thermal
   temperatureC                    = 10.0f
@@ -154,6 +164,7 @@ class LeadProp extends MetalProp {
 
 class PlatinumProp extends MetalProp {
   substanceName                   = "platinum"
+  nameInStateOfMatter             = Map("solid" -> "platinum", "liquid" -> "liquid platinum", "gas" -> "gaseous platinum")
   color                           = "grey"
   // Thermal
   temperatureC                    = 10.0f
@@ -169,6 +180,7 @@ class PlatinumProp extends MetalProp {
 
 class SiliconProp extends MetalProp {
   substanceName                   = "silicon"
+  nameInStateOfMatter             = Map("solid" -> "silicon", "liquid" -> "liquid silicon", "gas" -> "gaseous silicon")
   color                           = "grey"
   // Thermal
   temperatureC                    = 10.0f
@@ -184,6 +196,7 @@ class SiliconProp extends MetalProp {
 
 class SteelProp extends MetalProp {
   substanceName                   = "steel"
+  nameInStateOfMatter             = Map("solid" -> "steel", "liquid" -> "liquid steel", "gas" -> "gaseous steel")
   color                           = "grey"
   // Thermal
   temperatureC                    = 10.0f
@@ -199,6 +212,7 @@ class SteelProp extends MetalProp {
 
 class TinProp extends MetalProp {
   substanceName                   = "tin"
+  nameInStateOfMatter             = Map("solid" -> "tin", "liquid" -> "liquid tin", "gas" -> "gasseous tin")
   color                           = "grey"
   // Thermal
   temperatureC                    = 10.0f
@@ -214,6 +228,7 @@ class TinProp extends MetalProp {
 
 class TitaniumProp extends MetalProp {
   substanceName                   = "titanium"
+  nameInStateOfMatter             = Map("solid" -> "titanium", "liquid" -> "liquid titanium", "gas" -> "gaseous titanium")
   color                           = "grey"
   // Thermal
   temperatureC                    = 10.0f
@@ -229,6 +244,7 @@ class TitaniumProp extends MetalProp {
 
 class ZincProp extends MetalProp {
   substanceName                   = "zinc"
+  nameInStateOfMatter             = Map("solid" -> "zinc", "liquid" -> "liquid zinc", "gas" -> "gaseous zinc")
   color                           = "brown"
   // Thermal
   temperatureC                    = 10.0f
@@ -247,6 +263,7 @@ class ZincProp extends MetalProp {
  */
 class GlassProp extends MaterialProperties {
   substanceName                   = "glass"
+  nameInStateOfMatter             = Map("solid" -> "glass", "liquid" -> "liquid glass", "gas" -> "gaseous glass")
   color                           = "clear"
   // Thermal
   temperatureC                    = 10.0f
@@ -266,6 +283,7 @@ class GlassProp extends MaterialProperties {
  */
 class PlasticProp extends MaterialProperties {
   substanceName                   = "plastic"
+  nameInStateOfMatter             = Map("solid" -> "plastic", "liquid" -> "liquid plastic", "gas" -> "gaseous plastic")
   color                           = "white"
   // Thermal
   temperatureC                    = 10.0f
@@ -284,6 +302,7 @@ class PlasticProp extends MaterialProperties {
  */
 class CeramicProp extends MaterialProperties {
   substanceName                   = "ceramic"
+  nameInStateOfMatter             = Map("solid" -> "ceramic", "liquid" -> "liquid ceramic", "gas" -> "gaseous ceramic")
   color                           = "white"
   // Thermal
   temperatureC                    = 10.0f
@@ -304,6 +323,7 @@ class CeramicProp extends MaterialProperties {
  */
 class WoodProp extends MaterialProperties {
   substanceName                   = "wood"
+  nameInStateOfMatter             = Map()
   color                           = "brown"
   // Thermal
   temperatureC                    = 10.0f
@@ -320,6 +340,7 @@ class WoodProp extends MaterialProperties {
 
 class PaperProp extends MaterialProperties {
   substanceName                   = "paper"
+  nameInStateOfMatter             = Map()
   color                           = "white"
   // Thermal
   temperatureC                    = 10.0f
@@ -339,6 +360,7 @@ class PaperProp extends MaterialProperties {
  */
 class CottonClothProp extends MaterialProperties {
   substanceName                   = "cloth"
+  nameInStateOfMatter             = Map()
   color                           = "white"
   // Thermal
   temperatureC                    = 10.0f
@@ -358,6 +380,7 @@ class CottonClothProp extends MaterialProperties {
  */
 class WaterProp extends MaterialProperties {
   substanceName                   = "water"
+  nameInStateOfMatter             = Map("solid" -> "ice", "liquid" -> "water", "gas" -> "steam")
   color                           = "clear"
   // Thermal
   temperatureC                    = 10.0f
@@ -371,8 +394,10 @@ class WaterProp extends MaterialProperties {
 
 }
 
+
 class OrangeJuiceProp extends MaterialProperties {
   substanceName                   = "orange juice"
+  nameInStateOfMatter             = Map("solid" -> "solid orange juice", "liquid" -> "orange juice", "gas" -> "gaseous orange juice")
   color                           = "orange"
   // Thermal
   temperatureC                    = 10.0f
@@ -391,6 +416,7 @@ class OrangeJuiceProp extends MaterialProperties {
  */
 class SoilProp extends MaterialProperties {
   substanceName                   = "soil"
+  nameInStateOfMatter             = Map()
   color                           = "brown"
   // Thermal
   temperatureC                    = 10.0f
@@ -406,6 +432,7 @@ class SoilProp extends MaterialProperties {
 
 class PlantMatterProp extends MaterialProperties {
   substanceName                   = "plant matter"
+  nameInStateOfMatter             = Map()
   color                           = "green"
   // Thermal
   temperatureC                    = 10.0f
@@ -421,6 +448,7 @@ class PlantMatterProp extends MaterialProperties {
 
 class FlowerMatterProp extends MaterialProperties {
   substanceName                   = "flower matter"
+  nameInStateOfMatter             = Map()
   color                           = "purple"
   // Thermal
   temperatureC                    = 10.0f
@@ -436,6 +464,7 @@ class FlowerMatterProp extends MaterialProperties {
 
 class PollenMatterProp extends MaterialProperties {
   substanceName                   = "pollen matter"
+  nameInStateOfMatter             = Map()
   color                           = "yellow"
   // Thermal
   temperatureC                    = 10.0f
