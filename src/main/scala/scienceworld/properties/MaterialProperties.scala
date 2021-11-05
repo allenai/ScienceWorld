@@ -603,7 +603,22 @@ class SoapProp extends MaterialProperties {
   stateOfMatter                   = "solid"
   boilingPoint                    = 100000.0f
   meltingPoint                    = 140.0f
-  combustionPoint                 = 537.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = false
+}
+
+class IceCreamProp extends MaterialProperties {
+  substanceName                   = "ice cream"
+  nameInStateOfMatter             = Map("solid" -> "ice cream", "liquid" -> "liquid ice cream", "gas" -> "gaseous ice cream")
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.5f
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 101.0f
+  meltingPoint                    = -10.0f
+  combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = false
 }

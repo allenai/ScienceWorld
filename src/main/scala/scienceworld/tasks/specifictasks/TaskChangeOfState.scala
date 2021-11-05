@@ -1,6 +1,6 @@
 package scienceworld.tasks.specifictasks
 
-import scienceworld.objects.{AppleJuice, Caesium, Chocolate, Gallium, Lead, Marshmallow, Mercury, OrangeJuice, Soap, Tin}
+import scienceworld.objects.{AppleJuice, Caesium, Chocolate, Gallium, Ice, IceCream, Lead, Marshmallow, Mercury, OrangeJuice, Soap, Tin}
 import scienceworld.properties.LeadProp
 import scienceworld.struct.EnvObject
 
@@ -9,11 +9,13 @@ class TaskChangeOfState(val seed:Int) {
 
   val substancePossibilities = Array(
     new TaskObject("water", None, "", Array.empty[String], 0),                                      // Example of water (found in the environment)
+    new TaskObject("ice", Some(new Ice), "kitchen", Array("freezer"), 0),                                      // Example of water (found in the environment)
 
     new TaskObject("orange juice", Some(new OrangeJuice), "kitchen", Array("fridge"), 0),           // Example of something needing to be generated
     new TaskObject("apple juice", Some(new AppleJuice), "kitchen", Array("fridge"), 0),
     new TaskObject("chocolate", Some(new Chocolate), "kitchen", Array("fridge"), 0),
     new TaskObject("marshmallow", Some(new Marshmallow), roomToGenerateIn = "kitchen", Array("cupboard", "table", "desk"), generateNear = 0),
+    new TaskObject("ice cream", Some(new IceCream), roomToGenerateIn = "kitchen", Array("freezer"), generateNear = 0),
 
     new TaskObject("soap", Some(new Soap), roomToGenerateIn = "kitchen", Array("cupboard", "table", "desk"), generateNear = 0),
     new TaskObject("rubber", Some(new Soap), roomToGenerateIn = "workshop", Array("table", "desk"), generateNear = 0),

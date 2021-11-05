@@ -1,6 +1,6 @@
 package scienceworld.objects
 
-import scienceworld.properties.{AppleJuiceProp, ChocolateProp, EdibilityProperties, Edible, MarshmallowProp, OrangeJuiceProp}
+import scienceworld.properties.{AppleJuiceProp, ChocolateProp, EdibilityProperties, Edible, IceCreamProp, MarshmallowProp, OrangeJuiceProp}
 import scienceworld.struct.EnvObject
 
 class Food extends EnvObject {
@@ -164,6 +164,21 @@ class Marshmallow extends Food {
 
   override def getReferents(): Set[String] = {
     Set("marshmallow", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return this.name
+  }
+
+}
+
+class IceCream extends Food {
+  this.name = "ice cream"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new IceCreamProp())
+
+  override def getReferents(): Set[String] = {
+    Set("ice cream", this.name)
   }
 
   override def getDescription(mode:Int): String = {
