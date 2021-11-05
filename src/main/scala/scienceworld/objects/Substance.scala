@@ -1,6 +1,6 @@
 package scienceworld.objects
 
-import scienceworld.properties.{AirProp, WaterProp}
+import scienceworld.properties.{AirProp, CaesiumProp, GalliumProp, LeadProp, MercuryProp, RubberProp, SoapProp, TinProp, WaterProp}
 import scienceworld.struct.EnvObject
 
 class Substance extends EnvObject {
@@ -38,5 +38,39 @@ class Ice extends Substance {
 }
 
 
+// Metals
+class Lead extends Substance {
+  this.name = "lead"
+  this.propMaterial = Some(new LeadProp())
+}
 
+class Tin extends Substance {
+  this.name = "tin"
+  this.propMaterial = Some(new TinProp())
+}
 
+class Mercury extends Substance {
+  this.name = "mercury"
+  this.propMaterial = Some(new MercuryProp())
+}
+
+class Gallium extends Substance {
+  this.name = "gallium"
+  this.propMaterial = Some(new GalliumProp())
+}
+
+class Caesium extends Substance {
+  this.name = "caesium"
+  this.propMaterial = Some(new CaesiumProp)
+}
+
+// Other
+class Soap extends Substance {
+  this.name = "soap"
+  this.propMaterial = Some(new SoapProp)
+}
+
+class Rubber extends Substance {
+  this.name = "rubber"
+  this.propMaterial = Some (new RubberProp)
+}

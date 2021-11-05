@@ -98,6 +98,22 @@ class BronzeProp extends MetalProp {
 
 }
 
+class CaesiumProp extends MetalProp {
+  substanceName                   = "caesium"
+  nameInStateOfMatter             = Map("solid" -> "solid caesium", "liquid" -> "liquid caesium", "gas" -> "gaseous caesium")
+  color                           = "gold"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 671.0f
+  meltingPoint                    = 29.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
 class CopperProp extends MetalProp {
   substanceName                   = "copper"
   nameInStateOfMatter             = Map("solid" -> "copper", "liquid" -> "liquid copper", "gas" -> "gaseous copper")
@@ -108,6 +124,22 @@ class CopperProp extends MetalProp {
   stateOfMatter                   = "solid"
   boilingPoint                    = 2500.0f
   meltingPoint                    = 1083.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
+class GalliumProp extends MetalProp {
+  substanceName                   = "gallium"
+  nameInStateOfMatter             = Map("solid" -> "gallium", "liquid" -> "liquid gallium", "gas" -> "gaseous gallium")
+  color                           = "silver"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "liquid"
+  boilingPoint                    = 2400.0f
+  meltingPoint                    = 30.0f
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
@@ -156,6 +188,22 @@ class LeadProp extends MetalProp {
   stateOfMatter                   = "solid"
   boilingPoint                    = 1740.0f
   meltingPoint                    = 327.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+
+}
+
+class MercuryProp extends MetalProp {
+  substanceName                   = "mercury"
+  nameInStateOfMatter             = Map("solid" -> "solid mercury", "liquid" -> "liquid mercury", "gas" -> "gaseous mercury")
+  color                           = "silver"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 1.00
+  stateOfMatter                   = "liquid"
+  boilingPoint                    = 357.0f
+  meltingPoint                    = -39.0f
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
@@ -374,6 +422,25 @@ class CottonClothProp extends MaterialProperties {
 
 }
 
+/*
+ * Rubber
+ */
+class RubberProp extends MaterialProperties {
+  substanceName                   = "rubber"
+  nameInStateOfMatter             = Map("solid" -> "rubber", "liquid" -> "liquid rubber", "gas" -> "gaseous rubber")
+  color                           = "black"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 180.0f
+  combustionPoint                 = 260.0f
+  // Electrical
+  electricallyConductive          = false
+
+}
+
 
 /*
  * Liquids
@@ -410,6 +477,20 @@ class OrangeJuiceProp extends MaterialProperties {
   electricallyConductive          = false
 }
 
+class AppleJuiceProp extends MaterialProperties {
+  substanceName                   = "apple juice"
+  nameInStateOfMatter             = Map("solid" -> "solid apple juice", "liquid" -> "apple juice", "gas" -> "gaseous apple juice")
+  color                           = "yellow"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.5f
+  stateOfMatter                   = "liquid"
+  boilingPoint                    = 160.0f
+  meltingPoint                    = -2.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = false
+}
 
 /*
  * Plants/Soil
@@ -478,3 +559,51 @@ class PollenMatterProp extends MaterialProperties {
 
 }
 
+
+/*
+ * Food matter
+ */
+class ChocolateProp extends MaterialProperties {
+  substanceName                   = "chocolate"
+  nameInStateOfMatter             = Map("solid" -> "solid chocolate", "liquid" -> "liquid chocolate", "gas" -> "gaseous chocolate")
+  color                           = "brown"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.5f
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 100000.0f
+  meltingPoint                    = 30.0f
+  combustionPoint                 = 95.0f
+  // Electrical
+  electricallyConductive          = false
+}
+
+class MarshmallowProp extends MaterialProperties {
+  substanceName                   = "marshmallow"
+  nameInStateOfMatter             = Map("solid" -> "marshmallow", "liquid" -> "liquid marshmallow", "gas" -> "gaseous marshmallow")
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.5f
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 100000.0f
+  meltingPoint                    = 36.0f
+  combustionPoint                 = 350.0f
+  // Electrical
+  electricallyConductive          = false
+}
+
+class SoapProp extends MaterialProperties {
+  substanceName                   = "soap"
+  nameInStateOfMatter             = Map("solid" -> "soap", "liquid" -> "liquid soap", "gas" -> "gaseous soap")
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.5f
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 100000.0f
+  meltingPoint                    = 140.0f
+  combustionPoint                 = 537.0f
+  // Electrical
+  electricallyConductive          = false
+}

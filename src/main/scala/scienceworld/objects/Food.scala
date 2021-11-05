@@ -1,6 +1,6 @@
 package scienceworld.objects
 
-import scienceworld.properties.{EdibilityProperties, Edible, OrangeJuiceProp}
+import scienceworld.properties.{AppleJuiceProp, ChocolateProp, EdibilityProperties, Edible, MarshmallowProp, OrangeJuiceProp}
 import scienceworld.struct.EnvObject
 
 class Food extends EnvObject {
@@ -55,7 +55,22 @@ class OrangeJuice extends Food {
   }
 
   override def getDescription(mode:Int): String = {
-    return "orange juice"
+    return this.name
+  }
+
+}
+
+class AppleJuice extends Food {
+  this.name = "apple juice"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new AppleJuiceProp())
+
+  override def getReferents(): Set[String] = {
+    Set("apple juice", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return this.name
   }
 
 }
@@ -123,3 +138,37 @@ class Potato extends Food {
   }
 
 }
+
+/*
+ * Chocolate
+ */
+class Chocolate extends Food {
+  this.name = "chocolate"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new ChocolateProp())
+
+  override def getReferents(): Set[String] = {
+    Set("chocolate", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return this.name
+  }
+
+}
+
+class Marshmallow extends Food {
+  this.name = "marshmallow"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new MarshmallowProp())
+
+  override def getReferents(): Set[String] = {
+    Set("marshmallow", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return this.name
+  }
+
+}
+
