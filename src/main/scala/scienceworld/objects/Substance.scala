@@ -32,9 +32,10 @@ class Water extends Substance {
 }
 
 class Ice extends Substance {
-  this.name = this.propMaterial.get.nameInStateOfMatter("liquid")
   this.propMaterial = Some(new WaterProp())
   this.propMaterial.get.temperatureC = -10.0f
+
+  this.name = this.propMaterial.get.nameInStateOfMatter("liquid")
 }
 
 

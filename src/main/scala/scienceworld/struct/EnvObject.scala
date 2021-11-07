@@ -87,6 +87,25 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   // Get both portals and objects
   def getContainedObjectsAndPortals():Set[EnvObject] = (this.containedObjects ++ this.portals).toSet
 
+  def getContainedObjectsAndPortalsRecursive():Set[EnvObject] = {
+    var out = mutable.Set[EnvObject]()
+
+    val thisObjects = this.getContainedObjects()
+    val thisPortals = this.getPortals()
+
+    // Add local objects
+    out = out ++ thisObjects
+    out = out ++ thisPortals
+
+    // Recurse
+    for (obj <- thisObjects) {
+      out = out ++ obj.getContainedObjectsAndPortalsRecursive()
+    }
+
+    // Return
+    out.toSet
+  }
+
   /*
    * Object containment
    */
