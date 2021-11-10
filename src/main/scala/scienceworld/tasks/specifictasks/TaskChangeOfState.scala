@@ -154,6 +154,7 @@ class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roo
         // If we reach here, the object needs to be generated
         if (exampleInstance.isEmpty) throw new RuntimeException("ERROR: Trying to generate TaskObject, but exampleInstance is not defined.")
         obj.addObject( exampleInstance.get )
+        println("### TaskObject: Adding object (" + exampleInstance.get.name + ") to (" + obj.name + ")")
         return true
       }
     }
@@ -193,6 +194,7 @@ class TaskDisable(val name:String, val roomIn:Array[String]) extends TaskModifie
     for (obj <- objsToDisable) {
       if (obj.propDevice.isDefined) {
         obj.propDevice.get.isBroken = true      // Disable the device
+        println("### TaskDisable: Disabled device (" + obj.name + ") in (" + obj.getContainer().get.name + ").")
         numDisabled += 1
       }
     }
