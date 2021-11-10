@@ -7,6 +7,7 @@ import scienceworld.properties.LeadProp
 import scienceworld.struct.EnvObject
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.control.Breaks.{break, breakable}
 
 
 class TaskChangeOfState(val seed:Int) {
@@ -38,7 +39,7 @@ class TaskChangeOfState(val seed:Int) {
   // Case 1: Normal (stove in kitchen)
   toolPossibilities.append( Array(new TaskObject("stove", Some(new Stove), roomToGenerateIn = "kitchen", Array(""), generateNear = 0) ))
   // Case 2: Disable stove in kitchen (also should add an alternate)
-  toolPossibilities.append( Array(new TaskDisable("stove", "kitchen") ) )
+  toolPossibilities.append( Array(new TaskDisable("stove", Array("kitchen") ) ) )
 
 
   // Combinations
@@ -99,14 +100,13 @@ object TaskChangeOfState {
 }
 
 
+// Base class
+trait TaskModifier {
 
-class TaskModifier {
+  // Run this modifier
+  def runModifier(universe:EnvObject, agent:Agent):Boolean
 
-  def runModifier(universe:EnvObject, agent:Agent):Boolean = {
-    return false
-  }
-
-  // Find all objects in the environment with a given name
+  // Helper function: Find all objects in the environment with a given name
   def findObjectsWithName(queryName:String, envRoot:EnvObject):Set[EnvObject] = {
     val allObjects = envRoot.getContainedObjectsAndPortalsRecursive()
     val queryObjects = allObjects.filter(_.name == queryName)
@@ -125,10 +125,51 @@ class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roo
   // Does this task object need to be generated in the environment?
   val needsToBeGenerated:Boolean = exampleInstance.isEmpty
 
+  override def runModifier(universe: EnvObject, agent: Agent): Boolean = {
+
+    return false
+  }
+
+
 }
 
 
 // Disables a device, with a given name, in a given room.
-class TaskDisable(val name:String, val roomIn:String) extends TaskModifier {
+class TaskDisable(val name:String, val roomIn:Array[String]) extends TaskModifier {
+
+  override def runModifier(universe: EnvObject, agent: Agent): Boolean = {
+    // Step 1: Look for the object(s) to disable
+    val objsToDisable = new ArrayBuffer[EnvObject]
+
+    // First, look for all objects in the universe with that name
+    val objsWithName = this.findObjectsWithName(name, universe)
+    // Then, see if those objects are also in a relevant container
+    for (obj <- objsWithName) {
+      val containers = obj.getContainersRecursive()                   // Get all containers (down to the world tree root) that this object is in
+      breakable {
+        for (container <- containers) {
+          if (roomIn.contains(container.name)) {                      // If one of the containers it's in is listed in the 'roomIn' find list, then add it to the list of devices to disable
+            objsToDisable.append(obj)
+            break()
+          }
+        }
+      }
+    }
+
+    // Step 2: Disable objects
+    var numDisabled:Int = 0
+    for (obj <- objsToDisable) {
+      if (obj.propDevice.isDefined) {
+        obj.propDevice.get.isBroken = true      // Disable the device
+        numDisabled += 1
+      }
+    }
+
+    // Step 3: Return true if we successfully disabled at least one device
+    if (numDisabled > 0) {
+      return true
+    }
+    return false
+  }
 
 }

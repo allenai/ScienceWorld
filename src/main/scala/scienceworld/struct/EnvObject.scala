@@ -241,6 +241,22 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     None
   }
 
+  // Get all the containers that this object is in, down until the root of the object's world tree
+  def getContainersRecursive():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]
+
+    // This objects container
+    val container = this.getContainer()
+    if (container.isDefined) {
+      out.append(container.get)
+      // Recurse through the container's container
+      out.insertAll(out.length, container.get.getContainersRecursive)
+    }
+
+    // Return
+    out.toArray
+  }
+
   /*
    * Helpers
    */
