@@ -121,11 +121,42 @@ trait TaskModifier {
 // (c) if generation is required, what room to generate it in (set to "" for n/a)
 // (d) if generation if required, what container name(s) are valid to place it into (e.g. "desk", "table").  If blank, it will be placed in the root container (e.g. the 'floor')
 // (e) generateNear: If non-zero, it will generate the object within 'generateNear' steps of the original location.  e.g. if the generation location is 'kitchen', and generateNear is 2, then the object could be generated in (e.g.) the hallway or bathroom, but not a far-off location.
-class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roomToGenerateIn:String, val possibleContainerNames:Array[String], val generateNear:Int=0) extends TaskModifier {
+class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roomToGenerateIn:String, val possibleContainerNames:Array[String], val generateNear:Int=0, val disableRecursiveCheck:Boolean = false) extends TaskModifier {
   // Does this task object need to be generated in the environment?
   val needsToBeGenerated:Boolean = exampleInstance.isEmpty
 
+  // Add a given object to a given room.
+  // TODO: Doesn't currently use 'generateNear' parameter.
   override def runModifier(universe: EnvObject, agent: Agent): Boolean = {
+    // Step 1: Check to see if the object is marked as required to be generated
+    if (!needsToBeGenerated) return false
+
+    // Step 2: Check to see if the object already exists in the environment
+    var allObjects:Set[EnvObject] = null
+    if (disableRecursiveCheck) {
+      // Only check objects that are directly contained within the named container
+      allObjects = universe.getContainedObjects()
+    } else {
+      // Check objects that are contained in the named container, or its containers (recursively)
+      allObjects = universe.getContainedObjectsAndPortalsRecursive()
+    }
+    for (obj <- allObjects) {
+      if (obj.name == roomToGenerateIn) {
+        // First, check to see if the object already exists
+        val containedObjects = obj.getContainedObjects()
+        for (cObj <- containedObjects) {
+          if (cObj.name == name) {
+            // An existing object with this name has been found -- exit
+            return true
+          }
+        }
+
+        // If we reach here, the object needs to be generated
+        if (exampleInstance.isEmpty) throw new RuntimeException("ERROR: Trying to generate TaskObject, but exampleInstance is not defined.")
+        obj.addObject( exampleInstance.get )
+        return true
+      }
+    }
 
     return false
   }
@@ -137,6 +168,7 @@ class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roo
 // Disables a device, with a given name, in a given room.
 class TaskDisable(val name:String, val roomIn:Array[String]) extends TaskModifier {
 
+  // Disable all devices with a given name, that are contained within any of the container listed in 'room'.  Looks recursively in containers.
   override def runModifier(universe: EnvObject, agent: Agent): Boolean = {
     // Step 1: Look for the object(s) to disable
     val objsToDisable = new ArrayBuffer[EnvObject]
