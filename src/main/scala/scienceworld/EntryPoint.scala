@@ -10,6 +10,7 @@ import scienceworld.input.{ActionDefinitions, ActionHandler, InputParser}
 import scienceworld.runtime.AgentInterface
 import scienceworld.tasks.{Task, TaskMaker}
 import scienceworld.tasks.goals.ObjMonitor
+import scienceworld.tasks.specifictasks.TaskChangeOfState
 
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks.{break, breakable}
@@ -43,6 +44,13 @@ object EntryPoint {
     val agentInterface = new AgentInterface(universe, agent, actionHandler, task)
 
     println ("Task: " + agentInterface.getTaskDescription() )
+
+
+    //###
+    //### DEBUG: Try new Task variation setup framework
+    //val t = new TaskChangeOfState(seed = 0)
+    //t.setupGoals()
+
     // DEBUG: Set the task/goals
     var curIter:Int = 0
 

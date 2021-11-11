@@ -50,7 +50,7 @@ class TaskChangeOfState(val seed:Int) {
 
   println("Number of combinations: " + combinations.length)
 
-
+  def numCombinations():Int = this.combinations.size
 
   // Setup a particular modifier combination on the universe
   def setupCombination(modifierCombination:List[List[TaskModifier]], universe:EnvObject, agent:Agent) = {
@@ -61,6 +61,11 @@ class TaskChangeOfState(val seed:Int) {
       mod.runModifier(universe, agent)
     }
   }
+
+  def setupCombination(combinationNum:Int, universe:EnvObject, agent:Agent): Unit = {
+    //this.setupCombination( combinations(combinationNum), universe, agent )
+  }
+
 
   // Setup a set of subgoals for this task modifier combination.
   def setupGoals(modifierCombination:List[List[TaskModifier]]): Unit = {
