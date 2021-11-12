@@ -6,7 +6,7 @@ import scienceworld.objects.devices.Stove
 import scienceworld.objects.{AppleJuice, Caesium, Chocolate, Gallium, Ice, IceCream, Lead, Marshmallow, Mercury, OrangeJuice, Soap, Tin}
 import scienceworld.properties.LeadProp
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.Task
+import scienceworld.tasks.{Task, TaskMaker, TaskMaker1}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalChangeStateOfMatter, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter}
 import scienceworld.tasks.specifictasks.TaskChangeOfState.{MODE_BOIL, MODE_CHANGESTATE, MODE_FREEZE, MODE_MELT}
@@ -16,7 +16,8 @@ import scala.util.Random
 import scala.util.control.Breaks.{break, breakable}
 
 
-class TaskChangeOfState(val mode:Int = MODE_CHANGESTATE) {
+class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametric {
+  val taskName = "task-1-" + mode.replaceAll(" ", "-")
 
   val substancePossibilities = new ArrayBuffer[ Array[TaskModifier] ]()
   // Example of water (found in the environment)
@@ -70,16 +71,24 @@ class TaskChangeOfState(val mode:Int = MODE_CHANGESTATE) {
   }
 
   // Setup a particular modifier combination on the universe
-  private def setupCombination(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent) = {
+  private def setupCombination(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent):(Boolean, String) = {
     // Run each modifier's change on the universe
     for (mod <- modifiers) {
       println("Running modifier: " + mod.toString)
-      mod.runModifier(universe, agent)
+      val success = mod.runModifier(universe, agent)
+      if (!success) {
+        return (false, "ERROR: Error running one or more modifiers while setting up task environment.")
+      }
     }
+    // If we reach here, success
+    return (true, "")
   }
 
-  def setupCombination(combinationNum:Int, universe:EnvObject, agent:Agent): Unit = {
-    this.setupCombination( this.getCombination(combinationNum), universe, agent )
+  def setupCombination(combinationNum:Int, universe:EnvObject, agent:Agent): (Boolean, String) = {
+    if (combinationNum >= this.numCombinations()) {
+      return (false, "ERROR: The requested variation (" + combinationNum + ") exceeds the total number of variations (" + this.numCombinations() + ").")
+    }
+    return this.setupCombination( this.getCombination(combinationNum), universe, agent )
   }
 
 
@@ -106,21 +115,21 @@ class TaskChangeOfState(val mode:Int = MODE_CHANGESTATE) {
       gSequence.append( new GoalIsDifferentStateOfMatter() )    // Be in any state but the first state
     } else if (mode == MODE_MELT) {
       subTask = "melt"
-      gSequence.append( new GoalIsNotStateOfMatter("solid") )
+      gSequence.append( new GoalChangeStateOfMatter("solid") )
       gSequence.append( new GoalChangeStateOfMatter("liquid") )
     } else if (mode == MODE_BOIL) {
       subTask = "boil"
-      gSequence.append( new GoalIsNotStateOfMatter("liquid") )
+      gSequence.append( new GoalChangeStateOfMatter("liquid") )
       gSequence.append( new GoalChangeStateOfMatter("gas") )
     } else if (mode == MODE_FREEZE) {
       subTask = "freeze"
-      gSequence.append( new GoalIsNotStateOfMatter("liquid") )
+      gSequence.append( new GoalChangeStateOfMatter("liquid") )
       gSequence.append( new GoalChangeStateOfMatter("solid") )
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
     }
 
-    val taskName = "task-1-" + subTask.replaceAll(" ", "-") + "-variation" + combinationNum
+    val taskLabel = taskName + "-variation" + combinationNum
     val description = "Your task is to " + subTask + " " + substanceName + ". First, focus on the substance. Then, take actions that will cause it to change its state of matter. "
     val goalSequence = new GoalSequence(gSequence.toArray)
 
@@ -139,15 +148,23 @@ class TaskChangeOfState(val mode:Int = MODE_CHANGESTATE) {
 
 //## DEBUG
 object TaskChangeOfState {
-  val MODE_CHANGESTATE  = 0
-  val MODE_MELT         = 1
-  val MODE_BOIL         = 2
-  val MODE_FREEZE       = 3
+  val MODE_CHANGESTATE  = "change the state of matter of"
+  val MODE_MELT         = "melt"
+  val MODE_BOIL         = "boil"
+  val MODE_FREEZE       = "freeze"
 
 
   def main(args:Array[String]) = {
     val task = new TaskChangeOfState()
   }
+
+  def registerTasks(taskMaker:TaskMaker1): Unit = {
+    taskMaker.addTask( new TaskChangeOfState(mode = MODE_CHANGESTATE) )
+    taskMaker.addTask( new TaskChangeOfState(mode = MODE_MELT) )
+    taskMaker.addTask( new TaskChangeOfState(mode = MODE_BOIL) )
+    taskMaker.addTask( new TaskChangeOfState(mode = MODE_FREEZE) )
+  }
+
 }
 
 

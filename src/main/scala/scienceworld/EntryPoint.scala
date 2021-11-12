@@ -8,7 +8,7 @@ import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.portal.Door
 import scienceworld.input.{ActionDefinitions, ActionHandler, InputParser}
 import scienceworld.runtime.AgentInterface
-import scienceworld.tasks.{Task, TaskMaker}
+import scienceworld.tasks.{Task, TaskMaker, TaskMaker1}
 import scienceworld.tasks.goals.ObjMonitor
 import scienceworld.tasks.specifictasks.TaskChangeOfState
 import scienceworld.tasks.specifictasks.TaskChangeOfState.MODE_MELT
@@ -39,22 +39,31 @@ object EntryPoint {
 
 
     val startTime = System.currentTimeMillis()
+    val taskMaker = new TaskMaker1()
+    println ("TASK LIST: ")
+    println( taskMaker.getTaskList().mkString("\n") )
 
-    val task = TaskMaker.getRandomTask()
+    // Pick a task
+    val taskName = taskMaker.getTaskList()(0)
 
-    val agentInterface = new AgentInterface(universe, agent, actionHandler, task)
+    // Setup task
+    val (task_, taskErrStr) = taskMaker.doTaskSetup(taskName, 6, universe, agent)
+    var task:Option[Task] = None
+    if (task_.isDefined) {
+      task = task_
+    } else {
+      task = Some( Task.mkUnaccomplishableTask() )
+    }
+
+    // Setup agent interface
+    val agentInterface = new AgentInterface(universe, agent, actionHandler, task.get)
+    // If there were any errors setting up the task, then note this.
+    if (taskErrStr.length > 0) {
+      agentInterface.setErrorState(taskErrStr)
+    }
 
     println ("Task: " + agentInterface.getTaskDescription() )
 
-
-    //###
-    //### DEBUG: Try new Task variation setup framework
-    val t = new TaskChangeOfState(mode = MODE_MELT)
-    val combinationIdx = 6
-    t.setupCombination(combinationIdx, universe, agent)
-    val task1 = t.setupGoals(combinationIdx)
-    print(task1)
-    //sys.exit(1)
 
     // DEBUG: Set the task/goals
     var curIter:Int = 0
