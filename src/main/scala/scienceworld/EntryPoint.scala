@@ -48,8 +48,12 @@ object EntryPoint {
 
     //###
     //### DEBUG: Try new Task variation setup framework
-    //val t = new TaskChangeOfState(seed = 0)
-    //t.setupGoals()
+    val t = new TaskChangeOfState(seed = 0)
+    val combinationIdx = 6
+    t.setupCombination(combinationIdx, universe, agent)
+    t.setupGoals(combinationIdx)
+
+    //sys.exit(1)
 
     // DEBUG: Set the task/goals
     var curIter:Int = 0

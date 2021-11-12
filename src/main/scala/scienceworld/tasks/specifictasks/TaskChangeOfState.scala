@@ -7,31 +7,32 @@ import scienceworld.properties.LeadProp
 import scienceworld.struct.EnvObject
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
 import scala.util.control.Breaks.{break, breakable}
 
 
 class TaskChangeOfState(val seed:Int) {
 
-  val substancePossibilities = new ArrayBuffer[TaskModifier]()
+  val substancePossibilities = new ArrayBuffer[ Array[TaskModifier] ]()
   // Example of water (found in the environment)
-  substancePossibilities.append( new TaskObject("water", None, "", Array.empty[String], 0) )
+  substancePossibilities.append( Array(new TaskObject("water", None, "", Array.empty[String], 0) ))
   // Example of ice (needs to be generated)
-  substancePossibilities.append( new TaskObject("ice", Some(new Ice), "kitchen", Array("freezer"), 0) )
+  substancePossibilities.append( Array(new TaskObject("ice", Some(new Ice), "kitchen", Array("freezer"), 0) ))
   // Example of something needing to be generated
-  substancePossibilities.append( new TaskObject("orange juice", Some(new OrangeJuice), "kitchen", Array("fridge"), 0) )
-  substancePossibilities.append( new TaskObject("apple juice", Some(new AppleJuice), "kitchen", Array("fridge"), 0) )
-  substancePossibilities.append( new TaskObject("chocolate", Some(new Chocolate), "kitchen", Array("fridge"), 0) )
-  substancePossibilities.append( new TaskObject("marshmallow", Some(new Marshmallow), roomToGenerateIn = "kitchen", Array("cupboard", "table", "desk"), generateNear = 0) )
-  substancePossibilities.append( new TaskObject("ice cream", Some(new IceCream), roomToGenerateIn = "kitchen", Array("freezer"), generateNear = 0) )
+  substancePossibilities.append( Array(new TaskObject("orange juice", Some(new OrangeJuice), "kitchen", Array("fridge"), 0) ))
+  substancePossibilities.append( Array(new TaskObject("apple juice", Some(new AppleJuice), "kitchen", Array("fridge"), 0) ))
+  substancePossibilities.append( Array(new TaskObject("chocolate", Some(new Chocolate), "kitchen", Array("fridge"), 0) ))
+  substancePossibilities.append( Array(new TaskObject("marshmallow", Some(new Marshmallow), roomToGenerateIn = "kitchen", Array("cupboard", "table", "desk"), generateNear = 0) ))
+  substancePossibilities.append( Array(new TaskObject("ice cream", Some(new IceCream), roomToGenerateIn = "kitchen", Array("freezer"), generateNear = 0) ))
 
-  substancePossibilities.append( new TaskObject("soap", Some(new Soap), roomToGenerateIn = "kitchen", Array("cupboard", "table", "desk"), generateNear = 0) )
-  substancePossibilities.append( new TaskObject("rubber", Some(new Soap), roomToGenerateIn = "workshop", Array("table", "desk"), generateNear = 0) )
+  substancePossibilities.append( Array(new TaskObject("soap", Some(new Soap), roomToGenerateIn = "kitchen", Array("cupboard", "table", "desk"), generateNear = 0) ))
+  substancePossibilities.append( Array(new TaskObject("rubber", Some(new Soap), roomToGenerateIn = "workshop", Array("table", "desk"), generateNear = 0) ))
 
-  substancePossibilities.append( new TaskObject("lead", Some(new Lead()), "workshop", Array("table", "desk"), 0) )                // Metals
-  substancePossibilities.append( new TaskObject("tin", Some(new Tin()), "workshop", Array("table", "desk"), 0) )
-  substancePossibilities.append( new TaskObject("mercury", Some(new Mercury()), "workshop", Array("table", "desk"), 0) )
-  substancePossibilities.append( new TaskObject("gallium", Some(new Gallium()), "workshop", Array("table", "desk"), 0) )
-  substancePossibilities.append( new TaskObject("caesium", Some(new Caesium()), "workshop", Array("table", "desk"), 0) )
+  substancePossibilities.append( Array(new TaskObject("lead", Some(new Lead()), "workshop", Array("table", "desk"), 0) ))                // Metals
+  substancePossibilities.append( Array(new TaskObject("tin", Some(new Tin()), "workshop", Array("table", "desk"), 0) ))
+  substancePossibilities.append( Array(new TaskObject("mercury", Some(new Mercury()), "workshop", Array("table", "desk"), 0) ))
+  substancePossibilities.append( Array(new TaskObject("gallium", Some(new Gallium()), "workshop", Array("table", "desk"), 0) ))
+  substancePossibilities.append( Array(new TaskObject("caesium", Some(new Caesium()), "workshop", Array("table", "desk"), 0) ))
 
 
 
@@ -50,28 +51,44 @@ class TaskChangeOfState(val seed:Int) {
 
   println("Number of combinations: " + combinations.length)
 
+  /*
+  for (i <- 0 until combinations.length) {
+    println(i + " : " + combinations(0)(0).getClass.toString + "    " + combinations(0)(1).getClass.toString)
+  }
+   */
+
   def numCombinations():Int = this.combinations.size
 
-  // Setup a particular modifier combination on the universe
-  def setupCombination(modifierCombination:List[List[TaskModifier]], universe:EnvObject, agent:Agent) = {
-    val modifiers = modifierCombination.flatMap(_.toList)
+  def getCombination(idx:Int):Array[TaskModifier] = {
+    val out = new ArrayBuffer[TaskModifier]
+    for (elem <- combinations(idx)) {
+      out.insertAll(out.length, elem)
+    }
 
+    println ("* getCombination: out.length: " + out.length)
+    // Return
+    out.toArray
+  }
+
+  // Setup a particular modifier combination on the universe
+  def setupCombination(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent) = {
     // Run each modifier's change on the universe
     for (mod <- modifiers) {
+      println("Running modifier: " + mod.toString)
       mod.runModifier(universe, agent)
     }
   }
 
   def setupCombination(combinationNum:Int, universe:EnvObject, agent:Agent): Unit = {
-    //this.setupCombination( combinations(combinationNum), universe, agent )
+    this.setupCombination( this.getCombination(combinationNum), universe, agent )
   }
 
 
   // Setup a set of subgoals for this task modifier combination.
-  def setupGoals(modifierCombination:List[List[TaskModifier]]): Unit = {
+  def setupGoals(modifiers:Array[TaskModifier]): Unit = {
     // Step 1: Find substance name
     // NOTE: The first modifier here will be the substance to change the state of.
-    val substanceModifier = modifierCombination(0)(0)
+    val substanceModifier = modifiers(0)
     var substanceName = "<unknown>"
     substanceModifier match {
       case m:TaskObject => {
@@ -89,10 +106,11 @@ class TaskChangeOfState(val seed:Int) {
     //val description = "Your task is to change the state of matter of a substance.  First, focus on a substance.  Then, make changes that will cause it to change its state of matter.  To reset, type 'reset task'. "
     val description = "Your task is to " + subTask + " " + substanceName + ".  First, focus the substance.  Then, make changes that will cause it to change its state of matter. "
 
-
-
   }
 
+  def setupGoals(combinationNum:Int): Unit = {
+    this.setupGoals( this.getCombination(combinationNum) )
+  }
 
 }
 
@@ -128,13 +146,18 @@ trait TaskModifier {
 // (e) generateNear: If non-zero, it will generate the object within 'generateNear' steps of the original location.  e.g. if the generation location is 'kitchen', and generateNear is 2, then the object could be generated in (e.g.) the hallway or bathroom, but not a far-off location.
 class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roomToGenerateIn:String, val possibleContainerNames:Array[String], val generateNear:Int=0, val disableRecursiveCheck:Boolean = false) extends TaskModifier {
   // Does this task object need to be generated in the environment?
-  val needsToBeGenerated:Boolean = exampleInstance.isEmpty
+  val needsToBeGenerated:Boolean = exampleInstance.isDefined
 
   // Add a given object to a given room.
   // TODO: Doesn't currently use 'generateNear' parameter.
   override def runModifier(universe: EnvObject, agent: Agent): Boolean = {
+    println ("#### TaskObject: Running for (" + name + ")")
+
     // Step 1: Check to see if the object is marked as required to be generated
-    if (!needsToBeGenerated) return false
+    if (!needsToBeGenerated) {
+      println ("### TaskObject: Object (" + name + ") does not need to be generated.")
+      return true
+    }
 
     // Step 2: Check to see if the object already exists in the environment
     var allObjects:Set[EnvObject] = null
@@ -148,22 +171,61 @@ class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roo
     for (obj <- allObjects) {
       if (obj.name == roomToGenerateIn) {
         // First, check to see if the object already exists
-        val containedObjects = obj.getContainedObjects()
-        for (cObj <- containedObjects) {
-          if (cObj.name == name) {
-            // An existing object with this name has been found -- exit
-            return true
+        if ((possibleContainerNames.length == 0) || ((possibleContainerNames.length == 1) && (possibleContainerNames(0).length == 0))) {
+          // CASE 1: Just generate in the main container
+          val containedObjects = obj.getContainedObjects()
+          for (cObj <- containedObjects) {
+            if (cObj.name == name) {
+              // An existing object with this name has been found -- exit
+              println("### TaskObject: Existing object with that name (" + name + ") has been found in container (" + obj.name + ")")
+              return true
+            }
+          }
+        } else {
+          // CASE 2: Generate in a sub-container of the main container
+          val containedObjects = obj.getContainedObjects()
+          for (cObj <- containedObjects) {
+            if (possibleContainerNames.contains(cObj.name)) {
+              // A relevant container has been found -- check all the objects in the container to see if an existing one has the same name
+              for (ccObj <- cObj.getContainedObjects()) {
+                if (ccObj.name == name) {
+                  // An existing object with this name has been found -- exit
+                  println("### TaskObject: Existing object with that name (" + name + ") has been found in container (" + ccObj.name + ")")
+                  return true
+                }
+              }
+            }
           }
         }
 
         // If we reach here, the object needs to be generated
         if (exampleInstance.isEmpty) throw new RuntimeException("ERROR: Trying to generate TaskObject, but exampleInstance is not defined.")
-        obj.addObject( exampleInstance.get )
-        println("### TaskObject: Adding object (" + exampleInstance.get.name + ") to (" + obj.name + ")")
+        if ((possibleContainerNames.length == 0) || ((possibleContainerNames.length == 1) && (possibleContainerNames(0).length == 0))) {
+          // CASE 1: Just generate in the main container
+          obj.addObject( exampleInstance.get )
+          println("### TaskObject: Adding object (" + exampleInstance.get.name + ") to (" + obj.name + ")")
+        } else {
+          // CASE 2: Generate in a sub-container of the main container
+          val containedObjects = Random.shuffle( obj.getContainedObjects().toList )
+
+          for (cObj <- containedObjects) {
+            if (possibleContainerNames.contains(cObj.name)) {
+              // Add to this container
+              println("### TaskObject: Adding object (" + exampleInstance.get.name + ") to (" + cObj.name + ")")
+              cObj.addObject( exampleInstance.get )
+              return true
+            }
+          }
+
+          // If we reach here, then no valid 'possibleContainer' was found
+          println ("ERROR: No valid possibleContainer (" + possibleContainerNames.mkString(", ") + ") was found in (" + obj.name + ").")
+          // (But, we'll allow it to keep going, just in case there is another container named 'roomToGenerateIn' in the environment)
+        }
         return true
       }
     }
 
+    println("### TaskObject: ERROR: Reached the end without adding an object.")
     return false
   }
 
