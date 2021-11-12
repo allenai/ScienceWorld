@@ -2,7 +2,7 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.Task
+import scienceworld.tasks.{Task, TaskModifier}
 
 trait TaskParametric {
   val taskName:String

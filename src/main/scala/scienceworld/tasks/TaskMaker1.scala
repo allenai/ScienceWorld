@@ -2,7 +2,7 @@ package scienceworld.tasks
 
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.specifictasks.{TaskChangeOfState, TaskParametric}
+import scienceworld.tasks.specifictasks.{TaskChangeOfState, TaskFindLivingNonLiving, TaskParametric}
 
 import scala.collection.mutable
 
@@ -62,8 +62,10 @@ class TaskMaker1 {
   /*
    * Register tasks
    */
+  // TODO: Add list of tasks here
   private def registerTasks(): Unit = {
     TaskChangeOfState.registerTasks(this)
+    TaskFindLivingNonLiving.registerTasks(this)
   }
 
 
