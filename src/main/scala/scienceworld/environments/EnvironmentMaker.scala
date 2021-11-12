@@ -39,8 +39,10 @@ object EnvironmentMaker {
     val locations = universe.getContainedObjectsOfType[Location]().toArray
     val randomLocation = locations( Random.nextInt(locations.length) )
 
+    // Normal: Random location
     randomLocation.addObject(agent)
 
+    //## DEBUG
     //## Specific start point in environment
     //for (location <- locations) if (location.name == "workshop") location.addObject(agent)
     //for (location <- locations) if (location.name == "kitchen") location.addObject(agent)

@@ -15,6 +15,9 @@ import scala.util.control.Breaks._
 class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandler, task:Task) {
   val inputParser = new InputParser(actionHandler.getActions())
   val objMonitor = new ObjMonitor()
+  // Store whether the environment is in an unexpected error state
+  var errorState:Boolean = false
+  var errorMessage:String = ""
 
   // Add any task-specific objects to the agent's inventory
   // TODO: Currently places task objects in agents inventory
@@ -257,6 +260,22 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
 
 
   /*
+   * Error Handling
+   */
+  def setErrorState(errorStr:String) {
+    this.errorState = true
+    this.errorMessage = errorStr
+  }
+
+  def isInErrorState():Boolean = {
+    return this.errorState
+  }
+
+  def getErrorStateMessage():String = {
+    return this.errorMessage
+  }
+
+  /*
    * User Input
    */
   def getUserInput():String = {
@@ -288,8 +307,15 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
   /*
    * Step
    */
+
+  // Returns (observation, score, isCompleted)
   def step(userInputStr:String): (String, Double, Boolean) = {
     val userOutStr = new StringBuilder()
+
+    // Check whether the simulator is in an error state (if so, return the error message)
+    if (this.isInErrorState()) {
+      return (this.getErrorStateMessage(), -1, true)
+    }
 
     // Parse user input
     val (success, statusStr) = this.processUserInput(userInputStr)
@@ -297,25 +323,30 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
       userOutStr.append("Input: " + statusStr + "\n\n")
     }
 
+    try {
+      breakable {
+        while (true) {
+          // Run queued actions
+          val actionOutStr = actionHandler.runQueuedActions()
+          userOutStr.append(actionOutStr)
 
-    breakable {
-      while (true) {
-        // Run queued actions
-        val actionOutStr = actionHandler.runQueuedActions()
-        userOutStr.append(actionOutStr)
+          // Run universe tick
+          universe.clearTickProcessedRecursive()
+          universe.tick()
 
-        // Run universe tick
-        universe.clearTickProcessedRecursive()
-        universe.tick()
+          // Check whether the goal conditions are met
+          task.goalSequence.tick(objMonitor)
 
-        // Check whether the goal conditions are met
-        task.goalSequence.tick(objMonitor)
+          // Increment the number of iterations
+          this.curIter += 1
 
-        // Increment the number of iterations
-        this.curIter += 1
-
-        // If the agent is not waiting, then break.  But if the agent is waiting, continue cycling through until the agent is finished waiting X number of ticks. (wait time is automatically decreased in the agent's wait function)
-        if (!agent.isWaiting()) break
+          // If the agent is not waiting, then break.  But if the agent is waiting, continue cycling through until the agent is finished waiting X number of ticks. (wait time is automatically decreased in the agent's wait function)
+          if (!agent.isWaiting()) break
+        }
+      }
+    } catch {
+      case e:Throwable => {
+        this.setErrorState(e.toString)
       }
     }
 
