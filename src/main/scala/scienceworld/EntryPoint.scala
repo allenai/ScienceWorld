@@ -11,6 +11,7 @@ import scienceworld.runtime.AgentInterface
 import scienceworld.tasks.{Task, TaskMaker}
 import scienceworld.tasks.goals.ObjMonitor
 import scienceworld.tasks.specifictasks.TaskChangeOfState
+import scienceworld.tasks.specifictasks.TaskChangeOfState.MODE_MELT
 
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks.{break, breakable}
@@ -48,11 +49,11 @@ object EntryPoint {
 
     //###
     //### DEBUG: Try new Task variation setup framework
-    val t = new TaskChangeOfState(seed = 0)
+    val t = new TaskChangeOfState(mode = MODE_MELT)
     val combinationIdx = 6
     t.setupCombination(combinationIdx, universe, agent)
-    t.setupGoals(combinationIdx)
-
+    val task1 = t.setupGoals(combinationIdx)
+    print(task1)
     //sys.exit(1)
 
     // DEBUG: Set the task/goals

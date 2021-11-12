@@ -1,17 +1,22 @@
 package scienceworld.tasks.specifictasks
 
+import scienceworld.environments.ContainerMaker
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.Stove
 import scienceworld.objects.{AppleJuice, Caesium, Chocolate, Gallium, Ice, IceCream, Lead, Marshmallow, Mercury, OrangeJuice, Soap, Tin}
 import scienceworld.properties.LeadProp
 import scienceworld.struct.EnvObject
+import scienceworld.tasks.Task
+import scienceworld.tasks.goals.{Goal, GoalSequence}
+import scienceworld.tasks.goals.specificgoals.{GoalChangeStateOfMatter, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter}
+import scienceworld.tasks.specifictasks.TaskChangeOfState.{MODE_BOIL, MODE_CHANGESTATE, MODE_FREEZE, MODE_MELT}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 import scala.util.control.Breaks.{break, breakable}
 
 
-class TaskChangeOfState(val seed:Int) {
+class TaskChangeOfState(val mode:Int = MODE_CHANGESTATE) {
 
   val substancePossibilities = new ArrayBuffer[ Array[TaskModifier] ]()
   // Example of water (found in the environment)
@@ -19,11 +24,11 @@ class TaskChangeOfState(val seed:Int) {
   // Example of ice (needs to be generated)
   substancePossibilities.append( Array(new TaskObject("ice", Some(new Ice), "kitchen", Array("freezer"), 0) ))
   // Example of something needing to be generated
-  substancePossibilities.append( Array(new TaskObject("orange juice", Some(new OrangeJuice), "kitchen", Array("fridge"), 0) ))
-  substancePossibilities.append( Array(new TaskObject("apple juice", Some(new AppleJuice), "kitchen", Array("fridge"), 0) ))
+  substancePossibilities.append( Array(new TaskObject("orange juice", Some(ContainerMaker.mkRandomLiquidCup(new OrangeJuice)), "kitchen", Array("fridge"), 0) ))
+  substancePossibilities.append( Array(new TaskObject("apple juice", Some(ContainerMaker.mkRandomLiquidCup(new AppleJuice)), "kitchen", Array("fridge"), 0) ))
   substancePossibilities.append( Array(new TaskObject("chocolate", Some(new Chocolate), "kitchen", Array("fridge"), 0) ))
   substancePossibilities.append( Array(new TaskObject("marshmallow", Some(new Marshmallow), roomToGenerateIn = "kitchen", Array("cupboard", "table", "desk"), generateNear = 0) ))
-  substancePossibilities.append( Array(new TaskObject("ice cream", Some(new IceCream), roomToGenerateIn = "kitchen", Array("freezer"), generateNear = 0) ))
+  substancePossibilities.append( Array(new TaskObject("ice cream", Some(ContainerMaker.mkRandomLiquidCup(new IceCream)), roomToGenerateIn = "kitchen", Array("freezer"), generateNear = 0) ))
 
   substancePossibilities.append( Array(new TaskObject("soap", Some(new Soap), roomToGenerateIn = "kitchen", Array("cupboard", "table", "desk"), generateNear = 0) ))
   substancePossibilities.append( Array(new TaskObject("rubber", Some(new Soap), roomToGenerateIn = "workshop", Array("table", "desk"), generateNear = 0) ))
@@ -51,12 +56,6 @@ class TaskChangeOfState(val seed:Int) {
 
   println("Number of combinations: " + combinations.length)
 
-  /*
-  for (i <- 0 until combinations.length) {
-    println(i + " : " + combinations(0)(0).getClass.toString + "    " + combinations(0)(1).getClass.toString)
-  }
-   */
-
   def numCombinations():Int = this.combinations.size
 
   def getCombination(idx:Int):Array[TaskModifier] = {
@@ -71,7 +70,7 @@ class TaskChangeOfState(val seed:Int) {
   }
 
   // Setup a particular modifier combination on the universe
-  def setupCombination(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent) = {
+  private def setupCombination(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent) = {
     // Run each modifier's change on the universe
     for (mod <- modifiers) {
       println("Running modifier: " + mod.toString)
@@ -85,7 +84,7 @@ class TaskChangeOfState(val seed:Int) {
 
 
   // Setup a set of subgoals for this task modifier combination.
-  def setupGoals(modifiers:Array[TaskModifier]): Unit = {
+  private def setupGoals(modifiers:Array[TaskModifier], combinationNum:Int): Task = {
     // Step 1: Find substance name
     // NOTE: The first modifier here will be the substance to change the state of.
     val substanceModifier = modifiers(0)
@@ -99,17 +98,40 @@ class TaskChangeOfState(val seed:Int) {
       }
     }
 
-    val subTask = "melt"
-    //val subTask = "boil"
-    //val subTask = "freeze"
-    //val subTask = "change the state of matter of"
-    //val description = "Your task is to change the state of matter of a substance.  First, focus on a substance.  Then, make changes that will cause it to change its state of matter.  To reset, type 'reset task'. "
-    val description = "Your task is to " + subTask + " " + substanceName + ".  First, focus the substance.  Then, make changes that will cause it to change its state of matter. "
+    var subTask = ""
+    val gSequence = new ArrayBuffer[Goal]
+    if (mode == MODE_CHANGESTATE) {
+      subTask = "change the state of matter of"
+      gSequence.append( new GoalIsStateOfMatter() )             // Be in any state
+      gSequence.append( new GoalIsDifferentStateOfMatter() )    // Be in any state but the first state
+    } else if (mode == MODE_MELT) {
+      subTask = "melt"
+      gSequence.append( new GoalIsNotStateOfMatter("solid") )
+      gSequence.append( new GoalChangeStateOfMatter("liquid") )
+    } else if (mode == MODE_BOIL) {
+      subTask = "boil"
+      gSequence.append( new GoalIsNotStateOfMatter("liquid") )
+      gSequence.append( new GoalChangeStateOfMatter("gas") )
+    } else if (mode == MODE_FREEZE) {
+      subTask = "freeze"
+      gSequence.append( new GoalIsNotStateOfMatter("liquid") )
+      gSequence.append( new GoalChangeStateOfMatter("solid") )
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
 
+    val taskName = "task-1-" + subTask.replaceAll(" ", "-") + "-variation" + combinationNum
+    val description = "Your task is to " + subTask + " " + substanceName + ". First, focus on the substance. Then, take actions that will cause it to change its state of matter. "
+    val goalSequence = new GoalSequence(gSequence.toArray)
+
+    val task = new Task(taskName, description, goalSequence)
+
+    // Return
+    return task
   }
 
-  def setupGoals(combinationNum:Int): Unit = {
-    this.setupGoals( this.getCombination(combinationNum) )
+  def setupGoals(combinationNum:Int): Task = {
+    this.setupGoals( this.getCombination(combinationNum), combinationNum )
   }
 
 }
@@ -117,8 +139,14 @@ class TaskChangeOfState(val seed:Int) {
 
 //## DEBUG
 object TaskChangeOfState {
+  val MODE_CHANGESTATE  = 0
+  val MODE_MELT         = 1
+  val MODE_BOIL         = 2
+  val MODE_FREEZE       = 3
+
+
   def main(args:Array[String]) = {
-    val task = new TaskChangeOfState(seed = 0)
+    val task = new TaskChangeOfState()
   }
 }
 
@@ -160,20 +188,19 @@ class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roo
     }
 
     // Step 2: Check to see if the object already exists in the environment
-    var allObjects:Set[EnvObject] = null
-    if (disableRecursiveCheck) {
-      // Only check objects that are directly contained within the named container
-      allObjects = universe.getContainedObjects()
-    } else {
-      // Check objects that are contained in the named container, or its containers (recursively)
-      allObjects = universe.getContainedObjectsAndPortalsRecursive()
-    }
+    val allObjects:Set[EnvObject] = universe.getContainedObjectsAndPortalsRecursive()
     for (obj <- allObjects) {
       if (obj.name == roomToGenerateIn) {
         // First, check to see if the object already exists
         if ((possibleContainerNames.length == 0) || ((possibleContainerNames.length == 1) && (possibleContainerNames(0).length == 0))) {
           // CASE 1: Just generate in the main container
-          val containedObjects = obj.getContainedObjects()
+          var containedObjects = Set.empty[EnvObject]
+          if (disableRecursiveCheck) {
+            containedObjects = obj.getContainedObjects()
+          } else {
+            containedObjects = obj.getContainedObjectsRecursive()
+          }
+
           for (cObj <- containedObjects) {
             if (cObj.name == name) {
               // An existing object with this name has been found -- exit
@@ -184,10 +211,18 @@ class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roo
         } else {
           // CASE 2: Generate in a sub-container of the main container
           val containedObjects = obj.getContainedObjects()
+
           for (cObj <- containedObjects) {
             if (possibleContainerNames.contains(cObj.name)) {
               // A relevant container has been found -- check all the objects in the container to see if an existing one has the same name
-              for (ccObj <- cObj.getContainedObjects()) {
+              var containedObjects1 = Set.empty[EnvObject]
+              if (disableRecursiveCheck) {
+                containedObjects1 = cObj.getContainedObjects()
+              } else {
+                containedObjects1 = cObj.getContainedObjectsRecursive()
+              }
+
+              for (ccObj <- containedObjects1) {
                 if (ccObj.name == name) {
                   // An existing object with this name has been found -- exit
                   println("### TaskObject: Existing object with that name (" + name + ") has been found in container (" + ccObj.name + ")")
@@ -206,7 +241,7 @@ class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roo
           println("### TaskObject: Adding object (" + exampleInstance.get.name + ") to (" + obj.name + ")")
         } else {
           // CASE 2: Generate in a sub-container of the main container
-          val containedObjects = Random.shuffle( obj.getContainedObjects().toList )
+          val containedObjects = Random.shuffle( obj.getContainedObjectsRecursive().toList )
 
           for (cObj <- containedObjects) {
             if (possibleContainerNames.contains(cObj.name)) {
