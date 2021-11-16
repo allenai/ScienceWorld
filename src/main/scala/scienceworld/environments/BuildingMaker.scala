@@ -6,7 +6,7 @@ import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassC
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
 import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
-import scienceworld.objects.livingthing.plant.{AppleTree, PeachTree, Plant, Soil}
+import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree, Plant, Soil}
 import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
 import scienceworld.objects.portal.Door
@@ -262,8 +262,8 @@ object RoomMaker {
 
 
     // debug (plant)
-    val plant1 = new Plant()
-    plant1.name = "plant 1"
+    val plant1 = new OrangeTree()
+    //plant1.name = "plant 1"
     val soil1 = new Soil()
     val flowerpot1 = new FlowerPot()
     flowerpot1.name = "flower pot 1"
@@ -296,8 +296,38 @@ object RoomMaker {
     room.addObject(flowerpot3)
 
 
-    val bee = new Bee()
-    room.addObject(bee)
+    val plant4 = new PeachTree()
+    //plant3.name = "plant 3"
+    val soil4 = new Soil()
+    val flowerpot4 = new FlowerPot()
+    flowerpot4.name = "flower pot 4"
+
+    flowerpot4.addObject(soil4)
+    flowerpot4.addObject(plant4)
+    room.addObject(flowerpot4)
+
+
+    val plant5 = new OrangeTree()
+    //plant3.name = "plant 3"
+    val soil5 = new Soil()
+    val flowerpot5 = new FlowerPot()
+    flowerpot5.name = "flower pot 5"
+
+    flowerpot5.addObject(soil5)
+    flowerpot5.addObject(plant5)
+    room.addObject(flowerpot5)
+
+
+
+    val numBees = 5
+    for (i <- 0 until numBees) {
+      val bee = new Bee()
+      bee.name = "bee " + i
+      room.addObject(bee)
+    }
+
+
+
 
 
     // Also add a sink, to fill up the water jug

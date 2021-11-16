@@ -19,18 +19,22 @@ object PlantReproduction {
 
 
   // Generator: Create an appropriate fruit for a given plant
-  def createFruit(plantType:String):EnvObject = {
+  def createFruit(plantType:String):Option[EnvObject] = {
     plantType match {
-      case PLANT_APPLE    => { return new Apple() }
-      case PLANT_AVOCADO  => { return new Avocado() }
-      case PLANT_BANANA   => { return new Banana() }
-      case PLANT_CHERRY   => { return new Cherry() }
-      case PLANT_LEMON    => { return new Lemon() }
-      case PLANT_ORANGE   => { return new Orange() }
-      case PLANT_PEACH    => { return new Peach() }
+      case PLANT_APPLE    => { return Some(new Apple())   }
+      case PLANT_AVOCADO  => { return Some(new Avocado()) }
+      case PLANT_BANANA   => { return Some(new Banana())  }
+      case PLANT_CHERRY   => { return Some(new Cherry())  }
+      case PLANT_LEMON    => { return Some(new Lemon())   }
+      case PLANT_ORANGE   => { return Some(new Orange())  }
+      case PLANT_PEACH    => { return Some(new Peach())   }
 
-      case _ => { throw new Exception("ERROR: Unknown fruit to generate (" + plantType + ")") }
+      case _ => {
+        println ("ERROR: Unknown fruit for plant type (" + plantType + "). ")
+        return None
+      }
     }
+
   }
 
 }

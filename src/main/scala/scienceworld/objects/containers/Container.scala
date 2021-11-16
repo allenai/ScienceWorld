@@ -147,12 +147,12 @@ class FlowerPot extends Container {
 
   override def tick(): Boolean = {
     // DEBUG: Add water if there is none
-    /*
+
     println ("### FLOWER POT: Infinite water")
     if (this.getContainedObjectsOfType[Water]().size == 0) {
       this.addObject( new Water() )
     }
-     */
+
 
     super.tick()
   }
