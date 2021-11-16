@@ -4,9 +4,12 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.environments.ContainerMaker
 import scienceworld.objects.agent.Agent
+import scienceworld.objects.containers.CeramicCup
 import scienceworld.objects.devices.Stove
+import scienceworld.objects.livingthing.plant.AppleTree
 import scienceworld.objects.taskitems.AnswerBox
 import scienceworld.objects.{AppleJuice, Caesium, Chocolate, Gallium, Ice, IceCream, Lead, Marshmallow, Mercury, OrangeJuice, Soap, Tin}
+import scienceworld.processes.PlantReproduction
 import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT, PLANT_STAGE_REPRODUCING, PLANT_STAGE_SEED, PLANT_STAGE_SEEDLING}
 import scienceworld.properties.LeadProp
 import scienceworld.struct.EnvObject
@@ -25,19 +28,37 @@ import scala.util.control.Breaks.{break, breakable}
 class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
   val taskName = "task-4-" + mode.replaceAll(" ", "-")
 
-  val answerBoxPossibilities = new ArrayBuffer[ Array[TaskModifier] ]()
-  val colours = Array("red", "green", "blue", "orange", "yellow", "purple")
-  val locations = Array("kitchen", "bathroom", "living room", "bedroom", "workshop")
+
+  val seeds = new ArrayBuffer[ Array[TaskModifier] ]()
+  val locations = Array("kitchen", "bathroom", "living room", "bedroom", "workshop", "green house")
   for (location <- locations) {
-    for (colour <- colours) {
-      val answerBox = new AnswerBox(colour)
-      answerBoxPossibilities.append(Array(new TaskObject(answerBox.name, Some(answerBox), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
-    }
+
+    val seedJarApple = this.mkSeedJar(PlantReproduction.PLANT_APPLE)
+    seeds.append(Array(new TaskObject(seedJarApple.name, Some(seedJarApple), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+
+    val seedJarAvocado = this.mkSeedJar(PlantReproduction.PLANT_AVOCADO)
+    seeds.append(Array(new TaskObject(seedJarAvocado.name, Some(seedJarAvocado), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+
+    val seedJarBanana = this.mkSeedJar(PlantReproduction.PLANT_BANANA)
+    seeds.append(Array(new TaskObject(seedJarBanana.name, Some(seedJarBanana), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+
+    val seedJarCherry = this.mkSeedJar(PlantReproduction.PLANT_CHERRY)
+    seeds.append(Array(new TaskObject(seedJarCherry.name, Some(seedJarCherry), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+
+    val seedJarLemon = this.mkSeedJar(PlantReproduction.PLANT_LEMON)
+    seeds.append(Array(new TaskObject(seedJarLemon.name, Some(seedJarLemon), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+
+    val seedJarOrange = this.mkSeedJar(PlantReproduction.PLANT_ORANGE)
+    seeds.append(Array(new TaskObject(seedJarOrange.name, Some(seedJarOrange), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+
+    val seedJarPeach = this.mkSeedJar(PlantReproduction.PLANT_PEACH)
+    seeds.append(Array(new TaskObject(seedJarApple.name, Some(seedJarPeach), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+
   }
 
   // Combinations
   val combinations = for {
-    i <- answerBoxPossibilities
+    i <- seeds
   } yield List(i)
 
   println("Number of combinations: " + combinations.length)
@@ -124,6 +145,23 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
   def setupGoals(combinationNum:Int): Task = {
     this.setupGoals( this.getCombination(combinationNum), combinationNum )
+  }
+
+  /*
+   * Helpers
+   */
+
+  // Make a jar containing a number of seeds of the same type
+  def mkSeedJar(plantType:String, numSeeds:Int = 5):EnvObject = {
+    val jar = new CeramicCup()      // TODO, make jar
+    jar.name = "seed jar"
+
+    for (i <- 0 until numSeeds) {
+      val seed = PlantReproduction.createSeed(plantType)
+      if (seed.isDefined) jar.addObject(seed.get)
+    }
+
+    return jar
   }
 
 }

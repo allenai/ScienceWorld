@@ -1,5 +1,6 @@
 package scienceworld.processes
 
+import scienceworld.objects.livingthing.plant.{AppleTree, AvocadoTree, BananaTree, CherryTree, LemonTree, OrangeTree, PeachTree}
 import scienceworld.objects.{Apple, Avocado, Banana, Cherry, Lemon, Orange, Peach}
 import scienceworld.struct.EnvObject
 
@@ -31,6 +32,25 @@ object PlantReproduction {
 
       case _ => {
         println ("ERROR: Unknown fruit for plant type (" + plantType + "). ")
+        return None
+      }
+    }
+
+  }
+
+  // Generator: Create an appropriate fruit for a given plant
+  def createSeed(plantType:String):Option[EnvObject] = {
+    plantType match {
+      case PLANT_APPLE    => { return Some(new AppleTree())   }
+      case PLANT_AVOCADO  => { return Some(new AvocadoTree()) }
+      case PLANT_BANANA   => { return Some(new BananaTree())  }
+      case PLANT_CHERRY   => { return Some(new CherryTree())  }
+      case PLANT_LEMON    => { return Some(new LemonTree())   }
+      case PLANT_ORANGE   => { return Some(new OrangeTree())  }
+      case PLANT_PEACH    => { return Some(new PeachTree())   }
+
+      case _ => {
+        println ("ERROR: Unknown seed for plant type (" + plantType + "). ")
         return None
       }
     }

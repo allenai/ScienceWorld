@@ -1,7 +1,7 @@
 package scienceworld.objects.livingthing.plant
 
 import scienceworld.processes.lifestage.PlantLifeStages
-import scienceworld.properties.{Edible, LifePropertiesApple, LifePropertiesOrange, LifePropertiesPeach}
+import scienceworld.properties.{Edible, LifePropertiesApple, LifePropertiesAvocado, LifePropertiesBanana, LifePropertiesCherry, LifePropertiesLemon, LifePropertiesOrange, LifePropertiesPeach}
 import scienceworld.struct.EnvObject.{MODE_CURSORY_DETAIL, MODE_DETAILED}
 import util.StringHelpers
 
@@ -99,6 +99,26 @@ class FruitingTree extends Plant {
 
 class AppleTree extends FruitingTree {
   propLife = Some(new LifePropertiesApple())
+
+}
+
+class AvocadoTree extends FruitingTree {
+  propLife = Some(new LifePropertiesAvocado())
+
+}
+
+class BananaTree extends FruitingTree {
+  propLife = Some(new LifePropertiesBanana())
+
+}
+
+class CherryTree extends FruitingTree {
+  propLife = Some(new LifePropertiesCherry())
+
+}
+
+class LemonTree extends FruitingTree {
+  propLife = Some(new LifePropertiesLemon())
 
 }
 

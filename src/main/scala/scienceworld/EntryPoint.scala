@@ -41,10 +41,15 @@ object EntryPoint {
     val startTime = System.currentTimeMillis()
     val taskMaker = new TaskMaker1()
     println ("TASK LIST: ")
-    println( taskMaker.getTaskList().mkString("\n") )
+    val taskList = taskMaker.getTaskList()
+    for (i <- 0 until taskList.length) {
+      println( i + ": \t" + taskList(i))
+    }
+
 
     // Pick a task
-    val taskName = taskMaker.getTaskList()(6)
+    //val taskName = taskMaker.getTaskList()(6)
+    val taskName = taskMaker.getTaskList()(9)
 
     // Setup task
     val (task_, taskErrStr) = taskMaker.doTaskSetup(taskName, 10, universe, agent)
