@@ -9,7 +9,10 @@ class Food extends EnvObject {
 
 }
 
-
+/*
+ * Fruits
+ */
+// TODO: Fruits require appropriate material properties
 class Apple extends Food {
   this.name = "apple"
   this.propEdibility = Some(new Edible())
@@ -22,6 +25,71 @@ class Apple extends Food {
 
   override def getDescription(mode:Int): String = {
     return "a " + this.color + " apple"
+  }
+
+}
+
+class Avocado extends Food {
+  this.name = "avocado"
+  this.propEdibility = Some(new Edible())
+
+  var color = "green"
+
+  override def getReferents(): Set[String] = {
+    Set("avocado", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return "an avocado"
+  }
+
+}
+
+class Banana extends Food {
+  this.name = "banana"
+  this.propEdibility = Some(new Edible())
+
+  var color = "yellow"
+
+  override def getReferents(): Set[String] = {
+    Set("banana", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return "a banana"
+  }
+
+}
+
+class Cherry extends Food {
+  this.name = "cherry"
+  this.propEdibility = Some(new Edible())
+
+  var color = "red"
+
+  override def getReferents(): Set[String] = {
+    Set("cherry", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return "a cherry"
+  }
+
+}
+
+
+class Lemon extends Food {
+  this.name = "lemon"
+  this.propEdibility = Some(new Edible())
+
+  var color = "yellow"
+
+  override def getReferents(): Set[String] = {
+    Set("lemon", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return "a lemon"
   }
 
 }
@@ -42,6 +110,28 @@ class Orange extends Food {
   }
 
 }
+
+class Peach extends Food {
+  this.name = "peach"
+  this.propEdibility = Some(new Edible())
+
+  var color = "pink"
+
+  override def getReferents(): Set[String] = {
+    Set("peach", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return "a peach"
+  }
+
+}
+
+
+
+/*
+ * Juice
+ */
 
 class OrangeJuice extends Food {
   this.name = "orange juice"
@@ -75,21 +165,7 @@ class AppleJuice extends Food {
 
 }
 
-class Banana extends Food {
-  this.name = "banana"
-  this.propEdibility = Some(new Edible())
 
-  var color = "yellow"
-
-  override def getReferents(): Set[String] = {
-    Set("banana", this.name)
-  }
-
-  override def getDescription(mode:Int): String = {
-    return "a banana"
-  }
-
-}
 
 class Onion extends Food {
   this.name = "onion"
