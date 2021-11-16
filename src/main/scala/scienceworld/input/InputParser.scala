@@ -163,7 +163,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     } else if (numMatches > 1) {
       // Ambiguous matches
       println ("Ambiguous matches")
-      val (ambiguousStr, allAmbiguousMatches) = this.mkAmbiguousMessage(matchesOut)
+      val (ambiguousStr, allAmbiguousMatches) = this.mkAmbiguousMessage(matchesOut, agent)
       lastAmbiguousMatches = Some(allAmbiguousMatches)      // Store ambiguous matches, to allow resolution in next step
       return (false, "", ambiguousStr, None )               // Return the ambiguity resolution string
 
@@ -200,7 +200,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     return numMatches
   }
 
-  def mkAmbiguousMessage(matches: mutable.Map[String, Array[InputMatch]]): (String, Array[InputMatch]) = {
+  def mkAmbiguousMessage(matches: mutable.Map[String, Array[InputMatch]], agent:Agent): (String, Array[InputMatch]) = {
     val os = new StringBuilder
     if (matches.keySet.size > 1) {
       // CASE: Multiple different actions are matched.
@@ -218,8 +218,9 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     }
 
     // Create a string that displays the options
+    val agentContainer = agent.getContainer()
     for (i <- 0 until allAmbiguousActions.length) {
-      os.append(i + ":\t" + allAmbiguousActions(i).mkHumanReadableClarification() + "\n")
+      os.append(i + ":\t" + allAmbiguousActions(i).mkHumanReadableClarification(agentContainer.getOrElse(new EnvObject())) + "\n")
     }
 
     // Return
@@ -550,8 +551,8 @@ object InputParser {
 // Storage class
 class InputMatch(val actionTrigger:ActionTrigger, val varLUT:mutable.Map[String, EnvObject], var actionRequestDef:Option[ActionRequestDef] = None) {
 
-  def mkHumanReadableClarification(): String = {
-    return actionTrigger.mkHumanReadableInstance(varLUT)
+  def mkHumanReadableClarification(agentContainer:EnvObject): String = {
+    return actionTrigger.mkHumanReadableInstance(varLUT, agentContainer)
   }
 
   override def toString():String = {
