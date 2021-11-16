@@ -4,9 +4,9 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.environments.ContainerMaker
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.containers.CeramicCup
+import scienceworld.objects.containers.{CeramicCup, FlowerPot}
 import scienceworld.objects.devices.Stove
-import scienceworld.objects.livingthing.plant.{AppleTree, Plant}
+import scienceworld.objects.livingthing.plant.{AppleTree, Plant, Soil}
 import scienceworld.objects.taskitems.AnswerBox
 import scienceworld.objects.{AppleJuice, Caesium, Chocolate, Gallium, Ice, IceCream, Lead, Marshmallow, Mercury, OrangeJuice, Soap, Tin}
 import scienceworld.processes.PlantReproduction
@@ -29,9 +29,10 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
   val taskName = "task-4-" + mode.replaceAll(" ", "-")
 
 
+  // Variation 1: Which seeds to grow
   val seeds = new ArrayBuffer[ Array[TaskModifier] ]()
-  //val locations = Array("kitchen", "bathroom", "living room", "bedroom", "workshop", "green house")
-  val locations = Array("green house")
+  val locations = Array("kitchen", "bathroom", "living room", "bedroom", "workshop", "green house")
+  //val locations = Array("green house")
   for (location <- locations) {
 
     val seedJarApple = this.mkSeedJar(PlantReproduction.PLANT_APPLE)
@@ -57,10 +58,52 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
   }
 
+
+  // Variation 2: What containers are available to grow the seeds in
+  val plantContainers = new ArrayBuffer[ Array[TaskModifier] ]()
+  val numContainers = 3
+
+  // Case 1: N flower pots, with soil inside
+  val case1tm = new ArrayBuffer[TaskModifier]()
+  for (i <- 0 until numContainers) {
+    val container = new FlowerPot()
+    container.name = "flower pot " + (i+1)
+    container.addObject( new Soil() )
+    case1tm.append( new TaskObject(container.name, Some(container), roomToGenerateIn = "green house", Array.empty[String], generateNear = 0))
+  }
+  plantContainers.append( case1tm.toArray )
+
+  // Case 2: N flower pots, no soil inside (but, soil nearby)
+  val case2tm = new ArrayBuffer[TaskModifier]()
+  for (i <- 0 until numContainers) {
+    val container = new FlowerPot()
+    container.name = "flower pot " + (i+1)
+    case2tm.append( new TaskObject(container.name, Some(container), roomToGenerateIn = "green house", Array.empty[String], generateNear = 0))
+
+    val soil = new Soil()
+    case2tm.append( new TaskObject(soil.name, Some(soil), roomToGenerateIn = "green house", Array.empty[String], generateNear = 0))
+  }
+  plantContainers.append( case2tm.toArray )
+
+  // Case 3: N flower pots, no soil nearby
+  val case3tm = new ArrayBuffer[TaskModifier]()
+  for (i <- 0 until numContainers) {
+    val container = new FlowerPot()
+    container.name = "flower pot " + (i+1)
+    case3tm.append( new TaskObject(container.name, Some(container), roomToGenerateIn = "green house", Array.empty[String], generateNear = 0))
+  }
+  plantContainers.append( case3tm.toArray )
+
+
+  // Case 4: No flower pots.  Only shovel outside?
+
+
+
   // Combinations
   val combinations = for {
     i <- seeds
-  } yield List(i)
+    j <- plantContainers
+  } yield List(i, j)
 
   println("Number of combinations: " + combinations.length)
 
@@ -104,9 +147,11 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     // The first modifier will be the seed jar.
     val seedJarMod = modifiers(0)
     var seedType = ""
+    var seedLocation = ""
     seedJarMod match {
       case s:TaskObject => {
         seedType = this.getSeedType(s.exampleInstance.get)
+        seedLocation = s.roomToGenerateIn
       }
       case _ => {
         throw new RuntimeException("ERROR: Unknown task modifier found, where seed jar modifier was expected." + seedJarMod.toString)
@@ -124,13 +169,13 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
       gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_ADULT_PLANT) )
       gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_REPRODUCING) )
 
-      description = "Your task is to grow a " + seedType + " plant from seed. First, focus on a seed. Then, make changes to the environment that grow the plant until it reaches the reproduction life stage."
+      description = "Your task is to grow a " + seedType + " plant from seed. Seeds can be found in the " + seedLocation + ". First, focus on a seed. Then, make changes to the environment that grow the plant until it reaches the reproduction life stage."
 
     } else if (mode == MODE_GROW_FRUIT) {
       // TODO: Currently requires all other apples/fruits to be erased from the environment?  (and possibly all other fruiting trees?)
       gSequence.append( new GoalFind(objectName = seedType) )     // e.g. "seedtype" will be "apple"
 
-      description = "Your task is to grow a " + seedType + ". This will require growing several plants, and them being crosspollinated to produce fruit. To complete the task, focus on the " + seedType + "."
+      description = "Your task is to grow a " + seedType + ". This will require growing several plants, and them being crosspollinated to produce fruit.  Seeds can be found in the " + seedLocation + ". To complete the task, focus on the " + seedType + "."
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
     }

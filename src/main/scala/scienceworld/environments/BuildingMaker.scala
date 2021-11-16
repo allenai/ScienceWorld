@@ -260,7 +260,7 @@ object RoomMaker {
     val waterJug = new Jug()
     room.addObject(waterJug)
 
-
+/*
     // debug (plant)
     val plant1 = new OrangeTree()
     //plant1.name = "plant 1"
@@ -316,7 +316,7 @@ object RoomMaker {
     flowerpot5.addObject(soil5)
     flowerpot5.addObject(plant5)
     room.addObject(flowerpot5)
-
+*/
 
 
     val numBees = 5
