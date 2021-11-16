@@ -344,11 +344,16 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
           if (!agent.isWaiting()) break
         }
       }
+      //## Uncomment when debugging in IntelliJ
+    }
+/*
     } catch {
       case e:Throwable => {
         this.setErrorState(e.toString)
       }
+
     }
+*/
 
     val score = task.goalSequence.score()
     val isCompleted = task.goalSequence.isCompleted()

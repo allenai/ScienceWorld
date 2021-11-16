@@ -1,5 +1,7 @@
 package scienceworld.properties
 
+import scienceworld.processes.PlantReproduction
+
 class LifeProperties {
   var lifeformType:String = ""
 
@@ -24,6 +26,29 @@ class LifePropertiesPlant extends LifeProperties {
 
 
 class LifePropertiesApple extends LifePropertiesPlant {
-  this.lifeformType = ""
+  this.lifeformType = PlantReproduction.PLANT_APPLE
 }
 
+class LifePropertiesAvocado extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_AVOCADO
+}
+
+class LifePropertiesBanana extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_BANANA
+}
+
+class LifePropertiesCherry extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_CHERRY
+}
+
+class LifePropertiesLemon extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_LEMON
+}
+
+class LifePropertiesOrange extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_ORANGE
+}
+
+class LifePropertiesPeach extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_PEACH
+}

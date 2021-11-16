@@ -25,6 +25,14 @@ class Plant extends LivingThing {
   // Life cycle
   lifecycle = Some( PlantLifeStages.mkPlantLifeCycle(this) )
 
+  /*
+   * Helpers
+   */
+  def isSeed():Boolean = {
+    return PlantLifeStages.isSeed(this.lifecycle.get)
+  }
+
+
 
   override def tick():Boolean = {
     // Life cycle tick

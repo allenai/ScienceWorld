@@ -2,11 +2,11 @@ package scienceworld.environments
 
 import scienceworld.objects.livingthing.animals.Bee
 import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water}
-import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, MetalPot, Sewer, TinCup, Jug, WoodBowl, WoodCup}
+import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
 import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
-import scienceworld.objects.livingthing.plant.{Plant, Soil}
+import scienceworld.objects.livingthing.plant.{AppleTree, PeachTree, Plant, Soil}
 import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
 import scienceworld.objects.portal.Door
@@ -274,8 +274,8 @@ object RoomMaker {
 
 
     // debug (plant)
-    val plant2 = new Plant()
-    plant2.name = "plant 2"
+    val plant2 = new AppleTree()
+    //plant2.name = "plant 2"
     val soil2 = new Soil()
     val flowerpot2 = new FlowerPot()
     flowerpot2.name = "flower pot 2"
@@ -285,8 +285,8 @@ object RoomMaker {
     room.addObject(flowerpot2)
 
     // debug (plant)
-    val plant3 = new Plant()
-    plant3.name = "plant 3"
+    val plant3 = new PeachTree()
+    //plant3.name = "plant 3"
     val soil3 = new Soil()
     val flowerpot3 = new FlowerPot()
     flowerpot3.name = "flower pot 3"

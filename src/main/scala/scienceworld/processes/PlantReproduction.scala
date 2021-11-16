@@ -22,12 +22,13 @@ object PlantReproduction {
   def createFruit(plantType:String):EnvObject = {
     plantType match {
       case PLANT_APPLE    => { return new Apple() }
-      case PLANT_ORANGE   => { return new Orange() }
-      case PLANT_PEACH    => { return new Peach() }
-      case PLANT_LEMON    => { return new Lemon() }
-      case PLANT_CHERRY   => { return new Cherry() }
       case PLANT_AVOCADO  => { return new Avocado() }
       case PLANT_BANANA   => { return new Banana() }
+      case PLANT_CHERRY   => { return new Cherry() }
+      case PLANT_LEMON    => { return new Lemon() }
+      case PLANT_ORANGE   => { return new Orange() }
+      case PLANT_PEACH    => { return new Peach() }
+
       case _ => { throw new Exception("ERROR: Unknown fruit to generate (" + plantType + ")") }
     }
   }

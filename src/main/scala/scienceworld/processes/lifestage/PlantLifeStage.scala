@@ -352,6 +352,14 @@ object PlantLifeStages {
   val PLANT_STAGE_DEATH         = "dead"
 
 
+  // Check to see if a given lifecycle is in the seed stage
+  def isSeed(in:LifeCycle):Boolean = {
+    if (in.getCurStageName() == PLANT_STAGE_SEED) return true
+    // Otherwise
+    return false
+  }
+
+  // Make a default plant life cycle
   def mkPlantLifeCycle(plant:Plant):LifeCycle = {
     val lifecycle = new LifeCycle("plant life cycle")
 
