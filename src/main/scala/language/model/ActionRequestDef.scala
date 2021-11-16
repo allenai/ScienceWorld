@@ -2,6 +2,7 @@ package language.model
 
 import scienceworld.struct.EnvObject
 
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.util.parsing.input.Positional
 
@@ -43,6 +44,16 @@ case class ActionTrigger(val pattern:List[ActionExpr]) extends Positional {
     out.mkString(" ")
   }
 
+  def mkHumanReadableInstance(varLUT:mutable.Map[String, EnvObject]):String = {
+    val out = new ArrayBuffer[String]
+
+    for (elem <- pattern) {
+      out.append(elem.mkHumanReadableInstance(varLUT))
+    }
+
+    out.mkString(" ")
+  }
+
   override def toString():String = {
     val os = new StringBuilder
 
@@ -57,6 +68,8 @@ case class ActionTrigger(val pattern:List[ActionExpr]) extends Positional {
 
 class ActionExpr() extends Positional {
   def mkHumanReadableExample():String = return ""
+
+  def mkHumanReadableInstance(varLUT:mutable.Map[String, EnvObject]):String = return ""
 }
 
 case class ActionExprOR(val orElements:List[String]) extends ActionExpr {
@@ -65,12 +78,32 @@ case class ActionExprOR(val orElements:List[String]) extends ActionExpr {
     return orElements(0)      // Return first element
   }
 
+  override def mkHumanReadableInstance(varLUT:mutable.Map[String, EnvObject]):String = this.mkHumanReadableExample()
+
   override def toString():String = return "ActionExprOR(orElements: " + orElements.mkString(",") + ")"
 }
 
 case class ActionExprIdentifier(val identifier:String) extends ActionExpr {
   override def mkHumanReadableExample():String = {
     return "OBJ"
+  }
+
+  override def mkHumanReadableInstance(varLUT:mutable.Map[String, EnvObject]):String = {
+    // Look up EnvObject for this identifier
+    if (!varLUT.contains(identifier)) return "<UNKNOWN>"
+    val obj = varLUT(identifier)
+
+    // Create a plain-text description of the object
+    val objDesc = new StringBuilder()
+    objDesc.append( obj.getName() )
+
+    // Add text that describes it's location
+    val container = obj.getContainer()
+    if (container.isDefined) {
+      objDesc.append(" (in " + container.get.name + ")")
+    }
+
+    return objDesc.toString()
   }
 
   override def toString():String = return "ActionExprIdentifier(identifier: " + identifier + ")"

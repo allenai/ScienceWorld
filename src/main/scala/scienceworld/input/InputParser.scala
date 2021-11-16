@@ -16,6 +16,7 @@ import scala.util.control.Breaks.{break, breakable}
 
 class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   val stopWords = Array("a", "the")
+  var lastAmbiguousMatches:Option[Array[InputMatch]] = None
 
   // Get a list of all referents
   def getAllReferents(objTreeRoot:EnvObject, includeHidden:Boolean):Array[String] = {
@@ -162,7 +163,9 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     } else if (numMatches > 1) {
       // Ambiguous matches
       println ("Ambiguous matches")
-      return (false, "", this.mkAmbiguousMessage(matchesOut), None )
+      val (ambiguousStr, allAmbiguousMatches) = this.mkAmbiguousMessage(matchesOut)
+      lastAmbiguousMatches = Some(allAmbiguousMatches)      // Store ambiguous matches, to allow resolution in next step
+      return (false, "", ambiguousStr, None )               // Return the ambiguity resolution string
 
     } else {
       // Exactly one match
@@ -190,29 +193,37 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     }
   }
 
+
   def countMatches(matches:mutable.Map[String, Array[InputMatch]]) : Int = {
     var numMatches:Int = 0
     for (key <- matches.keys) numMatches += matches(key).size
     return numMatches
   }
 
-  def mkAmbiguousMessage(matches:mutable.Map[String, Array[InputMatch]]): String = {
+  def mkAmbiguousMessage(matches: mutable.Map[String, Array[InputMatch]]): (String, Array[InputMatch]) = {
     val os = new StringBuilder
     if (matches.keySet.size > 1) {
       // CASE: Multiple different actions are matched.
       os.append("Ambiguous request: Multiple different possible actions were matched to this input (")
-      os.append( matches.map(_._1).mkString(", ") + "). ")
+      os.append(matches.map(_._1).mkString(", ") + "). ")
       os.append("It's possible the action space needs to be refined to remove possible duplicate/ambiguous patterns.")
-    } else {
-      // CASE: One action, but multiple ways of filling it in
-      val slots = new ArrayBuffer[Array[String]]
+    }
 
-      // TODO...
-      os.append("Ambiguous request: Multiple object matches.  I'm not sure which object you mean... ")
+    os.append("Ambiguous request: Please enter the number for the action you intended (or blank to cancel):\n")
+
+    // Collect all possible ambiguous actions
+    val allAmbiguousActions = new ArrayBuffer[InputMatch]
+    for (matchSet <- matches) {
+      allAmbiguousActions.insertAll(allAmbiguousActions.length, matchSet._2)
+    }
+
+    // Create a string that displays the options
+    for (i <- 0 until allAmbiguousActions.length) {
+      os.append(i + ":\t" + allAmbiguousActions(i).mkHumanReadableClarification() + "\n")
     }
 
     // Return
-    os.toString()
+    (os.toString(), allAmbiguousActions.toArray)
   }
 
   // Try to populate the slots of a given actionRequestDef with a given set of input tokens
@@ -396,6 +407,56 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     outLUT
   }
 
+
+  /*
+   * Ambiguity resolution
+   */
+  def isInAmbiguousState():Boolean = {
+    if (this.lastAmbiguousMatches.isDefined) return true
+    // Otherwise
+    return false
+  }
+
+  def clearAmbiguousState(): Unit = {
+    this.lastAmbiguousMatches = None
+  }
+
+  def resolveAmbiguity(inputStr:String, agent:Agent, objMonitor:ObjMonitor, goalSequence:GoalSequence):(String, Option[Action]) = {
+    // Checks
+    if (!this.isInAmbiguousState()) {
+      val errorStr = "ERROR: Not in ambiguous state."
+      return (errorStr, None)
+    }
+
+    // Step 1: Convert input to integer
+    var ambiguityIdx:Int = -1
+    try {
+      ambiguityIdx = inputStr.toInt
+    } catch {
+      case _ => {
+        val errorStr = "ERROR: Unknown response (" + inputStr + ").  Action cancelled."
+        this.clearAmbiguousState()
+        return (errorStr, None)
+      }
+    }
+
+    // Check in range
+    if ((ambiguityIdx < 0) || (ambiguityIdx >= this.lastAmbiguousMatches.get.length)) {
+      val errorStr = "ERROR: Value out of range (" + inputStr + ").  Action cancelled."
+      this.clearAmbiguousState()
+      return (errorStr, None)
+    }
+
+    // Step 2: Resolve
+    val action = this.lastAmbiguousMatches.get(ambiguityIdx)
+    // Convert from InputMatch to Action
+    val oneAction = Some( ActionTypecaster.typecastAction(action, objMonitor, goalSequence, agent) )
+
+    this.clearAmbiguousState()
+    return ("", oneAction)
+  }
+
+
   /*
    * More helper functions
    */
@@ -488,6 +549,10 @@ object InputParser {
 
 // Storage class
 class InputMatch(val actionTrigger:ActionTrigger, val varLUT:mutable.Map[String, EnvObject], var actionRequestDef:Option[ActionRequestDef] = None) {
+
+  def mkHumanReadableClarification(): String = {
+    return actionTrigger.mkHumanReadableInstance(varLUT)
+  }
 
   override def toString():String = {
     val os = new StringBuilder

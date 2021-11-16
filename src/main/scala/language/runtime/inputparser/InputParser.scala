@@ -100,9 +100,8 @@ class InputParser(actionRequestDefs:List[ActionRequestDef], actionRunner:ActionR
     } else {
       // CASE: One action, but multiple ways of filling it in
       val slots = new ArrayBuffer[Array[String]]
-
       // TODO...
-      os.append("Ambiguous request: Multiple object matches.  I'm not sure which (X:TODO) you mean... ")
+      os.append("Ambiguous request: Multiple object matches.  I'm not sure which (X:TODO) you mean... \n")
     }
 
     // Return

@@ -291,16 +291,32 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     // The agent's container (to render the agent's perspective)
     val agentContainer = agent.getContainer().get
 
-    //val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, interpreter.objectTreeRoot, agent)
-    val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, agent, objMonitor, task.goalSequence, agentContainer)
-    if (!successUserInput) {
-      println("ERROR: " + errStr)
+
+    if (!this.inputParser.isInAmbiguousState()) {
+      // Case 1: Normal case
+
+      //val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, interpreter.objectTreeRoot, agent)
+      val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, agent, objMonitor, task.goalSequence, agentContainer)
+      if (!successUserInput) {
+        println("ERROR: " + errStr)
+      } else {
+        println(userStr)
+        actionHandler.queueAction(action.get)
+      }
+
+      return (successUserInput, userStr)
     } else {
-      println(userStr)
-      actionHandler.queueAction(action.get)
+      // Case 2: Waiting to resolve an ambiguity
+
+      // NOTE: Whether or not the ambiguity is resolved successfully, this will handle it and generate an appropriate user message.
+      val (userStr, action) = inputParser.resolveAmbiguity(inputStr, agent, objMonitor, task.goalSequence)
+      if (action.isDefined) {
+        actionHandler.queueAction(action.get)
+      }
+      return (true, userStr)
+
     }
 
-    return (successUserInput, userStr)
   }
 
 
@@ -309,7 +325,7 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
    */
 
   // Returns (observation, score, isCompleted)
-  def step(userInputStr:String): (String, Double, Boolean) = {
+  def step(userInputStr: String): (String, Double, Boolean) = {
     val userOutStr = new StringBuilder()
 
     // Check whether the simulator is in an error state (if so, return the error message)
@@ -321,6 +337,14 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     val (success, statusStr) = this.processUserInput(userInputStr)
     if (statusStr.length > 0) {
       userOutStr.append("Input: " + statusStr + "\n\n")
+    }
+
+    // Check for ambiguity resolution case after parsing new input
+    if (this.inputParser.isInAmbiguousState()) {
+      // Request clarification from user to resolve ambiguity -- do not run tick(), etc.
+      val score = task.goalSequence.score()
+      val isCompleted = task.goalSequence.isCompleted()
+      return (statusStr, score, isCompleted)
     }
 
     try {
@@ -346,14 +370,14 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
       }
       //## Uncomment when debugging in IntelliJ
     }
-/*
-    } catch {
-      case e:Throwable => {
-        this.setErrorState(e.toString)
-      }
+    /*
+        } catch {
+          case e:Throwable => {
+            this.setErrorState(e.toString)
+          }
 
-    }
-*/
+        }
+    */
 
     val score = task.goalSequence.score()
     val isCompleted = task.goalSequence.isCompleted()
