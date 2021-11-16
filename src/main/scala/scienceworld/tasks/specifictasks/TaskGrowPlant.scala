@@ -6,7 +6,7 @@ import scienceworld.environments.ContainerMaker
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.CeramicCup
 import scienceworld.objects.devices.Stove
-import scienceworld.objects.livingthing.plant.AppleTree
+import scienceworld.objects.livingthing.plant.{AppleTree, Plant}
 import scienceworld.objects.taskitems.AnswerBox
 import scienceworld.objects.{AppleJuice, Caesium, Chocolate, Gallium, Ice, IceCream, Lead, Marshmallow, Mercury, OrangeJuice, Soap, Tin}
 import scienceworld.processes.PlantReproduction
@@ -30,7 +30,8 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
 
   val seeds = new ArrayBuffer[ Array[TaskModifier] ]()
-  val locations = Array("kitchen", "bathroom", "living room", "bedroom", "workshop", "green house")
+  //val locations = Array("kitchen", "bathroom", "living room", "bedroom", "workshop", "green house")
+  val locations = Array("green house")
   for (location <- locations) {
 
     val seedJarApple = this.mkSeedJar(PlantReproduction.PLANT_APPLE)
@@ -98,37 +99,38 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
   // Setup a set of subgoals for this task modifier combination.
   private def setupGoals(modifiers:Array[TaskModifier], combinationNum:Int): Task = {
-    // Step 1: Find substance name
-    // NOTE: The first modifier here will be the substance to change the state of.
-    val answerBoxModifier = modifiers(0)
-    var answerBoxName = "<unknown>"
-    var answerBoxLocation = "<unknown>"
-    answerBoxModifier match {
-      case m:TaskObject => {
-        answerBoxName = m.name
-        answerBoxLocation = m.roomToGenerateIn
+    // Step 1: Find seed type
+
+    // The first modifier will be the seed jar.
+    val seedJarMod = modifiers(0)
+    var seedType = ""
+    seedJarMod match {
+      case s:TaskObject => {
+        seedType = this.getSeedType(s.exampleInstance.get)
       }
       case _ => {
-        throw new RuntimeException("ERROR: Unknown task modifier found, where answer box modifier was expected." + answerBoxModifier.toString)
+        throw new RuntimeException("ERROR: Unknown task modifier found, where seed jar modifier was expected." + seedJarMod.toString)
       }
     }
+
+
 
     var subTask = ""
     val gSequence = new ArrayBuffer[Goal]
     var description:String = "<empty>"
     if (mode == MODE_GROW_PLANT) {
-      gSequence.append( new GoalLifeStage(lifeStageName = PLANT_STAGE_SEED) )
-      gSequence.append( new GoalLifeStage(lifeStageName = PLANT_STAGE_SEEDLING) )
-      gSequence.append( new GoalLifeStage(lifeStageName = PLANT_STAGE_ADULT_PLANT) )
-      gSequence.append( new GoalLifeStage(lifeStageName = PLANT_STAGE_REPRODUCING) )
+      gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_SEED) )
+      gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_SEEDLING) )
+      gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_ADULT_PLANT) )
+      gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_REPRODUCING) )
 
-      description = "Your task is to grow a plant from seed. First, focus on a seed. Then, make changes to the environment that grow the plant until it reaches the reproduction life stage."
+      description = "Your task is to grow a " + seedType + " plant from seed. First, focus on a seed. Then, make changes to the environment that grow the plant until it reaches the reproduction life stage."
 
     } else if (mode == MODE_GROW_FRUIT) {
       // TODO: Currently requires all other apples/fruits to be erased from the environment?  (and possibly all other fruiting trees?)
-      gSequence.append( new GoalFind("apple") )
+      gSequence.append( new GoalFind(objectName = seedType) )     // e.g. "seedtype" will be "apple"
 
-      description = "Your task is to grow an apple. This will require growing several plants, and them being crosspollinated to produce fruit. To complete the task, focus on the apple."
+      description = "Your task is to grow a " + seedType + ". This will require growing several plants, and them being crosspollinated to produce fruit. To complete the task, focus on the " + seedType + "."
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
     }
@@ -162,6 +164,20 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     }
 
     return jar
+  }
+
+  // Takes a seedJar as input, and determines what kind of seed is inside
+  def getSeedType(seedJar:EnvObject): String = {
+    val contents = seedJar.getContainedObjects()
+    for (obj <- contents) {
+      obj match {
+        case x:Plant => return x.propLife.get.lifeformType
+        case _ => { // do nothing
+        }
+      }
+    }
+    // We should never reach here
+    return ""
   }
 
 }

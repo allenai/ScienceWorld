@@ -5,12 +5,19 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn}
 
 // Object must be in the container
-class GoalLifeStage(lifeStageName:String = "", sameAsLastObj:Boolean = true) extends Goal {
+class GoalLifeStage(lifeFormType:String = "", lifeStageName:String = "", sameAsLastObj:Boolean = true) extends Goal {
 
   override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (sameAsLastObj && lastGoal.isDefined) {
       if (lastGoal.get.satisfiedWithObject.get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+    }
+
+    // Check that this is the correct life form type.  (Note, disabled if lifeformType is empty string)
+    if (lifeFormType.length > 0) {
+      if ((obj.propLife.isDefined) && (obj.propLife.get.lifeformType != lifeFormType)) {
+        return GoalReturn.mkSubgoalUnsuccessful()
+      }
     }
 
     // Check that the object is in a given life stage
