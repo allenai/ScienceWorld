@@ -94,25 +94,26 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
     var subTask = ""
     val gSequence = new ArrayBuffer[Goal]
+    var description:String = "<empty>"
     if (mode == MODE_GROW_PLANT) {
-      subTask = "living thing" //TODO
       gSequence.append( new GoalLifeStage(lifeStageName = PLANT_STAGE_SEED) )
       gSequence.append( new GoalLifeStage(lifeStageName = PLANT_STAGE_SEEDLING) )
       gSequence.append( new GoalLifeStage(lifeStageName = PLANT_STAGE_ADULT_PLANT) )
       gSequence.append( new GoalLifeStage(lifeStageName = PLANT_STAGE_REPRODUCING) )
 
-    } else if (mode == MODE_GROW_FRUIT) {
-      subTask = "non-living thing"
+      description = "Your task is to grow a plant from seed. First, focus on a seed. Then, make changes to the environment that grow the plant until it reaches the reproduction life stage."
 
+    } else if (mode == MODE_GROW_FRUIT) {
       // TODO: Currently requires all other apples/fruits to be erased from the environment?  (and possibly all other fruiting trees?)
       gSequence.append( new GoalFind("apple") )
 
+      description = "Your task is to grow an apple. This will require growing several plants, and them being crosspollinated to produce fruit. To complete the task, focus on the apple."
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
     }
 
     val taskLabel = taskName + "-variation" + combinationNum
-    val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName + " in the " + answerBoxLocation + "."
+    //val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName + " in the " + answerBoxLocation + "."
     val goalSequence = new GoalSequence(gSequence.toArray)
 
     val task = new Task(taskName, description, goalSequence)
