@@ -4,7 +4,7 @@ import scienceworld.objects.livingthing.animals.Bee
 import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
-import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Shovel, Sink, Stove, Thermometer, Toilet}
+import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Lighter, Shovel, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
 import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree, Plant, Soil}
 import scienceworld.objects.location.{Location, Outside, Room, Universe}
@@ -182,6 +182,9 @@ object RoomMaker {
     val chair = new Chair()
     room.addObject(chair)
 
+    // Lighter
+    val lighter = new Lighter()
+    room.addObject(lighter)
 
 
     // Return
