@@ -8,8 +8,10 @@ import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.portal.Door
 import scienceworld.input.{ActionDefinitions, ActionHandler, InputParser}
 import scienceworld.runtime.AgentInterface
-import scienceworld.tasks.{Task, TaskMaker}
+import scienceworld.tasks.{Task, TaskMaker, TaskMaker1}
 import scienceworld.tasks.goals.ObjMonitor
+import scienceworld.tasks.specifictasks.TaskChangeOfState
+import scienceworld.tasks.specifictasks.TaskChangeOfState.MODE_MELT
 
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks.{break, breakable}
@@ -37,12 +39,37 @@ object EntryPoint {
 
 
     val startTime = System.currentTimeMillis()
+    val taskMaker = new TaskMaker1()
+    println ("TASK LIST: ")
+    val taskList = taskMaker.getTaskList()
+    for (i <- 0 until taskList.length) {
+      println( i + ": \t" + taskList(i))
+    }
 
-    val task = TaskMaker.getRandomTask()
 
-    val agentInterface = new AgentInterface(universe, agent, actionHandler, task)
+    // Pick a task
+    //val taskName = taskMaker.getTaskList()(6)
+    val taskName = taskMaker.getTaskList()(8)
+
+    // Setup task
+    val (task_, taskErrStr) = taskMaker.doTaskSetup(taskName, 63, universe, agent)
+    var task:Option[Task] = None
+    if (task_.isDefined) {
+      task = task_
+    } else {
+      task = Some( Task.mkUnaccomplishableTask() )
+    }
+
+    // Setup agent interface
+    val agentInterface = new AgentInterface(universe, agent, actionHandler, task.get)
+    // If there were any errors setting up the task, then note this.
+    if (taskErrStr.length > 0) {
+      agentInterface.setErrorState(taskErrStr)
+    }
 
     println ("Task: " + agentInterface.getTaskDescription() )
+
+
     // DEBUG: Set the task/goals
     var curIter:Int = 0
 

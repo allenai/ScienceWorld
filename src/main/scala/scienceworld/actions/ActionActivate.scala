@@ -21,6 +21,11 @@ class ActionActivate(action:ActionRequestDef, assignments:Map[String, EnvObject]
     val (invalidStr, isValid) = ActionActivate.isValidAction(assignments)
     if (!isValid) return (invalidStr, false)
 
+    // Check to see if the device is broken
+    if (obj.propDevice.get.isBroken) {
+      return ("The " + obj.name + " appears broken, and can't be activated or deactivated.", true)
+    }
+
     // Activate
     if (!obj.propDevice.get.isActivated) {
       obj.propDevice.get.isActivated = true
@@ -87,7 +92,7 @@ object ActionActivate {
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("activate"),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
-        ))
+        ), this.ACTION_ID)
         out.append(pa)
       }
     }
@@ -109,6 +114,11 @@ class ActionDeactivate(action:ActionRequestDef, assignments:Map[String, EnvObjec
     // Do checks for valid action
     val (invalidStr, isValid) = ActionDeactivate.isValidAction(assignments)
     if (!isValid) return (invalidStr, false)
+
+    // Check to see if the device is broken
+    if (obj.propDevice.get.isBroken) {
+      return ("The " + obj.name + " appears broken, and can't be activated or deactivated.", true)
+    }
 
     // Open
     if (obj.propDevice.get.isActivated) {
@@ -177,7 +187,7 @@ object ActionDeactivate {
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("deactivate"),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
-        ))
+        ), this.ACTION_ID)
         out.append(pa)
       }
     }

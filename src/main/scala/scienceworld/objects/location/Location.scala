@@ -1,6 +1,7 @@
 package scienceworld.objects.location
 
 import scienceworld.objects.Air
+import scienceworld.objects.environmentoutside.Ground
 import scienceworld.properties.{ContainerProperties, IsContainer, IsOpenUnclosableContainer, MoveableProperties}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
@@ -73,6 +74,41 @@ class Room(_name:String) extends Location {
 
     os.append("This room is called the " + this.name + ". ")
     os.append("In it, you see: \n")
+    os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
+
+    os.append("You also see:\n")
+    os.append( StringHelpers.portalListToStringDescription(this.getPortals(), perspectiveContainer=this, multiline = true)  )
+
+    os.toString()
+  }
+}
+
+
+// Outside
+class Outside(_name:String) extends Location {
+  def this() = this(_name = "outside")
+
+  this.name = _name
+
+  // Add air
+  val air = new Air()
+  air.propMaterial.get.temperatureC = 25.0f
+  this.addObject( air )
+
+  // Add ground
+  val ground = new Ground()
+  this.addObject(ground)
+
+
+  override def getReferents(): Set[String] = {
+    Set("outside", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    val os = new StringBuilder()
+
+    os.append("This outside location is called the " + this.name + ". ")
+    os.append("Here you see: \n")
     os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
 
     os.append("You also see:\n")

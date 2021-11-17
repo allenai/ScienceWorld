@@ -145,6 +145,8 @@ def userConsole(jarPath:str):
     print("\n")
     print("All objects, their ids, types, and referents: " + str(env.getAllObjectIdsTypesReferentsLUTJSON() ))
     print("\n")
+    print("Valid action-object combinations (with templates): " + str(env.getValidActionObjectCombinationsWithTemplates() ))
+    print("\n")
     print("Task Description: " + str(env.getTaskDescription()) )    
 
     userInputStr = "look around"        # First action
@@ -179,13 +181,13 @@ def main():
     print("Virtual Text Environment API demo")
 
     # Run a user console
-    userConsole(jarPath)
+    #userConsole(jarPath)
 
     # Run speed test
     #speedTest(jarPath)
 
     # Run a model that chooses random actions until successfully reaching the goal
-    #randomModel(jarPath)
+    randomModel(jarPath)
 
     print("Exiting.")
 

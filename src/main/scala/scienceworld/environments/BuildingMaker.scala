@@ -2,12 +2,12 @@ package scienceworld.environments
 
 import scienceworld.objects.livingthing.animals.Bee
 import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water}
-import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, MetalPot, Sewer, TinCup, WaterJug, WoodBowl, WoodCup}
+import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
-import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
+import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Lighter, Shovel, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
-import scienceworld.objects.livingthing.plant.{Plant, Soil}
-import scienceworld.objects.location.{Location, Room, Universe}
+import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree, Plant, Soil}
+import scienceworld.objects.location.{Location, Outside, Room, Universe}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
 import scienceworld.objects.portal.Door
 import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalConductivity}
@@ -182,6 +182,9 @@ object RoomMaker {
     val chair = new Chair()
     room.addObject(chair)
 
+    // Lighter
+    val lighter = new Lighter()
+    room.addObject(lighter)
 
 
     // Return
@@ -257,13 +260,18 @@ object RoomMaker {
 
 
     // Water jug
-    val waterJug = new WaterJug()
+    val waterJug = new Jug()
     room.addObject(waterJug)
 
 
+    // Shovel
+    val shovel = new Shovel
+    room.addObject(shovel)
+
+/*
     // debug (plant)
-    val plant1 = new Plant()
-    plant1.name = "plant 1"
+    val plant1 = new OrangeTree()
+    //plant1.name = "plant 1"
     val soil1 = new Soil()
     val flowerpot1 = new FlowerPot()
     flowerpot1.name = "flower pot 1"
@@ -274,8 +282,8 @@ object RoomMaker {
 
 
     // debug (plant)
-    val plant2 = new Plant()
-    plant2.name = "plant 2"
+    val plant2 = new AppleTree()
+    //plant2.name = "plant 2"
     val soil2 = new Soil()
     val flowerpot2 = new FlowerPot()
     flowerpot2.name = "flower pot 2"
@@ -285,8 +293,8 @@ object RoomMaker {
     room.addObject(flowerpot2)
 
     // debug (plant)
-    val plant3 = new Plant()
-    plant3.name = "plant 3"
+    val plant3 = new PeachTree()
+    //plant3.name = "plant 3"
     val soil3 = new Soil()
     val flowerpot3 = new FlowerPot()
     flowerpot3.name = "flower pot 3"
@@ -296,8 +304,38 @@ object RoomMaker {
     room.addObject(flowerpot3)
 
 
-    val bee = new Bee()
-    room.addObject(bee)
+    val plant4 = new PeachTree()
+    //plant3.name = "plant 3"
+    val soil4 = new Soil()
+    val flowerpot4 = new FlowerPot()
+    flowerpot4.name = "flower pot 4"
+
+    flowerpot4.addObject(soil4)
+    flowerpot4.addObject(plant4)
+    room.addObject(flowerpot4)
+
+
+    val plant5 = new OrangeTree()
+    //plant3.name = "plant 3"
+    val soil5 = new Soil()
+    val flowerpot5 = new FlowerPot()
+    flowerpot5.name = "flower pot 5"
+
+    flowerpot5.addObject(soil5)
+    flowerpot5.addObject(plant5)
+    room.addObject(flowerpot5)
+*/
+
+
+    val numBees = 5
+    for (i <- 0 until numBees) {
+      val bee = new Bee()
+      bee.name = "bee " + i
+      room.addObject(bee)
+    }
+
+
+
 
 
     // Also add a sink, to fill up the water jug
@@ -311,6 +349,17 @@ object RoomMaker {
 
     // Return
     room
+  }
+
+
+  /*
+   * Outside
+   */
+  def mkOutside():Outside = {
+    val outside = new Outside()
+
+
+    return outside
   }
 
 
@@ -370,6 +419,11 @@ object BuildingMaker {
     universe.addObject(roomHallway)
 
 
+    // Outside
+    val outside = RoomMaker.mkOutside()
+    universe.addObject(outside)
+
+
     // Doors
     RoomMaker.mkDoor(roomKitchen, roomHallway)
     RoomMaker.mkDoor(roomLivingRoom, roomHallway)
@@ -377,6 +431,9 @@ object BuildingMaker {
     RoomMaker.mkDoor(roomBathroom, roomKitchen)
     RoomMaker.mkDoor(roomWorkshop, roomHallway)
     RoomMaker.mkDoor(roomGreenhouse, roomHallway)
+
+    RoomMaker.mkDoor(roomKitchen, outside)
+    RoomMaker.mkDoor(roomGreenhouse, outside)
 
   }
 

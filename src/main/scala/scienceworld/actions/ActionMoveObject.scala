@@ -118,7 +118,7 @@ object ActionMoveObject {
             new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid)),
             new ActionExprText("to"),
             new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid))
-          ))
+          ), this.ACTION_ID)
           out.append(pa)
         }
       }
@@ -196,7 +196,7 @@ object ActionPickUpObjectIntoInventory {
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("pick up"),
           new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid))
-        ))
+        ), this.ACTION_ID)
         out.append(pa)
       }
     }
@@ -279,7 +279,7 @@ object ActionPutDownObjectIntoInventory {
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("put down"),
           new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid))
-        ))
+        ), this.ACTION_ID)
         out.append(pa)
       }
     }
@@ -448,7 +448,7 @@ object ActionPourObject {
             new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid)),
             new ActionExprText("into"),
             new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid))
-          ))
+          ), this.ACTION_ID)
           out.append(pa)
         }
       }

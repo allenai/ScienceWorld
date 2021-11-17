@@ -15,6 +15,9 @@ import scala.util.control.Breaks._
 class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandler, task:Task) {
   val inputParser = new InputParser(actionHandler.getActions())
   val objMonitor = new ObjMonitor()
+  // Store whether the environment is in an unexpected error state
+  var errorState:Boolean = false
+  var errorMessage:String = ""
 
   // Add any task-specific objects to the agent's inventory
   // TODO: Currently places task objects in agents inventory
@@ -144,6 +147,29 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     return validActions.map(_.mkHumanReadableStr())
   }
 
+  def getValidActionObjectCombinationsJSON(): String = {
+    // Collect all objects visible to the agent
+    val visibleObjTreeRoot = this.getAgentVisibleObjects()._2
+    val agentInventory = agent.getInventoryContainer()
+    val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList
+    // Collect UUID -> Unique Referent LUT
+    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=false)
+
+    // Generate all possible valid actions
+    val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
+
+    // To templates
+    val validActionsTemplates = validActions.map(_.toTemplate())
+    val validActionTemplatesJSON = validActionsTemplates.map(_.toJSON())
+
+    // To JSON
+    val outJSON = "{\"validActions\": [" + validActionTemplatesJSON.mkString(",") + "]" + "}"
+
+    return outJSON
+  }
+
+
+
   def getPossibleActionObjectCombinations(): (Array[TemplateAction], Map[Int, String]) = {
     val OBJ_PLACEHOLDER_TOKEN = "OBJ"
     val START_TOKEN = "START "
@@ -234,6 +260,22 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
 
 
   /*
+   * Error Handling
+   */
+  def setErrorState(errorStr:String) {
+    this.errorState = true
+    this.errorMessage = errorStr
+  }
+
+  def isInErrorState():Boolean = {
+    return this.errorState
+  }
+
+  def getErrorStateMessage():String = {
+    return this.errorMessage
+  }
+
+  /*
    * User Input
    */
   def getUserInput():String = {
@@ -249,24 +291,47 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     // The agent's container (to render the agent's perspective)
     val agentContainer = agent.getContainer().get
 
-    //val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, interpreter.objectTreeRoot, agent)
-    val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, agent, objMonitor, task.goalSequence, agentContainer)
-    if (!successUserInput) {
-      println("ERROR: " + errStr)
+
+    if (!this.inputParser.isInAmbiguousState()) {
+      // Case 1: Normal case
+
+      //val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, interpreter.objectTreeRoot, agent)
+      val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, agent, objMonitor, task.goalSequence, agentContainer)
+      if (!successUserInput) {
+        println("ERROR: " + errStr)
+      } else {
+        println(userStr)
+        actionHandler.queueAction(action.get)
+      }
+
+      return (successUserInput, userStr)
     } else {
-      println(userStr)
-      actionHandler.queueAction(action.get)
+      // Case 2: Waiting to resolve an ambiguity
+
+      // NOTE: Whether or not the ambiguity is resolved successfully, this will handle it and generate an appropriate user message.
+      val (userStr, action) = inputParser.resolveAmbiguity(inputStr, agent, objMonitor, task.goalSequence)
+      if (action.isDefined) {
+        actionHandler.queueAction(action.get)
+      }
+      return (true, userStr)
+
     }
 
-    return (successUserInput, userStr)
   }
 
 
   /*
    * Step
    */
-  def step(userInputStr:String): (String, Double, Boolean) = {
+
+  // Returns (observation, score, isCompleted)
+  def step(userInputStr: String): (String, Double, Boolean) = {
     val userOutStr = new StringBuilder()
+
+    // Check whether the simulator is in an error state (if so, return the error message)
+    if (this.isInErrorState()) {
+      return (this.getErrorStateMessage(), -1, true)
+    }
 
     // Parse user input
     val (success, statusStr) = this.processUserInput(userInputStr)
@@ -274,27 +339,45 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
       userOutStr.append("Input: " + statusStr + "\n\n")
     }
 
-
-    breakable {
-      while (true) {
-        // Run queued actions
-        val actionOutStr = actionHandler.runQueuedActions()
-        userOutStr.append(actionOutStr)
-
-        // Run universe tick
-        universe.clearTickProcessedRecursive()
-        universe.tick()
-
-        // Check whether the goal conditions are met
-        task.goalSequence.tick(objMonitor)
-
-        // Increment the number of iterations
-        this.curIter += 1
-
-        // If the agent is not waiting, then break.  But if the agent is waiting, continue cycling through until the agent is finished waiting X number of ticks. (wait time is automatically decreased in the agent's wait function)
-        if (!agent.isWaiting()) break
-      }
+    // Check for ambiguity resolution case after parsing new input
+    if (this.inputParser.isInAmbiguousState()) {
+      // Request clarification from user to resolve ambiguity -- do not run tick(), etc.
+      val score = task.goalSequence.score()
+      val isCompleted = task.goalSequence.isCompleted()
+      return (statusStr, score, isCompleted)
     }
+
+    try {
+      breakable {
+        while (true) {
+          // Run queued actions
+          val actionOutStr = actionHandler.runQueuedActions()
+          userOutStr.append(actionOutStr)
+
+          // Run universe tick
+          universe.clearTickProcessedRecursive()
+          universe.tick()
+
+          // Check whether the goal conditions are met
+          task.goalSequence.tick(objMonitor)
+
+          // Increment the number of iterations
+          this.curIter += 1
+
+          // If the agent is not waiting, then break.  But if the agent is waiting, continue cycling through until the agent is finished waiting X number of ticks. (wait time is automatically decreased in the agent's wait function)
+          if (!agent.isWaiting()) break
+        }
+      }
+      //## Uncomment when debugging in IntelliJ
+    }
+    /*
+        } catch {
+          case e:Throwable => {
+            this.setErrorState(e.toString)
+          }
+
+        }
+    */
 
     val score = task.goalSequence.score()
     val isCompleted = task.goalSequence.isCompleted()

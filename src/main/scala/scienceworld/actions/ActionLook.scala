@@ -63,7 +63,7 @@ object ActionLookAround {
     // Single possible valid action
     val pa = new PossibleAction(Array[ActionExpr](
       new ActionExprText("look around")
-    ))
+    ), this.ACTION_ID)
     return Array( pa )
   }
 }
@@ -135,7 +135,7 @@ object ActionLookAt {
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("look at"),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
-        ))
+        ), this.ACTION_ID)
         out.append(pa)
       }
     }
@@ -250,7 +250,7 @@ object ActionLookIn {
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("look in"),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
-        ))
+        ), this.ACTION_ID)
         out.append(pa)
       }
     }

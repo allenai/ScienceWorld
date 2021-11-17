@@ -25,6 +25,12 @@ class ActionHandler {
     actions(actionDef.name) = actionDef
   }
 
+  def getActionID(actionName:String):Int = {
+    if (!this.actions.contains(actionName)) return -1
+    this.actions(actionName).uniqueActionID
+  }
+
+
   /*
    * Queueing actions
    */

@@ -74,7 +74,7 @@ object ActionFocus {
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("focus on"),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
-        ))
+        ), this.ACTION_ID)
         out.append(pa)
       }
     }
@@ -133,7 +133,7 @@ object ActionResetTask {
     // Single possible valid action
     val pa = new PossibleAction(Array[ActionExpr](
       new ActionExprText("reset task")
-    ))
+    ), this.ACTION_ID)
     return Array( pa )
   }
 

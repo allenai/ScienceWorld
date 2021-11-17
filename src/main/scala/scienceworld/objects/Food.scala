@@ -1,6 +1,6 @@
 package scienceworld.objects
 
-import scienceworld.properties.{EdibilityProperties, Edible, OrangeJuiceProp}
+import scienceworld.properties.{AppleJuiceProp, ChocolateProp, EdibilityProperties, Edible, IceCreamProp, MarshmallowProp, OrangeJuiceProp}
 import scienceworld.struct.EnvObject
 
 class Food extends EnvObject {
@@ -9,7 +9,10 @@ class Food extends EnvObject {
 
 }
 
-
+/*
+ * Fruits
+ */
+// TODO: Fruits require appropriate material properties
 class Apple extends Food {
   this.name = "apple"
   this.propEdibility = Some(new Edible())
@@ -22,6 +25,71 @@ class Apple extends Food {
 
   override def getDescription(mode:Int): String = {
     return "a " + this.color + " apple"
+  }
+
+}
+
+class Avocado extends Food {
+  this.name = "avocado"
+  this.propEdibility = Some(new Edible())
+
+  var color = "green"
+
+  override def getReferents(): Set[String] = {
+    Set("avocado", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return "an avocado"
+  }
+
+}
+
+class Banana extends Food {
+  this.name = "banana"
+  this.propEdibility = Some(new Edible())
+
+  var color = "yellow"
+
+  override def getReferents(): Set[String] = {
+    Set("banana", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return "a banana"
+  }
+
+}
+
+class Cherry extends Food {
+  this.name = "cherry"
+  this.propEdibility = Some(new Edible())
+
+  var color = "red"
+
+  override def getReferents(): Set[String] = {
+    Set("cherry", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return "a cherry"
+  }
+
+}
+
+
+class Lemon extends Food {
+  this.name = "lemon"
+  this.propEdibility = Some(new Edible())
+
+  var color = "yellow"
+
+  override def getReferents(): Set[String] = {
+    Set("lemon", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return "a lemon"
   }
 
 }
@@ -43,6 +111,28 @@ class Orange extends Food {
 
 }
 
+class Peach extends Food {
+  this.name = "peach"
+  this.propEdibility = Some(new Edible())
+
+  var color = "pink"
+
+  override def getReferents(): Set[String] = {
+    Set("peach", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return "a peach"
+  }
+
+}
+
+
+
+/*
+ * Juice
+ */
+
 class OrangeJuice extends Food {
   this.name = "orange juice"
   this.propEdibility = Some(new Edible())
@@ -55,26 +145,27 @@ class OrangeJuice extends Food {
   }
 
   override def getDescription(mode:Int): String = {
-    return "orange juice"
+    return this.name
   }
 
 }
 
-class Banana extends Food {
-  this.name = "banana"
+class AppleJuice extends Food {
+  this.name = "apple juice"
   this.propEdibility = Some(new Edible())
-
-  var color = "yellow"
+  this.propMaterial = Some(new AppleJuiceProp())
 
   override def getReferents(): Set[String] = {
-    Set("banana", this.name)
+    Set("apple juice", this.name)
   }
 
   override def getDescription(mode:Int): String = {
-    return "a banana"
+    return this.name
   }
 
 }
+
+
 
 class Onion extends Food {
   this.name = "onion"
@@ -123,3 +214,52 @@ class Potato extends Food {
   }
 
 }
+
+/*
+ * Chocolate
+ */
+class Chocolate extends Food {
+  this.name = "chocolate"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new ChocolateProp())
+
+  override def getReferents(): Set[String] = {
+    Set("chocolate", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return this.name
+  }
+
+}
+
+class Marshmallow extends Food {
+  this.name = "marshmallow"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new MarshmallowProp())
+
+  override def getReferents(): Set[String] = {
+    Set("marshmallow", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return this.name
+  }
+
+}
+
+class IceCream extends Food {
+  this.name = "ice cream"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new IceCreamProp())
+
+  override def getReferents(): Set[String] = {
+    Set("ice cream", this.name)
+  }
+
+  override def getDescription(mode:Int): String = {
+    return this.name
+  }
+
+}
+

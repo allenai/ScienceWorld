@@ -3,6 +3,7 @@ package scienceworld.objects.livingthing.plant
 import scienceworld.objects.Apple
 import scienceworld.objects.devices.Stove
 import scienceworld.objects.livingthing.LivingThing
+import scienceworld.processes.PlantReproduction
 import scienceworld.processes.lifestage.PlantLifeStages
 import scienceworld.properties.{FlowerMatterProp, IsNotContainer, IsOpenUnclosableContainer, LifePropertiesPlant, PlantMatterProp, PollenMatterProp, PollinationProperties}
 import scienceworld.struct.EnvObject
@@ -24,6 +25,17 @@ class Plant extends LivingThing {
 
   // Life cycle
   lifecycle = Some( PlantLifeStages.mkPlantLifeCycle(this) )
+
+  /*
+   * Helpers
+   */
+  def isSeed():Boolean = {
+    return PlantLifeStages.isSeed(this.lifecycle.get)
+  }
+
+  def getPlantType():String = {
+    return this.propLife.get.lifeformType
+  }
 
 
   override def tick():Boolean = {
@@ -87,7 +99,7 @@ class Pollen(val parentPlant:Plant) extends EnvObject {
   this.propContainer = Some(new IsNotContainer())
   this.propMaterial = Some(new PollenMatterProp())
 
-  def getPlantType():String = this.parentPlant.getType()
+  def getPlantType():String = this.parentPlant.getPlantType()
 
   override def tick():Boolean = {
     // TODO: Add genes?
@@ -130,12 +142,14 @@ class Flower(parentPlant:Plant) extends EnvObject {
     // Step 1A: check to see if the pollen is this plant's pollen, or a different plant's pollen
     if (pollen.parentPlant.uuid == this.parentPlant.uuid) {
       // The pollen comes from this plant -- do not pollinate
+      println ("#### POLLEN COMES FROM SAME PLANT")
       return false
     }
 
     // Step 1B: Check to see that the pollen comes from the correct plant type
-    if (pollen.getPlantType() != parentPlant.getType()) {
+    if (pollen.getPlantType() != parentPlant.getPlantType()) {
       // The pollen comes from a different plant (e.g. apple vs orange) -- do not pollinate
+      println ("#### POLLEN COMES FROM DIFFERENT TYPE OF PLANT")
       return false
     }
 
@@ -143,6 +157,8 @@ class Flower(parentPlant:Plant) extends EnvObject {
 
     // Step 2: Consume pollen
     pollen.delete()
+
+    println ("####* POLLENATION SUCCESSFUL")
 
     // Step 3: Get the flower -> fruit conversion going
     this.propPollination.get.pollinationStep = 1
@@ -190,8 +206,12 @@ class Flower(parentPlant:Plant) extends EnvObject {
         // TODO: Change into fruit
         if (this.getContainer().isDefined) {
           println("FRUIT MADE")
-          // Create fruit
-          this.getContainer().get.addObject(new Apple())
+          // Create appropriate fruit
+          val fruit = PlantReproduction.createFruit(this.parentPlant.getPlantType())
+          if (fruit.isDefined) {
+            this.getContainer().get.addObject( fruit.get )
+          }
+
           // Delete flower
           this.delete(expelContents = true)
         }

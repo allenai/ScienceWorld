@@ -152,7 +152,7 @@ object ActionConnectElectrical {
             new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid)),
             new ActionExprText("to"),
             new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid))
-          ))
+          ), this.ACTION_ID)
           out.append(pa)
         }
       }
@@ -241,7 +241,7 @@ object ActionDisconnectElectrical {
         val pa = new PossibleAction(Array[ActionExpr](
           new ActionExprText("disconnect"),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
-        ))
+        ), this.ACTION_ID)
         out.append(pa)
       }
     }

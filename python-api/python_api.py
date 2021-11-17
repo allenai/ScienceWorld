@@ -108,6 +108,11 @@ class VirtualEnv:
     # Get a list of *valid* agent-object combinations
     def getValidActionObjectCombinations(self):
         return self.gateway.getValidActionObjectCombinations()
+    
+    def getValidActionObjectCombinationsWithTemplates(self):
+        jsonStr = self.gateway.getValidActionObjectCombinationsJSON()
+        data = json.loads(jsonStr)
+        return data['validActions']
 
     # Get a LUT of object_id to type_id
     def getAllObjectTypesLUTJSON(self):

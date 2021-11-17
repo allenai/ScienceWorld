@@ -87,6 +87,25 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   // Get both portals and objects
   def getContainedObjectsAndPortals():Set[EnvObject] = (this.containedObjects ++ this.portals).toSet
 
+  def getContainedObjectsAndPortalsRecursive():Set[EnvObject] = {
+    var out = mutable.Set[EnvObject]()
+
+    val thisObjects = this.getContainedObjects()
+    val thisPortals = this.getPortals()
+
+    // Add local objects
+    out = out ++ thisObjects
+    out = out ++ thisPortals
+
+    // Recurse
+    for (obj <- thisObjects) {
+      out = out ++ obj.getContainedObjectsAndPortalsRecursive()
+    }
+
+    // Return
+    out.toSet
+  }
+
   /*
    * Object containment
    */
@@ -94,6 +113,19 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   def getContainer():Option[EnvObject] = this.inContainer
 
   def getContainedObjects():Set[EnvObject] = this.containedObjects.toSet
+
+  def getContainedObjectsRecursive():Set[EnvObject] = {
+    var out = mutable.Set[EnvObject]()
+    // Add objects contained in this object
+    out ++= this.getContainedObjects()
+    // Recurse
+    for (obj <- this.getContainedObjects()) {
+      out ++= obj.getContainedObjectsRecursive()
+    }
+
+    // Return
+    out.toSet
+  }
 
   def getContainedObjectsNotHidden():Set[EnvObject] = {
     this.containedObjects.filter(_.isHidden() == false).toSet
@@ -220,6 +252,22 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
 
     // Default return
     None
+  }
+
+  // Get all the containers that this object is in, down until the root of the object's world tree
+  def getContainersRecursive():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]
+
+    // This objects container
+    val container = this.getContainer()
+    if (container.isDefined) {
+      out.append(container.get)
+      // Recurse through the container's container
+      out.insertAll(out.length, container.get.getContainersRecursive)
+    }
+
+    // Return
+    out.toArray
   }
 
   /*

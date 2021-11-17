@@ -26,3 +26,8 @@ class HeatSourcePropertiesOven extends HeatSourceProperties(maxTemp = 540.0f, cu
 class HeatSourcePropertiesWoodFire extends HeatSourceProperties(maxTemp = 600.0f, curSetTemp = None) {
 
 }
+
+class HeatSourcePropertiesLighter extends HeatSourceProperties(maxTemp = 2200.0f, curSetTemp = None) {
+
+}
+
