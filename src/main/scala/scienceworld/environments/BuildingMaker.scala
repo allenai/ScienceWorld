@@ -4,10 +4,10 @@ import scienceworld.objects.livingthing.animals.Bee
 import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
-import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
+import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Shovel, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
 import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree, Plant, Soil}
-import scienceworld.objects.location.{Location, Room, Universe}
+import scienceworld.objects.location.{Location, Outside, Room, Universe}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
 import scienceworld.objects.portal.Door
 import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalConductivity}
@@ -260,6 +260,11 @@ object RoomMaker {
     val waterJug = new Jug()
     room.addObject(waterJug)
 
+
+    // Shovel
+    val shovel = new Shovel
+    room.addObject(shovel)
+
 /*
     // debug (plant)
     val plant1 = new OrangeTree()
@@ -345,6 +350,17 @@ object RoomMaker {
 
 
   /*
+   * Outside
+   */
+  def mkOutside():Outside = {
+    val outside = new Outside()
+
+
+    return outside
+  }
+
+
+  /*
    * Helper functions
    */
   def mkDoor(location1:Location, location2:Location, isOpen:Boolean = false) {
@@ -400,6 +416,11 @@ object BuildingMaker {
     universe.addObject(roomHallway)
 
 
+    // Outside
+    val outside = RoomMaker.mkOutside()
+    universe.addObject(outside)
+
+
     // Doors
     RoomMaker.mkDoor(roomKitchen, roomHallway)
     RoomMaker.mkDoor(roomLivingRoom, roomHallway)
@@ -407,6 +428,9 @@ object BuildingMaker {
     RoomMaker.mkDoor(roomBathroom, roomKitchen)
     RoomMaker.mkDoor(roomWorkshop, roomHallway)
     RoomMaker.mkDoor(roomGreenhouse, roomHallway)
+
+    RoomMaker.mkDoor(roomKitchen, outside)
+    RoomMaker.mkDoor(roomGreenhouse, outside)
 
   }
 

@@ -34,3 +34,10 @@ class IsNotActivableDeviceOn extends DeviceProperties {
 class IsUsable extends DeviceProperties {
   isUsable                              = true
 }
+
+// For instantaneous use devices (like a shovel)
+class IsUsableNonActivable extends DeviceProperties {
+  isActivable                           = false
+  isActivated                           = false
+  isUsable                              = true
+}
