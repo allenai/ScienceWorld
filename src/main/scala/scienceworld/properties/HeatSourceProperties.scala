@@ -23,6 +23,10 @@ class HeatSourcePropertiesOven extends HeatSourceProperties(maxTemp = 540.0f, cu
 
 }
 
+class HeatSourcePropertiesBlastFurnace extends HeatSourceProperties(maxTemp = 2300.0f, curSetTemp = None) {
+
+}
+
 class HeatSourcePropertiesWoodFire extends HeatSourceProperties(maxTemp = 600.0f, curSetTemp = None) {
 
 }

@@ -4,7 +4,7 @@ import scienceworld.objects.livingthing.animals.Bee
 import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water, Wood}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
-import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Lighter, Shovel, Sink, Stove, Thermometer, Toilet}
+import scienceworld.objects.devices.{Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
 import scienceworld.objects.environmentoutside.FirePit
 import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree, Plant, Soil}
@@ -134,6 +134,8 @@ object RoomMaker {
     val freezer = new Freezer()
     room.addObject(freezer)
 
+    val oven = new Oven()
+    room.addObject(oven)
 
 
     // Containers
@@ -367,6 +369,19 @@ object RoomMaker {
 
 
   /*
+   * Foundry
+   */
+  def mkFoundry(sewer:Sewer):Room = {
+    val foundry = new Room("foundry")
+
+    foundry.addObject(new BlastFurnace())
+    foundry.addObject(new Sink( drainsTo=Some(sewer)  ))
+
+    // Return
+    foundry
+  }
+
+  /*
    * Helper functions
    */
   def mkDoor(location1:Location, location2:Location, isOpen:Boolean = false) {
@@ -426,6 +441,10 @@ object BuildingMaker {
     val outside = RoomMaker.mkOutside()
     universe.addObject(outside)
 
+    // Foundry
+    val foundry = RoomMaker.mkFoundry(sewer)
+    universe.addObject(foundry)
+
 
     // Doors
     RoomMaker.mkDoor(roomKitchen, roomHallway)
@@ -437,6 +456,8 @@ object BuildingMaker {
 
     RoomMaker.mkDoor(roomKitchen, outside)
     RoomMaker.mkDoor(roomGreenhouse, outside)
+
+    RoomMaker.mkDoor(foundry, outside)
 
   }
 
