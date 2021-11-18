@@ -10,7 +10,7 @@ val_data = {"texts":[],"labels":[]}
 test_data = {"texts":[],"labels":[]}
 
 for data in json_list:
-    raw_data = json.load(data)
+    raw_data = json.loads(data)
     if raw_data["p_valid_model"] < 0.8:
         continue
     text = "[GEN]" + " <head> " + raw_data["head"] + " </head> "\
@@ -26,4 +26,11 @@ for data in json_list:
         test_data["texts"].append(text)
         test_data["labels"].append(label)
 
-pass
+with open("atomic_train.json", "w") as f:
+    json.dump(train_data, f)
+
+with open("atomic_train.json", "w") as f:
+    json.dump(train_data, f)
+
+with open("atomic_train.json", "w") as f:
+    json.dump(train_data, f)
