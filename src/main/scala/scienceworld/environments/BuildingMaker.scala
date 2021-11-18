@@ -4,7 +4,7 @@ import scienceworld.objects.livingthing.animals.Bee
 import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water, Wood}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, SteelTable, WoodTable}
-import scienceworld.objects.devices.{Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, Stove, Thermometer, Toilet}
+import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
 import scienceworld.objects.environmentoutside.FirePit
 import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree, Plant, Soil}
@@ -268,7 +268,7 @@ object RoomMaker {
 
 
     // Shovel
-    val shovel = new Shovel
+    val shovel = new Shovel()
     room.addObject(shovel)
 
 /*
@@ -363,6 +363,7 @@ object RoomMaker {
 
     outside.addObject( new FirePit() )
     outside.addObject( new Wood() )
+    outside.addObject( new Axe() )
 
     return outside
   }

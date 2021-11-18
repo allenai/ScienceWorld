@@ -8,7 +8,11 @@ import util.StringHelpers
 /*
  * Generic Fruiting Tree
  */
-class FruitingTree extends Plant {
+class Tree extends Plant {
+
+}
+
+class FruitingTree extends Tree {
   this.propEdibility = Some(new Edible())
 
   def getPlantName():String = {
