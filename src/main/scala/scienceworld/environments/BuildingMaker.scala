@@ -6,7 +6,7 @@ import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassC
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, SteelTable, WoodTable}
 import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
-import scienceworld.objects.environmentoutside.FirePit
+import scienceworld.objects.environmentoutside.{FirePit, Fountain}
 import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree, Plant, Soil}
 import scienceworld.objects.location.{Location, Outside, Room, Universe}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
@@ -364,6 +364,7 @@ object RoomMaker {
     outside.addObject( new FirePit() )
     outside.addObject( new Wood() )
     outside.addObject( new Axe() )
+    outside.addObject( new Fountain() )
 
     return outside
   }
