@@ -285,6 +285,21 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   def isHidden():Boolean = this._isHidden
   def setHidden(value:Boolean) { this._isHidden = value }
 
+  // The object name, with important descriptors added
+  def getDescriptName():String = {
+    // Check 1: Was on fire
+    if (!this.isOnFire() && this.hasCombusted()) {
+      return "burned " + this.name
+    }
+
+    // Check 2: Is on fire
+    if (this.isOnFire()) {
+      return this.name + " (on fire)"
+    }
+
+    // Otherwise
+    return this.name
+  }
 
   /*
    * Delete (remove) object from simulation

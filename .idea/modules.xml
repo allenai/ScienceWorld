@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/virtualenv-scala.iml" filepath="$PROJECT_DIR$/.idea/modules/virtualenv-scala.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/virtualenv-scala-build.iml" filepath="$PROJECT_DIR$/.idea/modules/virtualenv-scala-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/virtualenv-scala2.iml" filepath="$PROJECT_DIR$/.idea/virtualenv-scala2.iml" />
+    </modules>
+  </component>
+</project>
