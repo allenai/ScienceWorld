@@ -2,7 +2,7 @@ package scienceworld.struct
 
 import scienceworld.objects.portal.Portal
 import scienceworld.properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, ElectricalConnectionProperties, HeatSourceProperties, LifeProperties, MaterialProperties, MoveableProperties, PollinationProperties, PortalProperties}
-import scienceworld.processes.{ElectricalConductivity, HeatTransfer, StateOfMatter}
+import scienceworld.processes.{Combustion, ElectricalConductivity, HeatTransfer, StateOfMatter}
 import util.{UniqueIdentifier, UniqueTypeID}
 
 import scala.collection.mutable
@@ -348,14 +348,32 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   }
 
 
-
   /*
-   * Text-based simulation methods
+   * Simulation methods (devices)
    */
   def useWith(patientObj:EnvObject):(Boolean, String) = {
     return (false, "")
   }
 
+  /*
+   * Simulation methods (combustion)
+   */
+
+  // Returns true if the environment is currently on fire, or has been on fire.
+  def hasCombusted():Boolean = {
+    if (this.propMaterial.isEmpty) return false
+    return this.propMaterial.get.hasCombusted
+  }
+
+  def isOnFire():Boolean = {
+    if (this.propMaterial.isEmpty) return false
+    return this.propMaterial.get.isCombusting
+  }
+
+
+  /*
+   * Text-based simulation methods
+   */
   // Tick completion
   def setTickProcessed() { this.tickCompleted = true }
   def clearTickProcessed() { this.tickCompleted = false }
@@ -378,6 +396,9 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   def tick():Boolean = {
     // Was tick already processed
     if (this.wasTickProcessed()) return false
+
+    // Combustion: Handle object combustion
+    Combustion.combustionTick(this)
 
     // Heat transfer: Conductive heat transfer between this container and all objects in the container (container to obj)
     for (containedObj <- this.getContainedObjects()) {

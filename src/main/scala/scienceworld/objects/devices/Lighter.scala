@@ -1,6 +1,6 @@
 package scienceworld.objects.devices
 
-import scienceworld.processes.Shovelling
+import scienceworld.processes.{Combustion, Shovelling}
 import scienceworld.properties.{HeatSourcePropertiesLighter, HeatSourcePropertiesStove, IsNotContainer, IsOpenUnclosableContainer, IsUsableNonActivable, MetalProp, MoveableProperties}
 import scienceworld.struct.EnvObject
 import util.StringHelpers
@@ -26,6 +26,8 @@ class Lighter extends HeatSource {
     if (combustionTemp <= heatsourceTemp) {
       // Combust the object
       println ("TODO: Combust")
+      Combustion.setObjectOnFire(patientObj)
+
       return (true, "TODO: Combust (" + patientObj.name + ").")
 
     } else {
