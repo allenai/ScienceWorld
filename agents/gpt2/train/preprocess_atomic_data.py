@@ -29,8 +29,8 @@ for data in json_list:
 with open("atomic_train.json", "w") as f:
     json.dump(train_data, f)
 
-with open("atomic_train.json", "w") as f:
-    json.dump(train_data, f)
+with open("atomic_val.json", "w") as f:
+    json.dump(val_data, f)
 
-with open("atomic_train.json", "w") as f:
-    json.dump(train_data, f)
+with open("atomic_test.json", "w") as f:
+    json.dump(test_data, f)
