@@ -1,8 +1,8 @@
 package scienceworld.environments
 
 import scienceworld.objects.livingthing.animals.Bee
-import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water, Wood}
-import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
+import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, SodiumChloride, Water, Wood}
+import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, GlassJar, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, SteelTable, WoodTable}
 import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
@@ -188,6 +188,12 @@ object RoomMaker {
     // Lighter
     val lighter = new Lighter()
     room.addObject(lighter)
+
+    // Salt
+    val jar = new GlassJar()
+    jar.addObject(new SodiumChloride())
+    room.addObject(jar)
+
 
 
     // Return

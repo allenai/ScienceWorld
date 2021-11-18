@@ -75,7 +75,7 @@ object ActionMoveThroughDoor {
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move through door
     val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("go through", "walk through", "move through", "go to", "walk to", "move to", "go into", "move into")),
+      new ActionExprOR(List("go", "go through", "walk through", "move through", "go to", "walk to", "move to", "go into", "move into")),
       new ActionExprIdentifier("doorOrLocation")
     ))
     val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)

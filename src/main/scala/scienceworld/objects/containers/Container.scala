@@ -59,6 +59,7 @@ class GlassCup extends Container {
 
 }
 
+
 class PlasticCup extends Container {
   this.name = "plastic cup"
   this.propContainer = Some(new IsOpenUnclosableContainer())
@@ -133,6 +134,18 @@ class Jug extends Container {
 
   override def getReferents(): Set[String] = {
     Set("jug", this.name, this.getDescriptName())
+  }
+
+}
+
+
+class GlassJar extends Container {
+  this.name = "glass jar"
+  this.propContainer = Some(new IsContainer())
+  this.propMaterial = Some(new GlassProp())
+
+  override def getReferents(): Set[String] = {
+    Set("jar", "glass jar", this.name, this.getDescriptName())
   }
 
 }
