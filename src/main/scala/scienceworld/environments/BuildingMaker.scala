@@ -3,7 +3,7 @@ package scienceworld.environments
 import scienceworld.objects.livingthing.animals.Bee
 import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water, Wood}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
-import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
+import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, SteelTable, WoodTable}
 import scienceworld.objects.devices.{Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
 import scienceworld.objects.environmentoutside.FirePit
@@ -60,7 +60,7 @@ object RoomMaker {
     val bed = new Bed()
     room.addObject(bed)
 
-    val table = new Table()
+    val table = new WoodTable()
     room.addObject(table)
 
     val closet = new Closet()
@@ -175,7 +175,7 @@ object RoomMaker {
     room.addObject( Picture.mkRandom() )
 
     // Table
-    val table = new Table()
+    val table = new WoodTable()
     room.addObject( table )
 
     // Cup on table
@@ -203,7 +203,7 @@ object RoomMaker {
     val room = new Room("workshop")
 
     // Table
-    val table = new Table()
+    val table = new WoodTable()
     room.addObject( table )
 
     // Electical
@@ -376,6 +376,7 @@ object RoomMaker {
 
     foundry.addObject(new BlastFurnace())
     foundry.addObject(new Sink( drainsTo=Some(sewer)  ))
+    foundry.addObject(new SteelTable() )
 
     // Return
     foundry
@@ -391,14 +392,15 @@ object RoomMaker {
   }
 
   def mkRandomTable():EnvObject = {
-    val numOptions = 2
+    val numOptions = 3
     val randIdx = Random.nextInt(numOptions)
 
-    if (randIdx == 0) return new Table()
-    if (randIdx == 1) return new Desk()
+    if (randIdx == 0) return new WoodTable()
+    if (randIdx == 1) return new SteelTable()
+    if (randIdx == 2) return new Desk()
 
     // Default
-    return new Table()
+    return new WoodTable()
   }
 
 }

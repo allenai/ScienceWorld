@@ -1,7 +1,7 @@
 package scienceworld.objects.containers.furniture
 
 import scienceworld.objects.containers.Container
-import scienceworld.properties.{IsContainer, IsOpenUnclosableContainer, WoodProp}
+import scienceworld.properties.{IsContainer, IsOpenUnclosableContainer, SteelProp, WoodProp}
 import scienceworld.struct.EnvObject._
 import util.StringHelpers
 
@@ -9,7 +9,7 @@ import util.StringHelpers
 /*
  * Tables/Desks/etc
  */
-class Table extends Container {
+class WoodTable extends Container {
   this.name = "table"
   this.propContainer = Some(new IsOpenUnclosableContainer())
   this.propMaterial = Some(new WoodProp())
@@ -38,6 +38,34 @@ class Table extends Container {
 
 }
 
+class SteelTable extends Container {
+  this.name = "table"
+  this.propContainer = Some(new IsOpenUnclosableContainer())
+  this.propMaterial = Some(new SteelProp())
+
+  override def getReferents(): Set[String] = {
+    Set("table", this.propMaterial.get.substanceName + " table", this.name, this.getDescriptName())
+  }
+
+
+  override def getDescription(mode: Int): String = {
+    val os = new StringBuilder
+
+    os.append("a " + this.getDescriptName() + ". ")
+
+    if (mode == MODE_CURSORY_DETAIL) {
+      os.append("On the " + this.getDescriptName() + " is: ")
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
+      os.append(".")
+    } else if (mode == MODE_DETAILED) {
+      os.append("On the " + this.getDescriptName() + " is: \n")
+      os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
+    }
+
+    os.toString
+  }
+
+}
 
 class Desk extends Container {
   this.name = "desk"
