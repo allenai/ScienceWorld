@@ -15,17 +15,17 @@ class Sittable extends Container {
   this.propMaterial = Some(new WoodProp())
 
   override def getReferents(): Set[String] = {
-    Set("sittable", this.propMaterial.get.substanceName + " sittable", this.name)
+    Set("sittable", this.propMaterial.get.substanceName + " sittable", this.name, this.getDescriptName())
   }
 
 
   override def getDescription(mode: Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ". ")
+    os.append("a " + this.getDescriptName() + ". ")
 
 
-    os.append("On the " + this.name + " is: ")
+    os.append("On the " + this.getDescriptName() + " is: ")
     os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
     os.append(".")
 
@@ -73,7 +73,7 @@ class Pillow extends EnvObject {
   this.propMaterial = Some(new CottonClothProp)
 
   override def getDescription(mode: Int): String = {
-    return "a " + this.propMaterial.get.color + " pillow"
+    return "a " + this.propMaterial.get.color + " " + this.getDescriptName()
   }
 
 }

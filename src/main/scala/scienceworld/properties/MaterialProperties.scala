@@ -11,8 +11,14 @@ trait MaterialProperties {
   var boilingPoint:Double             = 100.0f
   var meltingPoint:Double             = 0.0f
   var combustionPoint:Double          = 200.0f
+  // Combustion
+  var isCombusting:Boolean            = false
+  var hasCombusted:Boolean            = false
+  var combustionTicks:Int             = 100
+
   // Electrical
   var electricallyConductive:Boolean  = false
+
 }
 
 
@@ -354,7 +360,7 @@ class CeramicProp extends MaterialProperties {
   color                           = "white"
   // Thermal
   temperatureC                    = 10.0f
-  thermalConductivity             = 0.50
+  thermalConductivity             = 0.02
   stateOfMatter                   = "solid"
   boilingPoint                    = 10001.0f
   meltingPoint                    = 2000.0f
@@ -621,4 +627,25 @@ class IceCreamProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = false
+}
+
+class AshProp extends MaterialProperties {
+  substanceName                   = "ash"
+  nameInStateOfMatter             = Map()
+  color                           = "grey"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 10002.0f
+  // Combustion
+  isCombusting                    = false           // Has already combusted
+  hasCombusted                    = true
+  combustionTicks                 = 0
+  // Electrical
+  electricallyConductive          = false
+
+
 }

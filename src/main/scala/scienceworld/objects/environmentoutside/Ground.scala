@@ -25,11 +25,11 @@ class Ground extends EnvObject {
   }
 
   override def getReferents(): Set[String] = {
-    Set("ground", this.name)
+    Set("ground", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return "the " + this.name
+    return "the " + this.getDescriptName()
     /*
     val containedObjects = this.getContainedObjects()
     if (containedObjects.size == 0) {
@@ -49,15 +49,15 @@ class Hole extends Container {
   this.propContainer = Some(new IsOpenUnclosableContainer)
 
   override def getReferents(): Set[String] = {
-    Set("hole", this.name)
+    Set("hole", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
     val containedObjects = this.getContainedObjects()
     if (containedObjects.size == 0) {
-      return "a hole " + this.name
+      return "a hole " + this.getDescriptName()
     } else {
-      return "a " + this.name + " (containing " + StringHelpers.objectListToStringDescription(containedObjects, this, mode=MODE_CURSORY_DETAIL, multiline = false) + ")"
+      return "a " + this.getDescriptName() + " (containing " + StringHelpers.objectListToStringDescription(containedObjects, this, mode=MODE_CURSORY_DETAIL, multiline = false) + ")"
     }
 
   }

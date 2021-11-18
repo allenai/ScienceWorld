@@ -20,11 +20,13 @@ class Apple extends Food {
   var color = "red"
 
   override def getReferents(): Set[String] = {
-    Set("apple", this.color + " apple", this.name)
+    val cannonicalName = this.color + " apple"
+    Set("apple", this.color + " apple", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
   }
 
   override def getDescription(mode:Int): String = {
-    return "a " + this.color + " apple"
+    val cannonicalName = this.color + " apple"
+    return "a " + this.getDescriptName(cannonicalName)
   }
 
 }
@@ -36,11 +38,11 @@ class Avocado extends Food {
   var color = "green"
 
   override def getReferents(): Set[String] = {
-    Set("avocado", this.name)
+    Set("avocado", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return "an avocado"
+    return "an " + this.getDescriptName()
   }
 
 }
@@ -52,11 +54,11 @@ class Banana extends Food {
   var color = "yellow"
 
   override def getReferents(): Set[String] = {
-    Set("banana", this.name)
+    Set("banana", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return "a banana"
+    return "a " + this.getDescriptName()
   }
 
 }
@@ -68,11 +70,11 @@ class Cherry extends Food {
   var color = "red"
 
   override def getReferents(): Set[String] = {
-    Set("cherry", this.name)
+    Set("cherry", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return "a cherry"
+    return "a " + this.getDescriptName()
   }
 
 }
@@ -85,11 +87,11 @@ class Lemon extends Food {
   var color = "yellow"
 
   override def getReferents(): Set[String] = {
-    Set("lemon", this.name)
+    Set("lemon", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return "a lemon"
+    return "a " + this.getDescriptName()
   }
 
 }
@@ -102,11 +104,11 @@ class Orange extends Food {
   var color = "orange"
 
   override def getReferents(): Set[String] = {
-    Set("orange", this.name)
+    Set("orange", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return "an orange"
+    return "an " + this.getDescriptName()
   }
 
 }
@@ -118,11 +120,11 @@ class Peach extends Food {
   var color = "pink"
 
   override def getReferents(): Set[String] = {
-    Set("peach", this.name)
+    Set("peach", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return "a peach"
+    return "a " + this.getDescriptName()
   }
 
 }
@@ -141,11 +143,11 @@ class OrangeJuice extends Food {
   var color = "orange"
 
   override def getReferents(): Set[String] = {
-    Set("orange juice", this.name)
+    Set("orange juice", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return this.name
+    return this.getDescriptName()
   }
 
 }
@@ -156,11 +158,11 @@ class AppleJuice extends Food {
   this.propMaterial = Some(new AppleJuiceProp())
 
   override def getReferents(): Set[String] = {
-    Set("apple juice", this.name)
+    Set("apple juice", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return this.name
+    return this.getDescriptName()
   }
 
 }
@@ -174,11 +176,13 @@ class Onion extends Food {
   var color = "red"
 
   override def getReferents(): Set[String] = {
-    Set("onion", this.color + " onion", this.name)
+    val cannonicalName = this.color + " onion"
+    Set("onion", this.color + " onion", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
   }
 
   override def getDescription(mode:Int): String = {
-    return "a " + this.color + " onion"
+    val cannonicalName = this.color + " onion"
+    return "a " + this.getDescriptName(cannonicalName)
   }
 
 }
@@ -190,11 +194,11 @@ class Garlic extends Food {
   var color = "white"
 
   override def getReferents(): Set[String] = {
-    Set("garlic", this.name)
+    Set("garlic", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return "garlic"
+    return this.getDescriptName()
   }
 
 }
@@ -206,11 +210,11 @@ class Potato extends Food {
   var color = "brown"
 
   override def getReferents(): Set[String] = {
-    Set("potato", this.name)
+    Set("potato", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return "a potato"
+    return "a " + this.getDescriptName()
   }
 
 }
@@ -224,11 +228,11 @@ class Chocolate extends Food {
   this.propMaterial = Some(new ChocolateProp())
 
   override def getReferents(): Set[String] = {
-    Set("chocolate", this.name)
+    Set("chocolate", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return this.name
+    return this.getDescriptName()
   }
 
 }
@@ -239,11 +243,11 @@ class Marshmallow extends Food {
   this.propMaterial = Some(new MarshmallowProp())
 
   override def getReferents(): Set[String] = {
-    Set("marshmallow", this.name)
+    Set("marshmallow", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return this.name
+    return this.getDescriptName()
   }
 
 }
@@ -254,11 +258,11 @@ class IceCream extends Food {
   this.propMaterial = Some(new IceCreamProp())
 
   override def getReferents(): Set[String] = {
-    Set("ice cream", this.name)
+    Set("ice cream", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return this.name
+    return this.getDescriptName()
   }
 
 }

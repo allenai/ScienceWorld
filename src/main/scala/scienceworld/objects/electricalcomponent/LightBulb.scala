@@ -21,13 +21,13 @@ class LightBulb extends PolarizedElectricalComponent {
   }
 
   override def getReferents(): Set[String] = {
-    Set("light", "light bulb", this.name)
+    Set("light", "light bulb", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int):String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ", which is ")
+    os.append("a " + this.getDescriptName() + ", which is ")
     if (this.propDevice.get.isActivated) {
       os.append("on")
     } else {

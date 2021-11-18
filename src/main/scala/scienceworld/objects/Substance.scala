@@ -1,17 +1,17 @@
 package scienceworld.objects
 
-import scienceworld.properties.{AirProp, CaesiumProp, GalliumProp, LeadProp, MercuryProp, RubberProp, SoapProp, TinProp, WaterProp}
+import scienceworld.properties.{AirProp, AshProp, CaesiumProp, GalliumProp, LeadProp, MercuryProp, RubberProp, SoapProp, TinProp, WaterProp, WoodProp}
 import scienceworld.struct.EnvObject
 
 class Substance extends EnvObject {
   this.name = "substance"
 
   override def getReferents(): Set[String] = {
-    Set("substance", this.name)
+    Set("substance", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return "a substance called " + this.name
+    return "a substance called " + this.getDescriptName()
   }
 }
 
@@ -74,4 +74,15 @@ class Soap extends Substance {
 class Rubber extends Substance {
   this.name = "rubber"
   this.propMaterial = Some (new RubberProp)
+}
+
+class Wood extends Substance {
+  this.name = "wood"
+  this.propMaterial = Some (new WoodProp)
+}
+
+// Combustion products
+class Ash extends Substance {
+  this.name = "ash"
+  this.propMaterial = Some (new AshProp)
 }

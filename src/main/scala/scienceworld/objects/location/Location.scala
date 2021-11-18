@@ -15,13 +15,13 @@ class Location extends EnvObject {
   propContainer = Some( new IsOpenUnclosableContainer() )
 
   override def getReferents(): Set[String] = {
-    Set("location", this.name)
+    Set("location", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder()
 
-    os.append("A location. ")
+    os.append("A " + this.getDescriptName() + ". ")
     os.append("In this location, you see: ")
     os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = true)  )
     os.append(".")
@@ -37,13 +37,13 @@ class Universe extends Location {
   this.name = "universe"
 
   override def getReferents(): Set[String] = {
-    Set("universe")
+    Set("universe", this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder()
 
-    os.append("A Universe. ")
+    os.append("A " + this.getDescriptName() + ". ")
     os.append("In this Universe, you see: ")
     os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = true)  )
     os.append(".")
@@ -66,13 +66,13 @@ class Room(_name:String) extends Location {
 
 
   override def getReferents(): Set[String] = {
-    Set("room", this.name)
+    Set("room", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder()
 
-    os.append("This room is called the " + this.name + ". ")
+    os.append("This room is called the " + this.getDescriptName() + ". ")
     os.append("In it, you see: \n")
     os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
 
@@ -101,13 +101,13 @@ class Outside(_name:String) extends Location {
 
 
   override def getReferents(): Set[String] = {
-    Set("outside", this.name)
+    Set("outside", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder()
 
-    os.append("This outside location is called the " + this.name + ". ")
+    os.append("This outside location is called the " + this.getDescriptName() + ". ")
     os.append("Here you see: \n")
     os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
 

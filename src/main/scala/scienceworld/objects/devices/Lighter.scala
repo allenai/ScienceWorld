@@ -1,6 +1,6 @@
 package scienceworld.objects.devices
 
-import scienceworld.processes.Shovelling
+import scienceworld.processes.{Combustion, Shovelling}
 import scienceworld.properties.{HeatSourcePropertiesLighter, HeatSourcePropertiesStove, IsNotContainer, IsOpenUnclosableContainer, IsUsableNonActivable, MetalProp, MoveableProperties}
 import scienceworld.struct.EnvObject
 import util.StringHelpers
@@ -26,7 +26,9 @@ class Lighter extends HeatSource {
     if (combustionTemp <= heatsourceTemp) {
       // Combust the object
       println ("TODO: Combust")
-      return (true, "TODO: Combust (" + patientObj.name + ").")
+      val (success, messageStr) = Combustion.setObjectOnFire(patientObj)
+
+      return (true, messageStr)
 
     } else {
       // Heat up the object a small amount
@@ -59,13 +61,13 @@ class Lighter extends HeatSource {
   }
 
   override def getReferents():Set[String] = {
-    Set("lighter", this.name)
+    Set("lighter", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int):String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name)
+    os.append("a " + this.getDescriptName())
 
     os.toString()
   }

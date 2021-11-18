@@ -32,13 +32,13 @@ class Switch extends PolarizedElectricalComponent {
   }
 
   override def getReferents(): Set[String] = {
-    Set("component", this.name)
+    Set("component", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ", which is ")
+    os.append("a " + this.getDescriptName() + ", which is ")
     if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
     if (mode == MODE_DETAILED) {
       os.append(". ")

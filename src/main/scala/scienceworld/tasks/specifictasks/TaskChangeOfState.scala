@@ -22,6 +22,11 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
   val substancePossibilities = new ArrayBuffer[ Array[TaskModifier] ]()
   // Example of water (found in the environment)
   substancePossibilities.append( Array(new TaskObject("water", None, "", Array.empty[String], 0) ))
+
+  // Water, but disable the common source (the sink in the kitchen)
+  substancePossibilities.append( Array(new TaskObject("water", None, "", Array.empty[String], 0),
+    new TaskDisable(name="sink", Array("kitchen") )))
+
   // Example of ice (needs to be generated)
   substancePossibilities.append( Array(new TaskObject("ice", Some(new Ice), "kitchen", Array("freezer"), 0) ))
   // Example of something needing to be generated

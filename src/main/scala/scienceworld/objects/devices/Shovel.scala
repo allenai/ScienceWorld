@@ -19,13 +19,13 @@ class Shovel extends Device {
   }
 
   override def getReferents(): Set[String] = {
-    Set("shovel", this.name)
+    Set("shovel", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
-    os.append("a shovel")
+    os.append("a " + this.getDescriptName())
 
     os.toString
   }

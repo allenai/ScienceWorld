@@ -2,7 +2,7 @@ package scienceworld.struct
 
 import scienceworld.objects.portal.Portal
 import scienceworld.properties.{ContainerProperties, CoolingSourceProperties, DeviceProperties, EdibilityProperties, ElectricalConnectionProperties, HeatSourceProperties, LifeProperties, MaterialProperties, MoveableProperties, PollinationProperties, PortalProperties}
-import scienceworld.processes.{ElectricalConductivity, HeatTransfer, StateOfMatter}
+import scienceworld.processes.{Combustion, ElectricalConductivity, HeatTransfer, StateOfMatter}
 import util.{UniqueIdentifier, UniqueTypeID}
 
 import scala.collection.mutable
@@ -285,6 +285,25 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   def isHidden():Boolean = this._isHidden
   def setHidden(value:Boolean) { this._isHidden = value }
 
+  // The object name, with important descriptors added
+  def getDescriptName(overrideName:String = ""):String = {
+    // By default use this.name, unless an overrideName has been specified.
+    var name = this.name
+    if (overrideName.length > 0) name = overrideName
+
+    // Check 1: Was on fire
+    if (!this.isOnFire() && this.hasCombusted()) {
+      return "burned " + name
+    }
+
+    // Check 2: Is on fire
+    if (this.isOnFire()) {
+      return name + " (on fire)"
+    }
+
+    // Otherwise
+    return name
+  }
 
   /*
    * Delete (remove) object from simulation
@@ -348,14 +367,32 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   }
 
 
-
   /*
-   * Text-based simulation methods
+   * Simulation methods (devices)
    */
   def useWith(patientObj:EnvObject):(Boolean, String) = {
     return (false, "")
   }
 
+  /*
+   * Simulation methods (combustion)
+   */
+
+  // Returns true if the environment is currently on fire, or has been on fire.
+  def hasCombusted():Boolean = {
+    if (this.propMaterial.isEmpty) return false
+    return this.propMaterial.get.hasCombusted
+  }
+
+  def isOnFire():Boolean = {
+    if (this.propMaterial.isEmpty) return false
+    return this.propMaterial.get.isCombusting
+  }
+
+
+  /*
+   * Text-based simulation methods
+   */
   // Tick completion
   def setTickProcessed() { this.tickCompleted = true }
   def clearTickProcessed() { this.tickCompleted = false }
@@ -378,6 +415,9 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   def tick():Boolean = {
     // Was tick already processed
     if (this.wasTickProcessed()) return false
+
+    // Combustion: Handle object combustion
+    Combustion.combustionTick(this)
 
     // Heat transfer: Conductive heat transfer between this container and all objects in the container (container to obj)
     for (containedObj <- this.getContainedObjects()) {
@@ -421,6 +461,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     val out = mutable.Set[String]()
     out.add("object")
     out.add(this.name)
+    out.add(this.getDescriptName())
     // Return
     out.toSet
   }
@@ -448,7 +489,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   }
 
   def getDescription(mode:Int = MODE_CURSORY_DETAIL):String = {
-    return "An object, called " + this.name + ", of type " + this.objType
+    return "An object, called " + this.getDescriptName() + ", of type " + this.objType
   }
 
   // If the object is hidden, returns None

@@ -16,11 +16,11 @@ class FruitingTree extends Plant {
     if (this.isSeed()) {
       // Seed
       val seedName = propLife.get.lifeformType + " seed"
-      return seedName
+      return this.getDescriptName(seedName)
     } else {
       // Plant in some stage of growth
       val treeName = propLife.get.lifeformType + " tree"
-      return treeName
+      return this.getDescriptName(treeName)
     }
 
   }
@@ -46,6 +46,8 @@ class FruitingTree extends Plant {
 
     var out = Set("living thing", "organism", this.name, this.name + " in the " + lifecycle.get.getCurStageName() + " stage", lifecycle.get.getCurStageName() + " plant",
       plantName, plantName + " in the " + lifecycle.get.getCurStageName() + " stage", lifecycle.get.getCurStageName() + " " + plantName)
+
+    out ++= Set(this.getDescriptName(), this.getDescriptName() + " in the " + lifecycle.get.getCurStageName() + " stage")
 
     // If ill, append ill referents too
     if (this.propLife.get.isSickly) {

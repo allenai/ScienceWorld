@@ -20,7 +20,7 @@ class AnswerBox(colourName:String) extends Container {
   }
 
   override def getReferents(): Set[String] = {
-    Set(this.name)
+    Set(this.name, this.getDescriptName())
   }
 
 }
