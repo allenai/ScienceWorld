@@ -7,11 +7,11 @@ class Substance extends EnvObject {
   this.name = "substance"
 
   override def getReferents(): Set[String] = {
-    Set("substance", this.name)
+    Set("substance", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return "a substance called " + this.name
+    return "a substance called " + this.getDescriptName()
   }
 }
 

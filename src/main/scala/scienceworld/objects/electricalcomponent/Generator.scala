@@ -27,13 +27,13 @@ class Generator extends PolarizedElectricalComponent {
   }
 
   override def getReferents(): Set[String] = {
-    Set("generator", this.name)
+    Set("generator", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int):String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + "")
+    os.append("a " + this.getDescriptName() + "")
     if (mode == MODE_DETAILED) {
       os.append(". ")
       os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")

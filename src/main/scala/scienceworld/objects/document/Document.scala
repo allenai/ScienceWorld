@@ -20,13 +20,13 @@ class Document extends EnvObject {
   }
 
   override def getReferents(): Set[String] = {
-    Set(this.name, this.title, this.name + " called " + this.title)
+    Set(this.name, this.title, this.name + " called " + this.title, this.getDescriptName(), this.getDescriptName() + " called " + this.title)
   }
 
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
-    os.append("A document titled " + this.title)
+    os.append("A " + this.getDescriptName() + " titled " + this.title)
 
     os.toString
   }
@@ -50,7 +50,7 @@ class Paper extends Document {
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
-    os.append("A paper titled " + this.title)
+    os.append("A " + this.getDescriptName() + " titled " + this.title)
 
     os.toString
   }
@@ -76,13 +76,13 @@ class Book extends Document {
   }
 
   override def getReferents(): Set[String] = {
-    Set("book", this.title, "book by " + this.author, this.title + " book", this.name)
+    Set("book", this.title, "book by " + this.author, this.title + " book", this.name, this.getDescriptName(), this.getDescriptName() + " by " + this.author, this.getDescriptName() + " called " + this.title)
   }
 
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
-    os.append("A book titled " + this.title + " by " + this.author)
+    os.append("A " + this.getDescriptName() + " titled " + this.title + " by " + this.author)
 
     os.toString
 

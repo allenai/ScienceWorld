@@ -10,11 +10,11 @@ class ForkMetal extends EnvObject {
   this.propMaterial = Some(new SteelProp())
 
   override def getReferents(): Set[String] = {
-    Set(this.name, this.propMaterial.get.substanceName + " fork")
+    Set(this.name, this.propMaterial.get.substanceName + " fork", this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return "A " + this.propMaterial.get.substanceName + " fork"
+    return "A " + this.getDescriptName()
 
   }
 }
@@ -25,11 +25,11 @@ class ForkPlastic extends EnvObject {
   this.propMaterial = Some(new PlasticProp())
 
   override def getReferents(): Set[String] = {
-    Set(this.name, this.propMaterial.get.substanceName + " fork")
+    Set(this.name, this.propMaterial.get.substanceName + " fork", this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return "A " + this.propMaterial.get.substanceName + " fork"
+    return "A " + this.getDescriptName()
 
   }
 }

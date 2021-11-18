@@ -12,7 +12,7 @@ class Device extends EnvObject {
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ", which is turned ")
+    os.append("a " + this.getDescriptName() + ", which is turned ")
     if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
 
     os.toString

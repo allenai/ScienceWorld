@@ -30,7 +30,7 @@ class Thermometer extends Device {
   }
 
   override def getReferents(): Set[String] = {
-    Set("thermometer", this.name)
+    Set("thermometer", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
@@ -48,9 +48,9 @@ class Thermometer extends Device {
     currentMeasurement = this.getDeviceReading( this )
 
     if (currentMeasurement.isDefined) {
-      os.append("a thermometer, currently reading a temperature of " + currentMeasurement.get)
+      os.append("a " + this.getDescriptName() + ", currently reading a temperature of " + currentMeasurement.get)
     } else {
-      os.append("a thermometer")
+      os.append("a " + this.getDescriptName())
     }
 
     os.toString

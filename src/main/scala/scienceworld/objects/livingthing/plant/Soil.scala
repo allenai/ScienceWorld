@@ -9,11 +9,11 @@ class Soil extends EnvObject {
   this.propMaterial = Some(new SoilProp)
 
   override def getReferents(): Set[String] = {
-    Set("soil", this.name)
+    Set("soil", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    return this.name
+    return this.getDescriptName()
   }
 
 }

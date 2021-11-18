@@ -15,21 +15,21 @@ class Table extends Container {
   this.propMaterial = Some(new WoodProp())
 
   override def getReferents(): Set[String] = {
-    Set("table", this.propMaterial.get.substanceName + " table", this.name)
+    Set("table", this.propMaterial.get.substanceName + " table", this.name, this.getDescriptName())
   }
 
 
   override def getDescription(mode: Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ". ")
+    os.append("a " + this.getDescriptName() + ". ")
 
     if (mode == MODE_CURSORY_DETAIL) {
-      os.append("On the " + this.name + " is: ")
+      os.append("On the " + this.getDescriptName() + " is: ")
       os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
       os.append(".")
     } else if (mode == MODE_DETAILED) {
-      os.append("On the " + this.name + " is: \n")
+      os.append("On the " + this.getDescriptName() + " is: \n")
       os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
     }
 
@@ -49,21 +49,21 @@ class Desk extends Container {
   this.addObject(drawer)
 
   override def getReferents(): Set[String] = {
-    Set("desk", this.propMaterial.get.substanceName + " desk", this.name)
+    Set("desk", this.propMaterial.get.substanceName + " desk", this.name, this.getDescriptName())
   }
 
 
   override def getDescription(mode: Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ". ")
+    os.append("a " + this.getDescriptName() + ". ")
 
     if (mode == MODE_CURSORY_DETAIL) {
-      os.append("On the " + this.name + " is: ")
+      os.append("On the " + this.getDescriptName() + " is: ")
       os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
       os.append(".")
     } else if (mode == MODE_DETAILED) {
-      os.append("On the " + this.name + " is: \n")
+      os.append("On the " + this.getDescriptName() + " is: \n")
       os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
     }
 
@@ -82,21 +82,21 @@ class Counter extends Container {
   this.addObject(drawer)
 
   override def getReferents(): Set[String] = {
-    Set("counter", this.propMaterial.get.substanceName + " counter", this.name)
+    Set("counter", this.propMaterial.get.substanceName + " counter", this.name, this.getDescriptName())
   }
 
 
   override def getDescription(mode: Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ". ")
+    os.append("a " + this.getDescriptName() + ". ")
 
     if (mode == MODE_CURSORY_DETAIL) {
-      os.append("On the " + this.name + " is: ")
+      os.append("On the " + this.getDescriptName() + " is: ")
       os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
       os.append(".")
     } else if (mode == MODE_DETAILED) {
-      os.append("On the " + this.name + " is: \n")
+      os.append("On the " + this.getDescriptName() + " is: \n")
       os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
     }
 
@@ -116,16 +116,16 @@ class Cupboard extends Container {
   this.addObject(drawer)
 
   override def getReferents(): Set[String] = {
-    Set("cupboard", this.propMaterial.get.substanceName + " desk", this.name)
+    Set("cupboard", this.propMaterial.get.substanceName + " cupboard", this.name, this.getDescriptName())
   }
 
 
   override def getDescription(mode: Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ". ")
+    os.append("a " + this.getDescriptName() + ". ")
 
-    os.append("The " + this.name + " door is ")
+    os.append("The " + this.getDescriptName() + " door is ")
     if (this.propContainer.get.isOpen) {
       os.append("open. ")
     } else {
@@ -134,11 +134,11 @@ class Cupboard extends Container {
 
     if (this.propContainer.get.isOpen) {
       if (mode == MODE_CURSORY_DETAIL) {
-        os.append("In the " + this.name + " is: ")
+        os.append("In the " + this.getDescriptName() + " is: ")
         os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
         os.append(".")
       } else if (mode == MODE_DETAILED) {
-        os.append("In the " + this.name + " is: \n")
+        os.append("In the " + this.getDescriptName() + " is: \n")
         os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
       }
     }
@@ -156,16 +156,16 @@ class Closet extends Container {
 
 
   override def getReferents(): Set[String] = {
-    Set("closet", this.propMaterial.get.substanceName + " closet", this.name)
+    Set("closet", this.propMaterial.get.substanceName + " closet", this.name, this.getDescriptName())
   }
 
 
   override def getDescription(mode: Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ". ")
+    os.append("a " + this.getDescriptName() + ". ")
 
-    os.append("The " + this.name + " door is ")
+    os.append("The " + this.getDescriptName() + " door is ")
     if (this.propContainer.get.isOpen) {
       os.append("open. ")
     } else {
@@ -174,11 +174,11 @@ class Closet extends Container {
 
     if (this.propContainer.get.isOpen) {
       if (mode == MODE_CURSORY_DETAIL) {
-        os.append("In the " + this.name + " is: ")
+        os.append("In the " + this.getDescriptName() + " is: ")
         os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
         os.append(".")
       } else if (mode == MODE_DETAILED) {
-        os.append("In the " + this.name + " is: \n")
+        os.append("In the " + this.getDescriptName() + " is: \n")
         os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
       }
     }
@@ -198,14 +198,14 @@ class Drawer extends Container {
   this.propMaterial = Some(new WoodProp())
 
   override def getReferents(): Set[String] = {
-    Set("drawer", this.propMaterial.get.substanceName + " table", this.name)
+    Set("drawer", this.propMaterial.get.substanceName + " table", this.name, this.getDescriptName())
   }
 
 
   override def getDescription(mode: Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name)
+    os.append("a " + this.getDescriptName())
 
     if (mode == MODE_DETAILED) {
       os.append(". ")
@@ -213,11 +213,11 @@ class Drawer extends Container {
         os.append(" The drawer is closed.")
       } else {
         if (mode == MODE_CURSORY_DETAIL) {
-          os.append("In the " + this.name + " is: ")
+          os.append("In the " + this.getDescriptName() + " is: ")
           os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
           os.append(".")
         } else if (mode == MODE_DETAILED) {
-          os.append("In the " + this.name + " is: \n")
+          os.append("In the " + this.getDescriptName() + " is: \n")
           os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
         }
       }

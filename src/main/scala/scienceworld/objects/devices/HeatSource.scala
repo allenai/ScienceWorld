@@ -126,17 +126,17 @@ class Oven extends HeatSource {
   }
 
   override def getReferents():Set[String] = {
-    Set("oven", this.name)
+    Set("oven", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int):String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ", which is turned ")
+    os.append("a " + this.getDescriptName() + ", which is turned ")
     if (this.propDevice.get.isActivated) { os.append("on") } else { os.append("off") }
     os.append(". ")
 
-    os.append("In the oven is: ")
+    os.append("In the " + this.getDescriptName() + " is: ")
     os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
     os.append(".")
 

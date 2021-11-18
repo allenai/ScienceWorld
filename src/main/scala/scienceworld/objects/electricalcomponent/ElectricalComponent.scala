@@ -61,13 +61,13 @@ class PolarizedElectricalComponent() extends EnvObject(name = "", objType = "", 
   }
 
   override def getReferents(): Set[String] = {
-    Set("component", this.name)
+    Set("component", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ". ")
+    os.append("a " + this.getDescriptName() + ". ")
     if (mode == MODE_DETAILED) {
       os.append("its anode is connected to: " + this.anode.propElectricalConnection.get.getConnectedToStr() + ". ")
       os.append("its cathode is connected to: " + this.cathode.propElectricalConnection.get.getConnectedToStr() + ". ")
@@ -105,13 +105,13 @@ class UnpolarizedElectricalComponent extends EnvObject {
   }
 
   override def getReferents(): Set[String] = {
-    Set("component", this.name)
+    Set("component", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ". ")
+    os.append("a " + this.getDescriptName() + ". ")
     if (mode == MODE_DETAILED) {
       os.append("its terminal 1 is connected to: " + this.terminal1.get.propElectricalConnection.get.getConnectedToStr() + ". ")
       os.append("its terminal 2 is connected to: " + this.terminal2.get.propElectricalConnection.get.getConnectedToStr() + ". ")
@@ -271,18 +271,18 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
   }
 
   override def getReferents():Set[String] = {
-    Set("terminal", this.name, this.name + " on " + parentObject.name, parentObject.name + " " + this.name)
+    Set("terminal", this.name, this.name + " on " + parentObject.name, parentObject.name + " " + this.name, this.getDescriptName(), this.getDescriptName() + " on " + parentObject.name)
   }
 
   override def getDescription(mode: Int): String = {
     if (mode == MODE_CURSORY_DETAIL) {
-      return "a " + this.name + " on " + parentObject.name
+      return "a " + this.getDescriptName() + " on " + parentObject.name
     } else if (mode == MODE_DETAILED) {
-      return "a " + this.name + ".  it is connected to: " + this.propElectricalConnection.get.getConnectedToStr() + ". "
+      return "a " + this.getDescriptName() + ".  it is connected to: " + this.propElectricalConnection.get.getConnectedToStr() + ". "
     }
 
     // Default return
-    return "a " + this.name + " on " + parentObject.name
+    return "a " + this.getDescriptName() + " on " + parentObject.name
   }
 }
 

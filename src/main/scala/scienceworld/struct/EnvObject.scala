@@ -286,19 +286,23 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   def setHidden(value:Boolean) { this._isHidden = value }
 
   // The object name, with important descriptors added
-  def getDescriptName():String = {
+  def getDescriptName(overrideName:String = ""):String = {
+    // By default use this.name, unless an overrideName has been specified.
+    var name = this.name
+    if (overrideName.length > 0) name = overrideName
+
     // Check 1: Was on fire
     if (!this.isOnFire() && this.hasCombusted()) {
-      return "burned " + this.name
+      return "burned " + name
     }
 
     // Check 2: Is on fire
     if (this.isOnFire()) {
-      return this.name + " (on fire)"
+      return name + " (on fire)"
     }
 
     // Otherwise
-    return this.name
+    return name
   }
 
   /*
@@ -457,6 +461,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     val out = mutable.Set[String]()
     out.add("object")
     out.add(this.name)
+    out.add(this.getDescriptName())
     // Return
     out.toSet
   }
@@ -484,7 +489,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   }
 
   def getDescription(mode:Int = MODE_CURSORY_DETAIL):String = {
-    return "An object, called " + this.name + ", of type " + this.objType
+    return "An object, called " + this.getDescriptName() + ", of type " + this.objType
   }
 
   // If the object is hidden, returns None

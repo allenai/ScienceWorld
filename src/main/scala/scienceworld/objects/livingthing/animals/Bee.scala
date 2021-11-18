@@ -72,13 +72,13 @@ class WanderingAnimal extends Animal {
   }
 
   override def getReferents(): Set[String] = {
-    Set("living thing", "organism", this.name)
+    Set("living thing", "organism", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name + ". ")
+    os.append("a " + this.getDescriptName() + ". ")
     if (mode == MODE_DETAILED) {
       // Extended detail
     }
@@ -196,13 +196,13 @@ class Bee extends WanderingAnimal {
   }
 
   override def getReferents(): Set[String] = {
-    Set("living thing", "organism", this.name)
+    Set("living thing", "organism", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name)
+    os.append("a " + this.getDescriptName())
     if (mode == MODE_DETAILED) {
       // Extended detail
       if (this.getContainedAccessibleObjectsOfType[Pollen]().size > 0) {

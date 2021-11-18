@@ -17,7 +17,7 @@ class UnknownSubstanceElectricalConductivity(letterName:String = "A", isConducti
   this.propMaterial.get.electricallyConductive = isConductive
 
   override def getReferents(): Set[String] = {
-    Set(this.name, "unknown substance")
+    Set(this.name, "unknown substance", this.getDescriptName())
   }
 
   override def getDescription(mode: Int): String = {

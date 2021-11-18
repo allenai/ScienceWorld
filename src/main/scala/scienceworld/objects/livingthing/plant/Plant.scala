@@ -48,7 +48,8 @@ class Plant extends LivingThing {
   }
 
   override def getReferents(): Set[String] = {
-    val out = Set("living thing", "organism", this.name, this.name + " in the " + lifecycle.get.getCurStageName() + " stage", lifecycle.get.getCurStageName() + " plant")
+    var out = Set("living thing", "organism", this.name, this.name + " in the " + lifecycle.get.getCurStageName() + " stage", lifecycle.get.getCurStageName() + " plant")
+    out ++= Set(this.getDescriptName(), this.getDescriptName() + " in the " + lifecycle.get.getCurStageName() + " stage")
 
     // If ill, append ill referents too
     if (this.propLife.get.isSickly) {
@@ -70,7 +71,7 @@ class Plant extends LivingThing {
     }
 
     // If alive, give a verbose name
-    os.append("a " + this.name + " in the " + lifecycle.get.getCurStageName() + " stage")
+    os.append("a " + this.getDescriptName() + " in the " + lifecycle.get.getCurStageName() + " stage")
     if (propLife.get.isSickly) os.append(" (that looks unwell)")
 
     val cObjs = this.getContainedObjectsNotHidden()
@@ -107,16 +108,16 @@ class Pollen(val parentPlant:Plant) extends EnvObject {
   }
 
   override def getReferents(): Set[String] = {
-    Set("pollen", this.name, getPlantType() + " pollen")
+    Set("pollen", this.name, getPlantType() + " pollen", this.getDescriptName())
   }
 
   override def getDescription(mode: Int): String = {
     val os = new StringBuilder
 
     if (mode == MODE_CURSORY_DETAIL) {
-      os.append("pollen")
+      os.append(this.getDescriptName())
     } else if (mode == MODE_DETAILED) {
-      os.append(getPlantType() + " pollen")
+      os.append(getPlantType() + this.getDescriptName())
     }
 
     // Return
@@ -257,11 +258,11 @@ class Flower(parentPlant:Plant) extends EnvObject {
 
     // If flower is pollinated, then it begins to wilt
     if (this.propPollination.get.pollinationStep > 0) {
-      return Set("flower", this.name, "wilting flower", "wilting " + this.name)
+      return Set("flower", this.name, "wilting flower", "wilting " + this.name, this.getDescriptName(), "wilting " + this.getDescriptName())
     }
 
     // Normal (non-wilted) flower
-    return Set("flower", this.name)
+    return Set("flower", this.name, this.getDescriptName())
   }
 
 
@@ -270,10 +271,10 @@ class Flower(parentPlant:Plant) extends EnvObject {
 
     // If flower is pollinated, then it begins to wilt
     if (this.propPollination.get.pollinationStep > 0) {
-      os.append("a wilting " + this.name)
+      os.append("a wilting " + this.getDescriptName())
     } else {
       // Normal (non-wilted) flower
-      os.append("a " + this.name)
+      os.append("a " + this.getDescriptName())
     }
 
     if (mode == MODE_DETAILED) {

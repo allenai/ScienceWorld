@@ -62,20 +62,20 @@ class Sink(drainsTo:Option[EnvObject]) extends Device {
   }
 
   override def getReferents(): Set[String] = {
-    Set("sink", this.name)
+    Set("sink", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode: Int): String = {
     val os = new StringBuilder
 
-    os.append("a sink, which is turned ")
+    os.append("a " + this.getDescriptName() + ", which is turned ")
     if (this.propDevice.get.isActivated) {
       os.append("on")
     } else {
       os.append("off")
     }
     os.append(". ")
-    os.append("In the sink is: ")
+    os.append("In the " + this.getDescriptName() + " is: ")
     os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
     os.append(".")
 
@@ -148,20 +148,20 @@ class Bathtub(drainsTo:Option[EnvObject]) extends Device {
   }
 
   override def getReferents(): Set[String] = {
-    Set("bath tub", this.name)
+    Set("bath tub", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode: Int): String = {
     val os = new StringBuilder
 
-    os.append("a bath tub, which is turned ")
+    os.append("a " + this.getDescriptName() + ", which is turned ")
     if (this.propDevice.get.isActivated) {
       os.append("on")
     } else {
       os.append("off")
     }
     os.append(". ")
-    os.append("In the tub is: ")
+    os.append("In the " + this.getDescriptName() + " is: ")
     os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
     os.append(".")
 
@@ -252,18 +252,18 @@ class Toilet(drainsTo:EnvObject) extends Device {
 
 
   override def getReferents(): Set[String] = {
-    Set("toilet", this.name)
+    Set("toilet", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode: Int): String = {
     val os = new StringBuilder
 
-    os.append("a toilet")
+    os.append("a " + this.getDescriptName())
     if (this.toiletFlushStage > 0) os.append(", which is flushing")
     os.append(". ")
 
     if (this.getContainedObjects().size > 0) {
-      os.append("In the toilet is is: ")
+      os.append("In the " + this.getDescriptName() + " is: ")
       os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
       os.append(".")
     }

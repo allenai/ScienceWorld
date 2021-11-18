@@ -48,13 +48,13 @@ class Fridge extends CoolingSource {
   }
 
   override def getReferents():Set[String] = {
-    Set("fridge", this.name)
+    Set("fridge", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int):String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name)
+    os.append("a " + this.getDescriptName())
     // Only mention being off if it's off, but don't mention being on (since this is assumed).
     if (!this.propDevice.get.isActivated) {
       os.append(", which is turned ")
@@ -62,7 +62,7 @@ class Fridge extends CoolingSource {
     }
     os.append(". ")
 
-    os.append("The " + this.name + " door is ")
+    os.append("The " + this.getDescriptName() + " door is ")
     if (this.propContainer.get.isOpen) {
       os.append("open. ")
     } else {
@@ -70,7 +70,7 @@ class Fridge extends CoolingSource {
     }
 
     if (this.propContainer.get.isOpen) {
-      os.append("In the " + this.name + " is: ")
+      os.append("In the " + this.getDescriptName() + " is: ")
       os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
       os.append(".")
     }
@@ -103,13 +103,13 @@ class Freezer extends CoolingSource {
   }
 
   override def getReferents():Set[String] = {
-    Set("freezer", this.name)
+    Set("freezer", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int):String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name)
+    os.append("a " + this.getDescriptName())
     // Only mention being off if it's off, but don't mention being on (since this is assumed).
     if (!this.propDevice.get.isActivated) {
       os.append(", which is turned ")
@@ -117,7 +117,7 @@ class Freezer extends CoolingSource {
     }
     os.append(". ")
 
-    os.append("The " + this.name + " door is ")
+    os.append("The " + this.getDescriptName() + " door is ")
     if (this.propContainer.get.isOpen) {
       os.append("open. ")
     } else {
@@ -125,7 +125,7 @@ class Freezer extends CoolingSource {
     }
 
     if (this.propContainer.get.isOpen) {
-      os.append("In the " + this.name + " is: ")
+      os.append("In the " + this.getDescriptName() + " is: ")
       os.append( StringHelpers.objectListToStringDescription(this.getContainedObjectsAndPortals(), perspectiveContainer=this, multiline = false)  )
       os.append(".")
     }

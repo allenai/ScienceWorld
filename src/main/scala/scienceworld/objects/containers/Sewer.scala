@@ -14,7 +14,7 @@ class Sewer extends Container {
   this.propMaterial = Some(new SteelProp())
 
   override def getReferents(): Set[String] = {
-    Set(this.name)
+    Set(this.name, this.getDescriptName())
   }
 
 }

@@ -61,13 +61,13 @@ class Lighter extends HeatSource {
   }
 
   override def getReferents():Set[String] = {
-    Set("lighter", this.name)
+    Set("lighter", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int):String = {
     val os = new StringBuilder
 
-    os.append("a " + this.name)
+    os.append("a " + this.getDescriptName())
 
     os.toString()
   }
