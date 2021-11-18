@@ -26,9 +26,9 @@ class Lighter extends HeatSource {
     if (combustionTemp <= heatsourceTemp) {
       // Combust the object
       println ("TODO: Combust")
-      Combustion.setObjectOnFire(patientObj)
+      val (success, messageStr) = Combustion.setObjectOnFire(patientObj)
 
-      return (true, "TODO: Combust (" + patientObj.name + ").")
+      return (true, messageStr)
 
     } else {
       // Heat up the object a small amount

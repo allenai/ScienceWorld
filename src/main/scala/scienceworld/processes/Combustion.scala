@@ -8,12 +8,17 @@ object Combustion {
   val COMBUSTION_DELTA_TEMP = 200.0f      // If an object is on fire, it will burn at it's combustion temperature plus this delta
 
   // Set an object on fire
-  def setObjectOnFire(obj:EnvObject): Unit = {
-    if (obj.propMaterial.isEmpty) return
+  def setObjectOnFire(obj:EnvObject): (Boolean, String) = {
+    if (obj.propMaterial.isEmpty) return (false, "That is not flammable.")
+
+    if (obj.isOnFire()) return (true, "The " + obj.name + " is already on fire.")
 
     if (obj.propMaterial.get.combustionTicks > 0) {
       obj.propMaterial.get.isCombusting = true
       obj.propMaterial.get.hasCombusted = true
+      return (true, "The " + obj.name + " catches fire.")
+    } else {
+      return (true, "The " + obj.name + " is not flammable.")
     }
   }
 
