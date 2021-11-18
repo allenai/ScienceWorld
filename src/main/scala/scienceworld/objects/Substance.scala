@@ -1,6 +1,6 @@
 package scienceworld.objects
 
-import scienceworld.properties.{AirProp, AshProp, CaesiumProp, GalliumProp, LeadProp, MercuryProp, RubberProp, SoapProp, TinProp, WaterProp}
+import scienceworld.properties.{AirProp, AshProp, CaesiumProp, GalliumProp, LeadProp, MercuryProp, RubberProp, SoapProp, TinProp, WaterProp, WoodProp}
 import scienceworld.struct.EnvObject
 
 class Substance extends EnvObject {
@@ -74,6 +74,11 @@ class Soap extends Substance {
 class Rubber extends Substance {
   this.name = "rubber"
   this.propMaterial = Some (new RubberProp)
+}
+
+class Wood extends Substance {
+  this.name = "wood"
+  this.propMaterial = Some (new WoodProp)
 }
 
 // Combustion products

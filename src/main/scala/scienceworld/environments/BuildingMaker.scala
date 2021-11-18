@@ -1,11 +1,12 @@
 package scienceworld.environments
 
 import scienceworld.objects.livingthing.animals.Bee
-import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water}
+import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water, Wood}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, Table}
 import scienceworld.objects.devices.{Bathtub, Freezer, Fridge, Lighter, Shovel, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
+import scienceworld.objects.environmentoutside.FirePit
 import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree, Plant, Soil}
 import scienceworld.objects.location.{Location, Outside, Room, Universe}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
@@ -358,6 +359,8 @@ object RoomMaker {
   def mkOutside():Outside = {
     val outside = new Outside()
 
+    outside.addObject( new FirePit() )
+    outside.addObject( new Wood() )
 
     return outside
   }

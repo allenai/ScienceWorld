@@ -360,7 +360,7 @@ class CeramicProp extends MaterialProperties {
   color                           = "white"
   // Thermal
   temperatureC                    = 10.0f
-  thermalConductivity             = 0.50
+  thermalConductivity             = 0.02
   stateOfMatter                   = "solid"
   boilingPoint                    = 10001.0f
   meltingPoint                    = 2000.0f
