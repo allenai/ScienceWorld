@@ -2,6 +2,7 @@ package scienceworld.processes
 
 import scienceworld.objects.Ash
 import scienceworld.struct.EnvObject
+import scala.util.control.Breaks._
 
 object Combustion {
   val COMBUSTION_DELTA_TEMP = 200.0f      // If an object is on fire, it will burn at it's combustion temperature plus this delta
@@ -20,6 +21,14 @@ object Combustion {
   def getBurningTemperature(obj:EnvObject): Double = {
     if (obj.propMaterial.isEmpty) return -273.0f
     return obj.propMaterial.get.combustionPoint + this.COMBUSTION_DELTA_TEMP
+  }
+
+  // Put out a fire
+  def putOutFire(obj:EnvObject): Unit = {
+    if (obj.propMaterial.isEmpty) return
+    obj.propMaterial.get.isCombusting = false
+    // Should also reduce it's temperature, or it will just start combusting again
+    obj.propMaterial.get.temperatureC = obj.propMaterial.get.combustionPoint - 10.0f
   }
 
   // Main tick for combustion process
@@ -63,9 +72,33 @@ object Combustion {
         // Delete the original object
         obj.delete(expelContents = true)
 
-        println ("TODO: Combustion of object (" + obj.name + ") has completed.  Replaced with (" + ash.name + ").")
+        println("TODO: Combustion of object (" + obj.name + ") has completed.  Replaced with (" + ash.name + ").")
 
       }
+
+      // Check to see if the object is in the same container as some liquid water (or, the object itself contains water).
+      val container = obj.getContainer()
+      var objectsThatMightBeWater = obj.getContainedObjects()
+      if (container.isDefined) objectsThatMightBeWater ++= container.get.getContainedObjects()
+
+      breakable {
+        for (cObj <- objectsThatMightBeWater) {
+          if (cObj.propMaterial.isDefined) {
+            if ((cObj.propMaterial.get.substanceName == "water") && (cObj.propMaterial.get.stateOfMatter == "liquid")) {
+              println("### COMBUSTION: PUTTING FIRE OUT WITH (" + cObj.name + ").")
+
+              // Turn water into steam (by setting its temperature to be the same as the on-fire-object)
+              cObj.propMaterial.get.temperatureC = obj.propMaterial.get.temperatureC
+
+              // Put out fire
+              this.putOutFire(obj)
+
+              break()
+            }
+          }
+        }
+      }
+
     }
 
   }
