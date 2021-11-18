@@ -23,7 +23,7 @@ class Picture extends EnvObject {
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
-    if (mode == MODE_CURSORY_DETAIL) return "a " + this.name
+    if (mode == MODE_CURSORY_DETAIL) return "a " + this.getDescriptName()
 
     if (mode == MODE_DETAILED) {
       os.append("a " + this.getDescriptName() + " of " + description + ". ")

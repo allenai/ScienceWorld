@@ -4,6 +4,7 @@ import scienceworld.objects.Ash
 import scienceworld.struct.EnvObject
 
 object Combustion {
+  val COMBUSTION_DELTA_TEMP = 200.0f      // If an object is on fire, it will burn at it's combustion temperature plus this delta
 
   // Set an object on fire
   def setObjectOnFire(obj:EnvObject): Unit = {
@@ -13,6 +14,12 @@ object Combustion {
       obj.propMaterial.get.isCombusting = true
       obj.propMaterial.get.hasCombusted = true
     }
+  }
+
+  // Returns the temperature that an object that's on fire will emit (that can set other objects on fire)
+  def getBurningTemperature(obj:EnvObject): Double = {
+    if (obj.propMaterial.isEmpty) return -273.0f
+    return obj.propMaterial.get.combustionPoint + this.COMBUSTION_DELTA_TEMP
   }
 
   // Main tick for combustion process
@@ -34,8 +41,8 @@ object Combustion {
       obj.propMaterial.get.combustionTicks -= 1
 
       // Set object to a minimum temperature (the combustion point)
-      if (obj.propMaterial.get.temperatureC < obj.propMaterial.get.combustionPoint) {
-        obj.propMaterial.get.temperatureC = obj.propMaterial.get.combustionPoint
+      if (obj.propMaterial.get.temperatureC < this.getBurningTemperature(obj)) {
+        obj.propMaterial.get.temperatureC = this.getBurningTemperature(obj)
       }
 
       // Check to see if the object has reached the end of combustion (expired ticks)

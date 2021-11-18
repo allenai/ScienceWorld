@@ -14,7 +14,7 @@ trait MaterialProperties {
   // Combustion
   var isCombusting:Boolean            = false
   var hasCombusted:Boolean            = false
-  var combustionTicks:Int             = 10
+  var combustionTicks:Int             = 100
 
   // Electrical
   var electricallyConductive:Boolean  = false
