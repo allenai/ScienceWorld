@@ -1,12 +1,12 @@
 package scienceworld.environments
 
 import scienceworld.objects.livingthing.animals.Bee
-import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Water, Wood}
-import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
+import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Soap, SodiumChloride, Water, Wood}
+import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, GlassJar, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, SteelTable, WoodTable}
-import scienceworld.objects.devices.{Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, Stove, Thermometer, Toilet}
+import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, Switch, Wire}
-import scienceworld.objects.environmentoutside.FirePit
+import scienceworld.objects.environmentoutside.{FirePit, Fountain}
 import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree, Plant, Soil}
 import scienceworld.objects.location.{Location, Outside, Room, Universe}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
@@ -189,6 +189,14 @@ object RoomMaker {
     val lighter = new Lighter()
     room.addObject(lighter)
 
+    // Salt
+    val jar = new GlassJar()
+    jar.addObject(new SodiumChloride())
+    room.addObject(jar)
+
+    // Soap
+    room.addObject(new Soap())
+
 
     // Return
     room
@@ -268,7 +276,7 @@ object RoomMaker {
 
 
     // Shovel
-    val shovel = new Shovel
+    val shovel = new Shovel()
     room.addObject(shovel)
 
 /*
@@ -363,6 +371,8 @@ object RoomMaker {
 
     outside.addObject( new FirePit() )
     outside.addObject( new Wood() )
+    outside.addObject( new Axe() )
+    outside.addObject( new Fountain() )
 
     return outside
   }

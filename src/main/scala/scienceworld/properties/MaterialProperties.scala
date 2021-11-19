@@ -37,6 +37,24 @@ class AirProp extends MaterialProperties {
   electricallyConductive          = false
 }
 
+/*
+ * Elements
+ */
+class SodiumProp extends MaterialProperties {
+  substanceName                   = "sodium"
+  nameInStateOfMatter             = Map("solid" -> "sodium", "liquid" -> "liquid sodium", "gas" -> "gaseous sodium")
+  color                           = "grey"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.20
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 881.0f
+  meltingPoint                    = 98.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+}
+
 
 /*
  * Metals
@@ -648,4 +666,53 @@ class AshProp extends MaterialProperties {
   electricallyConductive          = false
 
 
+}
+
+
+/*
+ * Other chemicals
+ */
+class SodiumChlorideProp extends MaterialProperties {
+  substanceName                   = "sodium chloride"
+  nameInStateOfMatter             = Map("solid" -> "sodium chloride", "liquid" -> "liquid sodium chloride", "gas" -> "gaseous sodium chloride")
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.20
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 1465.0f
+  meltingPoint                    = 801.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = false
+}
+
+class SaltWaterProp extends MaterialProperties {
+  substanceName                   = "salt water"
+  nameInStateOfMatter             = Map("solid" -> "solid salt water", "liquid" -> "salt water", "gas" -> "gaseous salt water")
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.20
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 110.0f
+  meltingPoint                    = -2.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = true
+}
+
+class SoapyWaterProp extends MaterialProperties {
+  substanceName                   = "soapy water"
+  nameInStateOfMatter             = Map("solid" -> "solid soapy water", "liquid" -> "soapy water", "gas" -> "gaseous soapy water")
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.20
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 105.0f
+  meltingPoint                    = -1.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = false
 }

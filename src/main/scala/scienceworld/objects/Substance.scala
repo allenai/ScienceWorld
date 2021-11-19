@@ -1,6 +1,6 @@
 package scienceworld.objects
 
-import scienceworld.properties.{AirProp, AshProp, CaesiumProp, GalliumProp, LeadProp, MercuryProp, RubberProp, SoapProp, TinProp, WaterProp, WoodProp}
+import scienceworld.properties.{AirProp, AshProp, CaesiumProp, GalliumProp, LeadProp, MercuryProp, RubberProp, SaltWaterProp, SoapProp, SoapyWaterProp, SodiumChlorideProp, SodiumProp, TinProp, WaterProp, WoodProp}
 import scienceworld.struct.EnvObject
 
 class Substance extends EnvObject {
@@ -85,4 +85,26 @@ class Wood extends Substance {
 class Ash extends Substance {
   this.name = "ash"
   this.propMaterial = Some (new AshProp)
+}
+
+
+// Substances
+class Sodium extends Substance {
+  this.name = "sodium"
+  this.propMaterial = Some( new SodiumProp )
+}
+
+class SodiumChloride extends Substance {
+  this.name = "sodium chloride"
+  this.propMaterial = Some( new SodiumChlorideProp )
+}
+
+class SaltWater extends Substance {
+  this.name = "salt water"
+  this.propMaterial = Some( new SaltWaterProp )
+}
+
+class SoapyWater extends Substance {
+  this.name = "soapy water"
+  this.propMaterial = Some( new SoapyWaterProp )
 }

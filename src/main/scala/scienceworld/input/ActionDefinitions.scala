@@ -1,7 +1,7 @@
 package scienceworld.input
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
-import scienceworld.actions.{ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionUseDevice, ActionWait, PossibleAction}
+import scienceworld.actions.{ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMix, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionUseDevice, ActionWait, PossibleAction}
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 
@@ -34,6 +34,7 @@ object ActionDefinitions {
   val ACTION_ID_INVENTORY     = 19
   val ACTION_ID_PICKUP        = 20
   val ACTION_ID_PUTDOWN       = 21
+  val ACTION_ID_MIX           = 22
 
 
   /*
@@ -102,6 +103,9 @@ object ActionDefinitions {
     ActionInventory.registerAction(actionHandler)
     ActionPickUpObjectIntoInventory.registerAction(actionHandler)
     ActionPutDownObjectIntoInventory.registerAction(actionHandler)
+
+    // Mix
+    ActionMix.registerAction(actionHandler)
 
     // Return
     actionHandler

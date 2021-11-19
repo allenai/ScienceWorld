@@ -10,7 +10,7 @@ class FirePit extends Container {
   this.propContainer = Some(new IsOpenUnclosableContainer)
 
   override def getReferents(): Set[String] = {
-    Set("ground", this.name, this.getDescriptName())
+    Set("fire pit", this.name, this.getDescriptName())
   }
 
 }
