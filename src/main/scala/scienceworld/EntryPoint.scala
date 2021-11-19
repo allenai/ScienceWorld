@@ -43,14 +43,16 @@ object EntryPoint {
     println ("TASK LIST: ")
     val taskList = taskMaker.getTaskList()
     for (i <- 0 until taskList.length) {
-      println( i + ": \t" + taskList(i))
+      val taskName = taskList(i)
+      val numVariations = taskMaker.getMaxVariations(taskName)
+      println( i.formatted("%5s") + ": \t" + taskName.formatted("%60s") + "  (" + numVariations + " variations)")
     }
 
 
     // Pick a task
     //val taskName = taskMaker.getTaskList()(6)
     //val taskName = taskMaker.getTaskList()(8)
-    val taskName = taskMaker.getTaskList()(6)
+    val taskName = taskMaker.getTaskList()(7)
     //val taskName = taskMaker.getTaskList()(0)
 
     // Setup task

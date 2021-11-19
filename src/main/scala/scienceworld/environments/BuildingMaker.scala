@@ -248,7 +248,7 @@ object RoomMaker {
     val unknownSubstance = UnknownSubstanceElectricalConductivity.mkRandomSubstanceElectricalConductive()
     table.addObject(unknownSubstance)
      */
-
+    /*
     // Add one metalic and one non-metalic object
     room.addObject(new ForkMetal())
     room.addObject(new ForkPlastic())
@@ -256,7 +256,7 @@ object RoomMaker {
     // Answer box
     room.addObject( new AnswerBox("green") )
     room.addObject( new AnswerBox("red") )
-
+    */
 
 
 

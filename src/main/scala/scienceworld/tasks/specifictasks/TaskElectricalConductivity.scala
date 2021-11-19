@@ -9,7 +9,7 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueBool, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalElectricallyConnected, GoalFind, GoalObjectInContainer, GoalObjectInContainerByName}
-import scienceworld.tasks.specifictasks.TaskElectricalConductivity.MODE_TEST_CONDUCTIVITY
+import scienceworld.tasks.specifictasks.TaskElectricalConductivity.{MODE_TEST_CONDUCTIVITY, MODE_TEST_CONDUCTIVITY_UNKNOWN}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -170,9 +170,9 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
     val gSequence = new ArrayBuffer[Goal]
     var description:String = "<empty>"
     if (mode == MODE_TEST_CONDUCTIVITY) {
-      // Randomly pick whether the user should use the renewable or non-renewable power source, based on the combination #
-      var correctContainerName:String = ""
-      var incorrectContainerName:String = ""
+      // Figure out the correct answer container based on the object's conductivity
+      var correctContainerName: String = ""
+      var incorrectContainerName: String = ""
       if (specificSubstanceConductive.get == true) {
         // Object is conductive
         correctContainerName = boxNameConductive.get
@@ -183,12 +183,37 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
         incorrectContainerName = boxNameConductive.get
       }
 
-      gSequence.append(new GoalFind(objectName = specificSubstanceName.get, failIfWrong = true) )
-      gSequence.append(new GoalObjectInContainerByName(containerName = correctContainerName, failureContainers = List(incorrectContainerName)) )            // Then, make sure it's in the correct answer container
+      // Goal sequence
+      gSequence.append(new GoalFind(objectName = specificSubstanceName.get, failIfWrong = true))
+      gSequence.append(new GoalObjectInContainerByName(containerName = correctContainerName, failureContainers = List(incorrectContainerName))) // Then, make sure it's in the correct answer container
 
-      // TODO: Add goal condition that checks that the appropraite power source was used
+      // Description
       description = "Your task is to determine if " + specificSubstanceName.get + " is electrically conductive. "
       description += "First, focus on the " + specificSubstanceName.get + ". "
+      description += "If it is electrically conductive, place it in the " + boxNameConductive.get + ". "
+      description += "If it is electrically nonconductive, place it in the " + boxNameNonconductive.get + ". "
+
+    } else if (mode == MODE_TEST_CONDUCTIVITY_UNKNOWN) {
+      // Figure out the correct answer container based on the object's conductivity
+      var correctContainerName: String = ""
+      var incorrectContainerName: String = ""
+      if (unknownSubstanceConductive.get == true) {
+        // Object is conductive
+        correctContainerName = boxNameConductive.get
+        incorrectContainerName = boxNameNonconductive.get
+      } else {
+        // Object is non-conductive
+        correctContainerName = boxNameNonconductive.get
+        incorrectContainerName = boxNameConductive.get
+      }
+
+      // Goal sequence
+      gSequence.append(new GoalFind(objectName = unknownSubstanceName.get, failIfWrong = true))
+      gSequence.append(new GoalObjectInContainerByName(containerName = correctContainerName, failureContainers = List(incorrectContainerName))) // Then, make sure it's in the correct answer container
+
+      // Description
+      description = "Your task is to determine if " + unknownSubstanceName.get + " is electrically conductive. "
+      description += "First, focus on the " + unknownSubstanceName.get + ". "
       description += "If it is electrically conductive, place it in the " + boxNameConductive.get + ". "
       description += "If it is electrically nonconductive, place it in the " + boxNameNonconductive.get + ". "
 
@@ -214,9 +239,11 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
 
 object TaskElectricalConductivity {
   val MODE_TEST_CONDUCTIVITY            = "test conductivity"
+  val MODE_TEST_CONDUCTIVITY_UNKNOWN    = "test conductivity of unknown substances"
 
   def registerTasks(taskMaker:TaskMaker1): Unit = {
     taskMaker.addTask( new TaskElectricalConductivity(mode = MODE_TEST_CONDUCTIVITY) )
+    taskMaker.addTask( new TaskElectricalConductivity(mode = MODE_TEST_CONDUCTIVITY_UNKNOWN) )
   }
 
 }
