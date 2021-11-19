@@ -2,7 +2,7 @@ package scienceworld.tasks
 
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.specifictasks.{TaskChangeOfState, TaskChemistryMix, TaskFindLivingNonLiving, TaskGrowPlant, TaskParametric}
+import scienceworld.tasks.specifictasks.{TaskChangeOfState, TaskChemistryMix, TaskElectricCircuit, TaskFindLivingNonLiving, TaskGrowPlant, TaskParametric}
 
 import scala.collection.mutable
 
@@ -65,6 +65,7 @@ class TaskMaker1 {
   // TODO: Add list of tasks here
   private def registerTasks(): Unit = {
     TaskChangeOfState.registerTasks(this)
+    TaskElectricCircuit.registerTasks(this)
     TaskFindLivingNonLiving.registerTasks(this)
     TaskGrowPlant.registerTasks(this)
     TaskChemistryMix.registerTasks(this)

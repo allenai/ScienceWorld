@@ -8,13 +8,12 @@ import scienceworld.struct.EnvObject._
  * Light Bulb
  */
 
-class LightBulb extends PolarizedElectricalComponent {
-  this.name = "light bulb"
+class LightBulb(val color:String = "") extends PolarizedElectricalComponent {
+  this.name = (color + " light bulb").trim
 
   this.propDevice = Some(new IsNotActivableDeviceOff())
 
   this.electricalRole = ROLE_VOLTAGE_USER     // Component uses voltage, rather than generating it
-
 
   override def tick(): Boolean = {
     super.tick()

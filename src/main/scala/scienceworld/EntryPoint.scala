@@ -49,7 +49,8 @@ object EntryPoint {
 
     // Pick a task
     //val taskName = taskMaker.getTaskList()(6)
-    val taskName = taskMaker.getTaskList()(8)
+    //val taskName = taskMaker.getTaskList()(8)
+    val taskName = taskMaker.getTaskList()(4)
     //val taskName = taskMaker.getTaskList()(0)
 
     // Setup task

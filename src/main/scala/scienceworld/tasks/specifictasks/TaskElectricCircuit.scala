@@ -1,0 +1,188 @@
+package scienceworld.tasks.specifictasks
+
+import scienceworld.objects.agent.Agent
+import scienceworld.objects.containers.{CeramicCup, FlowerPot}
+import scienceworld.objects.electricalcomponent.{Battery, LightBulb}
+import scienceworld.objects.livingthing.plant.{Plant, Soil}
+import scienceworld.processes.PlantReproduction
+import scienceworld.struct.EnvObject
+import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
+import scienceworld.tasks.goals.{Goal, GoalSequence}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalFind, GoalLifeStage}
+import scienceworld.tasks.specifictasks.TaskElectricCircuit.{MODE_POWER_COMPONENT, MODE_POWER_COMPONENT_RENEWABLE, MODE_TEST_CONDUCTIVITY}
+import scienceworld.tasks.specifictasks.TaskFindLivingNonLiving.MODE_LIVING
+
+import scala.collection.mutable.ArrayBuffer
+
+
+class TaskElectricCircuit(val mode:String = MODE_LIVING) extends TaskParametric {
+  val taskName = "task-2-" + mode.replaceAll(" ", "-")
+
+  val locations = Array("workshop")
+
+  // Variation 1: Battery
+  val powerSource = new ArrayBuffer[ Array[TaskModifier] ]()
+  for (location <- locations) {
+    val battery = new Battery()
+    powerSource.append(Array(
+      new TaskObject(battery.name, Some(battery), roomToGenerateIn = location, Array.empty[String], generateNear = 0)
+    ))
+  }
+
+  // Variation 2: Part to power
+  val partToPower = new ArrayBuffer[ Array[TaskModifier] ]()
+  val lightColors = Array("red", "green", "blue")
+
+  for (location <- locations) {
+
+    // Generate array of lights
+    val lights = new ArrayBuffer[TaskObject]
+    for (color <- lightColors) {
+      val lightbulb = new LightBulb(color)
+      lights.append( new TaskObject(lightbulb.name, Some(lightbulb), roomToGenerateIn = location, Array.empty[String], generateNear = 0) )
+    }
+    // TODO: Add other parts (e.g. motor?)
+
+    // Iterate through all possible components to power
+    val components = lights
+    for (component <- components) {
+      partToPower.append(components.toArray ++ Array( new TaskValueStr(key = "componentToPower", value = component.name) ))
+    }
+
+  }
+
+
+  // Combinations
+  val combinations = for {
+    i <- powerSource
+    j <- partToPower
+  } yield List(i, j)
+
+  println("Number of combinations: " + combinations.length)
+
+  def numCombinations():Int = this.combinations.size
+
+  def getCombination(idx:Int):Array[TaskModifier] = {
+    val out = new ArrayBuffer[TaskModifier]
+    for (elem <- combinations(idx)) {
+      out.insertAll(out.length, elem)
+    }
+    // Return
+    out.toArray
+  }
+
+  // Setup a particular modifier combination on the universe
+  private def setupCombination(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent):(Boolean, String) = {
+    // Run each modifier's change on the universe
+    for (mod <- modifiers) {
+      println("Running modifier: " + mod.toString)
+      val success = mod.runModifier(universe, agent)
+      if (!success) {
+        return (false, "ERROR: Error running one or more modifiers while setting up task environment.")
+      }
+    }
+    // If we reach here, success
+    return (true, "")
+  }
+
+  def setupCombination(combinationNum:Int, universe:EnvObject, agent:Agent): (Boolean, String) = {
+    if (combinationNum >= this.numCombinations()) {
+      return (false, "ERROR: The requested variation (" + combinationNum + ") exceeds the total number of variations (" + this.numCombinations() + ").")
+    }
+    return this.setupCombination( this.getCombination(combinationNum), universe, agent )
+  }
+
+
+  // Setup a set of subgoals for this task modifier combination.
+  private def setupGoals(modifiers:Array[TaskModifier], combinationNum:Int): Task = {
+    // Step 1: Find seed type
+
+    // The first modifier will be the seed jar.
+    val partToPower = this.getTaskValueStr(modifiers, key = "componentToPower")
+    if (partToPower.isEmpty) throw new RuntimeException("ERROR: Unable to initialize task (componentToPower is undefined).")
+
+
+    var subTask = ""
+    val gSequence = new ArrayBuffer[Goal]
+    var description:String = "<empty>"
+    if (mode == MODE_POWER_COMPONENT) {
+      gSequence.append(new GoalFind(objectName = partToPower.get, failIfWrong = true))
+      gSequence.append(new GoalActivateDevice(deviceName = partToPower.get))
+      description = "Your task is to turn on the " + partToPower.get + ". First, focus on the " + partToPower.get + ". Then, create an electrical circuit that powers it on. "
+
+    } else if (mode == MODE_POWER_COMPONENT_RENEWABLE) {
+      // TODO
+      //gSequence.append(new GoalActivateDevice(deviceName = partToPower.get))
+      description = "TODO"
+
+    } else if (mode == MODE_TEST_CONDUCTIVITY) {
+      // TODO
+      //gSequence.append( new GoalFind(objectName = seedType) )     // e.g. "seedtype" will be "apple"
+
+      description = "TODO"
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+
+    val taskLabel = taskName + "-variation" + combinationNum
+    //val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName + " in the " + answerBoxLocation + "."
+    val goalSequence = new GoalSequence(gSequence.toArray)
+
+    val task = new Task(taskName, description, goalSequence)
+
+    // Return
+    return task
+  }
+
+  def setupGoals(combinationNum:Int): Task = {
+    this.setupGoals( this.getCombination(combinationNum), combinationNum )
+  }
+
+  /*
+   * Helpers
+   */
+
+  // Make a jar containing a number of seeds of the same type
+  def mkSeedJar(plantType:String, numSeeds:Int = 5):EnvObject = {
+    val jar = new CeramicCup()      // TODO, make jar
+    jar.name = "seed jar"
+
+    for (i <- 0 until numSeeds) {
+      val seed = PlantReproduction.createSeed(plantType)
+      if (seed.isDefined) jar.addObject(seed.get)
+    }
+
+    return jar
+  }
+
+  // Takes a seedJar as input, and determines what kind of seed is inside
+  def getSeedType(seedJar:EnvObject): String = {
+    val contents = seedJar.getContainedObjects()
+    for (obj <- contents) {
+      obj match {
+        case x:Plant => return x.propLife.get.lifeformType
+        case _ => { // do nothing
+        }
+      }
+    }
+    // We should never reach here
+    return ""
+  }
+
+}
+
+
+object TaskElectricCircuit {
+  val MODE_POWER_COMPONENT              = "power component"
+  val MODE_POWER_COMPONENT_RENEWABLE    = "power component (renewable vs nonrenewable energy)"
+  val MODE_TEST_CONDUCTIVITY            = "test conductivity"
+
+  def registerTasks(taskMaker:TaskMaker1): Unit = {
+    taskMaker.addTask( new TaskElectricCircuit(mode = MODE_POWER_COMPONENT) )
+    taskMaker.addTask( new TaskElectricCircuit(mode = MODE_POWER_COMPONENT_RENEWABLE) )
+
+    taskMaker.addTask( new TaskElectricCircuit(mode = MODE_TEST_CONDUCTIVITY) )
+  }
+
+}
+

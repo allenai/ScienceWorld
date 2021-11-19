@@ -16,7 +16,7 @@ import scienceworld.tasks.specifictasks.TaskFindLivingNonLiving.MODE_LIVING
 import scala.collection.mutable.ArrayBuffer
 
 class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
-  val taskName = "task-4-" + mode.replaceAll(" ", "-")
+  val taskName = "task-5-" + mode.replaceAll(" ", "-")
 
 
   // Variation 1: Which seeds to grow
@@ -117,24 +117,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     this.setupGoals( this.getCombination(combinationNum), combinationNum )
   }
 
-  /*
-   * Helpers
-   */
 
-  // Search the TaskModifiers for a TaskValueStr (key/value pair), that might include additional info (such as the answer) to supply to the goal conditions.
-  def getTaskValueStr(modifiers:Array[TaskModifier], key:String):Option[String] = {
-    // TODO
-    for (mod <- modifiers) {
-      mod match {
-        case m:TaskValueStr => {
-          if (m.key == key) return Some(m.value)
-        }
-        case _ => { }
-      }
-    }
-    // If we reach here, the key wasn't found
-    return None
-  }
 
 
 }
