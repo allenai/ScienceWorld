@@ -3,7 +3,6 @@ package scienceworld.environments
 import scienceworld.objects.{Apple, OrangeJuice, Water}
 import scienceworld.objects.containers.{BookShelf, GlassCup, MetalPot, Sewer, WoodCup}
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.containers.furniture.{Desk, Table}
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
 import scienceworld.objects.document.{BookFrankenstein, BookMobyDick}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, PolarizedElectricalComponent, Switch, Wire}
@@ -45,8 +44,9 @@ object EnvironmentMaker {
     //## DEBUG
     //## Specific start point in environment
     //for (location <- locations) if (location.name == "workshop") location.addObject(agent)
-    for (location <- locations) if (location.name == "kitchen") location.addObject(agent)
+    //for (location <- locations) if (location.name == "kitchen") location.addObject(agent)
     //for (location <- locations) if (location.name == "green house") location.addObject(agent)
+    for (location <- locations) if (location.name == "outside") location.addObject(agent)
 
 
     // Return

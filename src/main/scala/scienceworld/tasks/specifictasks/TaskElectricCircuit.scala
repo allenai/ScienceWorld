@@ -2,7 +2,7 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.{CeramicCup, FlowerPot}
-import scienceworld.objects.electricalcomponent.{Battery, ElectricMotor, LightBulb}
+import scienceworld.objects.electricalcomponent.{Battery, ElectricBuzzer, ElectricMotor, GasGenerator, LightBulb, NuclearGenerator, SolarPanel, WindGenerator}
 import scienceworld.objects.livingthing.plant.{Plant, Soil}
 import scienceworld.processes.PlantReproduction
 import scienceworld.struct.EnvObject
@@ -41,16 +41,49 @@ class TaskElectricCircuit(val mode:String = MODE_LIVING) extends TaskParametric 
       val lightbulb = new LightBulb(color)
       components.append( new TaskObject(lightbulb.name, Some(lightbulb), roomToGenerateIn = location, Array.empty[String], generateNear = 0) )
     }
-    // TODO: Add other parts (e.g. motor?)
+    // Additional parts (motor)
     val electricMotor = new ElectricMotor()
     components.append(new TaskObject(electricMotor.name, Some(electricMotor), roomToGenerateIn = location, Array.empty[String], generateNear = 0))
-
+    // Additional parts (buzzer)
+    val electricBuzzer = new ElectricBuzzer()
+    components.append(new TaskObject(electricBuzzer.name, Some(electricBuzzer), roomToGenerateIn = location, Array.empty[String], generateNear = 0))
 
     // Iterate through all possible components to power
     for (component <- components) {
       partToPower.append(components.toArray ++ Array( new TaskValueStr(key = "componentToPower", value = component.name) ))
     }
+  }
 
+  // Variation 3: Renewable power source
+  val renewablePowerSource = new ArrayBuffer[ Array[TaskModifier] ]()
+  for (location <- locations) {
+    // Solar panel
+    val solarPanel = new SolarPanel()
+    renewablePowerSource.append( Array(
+      new TaskObject(solarPanel.name, Some(solarPanel), roomToGenerateIn = location, Array.empty[String], generateNear = 0)
+    ))
+
+    // Wind generator
+    val windGenerator = new WindGenerator()
+    renewablePowerSource.append( Array(
+      new TaskObject(windGenerator.name, Some(windGenerator), roomToGenerateIn = location, Array.empty[String], generateNear = 0)
+    ))
+  }
+
+  // Variation 4: Non-renewable power source
+  val nonrenewablePowerSource = new ArrayBuffer[ Array[TaskModifier] ]()
+  for (location <- locations) {
+    // Gas generator
+    val gasGenerator = new GasGenerator()
+    nonrenewablePowerSource.append( Array(
+      new TaskObject(gasGenerator.name, Some(gasGenerator), roomToGenerateIn = location, Array.empty[String], generateNear = 0)
+    ))
+
+    // Nuclear generator
+    val nuclearGenerator = new NuclearGenerator()
+    nonrenewablePowerSource.append( Array(
+      new TaskObject(nuclearGenerator.name, Some(nuclearGenerator), roomToGenerateIn = location, Array.empty[String], generateNear = 0)
+    ))
   }
 
 
@@ -58,7 +91,9 @@ class TaskElectricCircuit(val mode:String = MODE_LIVING) extends TaskParametric 
   val combinations = for {
     i <- powerSource
     j <- partToPower
-  } yield List(i, j)
+    k <- renewablePowerSource
+    m <- nonrenewablePowerSource
+  } yield List(i, j, k, m)
 
   println("Number of combinations: " + combinations.length)
 
