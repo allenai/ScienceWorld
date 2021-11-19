@@ -2,7 +2,7 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.{CeramicCup, FlowerPot}
-import scienceworld.objects.electricalcomponent.{Battery, LightBulb}
+import scienceworld.objects.electricalcomponent.{Battery, ElectricMotor, LightBulb}
 import scienceworld.objects.livingthing.plant.{Plant, Soil}
 import scienceworld.processes.PlantReproduction
 import scienceworld.struct.EnvObject
@@ -36,15 +36,17 @@ class TaskElectricCircuit(val mode:String = MODE_LIVING) extends TaskParametric 
   for (location <- locations) {
 
     // Generate array of lights
-    val lights = new ArrayBuffer[TaskObject]
+    val components = new ArrayBuffer[TaskObject]
     for (color <- lightColors) {
       val lightbulb = new LightBulb(color)
-      lights.append( new TaskObject(lightbulb.name, Some(lightbulb), roomToGenerateIn = location, Array.empty[String], generateNear = 0) )
+      components.append( new TaskObject(lightbulb.name, Some(lightbulb), roomToGenerateIn = location, Array.empty[String], generateNear = 0) )
     }
     // TODO: Add other parts (e.g. motor?)
+    val electricMotor = new ElectricMotor()
+    components.append(new TaskObject(electricMotor.name, Some(electricMotor), roomToGenerateIn = location, Array.empty[String], generateNear = 0))
+
 
     // Iterate through all possible components to power
-    val components = lights
     for (component <- components) {
       partToPower.append(components.toArray ++ Array( new TaskValueStr(key = "componentToPower", value = component.name) ))
     }
