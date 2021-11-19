@@ -699,5 +699,20 @@ class SaltWaterProp extends MaterialProperties {
   meltingPoint                    = -2.0f
   combustionPoint                 = 100000.0f
   // Electrical
+  electricallyConductive          = true
+}
+
+class SoapyWaterProp extends MaterialProperties {
+  substanceName                   = "soapy water"
+  nameInStateOfMatter             = Map("solid" -> "solid soapy water", "liquid" -> "soapy water", "gas" -> "gaseous soapy water")
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.20
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 105.0f
+  meltingPoint                    = -1.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
   electricallyConductive          = false
 }

@@ -1,7 +1,7 @@
 package scienceworld.environments
 
 import scienceworld.objects.livingthing.animals.Bee
-import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, SodiumChloride, Water, Wood}
+import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Soap, SodiumChloride, Water, Wood}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, GlassJar, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, SteelTable, WoodTable}
 import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, Stove, Thermometer, Toilet}
@@ -194,6 +194,8 @@ object RoomMaker {
     jar.addObject(new SodiumChloride())
     room.addObject(jar)
 
+    // Soap
+    room.addObject(new Soap())
 
 
     // Return

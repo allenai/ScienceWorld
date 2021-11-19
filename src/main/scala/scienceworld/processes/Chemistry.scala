@@ -1,6 +1,6 @@
 package scienceworld.processes
 
-import scienceworld.objects.SaltWater
+import scienceworld.objects.{SaltWater, SoapyWater}
 import scienceworld.struct.EnvObject
 
 class Chemistry {
@@ -50,8 +50,8 @@ object Chemistry {
     // Case: Two substances
     if (contents.size == 2) {
 
+      // Salt Water
       if ((water.isDefined) && (sodiumChloride.isDefined)) {
-        // Salt Water
         water.get.delete()
         sodiumChloride.get.delete()
 
@@ -59,6 +59,17 @@ object Chemistry {
         container.addObject(saltWater)
 
         return (true, "Sodium chloride and water mix to produce salt water.")
+      }
+
+      // Soapy water
+      if ((water.isDefined) && (soap.isDefined)) {
+        water.get.delete()
+        soap.get.delete()
+
+        val soapyWater = new SoapyWater()
+        container.addObject(soapyWater)
+
+        return (true, "Soap and water mix to produce soapy water.")
       }
 
     }
