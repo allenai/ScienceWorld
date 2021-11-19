@@ -150,3 +150,45 @@ class GoalObjectInContainer(containerName:String = "", failureContainers:List[En
   }
 
 }
+
+class GoalObjectInContainerByName(containerName:String = "", failureContainers:List[String] = List.empty[String]) extends Goal {
+
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
+    // Check that the focus object of this step is the same as the focus object of the previous step
+    if (lastGoal.isDefined) {
+      if (lastGoal.get.satisfiedWithObject.get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+    }
+
+    // Check if the object is in one of the incorrect (failure) containers that would cause task failure
+    if (obj.getContainer().isDefined) {
+      for (failContainer <- failureContainers) {
+        // First, start at the direct container
+        var objContainer:Option[EnvObject] = obj.getContainer()
+        // Also check recursive containers by recusing down to object tree root
+        while (objContainer.isDefined) {
+          if (objContainer.get.name == failContainer) {
+            return GoalReturn.mkTaskFailure()
+          }
+          objContainer = objContainer.get.getContainer()
+        }
+      }
+    }
+
+    // Check that the object's container name is set to the desired container
+    var container:Option[EnvObject] = obj.getContainer()
+    while (container.isDefined) {
+      // Check to see if this container is the query container
+      if (container.get.name.toLowerCase == containerName.toLowerCase()) {
+        this.satisfiedWithObject = Some(obj)
+        return GoalReturn.mkSubgoalSuccess()
+      }
+
+      // If not, recurse
+      container = container.get.getContainer()
+    }
+
+    // If we reach here, the condition was not satisfied
+    return GoalReturn.mkSubgoalUnsuccessful()
+  }
+
+}

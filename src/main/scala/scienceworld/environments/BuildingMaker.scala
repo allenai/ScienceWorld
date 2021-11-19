@@ -244,8 +244,10 @@ object RoomMaker {
     table.addObject(battery)
 
     // Add a randomly generated substance that may or may not be electrically conductive
+    /*
     val unknownSubstance = UnknownSubstanceElectricalConductivity.mkRandomSubstanceElectricalConductive()
     table.addObject(unknownSubstance)
+     */
 
     // Add one metalic and one non-metalic object
     room.addObject(new ForkMetal())

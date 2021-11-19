@@ -9,13 +9,12 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalElectricallyConnected, GoalFind, GoalLifeStage}
-import scienceworld.tasks.specifictasks.TaskElectricCircuit.{MODE_POWER_COMPONENT, MODE_POWER_COMPONENT_RENEWABLE, MODE_TEST_CONDUCTIVITY}
-import scienceworld.tasks.specifictasks.TaskFindLivingNonLiving.MODE_LIVING
+import scienceworld.tasks.specifictasks.TaskElectricCircuit.{MODE_POWER_COMPONENT, MODE_POWER_COMPONENT_RENEWABLE}
 
 import scala.collection.mutable.ArrayBuffer
 
 
-class TaskElectricCircuit(val mode:String = MODE_LIVING) extends TaskParametric {
+class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskParametric {
   val taskName = "task-2-" + mode.replaceAll(" ", "-")
 
   val locations = Array("workshop")
@@ -173,11 +172,6 @@ class TaskElectricCircuit(val mode:String = MODE_LIVING) extends TaskParametric 
       // TODO: Add goal condition that checks that the appropraite power source was used
       description = "Your task is to turn on the " + partToPower.get + " by powering it using a " + powerSourceDescription + " power source. First, focus on the " + partToPower.get + ". Then, create an electrical circuit that powers it on. "
 
-    } else if (mode == MODE_TEST_CONDUCTIVITY) {
-      // TODO
-      //gSequence.append( new GoalFind(objectName = seedType) )     // e.g. "seedtype" will be "apple"
-
-      description = "TODO"
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
     }
@@ -196,50 +190,16 @@ class TaskElectricCircuit(val mode:String = MODE_LIVING) extends TaskParametric 
     this.setupGoals( this.getCombination(combinationNum), combinationNum )
   }
 
-  /*
-   * Helpers
-   */
-
-  // Make a jar containing a number of seeds of the same type
-  def mkSeedJar(plantType:String, numSeeds:Int = 5):EnvObject = {
-    val jar = new CeramicCup()      // TODO, make jar
-    jar.name = "seed jar"
-
-    for (i <- 0 until numSeeds) {
-      val seed = PlantReproduction.createSeed(plantType)
-      if (seed.isDefined) jar.addObject(seed.get)
-    }
-
-    return jar
-  }
-
-  // Takes a seedJar as input, and determines what kind of seed is inside
-  def getSeedType(seedJar:EnvObject): String = {
-    val contents = seedJar.getContainedObjects()
-    for (obj <- contents) {
-      obj match {
-        case x:Plant => return x.propLife.get.lifeformType
-        case _ => { // do nothing
-        }
-      }
-    }
-    // We should never reach here
-    return ""
-  }
-
 }
 
 
 object TaskElectricCircuit {
   val MODE_POWER_COMPONENT              = "power component"
   val MODE_POWER_COMPONENT_RENEWABLE    = "power component (renewable vs nonrenewable energy)"
-  val MODE_TEST_CONDUCTIVITY            = "test conductivity"
 
   def registerTasks(taskMaker:TaskMaker1): Unit = {
     taskMaker.addTask( new TaskElectricCircuit(mode = MODE_POWER_COMPONENT) )
     taskMaker.addTask( new TaskElectricCircuit(mode = MODE_POWER_COMPONENT_RENEWABLE) )
-
-    taskMaker.addTask( new TaskElectricCircuit(mode = MODE_TEST_CONDUCTIVITY) )
   }
 
 }

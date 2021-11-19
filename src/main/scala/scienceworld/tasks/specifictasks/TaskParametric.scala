@@ -2,7 +2,7 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.{Task, TaskModifier, TaskValueStr}
+import scienceworld.tasks.{Task, TaskModifier, TaskValueBool, TaskValueStr}
 
 trait TaskParametric {
   val taskName:String
@@ -25,6 +25,20 @@ trait TaskParametric {
     for (mod <- modifiers) {
       mod match {
         case m:TaskValueStr => {
+          if (m.key == key) return Some(m.value)
+        }
+        case _ => { }
+      }
+    }
+    // If we reach here, the key wasn't found
+    return None
+  }
+
+  def getTaskValueBool(modifiers:Array[TaskModifier], key:String):Option[Boolean] = {
+    // TODO
+    for (mod <- modifiers) {
+      mod match {
+        case m:TaskValueBool => {
           if (m.key == key) return Some(m.value)
         }
         case _ => { }
