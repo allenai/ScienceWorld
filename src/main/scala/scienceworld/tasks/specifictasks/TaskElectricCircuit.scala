@@ -8,7 +8,7 @@ import scienceworld.processes.PlantReproduction
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalFind, GoalLifeStage}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalElectricallyConnected, GoalFind, GoalLifeStage}
 import scienceworld.tasks.specifictasks.TaskElectricCircuit.{MODE_POWER_COMPONENT, MODE_POWER_COMPONENT_RENEWABLE, MODE_TEST_CONDUCTIVITY}
 import scienceworld.tasks.specifictasks.TaskFindLivingNonLiving.MODE_LIVING
 
@@ -56,17 +56,20 @@ class TaskElectricCircuit(val mode:String = MODE_LIVING) extends TaskParametric 
 
   // Variation 3: Renewable power source
   val renewablePowerSource = new ArrayBuffer[ Array[TaskModifier] ]()
+
   for (location <- locations) {
     // Solar panel
     val solarPanel = new SolarPanel()
     renewablePowerSource.append( Array(
-      new TaskObject(solarPanel.name, Some(solarPanel), roomToGenerateIn = location, Array.empty[String], generateNear = 0)
+      new TaskObject(solarPanel.name, Some(solarPanel), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "renewableSource", value = solarPanel.name)
     ))
 
     // Wind generator
     val windGenerator = new WindGenerator()
     renewablePowerSource.append( Array(
-      new TaskObject(windGenerator.name, Some(windGenerator), roomToGenerateIn = location, Array.empty[String], generateNear = 0)
+      new TaskObject(windGenerator.name, Some(windGenerator), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "renewableSource", value = windGenerator.name)
     ))
   }
 
@@ -76,13 +79,15 @@ class TaskElectricCircuit(val mode:String = MODE_LIVING) extends TaskParametric 
     // Gas generator
     val gasGenerator = new GasGenerator()
     nonrenewablePowerSource.append( Array(
-      new TaskObject(gasGenerator.name, Some(gasGenerator), roomToGenerateIn = location, Array.empty[String], generateNear = 0)
+      new TaskObject(gasGenerator.name, Some(gasGenerator), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "nonrenewableSource", value = gasGenerator.name)
     ))
 
     // Nuclear generator
     val nuclearGenerator = new NuclearGenerator()
     nonrenewablePowerSource.append( Array(
-      new TaskObject(nuclearGenerator.name, Some(nuclearGenerator), roomToGenerateIn = location, Array.empty[String], generateNear = 0)
+      new TaskObject(nuclearGenerator.name, Some(nuclearGenerator), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "nonrenewableSource", value = nuclearGenerator.name)
     ))
   }
 
@@ -148,9 +153,25 @@ class TaskElectricCircuit(val mode:String = MODE_LIVING) extends TaskParametric 
       description = "Your task is to turn on the " + partToPower.get + ". First, focus on the " + partToPower.get + ". Then, create an electrical circuit that powers it on. "
 
     } else if (mode == MODE_POWER_COMPONENT_RENEWABLE) {
-      // TODO
-      //gSequence.append(new GoalActivateDevice(deviceName = partToPower.get))
-      description = "TODO"
+      // Randomly pick whether the user should use the renewable or non-renewable power source, based on the combination #
+      val renewablePowerSource = this.getTaskValueStr(modifiers, key = "renewableSource")
+      val nonrenewablePowerSource = this.getTaskValueStr(modifiers, key = "nonrenewableSource")
+      var powerSourceToUse:Option[String] = None
+      var powerSourceDescription = ""
+      if (combinationNum % 2 == 0) {
+        powerSourceDescription = "renewable"
+        powerSourceToUse = renewablePowerSource
+      } else {
+        powerSourceDescription = "nonrenewable"
+        powerSourceToUse = nonrenewablePowerSource
+      }
+
+      gSequence.append(new GoalFind(objectName = partToPower.get, failIfWrong = true))
+      gSequence.append(new GoalActivateDevice(deviceName = partToPower.get))
+      gSequence.append(new GoalElectricallyConnected(connectedPartName = powerSourceToUse.get, failIfWrong = true))
+
+      // TODO: Add goal condition that checks that the appropraite power source was used
+      description = "Your task is to turn on the " + partToPower.get + " by powering it using a " + powerSourceDescription + " power source. First, focus on the " + partToPower.get + ". Then, create an electrical circuit that powers it on. "
 
     } else if (mode == MODE_TEST_CONDUCTIVITY) {
       // TODO

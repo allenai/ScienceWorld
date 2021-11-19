@@ -43,10 +43,10 @@ object EnvironmentMaker {
 
     //## DEBUG
     //## Specific start point in environment
-    //for (location <- locations) if (location.name == "workshop") location.addObject(agent)
+    for (location <- locations) if (location.name == "workshop") location.addObject(agent)
     //for (location <- locations) if (location.name == "kitchen") location.addObject(agent)
     //for (location <- locations) if (location.name == "green house") location.addObject(agent)
-    for (location <- locations) if (location.name == "outside") location.addObject(agent)
+    //for (location <- locations) if (location.name == "outside") location.addObject(agent)
 
 
     // Return
