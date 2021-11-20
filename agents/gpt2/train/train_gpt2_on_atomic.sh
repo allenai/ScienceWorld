@@ -20,7 +20,7 @@ deepspeed --num_gpus=4 run_clm.py \
         --per_device_eval_batch_size 16 \
         --output_dir /home/ruoyao/output_dump/gpt2-small-automic \
         --overwrite_output_dir\
-        --max_train_samples 1 \
+        --num_train_epochs 1\
 
 
 #        --fp16 \
