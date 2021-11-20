@@ -1,14 +1,16 @@
 #!/bin/bash
 
 #--model_name_or_path gpt2-medium \
-export DATAIN=atomic_train.json
+export TRAIN=atomic_train.json
+export VAL=atomic_val.json
 export MODELNAME=gpt2-large
 export TOKENIZERPATH=/home/ruoyao/comet-distill-tokenizer
 
 deepspeed --num_gpus=4 run_clm.py \
         --deepspeed ds_config_test.json \
         --model_name_or_path ${MODELNAME} \
-        --train_file ${DATAIN} \
+        --train_file ${TRAIN} \
+        --validation_file ${VAL} \
 	--tokenizer_name ${TOKENIZERPATH}\
         --do_train true \
         --do_eval true \
