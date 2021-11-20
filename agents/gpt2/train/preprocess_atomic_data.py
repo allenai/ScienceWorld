@@ -29,11 +29,17 @@ for data in json_list:
         label = raw_data["tail"]
         test_data.append({"text": text, "label":raw_data["tail"]})
 
-with open("atomic_train.json", "w") as f:
-    json.dump(train_data, f)
+with open("atomic_train.jsonl", "w") as f:
+    for data in train_data:
+        json.dump(train_data, f)
+        f.write('\n')
 
-with open("atomic_val.json", "w") as f:
-    json.dump(val_data, f)
+with open("atomic_val.jsonl", "w") as f:
+    for data in val_data:
+        json.dump(val_data, f)
+        f.write('\n')
 
-with open("atomic_test.json", "w") as f:
-    json.dump(test_data, f)
+with open("atomic_test.jsonl", "w") as f:
+    for data in test_data:
+        json.dump(test_data, f)
+        f.write('\n')
