@@ -3,7 +3,7 @@
 #--model_name_or_path gpt2-medium \
 export TRAIN=atomic_train.json
 export VAL=atomic_val.json
-export MODELNAME=gpt2-small
+export MODELNAME=gpt2
 export TOKENIZERPATH=/home/ruoyao/comet-distill-tokenizer
 
 deepspeed --num_gpus=4 run_clm.py \
