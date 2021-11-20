@@ -5,24 +5,29 @@ data_file = "/data/ai2-mosaic-public/ATOMIC10X.jsonl"
 with open(data_file) as f:
     json_list = list(f)
 
-train_data = {"texts":[]}
-val_data = {"texts":[]}
-test_data = {"texts":[]}
+train_data = []
+val_data = []
+test_data = []
 
 for data in json_list:
     raw_data = json.loads(data)
     if raw_data["p_valid_model"] < 0.8:
         continue
-    text = "<head> " + raw_data["head"] + " </head> "\
-            + "<relation> " + raw_data["relation"] + " </relation>"\
-            + "[GEN]" + raw_data["tail"]
-    label = raw_data["tail"]
-    if raw_data["split"] == "train":
-        train_data["texts"].append(text)
-    elif raw_data["split"] == "val":
-        val_data["texts"].append(text)
+    if raw_data["split"] != "test":
+        text = "<head> " + raw_data["head"] + " </head> "\
+                + "<relation> " + raw_data["relation"] + " </relation>"\
+                + " [GEN] " + raw_data["tail"]
+        label = raw_data["tail"]
+        if raw_data["split"] == "train":
+            train_data.append({"text": text})
+        elif raw_data["split"] == "val":
+            val_data.append({"text": text})
     else:
-        test_data["texts"].append(text)
+        text = "<head> " + raw_data["head"] + " </head> "\
+                + "<relation> " + raw_data["relation"] + " </relation>"\
+                + " [GEN] "
+        label = raw_data["tail"]
+        test_data.append({"text": text, "label":raw_data["tail"]})
 
 with open("atomic_train.json", "w") as f:
     json.dump(train_data, f)
