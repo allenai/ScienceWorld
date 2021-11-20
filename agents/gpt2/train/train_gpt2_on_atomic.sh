@@ -16,8 +16,8 @@ deepspeed --num_gpus=4 run_clm.py \
         --do_eval true \
         --do_predict true \
         --dataset_config_name wikitext-2-raw-v1 \
-        --per_device_train_batch_size 1 \
-        --per_device_eval_batch_size 1 \
+        --per_device_train_batch_size 16 \
+        --per_device_eval_batch_size 16 \
         --output_dir /home/ruoyao/output_dump/gpt2-small-automic \
         --overwrite_output_dir\
         --max_train_samples 1 \
