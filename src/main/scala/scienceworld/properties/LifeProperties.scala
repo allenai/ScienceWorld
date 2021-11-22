@@ -13,9 +13,15 @@ class LifeProperties {
   var isSickly:Boolean = false
   var isDead:Boolean = false
 
+  // Typical lifespan (in years) -- note, this does not currently affect the simulation, but is used for question answering.
+  var lifespanTypical:Double = 0.0f
+
 }
 
 
+/*
+ * Plants
+ */
 
 class LifePropertiesPlant extends LifeProperties {
   this.lifeformType = "plant"
@@ -51,4 +57,15 @@ class LifePropertiesOrange extends LifePropertiesPlant {
 
 class LifePropertiesPeach extends LifePropertiesPlant {
   this.lifeformType = PlantReproduction.PLANT_PEACH
+}
+
+
+/*
+ * Animals
+ */
+class LifePropertiesAnimal extends LifeProperties {
+  this.lifeformType = "animal"
+
+  this.minTemp = 0
+  this.maxTemp = 50
 }

@@ -3,15 +3,10 @@ package scienceworld.objects.livingthing.animals
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.livingthing.plant.{Flower, Pollen}
 import scienceworld.objects.location.Location
-import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 
 import scala.util.Random
 
-class Animal extends LivingThing {
-  this.name = "animal"
-
-}
 
 class WanderingAnimal extends Animal {
   this.name = "wandering animal"
@@ -202,7 +197,17 @@ class Bee extends WanderingAnimal {
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
-    os.append("a " + this.getDescriptName())
+
+    // If dead, simplify the name
+    if (propLife.get.isDead) {
+      os.append("a dead " + this.getDescriptName())
+      return os.toString()
+    }
+
+    // If alive, give a verbose name
+    os.append("a " + lifecycle.get.getCurStageName() + " " + this.getDescriptName())
+    if (propLife.get.isSickly) os.append(" (that looks unwell)")
+
     if (mode == MODE_DETAILED) {
       // Extended detail
       if (this.getContainedAccessibleObjectsOfType[Pollen]().size > 0) {

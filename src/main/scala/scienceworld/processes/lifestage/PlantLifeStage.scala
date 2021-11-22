@@ -129,7 +129,7 @@ class PlantLifeStageSeedling(obj:Plant, lifecycle:LifeCycle) extends LifeStage(P
 
 }
 
-// Seed stage
+// Adult stage
 class PlantLifeStageAdult(obj:Plant, lifecycle:LifeCycle) extends LifeStage(PlantLifeStages.PLANT_STAGE_ADULT_PLANT, obj, lifecycle) {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 5
@@ -213,7 +213,7 @@ class PlantLifeStageAdult(obj:Plant, lifecycle:LifeCycle) extends LifeStage(Plan
 }
 
 
-// Seed stage
+// Reproduction stage
 class PlantLifeStageReproduction(obj:Plant, lifecycle:LifeCycle) extends LifeStage(PlantLifeStages.PLANT_STAGE_REPRODUCING, obj, lifecycle) {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 5

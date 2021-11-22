@@ -1,6 +1,6 @@
 package scienceworld.environments
 
-import scienceworld.objects.livingthing.animals.Bee
+import scienceworld.objects.livingthing.animals.{Animal, Bee}
 import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Soap, SodiumChloride, Water, Wood}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, GlassJar, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, SteelTable, WoodTable}
@@ -375,6 +375,8 @@ object RoomMaker {
     outside.addObject( new Wood() )
     outside.addObject( new Axe() )
     outside.addObject( new Fountain() )
+
+    outside.addObject( new Animal() )
 
     return outside
   }

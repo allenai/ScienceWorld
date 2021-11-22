@@ -66,7 +66,7 @@ class Plant extends LivingThing {
 
     // If dead, simplify the name
     if (propLife.get.isDead) {
-      os.append("a dead " + this.name)
+      os.append("a dead " + this.getDescriptName())
       return os.toString()
     }
 
