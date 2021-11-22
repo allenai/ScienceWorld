@@ -73,3 +73,49 @@ class Animal extends LivingThing {
     os.toString
   }
 }
+
+/*
+// TODO: Separate out into long, medium, and short lived animals.  Then, make questions for 'which animal is the {longest/shortest} lived of these {3? 4?}.
+// Use long, medium, and short lists to make parametric variations.
+alligator
+bat
+bear
+camel
+cat
+cheetah
+clam
+cow
+coyote
+crab
+dog
+duck
+eagle
+fox
+frog
+gorilla
+hawk
+horse
+kangaroo
+lion
+moose
+mouse
+octopus
+prairie dog
+rabbit
+raccoon
+rhinoceros
+salamander
+sea turtle
+seal
+sheep
+skunk
+snail
+snake
+spider
+squirrel
+wolf
+worm
+zebra
+panda
+
+ */
