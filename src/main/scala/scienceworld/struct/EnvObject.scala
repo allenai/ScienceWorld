@@ -131,7 +131,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     this.containedObjects.filter(_.isHidden() == false).toSet
   }
 
-  def getContainedAccessibleObjects(includeHidden:Boolean = false):Set[EnvObject] = {
+  def getContainedAccessibleObjects(includeHidden:Boolean = false, includePortals:Boolean = true):Set[EnvObject] = {
     val out = mutable.Set[EnvObject]()
     // Contained objects in this container
     for (cObj <- this.getContainedObjects()) {
@@ -142,6 +142,15 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
         }
       }
     }
+    // Also add portals?
+    if (includePortals) {
+      for (pObj <- this.getPortals()) {
+        if (pObj.isHidden() || (includeHidden == true)) {
+          out.add(pObj)
+        }
+      }
+    }
+
     // Return
     out.toSet
   }
