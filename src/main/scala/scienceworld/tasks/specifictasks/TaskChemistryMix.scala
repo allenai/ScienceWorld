@@ -1,9 +1,9 @@
 package scienceworld.tasks.specifictasks
 
-import scienceworld.objects.{Soap, SodiumChloride}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.{CeramicCup, FlowerPot}
 import scienceworld.objects.livingthing.plant.{Plant, Soil}
+import scienceworld.objects.substance.{Soap, SodiumChloride}
 import scienceworld.processes.PlantReproduction
 import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT, PLANT_STAGE_REPRODUCING, PLANT_STAGE_SEED, PLANT_STAGE_SEEDLING}
 import scienceworld.struct.EnvObject

@@ -1,6 +1,5 @@
 package scienceworld.environments
 
-import scienceworld.objects.{Apple, OrangeJuice, Water}
 import scienceworld.objects.containers.{BookShelf, GlassCup, MetalPot, Sewer, WoodCup}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove, Thermometer, Toilet}
@@ -46,7 +45,8 @@ object EnvironmentMaker {
     //for (location <- locations) if (location.name == "workshop") location.addObject(agent)
     //for (location <- locations) if (location.name == "kitchen") location.addObject(agent)
     //for (location <- locations) if (location.name == "green house") location.addObject(agent)
-    for (location <- locations) if (location.name == "outside") location.addObject(agent)
+    //for (location <- locations) if (location.name == "outside") location.addObject(agent)
+    for (location <- locations) if (location.name == "art studio") location.addObject(agent)
 
 
     // Return

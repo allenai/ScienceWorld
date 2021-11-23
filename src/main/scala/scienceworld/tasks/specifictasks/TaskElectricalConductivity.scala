@@ -1,9 +1,9 @@
 package scienceworld.tasks.specifictasks
 
-import scienceworld.objects.{SodiumChloride, Water}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.electricalcomponent.{Battery, ElectricBuzzer, ElectricMotor, GasGenerator, LightBulb, NuclearGenerator, SolarPanel, WindGenerator}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic}
+import scienceworld.objects.substance.{SodiumChloride, Water}
 import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalConductivity}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueBool, TaskValueStr}

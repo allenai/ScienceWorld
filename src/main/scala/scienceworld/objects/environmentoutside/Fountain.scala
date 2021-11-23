@@ -1,7 +1,7 @@
 package scienceworld.objects.environmentoutside
 
-import scienceworld.objects.Water
 import scienceworld.objects.containers.Container
+import scienceworld.objects.substance.Water
 import scienceworld.properties.{CeramicProp, IsOpenUnclosableContainer}
 
 /*

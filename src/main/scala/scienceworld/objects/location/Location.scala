@@ -1,7 +1,7 @@
 package scienceworld.objects.location
 
-import scienceworld.objects.Air
 import scienceworld.objects.environmentoutside.Ground
+import scienceworld.objects.substance.Air
 import scienceworld.properties.{ContainerProperties, IsContainer, IsOpenUnclosableContainer, MoveableProperties}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._

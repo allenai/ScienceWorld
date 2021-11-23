@@ -2,11 +2,12 @@ package scienceworld
 
 import scienceworld.environments.EnvironmentMaker
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.{Apple, Water}
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove}
 import scienceworld.objects.location.{Location, Room, Universe}
 import scienceworld.objects.portal.Door
 import scienceworld.input.{ActionDefinitions, ActionHandler, InputParser}
+import scienceworld.objects.substance.food.Apple
+import scienceworld.properties.BlackPaintProp
 import scienceworld.runtime.AgentInterface
 import scienceworld.tasks.{Task, TaskMaker, TaskMaker1}
 import scienceworld.tasks.goals.ObjMonitor

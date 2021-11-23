@@ -1,6 +1,8 @@
 package scienceworld.processes
 
-import scienceworld.objects.{SaltWater, SoapyWater}
+import scienceworld.objects.substance.paint.{BlueVioletPaint, BrownPaint, GreenBluePaint, GreenPaint, OrangePaint, RedOrangePaint, VioletPaint, VioletRedPaint, YellowGreenPaint, YellowOrangePaint}
+import scienceworld.objects.substance.{SaltWater, SoapyWater}
+import scienceworld.properties.RedOrangePaintProp
 import scienceworld.struct.EnvObject
 
 class Chemistry {
@@ -9,6 +11,9 @@ class Chemistry {
 
 object Chemistry {
 
+  /*
+   * Helper functions
+   */
   // Try to find a substance in a container
   private def getSubstance(container:EnvObject, substanceName:String, stateOfMatter:String = ""):Option[EnvObject] = {
     for (cObj <- container.getContainedObjects()) {
@@ -24,6 +29,33 @@ object Chemistry {
     return None
   }
 
+  // Check for any N (e.g. any 2) objects to be defined in a list of objects.  e.g. check for any 2 paints to be defined.
+  // Used as a catch-all (e.g. if a lot of paints are together, then they'll mix to form brown).
+  // If 'deleteIfFound' is true, then it will delete those found (e.g. delete the N paints).  'expelContents' will expel contents of deleted objects, if deleted.
+  private def checkForAnyN(in:Array[Option[EnvObject]], numToFind:Int = 2, deleteIfFound:Boolean = false, expelContents:Boolean = false):Boolean = {
+    // Step 1: Count number defined
+    var numFound:Int = 0
+    for (elem <- in) {
+      if (elem.isDefined) numFound += 1
+    }
+
+    // Step 2: If we didn't find the correct number, then exit
+    if (numFound != numToFind) return false
+
+    // Step 3: If delete is requested, then delete those found
+    if (deleteIfFound) {
+      for (elem <- in) {
+        if (elem.isDefined) elem.get.delete(expelContents = expelContents)
+      }
+    }
+
+    // Return
+    true
+  }
+
+  /*
+   * Mixing
+   */
 
   // Mix the contents of a container
   def mixContainer(container:EnvObject):(Boolean, String) = {
@@ -47,7 +79,31 @@ object Chemistry {
     val sodiumChloride = this.getSubstance(container, substanceName = "sodium chloride", "solid")
     val soap = this.getSubstance(container, "soap")
 
-    // Case: Two substances
+    // Paints
+    // Primary
+    val paintRed        = this.getSubstance(container, substanceName = "red paint", stateOfMatter = "liquid")
+    val paintBlue       = this.getSubstance(container, substanceName = "blue paint", stateOfMatter = "liquid")
+    val paintYellow     = this.getSubstance(container, substanceName = "yellow paint", stateOfMatter = "liquid")
+    // Secondary
+    val paintViolet     = this.getSubstance(container, substanceName = "violet paint", stateOfMatter = "liquid")
+    val paintGreen      = this.getSubstance(container, substanceName = "green paint", stateOfMatter = "liquid")
+    val paintOrange     = this.getSubstance(container, substanceName = "orange paint", stateOfMatter = "liquid")
+    // Tertiary
+    val paintYellowOrange = this.getSubstance(container, substanceName = "yellow-orange paint", stateOfMatter = "liquid")
+    val paintRedOrange    = this.getSubstance(container, substanceName = "red-orange paint", stateOfMatter = "liquid")
+    val paintVioletRed    = this.getSubstance(container, substanceName = "violet-red paint", stateOfMatter = "liquid")
+    val paintBlueViolet   = this.getSubstance(container, substanceName = "blue-violet paint", stateOfMatter = "liquid")
+    val paintGreenBlue    = this.getSubstance(container, substanceName = "green-blue paint", stateOfMatter = "liquid")
+    val paintGreenYellow  = this.getSubstance(container, substanceName = "green-yellow paint", stateOfMatter = "liquid")
+    // Catch-all
+    val paintBrown        = this.getSubstance(container, substanceName = "brown paint", stateOfMatter = "liquid")
+
+    // All paints (for catch-all)
+    val paintsAll         = Array(paintRed, paintBlue, paintYellow, paintViolet, paintGreen, paintOrange, paintYellowOrange, paintRedOrange, paintVioletRed, paintBlueViolet, paintGreenBlue, paintGreenYellow, paintBrown)
+
+    /*
+     * Case: 2 SUBSTANCES
+     */
     if (contents.size == 2) {
 
       // Salt Water
@@ -70,6 +126,118 @@ object Chemistry {
         container.addObject(soapyWater)
 
         return (true, "Soap and water mix to produce soapy water.")
+      }
+
+
+      /*
+       * Paints
+       */
+      // Secondary colours
+      if ((paintRed.isDefined) && (paintBlue.isDefined)) {
+        paintRed.get.delete()
+        paintBlue.get.delete()
+        container.addObject( new VioletPaint() )
+        return (true, "Red and blue paint mix to produce violet paint.")
+      }
+
+      if ((paintBlue.isDefined) && (paintYellow.isDefined)) {
+        paintBlue.get.delete()
+        paintYellow.get.delete()
+        container.addObject( new GreenPaint() )
+        return (true, "Blue and yellow paint mix to produce green paint.")
+      }
+
+      if ((paintYellow.isDefined) && (paintRed.isDefined)) {
+        paintYellow.get.delete()
+        paintRed.get.delete()
+        container.addObject( new OrangePaint() )
+        return (true, "Yellow and red paint mix to produce orange paint.")
+      }
+
+      // Tertiary colours
+      if ((paintYellow.isDefined) && (paintOrange.isDefined)) {
+        paintYellow.get.delete()
+        paintOrange.get.delete()
+        container.addObject( new YellowOrangePaint() )
+        return (true, "Yellow and orange paint mix to produce yellow-orange paint.")
+      }
+
+      if ((paintOrange.isDefined) && (paintRed.isDefined)) {
+        paintOrange.get.delete()
+        paintRed.get.delete()
+        container.addObject( new RedOrangePaint() )
+        return (true, "Red and orange paint mix to produce red-orange paint.")
+      }
+
+      if ((paintRed.isDefined) && (paintViolet.isDefined)) {
+        paintRed.get.delete()
+        paintViolet.get.delete()
+        container.addObject( new VioletRedPaint() )
+        return (true, "Violet and red paint mix to produce violet-red paint.")
+      }
+
+      if ((paintViolet.isDefined) && (paintBlue.isDefined)) {
+        paintViolet.get.delete()
+        paintBlue.get.delete()
+        container.addObject( new BlueVioletPaint() )
+        return (true, "Blue and violet paint mix to produce blue-violet paint.")
+      }
+
+      if ((paintBlue.isDefined) && (paintGreen.isDefined)) {
+        paintBlue.get.delete()
+        paintGreen.get.delete()
+        container.addObject( new GreenBluePaint() )
+        return (true, "Blue and green paint mix to produce blue green paint.")
+      }
+
+      if ((paintGreen.isDefined) && (paintYellow.isDefined)) {
+        paintGreen.get.delete()
+        paintYellow.get.delete()
+        container.addObject( new YellowGreenPaint() )
+        return (true, "Green and yellow paint mix to produce yellow-green paint.")
+      }
+
+      // Catch-all (any 2 paints, not already covered by a rule above)
+      if (this.checkForAnyN(paintsAll, numToFind = 2, deleteIfFound = true, expelContents = false)) {
+        // Create brown
+        container.addObject( new BrownPaint() )
+        return (true, "The paints mix to produce brown paint.")
+      }
+
+
+    } else if (contents.size == 3) {
+      /*
+       * Case: 3 SUBSTANCES
+       */
+
+      // TODO: Add 3-substance mix combinations
+
+      /*
+       * Paints catch-all
+       */
+      // Catch-all (any 2 paints, not already covered by a rule above)
+      if (this.checkForAnyN(paintsAll, numToFind = 3, deleteIfFound = true, expelContents = false)) {
+        // Create brown
+        container.addObject( new BrownPaint() )
+        return (true, "The paints mix to produce brown paint.")
+      }
+
+
+    } else if (contents.size == 4) {
+      /*
+       * Case: 4 SUBSTANCES
+       */
+
+      // TODO: Add 3-substance mix combinations
+
+      /*
+       * Paints catch-all
+       */
+      // Catch-all (any 2 paints, not already covered by a rule above)
+      if (this.checkForAnyN(paintsAll, numToFind = 4, deleteIfFound = true, expelContents = false)) {
+        // Create brown
+        container.addObject( new BrownPaint() )
+        return (true, "The paints mix to produce brown paint.")
       }
 
     }

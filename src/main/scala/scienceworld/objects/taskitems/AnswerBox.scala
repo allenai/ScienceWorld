@@ -1,7 +1,7 @@
 package scienceworld.objects.taskitems
 
-import scienceworld.objects.Water
 import scienceworld.objects.containers.Container
+import scienceworld.objects.substance.Water
 import scienceworld.properties.{CeramicProp, IsOpenUnclosableContainer}
 import scienceworld.struct.EnvObject.MODE_CURSORY_DETAIL
 import util.StringHelpers

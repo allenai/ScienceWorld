@@ -8,7 +8,6 @@ import scienceworld.objects.containers.{CeramicCup, FlowerPot}
 import scienceworld.objects.devices.Stove
 import scienceworld.objects.livingthing.plant.{AppleTree, Plant, Soil}
 import scienceworld.objects.taskitems.AnswerBox
-import scienceworld.objects.{AppleJuice, Caesium, Chocolate, Gallium, Ice, IceCream, Lead, Marshmallow, Mercury, OrangeJuice, Soap, Tin}
 import scienceworld.processes.PlantReproduction
 import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT, PLANT_STAGE_REPRODUCING, PLANT_STAGE_SEED, PLANT_STAGE_SEEDLING}
 import scienceworld.properties.LeadProp

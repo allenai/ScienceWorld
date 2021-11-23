@@ -1,6 +1,6 @@
 package scienceworld.objects.devices
 
-import scienceworld.objects.Water
+import scienceworld.objects.substance.Water
 import scienceworld.properties.{GlassProp, IsActivableDeviceOff, IsNotContainer, IsOpenUnclosableContainer, IsUsable, MoveableProperties, SteelProp}
 import scienceworld.struct.EnvObject
 

@@ -1,7 +1,7 @@
 package scienceworld.objects.devices
 
-import scienceworld.objects.Water
 import scienceworld.objects.portal.LiquidDrain
+import scienceworld.objects.substance.Water
 import scienceworld.properties.{CeramicProp, IsActivableDeviceOff, IsOpenUnclosableContainer, MoveableProperties, SteelProp}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._

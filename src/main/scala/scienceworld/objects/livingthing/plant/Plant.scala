@@ -1,8 +1,8 @@
 package scienceworld.objects.livingthing.plant
 
-import scienceworld.objects.Apple
 import scienceworld.objects.devices.Stove
 import scienceworld.objects.livingthing.LivingThing
+import scienceworld.objects.substance.food.Apple
 import scienceworld.processes.PlantReproduction
 import scienceworld.processes.lifestage.PlantLifeStages
 import scienceworld.properties.{FlowerMatterProp, IsNotContainer, IsOpenUnclosableContainer, LifePropertiesPlant, PlantMatterProp, PollenMatterProp, PollinationProperties}

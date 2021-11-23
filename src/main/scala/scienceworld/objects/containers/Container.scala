@@ -1,7 +1,7 @@
 package scienceworld.objects.containers
 
-import scienceworld.objects.Water
 import scienceworld.objects.document.Book
+import scienceworld.objects.substance.Water
 import scienceworld.properties._
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._

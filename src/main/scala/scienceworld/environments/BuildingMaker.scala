@@ -1,7 +1,6 @@
 package scienceworld.environments
 
 import scienceworld.objects.livingthing.animals.{Animal, Bee}
-import scienceworld.objects.{Apple, Banana, Orange, OrangeJuice, Potato, Soap, SodiumChloride, Water, Wood}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, GlassJar, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, SteelTable, WoodTable}
 import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, Stove, Thermometer, Toilet}
@@ -11,6 +10,9 @@ import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree,
 import scienceworld.objects.location.{Location, Outside, Room, Universe}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
 import scienceworld.objects.portal.Door
+import scienceworld.objects.substance.food.{Apple, Banana, Orange, OrangeJuice, Potato}
+import scienceworld.objects.substance.paint.{BluePaint, GreenPaint, OrangePaint, RedPaint, VioletPaint, YellowPaint}
+import scienceworld.objects.substance.{Soap, SodiumChloride, Wood}
 import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalConductivity}
 import scienceworld.struct.EnvObject
 
@@ -364,6 +366,40 @@ object RoomMaker {
     room
   }
 
+  // Art studio for paint mixing
+  def mkArtStudio():Room = {
+    val room = new Room("art studio")
+
+    // Table
+    val table = new WoodTable()
+    room.addObject(table)
+
+    // Something to mix with
+    table.addObject( new GlassCup() )
+
+    // Paints
+    val paints1 = Array(new RedPaint, new BluePaint, new YellowPaint)
+    for (paint <- paints1) {
+      val woodcup = new WoodCup()
+      woodcup.addObject(paint)
+      room.addObject(woodcup)
+    }
+
+    // Also add a cupboard with more paint
+    val cupboard = new Cupboard()
+    room.addObject(cupboard)
+    val paints2 = Array(new RedPaint, new BluePaint, new YellowPaint) //, new GreenPaint, new VioletPaint, new OrangePaint)
+    for (paint <- paints2) {
+      val woodcup = new WoodCup()
+      woodcup.addObject(paint)
+      cupboard.addObject(woodcup)
+    }
+
+
+    // Return
+    room
+  }
+
 
   /*
    * Outside
@@ -447,6 +483,11 @@ object BuildingMaker {
     val roomGreenhouse = RoomMaker.mkGreenhouse(sewer)
     universe.addObject(roomGreenhouse)
 
+    // Art studio
+    val roomArtStudio = RoomMaker.mkArtStudio()
+    universe.addObject(roomArtStudio)
+
+
     // Hallway
     val roomHallway = new Room("hallway")
     roomHallway.addObject( Picture.mkRandom() )
@@ -469,6 +510,7 @@ object BuildingMaker {
     RoomMaker.mkDoor(roomBathroom, roomKitchen)
     RoomMaker.mkDoor(roomWorkshop, roomHallway)
     RoomMaker.mkDoor(roomGreenhouse, roomHallway)
+    RoomMaker.mkDoor(roomArtStudio, roomHallway)
 
     RoomMaker.mkDoor(roomKitchen, outside)
     RoomMaker.mkDoor(roomGreenhouse, outside)

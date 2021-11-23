@@ -1,7 +1,7 @@
 package scienceworld.objects.agent
 
-import scienceworld.objects.Orange
 import scienceworld.objects.containers.Container
+import scienceworld.objects.substance.food.Orange
 import scienceworld.properties.{IsOpenUnclosableContainer, MoveableProperties}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._

@@ -1,6 +1,6 @@
-package scienceworld.objects
+package scienceworld.objects.substance
 
-import scienceworld.properties.{AirProp, AshProp, CaesiumProp, GalliumProp, LeadProp, MercuryProp, RubberProp, SaltWaterProp, SoapProp, SoapyWaterProp, SodiumChlorideProp, SodiumProp, TinProp, WaterProp, WoodProp}
+import scienceworld.properties._
 import scienceworld.struct.EnvObject
 
 class Substance extends EnvObject {

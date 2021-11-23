@@ -1,7 +1,7 @@
 package scienceworld.processes
 
 import scienceworld.objects.livingthing.plant.{AppleTree, AvocadoTree, BananaTree, CherryTree, LemonTree, OrangeTree, PeachTree}
-import scienceworld.objects.{Apple, Avocado, Banana, Cherry, Lemon, Orange, Peach}
+import scienceworld.objects.substance.food.{Apple, Avocado, Banana, Cherry, Lemon, Orange, Peach}
 import scienceworld.struct.EnvObject
 
 class PlantReproduction {

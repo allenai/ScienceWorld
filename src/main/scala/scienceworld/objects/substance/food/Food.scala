@@ -1,6 +1,6 @@
-package scienceworld.objects
+package scienceworld.objects.substance.food
 
-import scienceworld.properties.{AppleJuiceProp, ChocolateProp, EdibilityProperties, Edible, IceCreamProp, MarshmallowProp, OrangeJuiceProp}
+import scienceworld.properties._
 import scienceworld.struct.EnvObject
 
 class Food extends EnvObject {

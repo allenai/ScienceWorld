@@ -4,7 +4,6 @@ import scienceworld.environments.ContainerMaker
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.Stove
 import scienceworld.objects.taskitems.AnswerBox
-import scienceworld.objects.{AppleJuice, Caesium, Chocolate, Gallium, Ice, IceCream, Lead, Marshmallow, Mercury, OrangeJuice, Soap, Tin}
 import scienceworld.properties.LeadProp
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskDisable, TaskMaker, TaskMaker1, TaskModifier, TaskObject}

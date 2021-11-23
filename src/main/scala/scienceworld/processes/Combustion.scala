@@ -1,7 +1,8 @@
 package scienceworld.processes
 
-import scienceworld.objects.Ash
+import scienceworld.objects.substance.Ash
 import scienceworld.struct.EnvObject
+
 import scala.util.control.Breaks._
 
 object Combustion {

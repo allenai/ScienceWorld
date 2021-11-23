@@ -1,6 +1,6 @@
 package scienceworld.objects.taskitems
 
-import scienceworld.objects.Substance
+import scienceworld.objects.substance.Substance
 import scienceworld.properties.{MetalProp, WaterProp}
 import scienceworld.struct.EnvObject
 

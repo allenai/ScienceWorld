@@ -3,8 +3,8 @@ package scienceworld.tasks.specifictasks
 import scienceworld.environments.ContainerMaker
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.Stove
-import scienceworld.objects.{AppleJuice, Caesium, Chocolate, Gallium, Ice, IceCream, Lead, Marshmallow, Mercury, OrangeJuice, Soap, Tin}
-import scienceworld.properties.LeadProp
+import scienceworld.objects.substance.food.{AppleJuice, Chocolate, IceCream, Marshmallow, OrangeJuice}
+import scienceworld.objects.substance.{Caesium, Gallium, Ice, Lead, Mercury, Soap, Tin}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskDisable, TaskMaker, TaskMaker1, TaskModifier, TaskObject}
 import scienceworld.tasks.goals.{Goal, GoalSequence}

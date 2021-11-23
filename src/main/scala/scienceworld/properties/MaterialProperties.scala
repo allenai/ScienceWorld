@@ -716,3 +716,192 @@ class SoapyWaterProp extends MaterialProperties {
   // Electrical
   electricallyConductive          = false
 }
+
+
+/*
+ * Paint
+ */
+class GenericPaintProp extends MaterialProperties {
+  color                           = "white"
+  substanceName                   = this.color + "paint"
+  val solidName                   = "dried " + this.color + " paint"
+  val liquidName                  = this.color + " paint"
+  val gasName                     = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.20
+  stateOfMatter                   = "liquid"
+  boilingPoint                    = 10000.0f
+  meltingPoint                    = 0.0f
+  combustionPoint                 = 293.0f
+  // Electrical
+  electricallyConductive          = false
+}
+
+class WhitePaintProp extends GenericPaintProp {
+  color                           = "white"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class BlackPaintProp extends GenericPaintProp {
+  color                           = "black"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class RedPaintProp extends GenericPaintProp {
+  color                           = "red"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class BluePaintProp extends GenericPaintProp {
+  color                           = "blue"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class YellowPaintProp extends GenericPaintProp {
+  color                           = "yellow"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class VioletPaintProp extends GenericPaintProp {
+  color                           = "violet"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class GreenPaintProp extends GenericPaintProp {
+  color                           = "green"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class OrangePaintProp extends GenericPaintProp {
+  color                           = "orange"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class BrownPaintProp extends GenericPaintProp {
+  color                           = "brown"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class YellowOrangePaintProp extends GenericPaintProp {
+  color                           = "yellow-orange"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class RedOrangePaintProp extends GenericPaintProp {
+  color                           = "red-orange"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class VoiletRedPaintProp extends GenericPaintProp {
+  color                           = "violet-red"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class BlueVioletPaintProp extends GenericPaintProp {
+  color                           = "blue-violet"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class GreenBluePaintProp extends GenericPaintProp {
+  color                           = "green-blue"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+class YellowGreenPaintProp extends GenericPaintProp {
+  color                           = "yellow-green"
+  substanceName                   = this.color + "paint"
+  // Inferred
+  override val solidName          = "dried " + this.color + " paint"
+  override val liquidName         = this.color + " paint"
+  override val gasName            = "gaseous " + this.color + " paint"
+  nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
+}
+
+// Red
+// Blue
+// Yellow
+// Violet
+// Green
+// Orange
+// Yellow-Orange
+// Red-Orange
+// Violet-red
+// blue-violet
+// green-blue
+// green-yellow
+// Brown
+// Black
+// White

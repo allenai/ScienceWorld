@@ -1,9 +1,9 @@
 package scienceworld.processes
 
-import scienceworld.objects.Wood
 import scienceworld.objects.devices.Device
 import scienceworld.objects.environmentoutside.{Ground, Hole}
 import scienceworld.objects.livingthing.plant.{Plant, Soil, Tree}
+import scienceworld.objects.substance.Wood
 import scienceworld.struct.EnvObject
 
 object Chopping {
