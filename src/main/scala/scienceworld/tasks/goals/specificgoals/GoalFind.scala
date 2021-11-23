@@ -4,9 +4,13 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn}
 
 // Find an object with a specific name
-class GoalFind(objectName:String = "", failIfWrong:Boolean = true) extends Goal {
+class GoalFind(objectName:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false) extends Goal {
+  this.defocusOnSuccess = _defocusOnSuccess
 
   override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
+    println ("### FOCUS IS ON: " + obj.name.toLowerCase)
+    println ("### LOOKING FOR: " + objectName.toLowerCase)
+
     if (obj.name.toLowerCase == objectName.toLowerCase) {
       // Case: The focus is on an object with the correct name
       this.satisfiedWithObject = Some(obj)

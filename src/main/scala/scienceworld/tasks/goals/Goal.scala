@@ -6,6 +6,7 @@ import scala.util.control.Breaks._
 // Storage class for a single goal
 trait Goal {
   var satisfiedWithObject:Option[EnvObject] = None
+  var defocusOnSuccess:Boolean = false
 
   def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
     return GoalReturn.mkSubgoalUnsuccessful()
@@ -78,7 +79,10 @@ class GoalSequence(val subgoals:Array[Goal]) {
         for (obj <- objMonitor.getMonitoredObjects()) {
           println("Checking obj (" + obj.toStringMinimal() + ") against subgoal " + curSubgoalIdx)
           goalReturn = curSubgoal.get.isGoalConditionSatisfied(obj, lastSubgoal)
-          if (goalReturn.subgoalSuccess) break()
+          if (goalReturn.subgoalSuccess) {
+            if (curSubgoal.get.defocusOnSuccess) objMonitor.clearMonitoredObjects()     // Clear focus, if the goal asks to do this
+            break()
+          }
           if (goalReturn.taskFailure) break()
         }
       }
