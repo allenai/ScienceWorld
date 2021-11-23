@@ -21,7 +21,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   // Get a list of all referents
   def getAllReferents(objTreeRoot:EnvObject, includeHidden:Boolean):Array[String] = {
     val out = mutable.Set[String]()
-    val allObjs = InputParser.collectObjects(objTreeRoot, includeHidden).toArray
+    val allObjs = InputParser.collectAccessibleObjects(objTreeRoot, includeHidden).toArray
     for (obj <- allObjs) {
       out ++= obj.getReferentsWithContainers(perspectiveContainer = objTreeRoot)
     }
@@ -33,7 +33,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   def getAllUniqueReferents(objTreeRoot:EnvObject, includeHidden:Boolean):Array[(String, EnvObject)] = {
     // Step 1: Collect a list of all referents for each object
     val objReferents = new ArrayBuffer[Array[String]]()
-    val allObjs = InputParser.collectObjects(objTreeRoot, includeHidden).toArray
+    val allObjs = InputParser.collectAccessibleObjects(objTreeRoot, includeHidden).toArray
     for (obj <- allObjs) {
       objReferents.append( obj.getReferentsWithContainers(perspectiveContainer = objTreeRoot).toArray.sorted )
     }
@@ -120,7 +120,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   def parse(inputStr:String, objTreeRoot:EnvObject, agent:Agent, objMonitor:ObjMonitor, goalSequence:GoalSequence, perspectiveContainer:EnvObject): (Boolean, String, String, Option[Action]) = {      // (Success, errorMessage, userString)
     // TODO: Only include observable objects in the list of all objects
     val tokens = this.tokenize(inputStr.toLowerCase)
-    val allObjs = (InputParser.collectObjects(objTreeRoot, includeHidden = true) ++ InputParser.collectObjects(agent, includeHidden = true)).toArray
+    val allObjs = (InputParser.collectAccessibleObjects(objTreeRoot, includeHidden = true) ++ InputParser.collectAccessibleObjects(agent, includeHidden = true)).toArray
 
     //println ("inputStr: " + inputStr)
 
@@ -434,7 +434,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     try {
       ambiguityIdx = inputStr.toInt
     } catch {
-      case _ => {
+      case _:Throwable => {
         val errorStr = "ERROR: Unknown response (" + inputStr + ").  Action cancelled."
         this.clearAmbiguousState()
         return (errorStr, None)
@@ -473,7 +473,7 @@ object InputParser {
   def getPossibleReferents(objTreeRoot:EnvObject, perspectiveContainer:EnvObject):Array[String] = {
     val out = new ArrayBuffer[String]()
 
-    val allObjs = collectObjects(objTreeRoot).toArray
+    val allObjs = collectAccessibleObjects(objTreeRoot).toArray
 
     for (obj <- allObjs) {
       out.insertAll(out.size, getObjectReferents(obj, perspectiveContainer) )
@@ -491,7 +491,8 @@ object InputParser {
    * Helper functions (collecting objects from the object tree into more easily traversed data structures)
    */
 
-  // Collect all objects in the object tree into a flat set
+  // Collect all objects in the object tree into a flat set.
+  // NOTE: This function does not respect container boundaries (e.g. whether a container is open/closed), and simply gets every object that's contained regardless of accessibility.
   def collectObjects(objectTreeRoot:EnvObject, includeHidden:Boolean = false):mutable.Set[EnvObject] = {
     val out = mutable.Set[EnvObject]()
 
@@ -515,6 +516,33 @@ object InputParser {
       for (obj <- objectTreeRoot.getContainedObjectsAndPortals()) {
         out ++= this.collectObjects(obj, includeHidden)
       }
+    }
+
+    // Return
+    out
+  }
+
+  def collectAccessibleObjects(objectTreeRoot:EnvObject, includeHidden:Boolean = false):mutable.Set[EnvObject] = {
+    val out = mutable.Set[EnvObject]()
+
+    // Step 1: Add this object
+    if (!out.contains(objectTreeRoot)) {
+      if (includeHidden || !objectTreeRoot.isHidden()) {
+        out.add(objectTreeRoot)
+      }
+    }
+
+    // Step 2: Also add the destination locations of any portals
+    for (portal <- objectTreeRoot.getPortals()) {
+      val destination = portal.getConnectsTo(perspectiveContainer = objectTreeRoot)
+      if (destination.isDefined) {
+        out.add(destination.get)
+      }
+    }
+
+    // Step 3: Add children recursively
+    if (includeHidden || !objectTreeRoot.isHidden()) {
+      out ++= objectTreeRoot.getContainedAccessibleObjects(includeHidden)
     }
 
     // Return

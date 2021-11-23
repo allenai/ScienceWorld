@@ -131,11 +131,11 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     this.containedObjects.filter(_.isHidden() == false).toSet
   }
 
-  def getContainedAccessibleObjects():Set[EnvObject] = {
+  def getContainedAccessibleObjects(includeHidden:Boolean = false):Set[EnvObject] = {
     val out = mutable.Set[EnvObject]()
     // Contained objects in this container
     for (cObj <- this.getContainedObjects()) {
-      if (!cObj.isHidden()) {   // If object is not hidden
+      if (!cObj.isHidden() || (includeHidden == true)) {   // If object is not hidden
         out.add(cObj)           // Add it
         if ((cObj.propContainer.isDefined) && (cObj.propContainer.get.isOpen)) {      // If the object is an open container, add it's contents
           out ++= cObj.getContainedAccessibleObjects()
