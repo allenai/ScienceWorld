@@ -1,6 +1,7 @@
 package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
+import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.livingthing.animals.{Ant, Beaver, BrownBear, Chameleon, Chipmunk, Crocodile, Dragonfly, Elephant, GiantTortoise, Hedgehog, Mouse, Parrot, Rabbit, Toad, Wolf}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
@@ -21,6 +22,8 @@ class TaskIdentifyLifeStages(val mode:String = MODE_LIFESTAGES) extends TaskPara
   for (location <- locations) {
 
     val elephant = new Elephant()
+    val elephantLifeStages = elephant.lifecycle.get.stages.map(_.stageName)
+    val lifeStages
     animalsAndStages.append(Array(
         new TaskObject(elephant.name, Some(elephant), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
         new TaskValueStr(key = "animal", value = elephant.name),
@@ -127,6 +130,29 @@ object TaskIdentifyLifeStages {
 
   def registerTasks(taskMaker:TaskMaker1): Unit = {
     taskMaker.addTask( new TaskIdentifyLifeStages(mode = MODE_LIFESTAGES) )
+  }
+
+
+  /*
+   * Helper functinos
+   */
+  def mkTaskVariation(livingThing: LivingThing, location: String): Unit = {
+
+    // Get living thing life stages
+    var lifestages = livingThing.lifecycle.get.stages.map(_.stageName)
+    // Remove the last life stage, since it should always assumed to be death
+    lifestages = lifestages.slice(0, lifestages.size - 1)
+    // Create array of stages
+    val stageKeys = new ArrayBuffer[TaskModifier]
+    for (i <- 0 until lifestages.length) {
+      val lifestageName = lifestages(i)
+      stageKeys.append(new TaskValueStr(key = "stage" + i, value = lifestageName))
+    }
+
+    // Create task modifier
+    val out = Array(new TaskObject(livingThing.name, Some(livingThing), roomToGenerateIn = location, Array.empty[String], generateNear = 0)) ++ stageKeys.toArray
+
+    return out
   }
 
 }
