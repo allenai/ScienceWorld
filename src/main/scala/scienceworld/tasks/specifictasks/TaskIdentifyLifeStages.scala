@@ -13,7 +13,7 @@ import scala.collection.mutable.ArrayBuffer
 
 
 class TaskIdentifyLifeStages(val mode:String = MODE_LIFESTAGES) extends TaskParametric {
-  val taskName = "task-6-" + mode.replaceAll(" ", "-")
+  val taskName = "task-7-" + mode.replaceAll(" ", "-")
 
   val locations = Array("outside")
 
@@ -21,14 +21,9 @@ class TaskIdentifyLifeStages(val mode:String = MODE_LIFESTAGES) extends TaskPara
   val animalsAndStages = new ArrayBuffer[ Array[TaskModifier] ]()
   for (location <- locations) {
 
-    val elephant = new Elephant()
-    val elephantLifeStages = elephant.lifecycle.get.stages.map(_.stageName)
-    val lifeStages
-    animalsAndStages.append(Array(
-        new TaskObject(elephant.name, Some(elephant), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
-        new TaskValueStr(key = "animal", value = elephant.name),
-        new TaskValueStr(key = "stage1", value = "baby " + elephant.name)      // TODO: Complete this pattern
-      ))
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Elephant(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new GiantTortoise(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Parrot(), location = location) )
 
   }
 
@@ -77,15 +72,15 @@ class TaskIdentifyLifeStages(val mode:String = MODE_LIFESTAGES) extends TaskPara
     // Step 1: Find seed type
     val animalName = this.getTaskValueStr(modifiers, "animal")
     if (animalName.isEmpty) throw new RuntimeException("ERROR: Failed to find animal name in task setup.")
-    val stage1 = this.getTaskValueStr(modifiers, "stage 1")
+    val stage1 = this.getTaskValueStr(modifiers, "stage1")
     if (stage1.isEmpty) throw new RuntimeException("ERROR: Failed to find lifecycle stage 1 in task setup.")
-    val stage2 = this.getTaskValueStr(modifiers, "stage 2")
+    val stage2 = this.getTaskValueStr(modifiers, "stage2")
     if (stage2.isEmpty) throw new RuntimeException("ERROR: Failed to find lifecycle stage 2 in task setup.")
-    val stage3 = this.getTaskValueStr(modifiers, "stage 3")
+    val stage3 = this.getTaskValueStr(modifiers, "stage3")
     //if (stage3.isEmpty) throw new RuntimeException("ERROR: Failed to find lifecycle stage 3 in task setup.")
-    val stage4 = this.getTaskValueStr(modifiers, "stage 4")
+    val stage4 = this.getTaskValueStr(modifiers, "stage4")
     //if (stage4.isEmpty) throw new RuntimeException("ERROR: Failed to find lifecycle stage 4 in task setup.")
-    val stage5 = this.getTaskValueStr(modifiers, "stage 5")
+    val stage5 = this.getTaskValueStr(modifiers, "stage5")
     //if (stage5.isEmpty) throw new RuntimeException("ERROR: Failed to find lifecycle stage 5 in task setup.")
 
 
@@ -136,7 +131,9 @@ object TaskIdentifyLifeStages {
   /*
    * Helper functinos
    */
-  def mkTaskVariation(livingThing: LivingThing, location: String): Unit = {
+
+  // Make a task variation that includes (a) adding the living thing to the environment, (b) recording it's life stages in key/value pairs in the task modifiers
+  def mkTaskVariation(livingThing: LivingThing, location: String): Array[TaskModifier] = {
 
     // Get living thing life stages
     var lifestages = livingThing.lifecycle.get.stages.map(_.stageName)
@@ -146,11 +143,14 @@ object TaskIdentifyLifeStages {
     val stageKeys = new ArrayBuffer[TaskModifier]
     for (i <- 0 until lifestages.length) {
       val lifestageName = lifestages(i)
-      stageKeys.append(new TaskValueStr(key = "stage" + i, value = lifestageName))
+      stageKeys.append(new TaskValueStr(key = "stage" + (i+1), value = lifestageName))
+      println ("stage" + i + "\t" + lifestageName)
+
     }
 
     // Create task modifier
-    val out = Array(new TaskObject(livingThing.name, Some(livingThing), roomToGenerateIn = location, Array.empty[String], generateNear = 0)) ++ stageKeys.toArray
+    val out = Array(new TaskObject(livingThing.name, Some(livingThing), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+                    new TaskValueStr(key = "animal", value = livingThing.name)) ++ stageKeys
 
     return out
   }
