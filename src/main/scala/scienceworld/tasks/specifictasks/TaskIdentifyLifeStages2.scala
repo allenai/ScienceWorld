@@ -1,18 +1,20 @@
 package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
+import scienceworld.objects.containers.furniture.Cupboard
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.livingthing.animals.{Ant, Beaver, BlueJay, BrownBear, Butterfly, Chameleon, Chipmunk, Crocodile, Dove, Dragonfly, Elephant, Frog, GiantTortoise, Hedgehog, Moth, Mouse, Parrot, Rabbit, Toad, Turtle, Wolf}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalFindLivingThingStage}
-import scienceworld.tasks.specifictasks.TaskIdentifyLifeStages._
+import scienceworld.tasks.specifictasks.TaskIdentifyLifeStages2._
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
 
 
-class TaskIdentifyLifeStages(val mode:String = MODE_LIFESTAGES) extends TaskParametric {
+class TaskIdentifyLifeStages2(val mode:String = MODE_LIFESTAGES) extends TaskParametric {
   val taskName = "task-7-" + mode.replaceAll(" ", "-")
 
   val locations = Array("outside")
@@ -20,26 +22,27 @@ class TaskIdentifyLifeStages(val mode:String = MODE_LIFESTAGES) extends TaskPara
   // TODO: Add distractor animals
 
   // Variation 1: Which seeds to grow
+  val numDistractors = 2
   val animalsAndStages = new ArrayBuffer[ Array[TaskModifier] ]()
   for (location <- locations) {
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Butterfly(), location = location) )
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Moth(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new Butterfly(), animalsToAdd = Butterfly.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 0))
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new Moth(), animalsToAdd = Moth.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 1))
 
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Frog(), location = location) )
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Toad(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new Frog(), animalsToAdd = Frog.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 2))
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new Toad(), animalsToAdd = Toad.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 3))
 
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new GiantTortoise(), location = location) )
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Turtle(), location = location) )
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Crocodile(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new GiantTortoise(), animalsToAdd = GiantTortoise.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 4))
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new Turtle(), animalsToAdd = Turtle.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 5))
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new Crocodile(), animalsToAdd = Crocodile.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 6))
 
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Parrot(), location = location) )
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Dove(), location = location) )
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new BlueJay(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new Parrot(), animalsToAdd = Parrot.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 7))
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new Dove(), animalsToAdd = Dove.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 8))
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new BlueJay(), animalsToAdd = BlueJay.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 9))
 
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Elephant(), location = location) )
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new BrownBear(), location = location) )
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Beaver(), location = location) )
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Wolf(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new Elephant(), animalsToAdd = Elephant.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 10))
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new BrownBear(), animalsToAdd = BrownBear.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 11))
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new Beaver(), animalsToAdd = Beaver.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 12))
+    animalsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new Wolf(), animalsToAdd = Wolf.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 13))
   }
 
   // Combinations
@@ -137,11 +140,11 @@ class TaskIdentifyLifeStages(val mode:String = MODE_LIFESTAGES) extends TaskPara
 }
 
 
-object TaskIdentifyLifeStages {
-  val MODE_LIFESTAGES       = "identify life stages"
+object TaskIdentifyLifeStages2 {
+  val MODE_LIFESTAGES       = "identify life stages 2"
 
   def registerTasks(taskMaker:TaskMaker1): Unit = {
-    taskMaker.addTask( new TaskIdentifyLifeStages(mode = MODE_LIFESTAGES) )
+    taskMaker.addTask( new TaskIdentifyLifeStages2(mode = MODE_LIFESTAGES) )
   }
 
 
@@ -149,8 +152,26 @@ object TaskIdentifyLifeStages {
    * Helper functinos
    */
 
+  // Randomly choose a set of N distractor animals to include in the environment
+  // This version also instantiates the different life stages of those distractor animals.
+  def mkDistractorAnimals(location:String, numAnimals:Int = 3, variationIdx:Int):Array[TaskModifier] = {
+    val allAnimals = List(Butterfly.mkExamplesAtLifeStages(), Moth.mkExamplesAtLifeStages(), Frog.mkExamplesAtLifeStages(), Toad.mkExamplesAtLifeStages(), GiantTortoise.mkExamplesAtLifeStages(), Turtle.mkExamplesAtLifeStages(), Crocodile.mkExamplesAtLifeStages(), Parrot.mkExamplesAtLifeStages(), Dove.mkExamplesAtLifeStages(), BlueJay.mkExamplesAtLifeStages(), Elephant.mkExamplesAtLifeStages(), BrownBear.mkExamplesAtLifeStages(), Beaver.mkExamplesAtLifeStages(), Wolf.mkExamplesAtLifeStages() )
+    val rand = new Random(variationIdx)     // Use variationIdx for seed
+    // Shuffle
+    val shuffled = rand.shuffle(allAnimals)
+
+    val out = new ArrayBuffer[TaskModifier]
+    for (i <- 0 until numAnimals) {
+      for (animal <- shuffled(i)) {
+        out.append(new TaskObject(animal.name, Some(animal), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true))
+      }
+    }
+
+    out.toArray
+  }
+
   // Make a task variation that includes (a) adding the living thing to the environment, (b) recording it's life stages in key/value pairs in the task modifiers
-  def mkTaskVariation(livingThing: LivingThing, location: String): Array[TaskModifier] = {
+  def mkTaskVariation(livingThing:LivingThing, animalsToAdd:Array[EnvObject], location: String): Array[TaskModifier] = {
 
     // Get living thing life stages
     var lifestages = livingThing.lifecycle.get.stages.map(_.stageName)
@@ -163,10 +184,18 @@ object TaskIdentifyLifeStages {
     }
 
     // Create task modifier
-    val out = Array(new TaskObject(livingThing.name, Some(livingThing), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
-                    new TaskValueStr(key = "animal", value = livingThing.name)) ++ stageKeys
+    val out = new ArrayBuffer[TaskModifier]()
+    // Add each animal
+    for (animal <- animalsToAdd) {
+      out.append( new TaskObject(animal.name, Some(animal), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true) )
+    }
 
-    return out
+    // Add a key describing which animal this task is for
+    out.append( new TaskValueStr(key = "animal", value = livingThing.name) )
+    // Add the life stage keys
+    out.insertAll(out.length, stageKeys)
+
+    return out.toArray
   }
 
 }

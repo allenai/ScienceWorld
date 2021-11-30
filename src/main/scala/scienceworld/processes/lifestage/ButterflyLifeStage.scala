@@ -11,7 +11,7 @@ import scienceworld.struct.EnvObject
 // Baby stage
 class ButterflyLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_EGG, obj, lifecycle, cannonicalName = "butterfly egg") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 20
 
   override def tick(): Unit = {
     this.incrementDuration()
@@ -50,7 +50,7 @@ class ButterflyLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(B
 
 class ButterflyLifeStageCaterpillar(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_CATERPILLAR, obj, lifecycle, cannonicalName = "caterpillar") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 20
 
   override def tick(): Unit = {
     this.incrementDuration()
@@ -89,7 +89,7 @@ class ButterflyLifeStageCaterpillar(obj:Animal, lifecycle:LifeCycle) extends Lif
 
 class ButterflyLifeStagePupa(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_PUPA, obj, lifecycle, cannonicalName = "butterfly pupa") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 20
 
   override def tick(): Unit = {
     this.incrementDuration()
@@ -129,7 +129,7 @@ class ButterflyLifeStagePupa(obj:Animal, lifecycle:LifeCycle) extends LifeStage(
 
 class ButterflyLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_ADULT, obj, lifecycle, cannonicalName = "adult butterfly") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 50
 
   override def tick(): Unit = {
     this.incrementDuration()

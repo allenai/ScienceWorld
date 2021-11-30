@@ -11,7 +11,7 @@ import scienceworld.struct.EnvObject
 // Baby stage
 class FrogLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_EGG, obj, lifecycle, cannonicalName = "frog egg") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 20
 
   override def tick(): Unit = {
     this.incrementDuration()
@@ -50,7 +50,7 @@ class FrogLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLi
 
 class FrogLifeStageTadpole(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_TADPOLE, obj, lifecycle, cannonicalName = "tadpole") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 20
 
   override def tick(): Unit = {
     this.incrementDuration()
@@ -90,7 +90,7 @@ class FrogLifeStageTadpole(obj:Animal, lifecycle:LifeCycle) extends LifeStage(Fr
 
 class FrogLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_ADULT, obj, lifecycle, cannonicalName = "adult frog") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 50
 
   override def tick(): Unit = {
     this.incrementDuration()

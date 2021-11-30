@@ -11,7 +11,7 @@ import scienceworld.struct.EnvObject
 // Baby stage
 class TortoiseLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_EGG, obj, lifecycle, cannonicalName = "") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 20
 
   override def tick(): Unit = {
     this.incrementDuration()
@@ -50,7 +50,7 @@ class TortoiseLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(To
 
 class TortoiseLifeStageHatchling(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_HATCHLING, obj, lifecycle, cannonicalName = "") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 20
 
   override def tick(): Unit = {
     this.incrementDuration()
@@ -90,7 +90,7 @@ class TortoiseLifeStageHatchling(obj:Animal, lifecycle:LifeCycle) extends LifeSt
 
 class TortoiseLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_JUVENILE, obj, lifecycle, cannonicalName = "") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 20
 
   override def tick(): Unit = {
     this.incrementDuration()
@@ -129,7 +129,7 @@ class TortoiseLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeSta
 
 class TortoiseLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_ADULT, obj, lifecycle, cannonicalName = "") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 50
 
   override def tick(): Unit = {
     this.incrementDuration()

@@ -10,7 +10,7 @@ import scienceworld.struct.EnvObject
 // Baby stage
 class AnimalLifeStageBaby(obj:Animal, lifecycle:LifeCycle) extends LifeStage(AnimalLifeStage.ANIMAL_STAGE_BABY, obj, lifecycle) {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 20
 
   override def tick(): Unit = {
     this.incrementDuration()
@@ -49,7 +49,7 @@ class AnimalLifeStageBaby(obj:Animal, lifecycle:LifeCycle) extends LifeStage(Ani
 
 class AnimalLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage(AnimalLifeStage.ANIMAL_STAGE_JUVENILE, obj, lifecycle) {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 20
 
   override def tick(): Unit = {
     this.incrementDuration()
@@ -88,7 +88,7 @@ class AnimalLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage
 
 class AnimalLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(AnimalLifeStage.ANIMAL_STAGE_ADULT, obj, lifecycle) {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 50
 
   override def tick(): Unit = {
     this.incrementDuration()

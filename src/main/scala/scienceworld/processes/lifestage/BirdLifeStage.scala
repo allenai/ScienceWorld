@@ -12,7 +12,7 @@ import scienceworld.struct.EnvObject
 // Baby stage
 class BirdLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_EGG, obj, lifecycle, cannonicalName = "") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 20
 
   override def tick(): Unit = {
     this.incrementDuration()
@@ -51,7 +51,7 @@ class BirdLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLi
 
 class BirdLifeStageHatchling(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_HATCHLING, obj, lifecycle, cannonicalName = "") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 20
 
   override def tick(): Unit = {
     this.incrementDuration()
@@ -91,7 +91,7 @@ class BirdLifeStageHatchling(obj:Animal, lifecycle:LifeCycle) extends LifeStage(
 
 class BirdLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_JUVENILE, obj, lifecycle, cannonicalName = "") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 20
 
   override def tick(): Unit = {
     this.incrementDuration()
@@ -130,7 +130,7 @@ class BirdLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage(B
 
 class BirdLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_ADULT, obj, lifecycle, cannonicalName = "") {
   var ticksMeetingCriteria:Int = 0
-  val stageDuration:Int = 10
+  val stageDuration:Int = 50
 
   override def tick(): Unit = {
     this.incrementDuration()

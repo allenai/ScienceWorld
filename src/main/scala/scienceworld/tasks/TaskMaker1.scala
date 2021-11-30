@@ -2,7 +2,7 @@ package scienceworld.tasks
 
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.specifictasks.{TaskChangeOfState, TaskChemistryMix, TaskChemistryMixPaint, TaskElectricCircuit, TaskElectricalConductivity, TaskFindLivingNonLiving, TaskGrowPlant, TaskIdentifyLifeStages, TaskLifeSpan, TaskParametric}
+import scienceworld.tasks.specifictasks.{TaskChangeOfState, TaskChemistryMix, TaskChemistryMixPaint, TaskElectricCircuit, TaskElectricalConductivity, TaskFindLivingNonLiving, TaskGrowPlant, TaskIdentifyLifeStages1, TaskIdentifyLifeStages2, TaskLifeSpan, TaskParametric}
 
 import scala.collection.mutable
 
@@ -72,7 +72,8 @@ class TaskMaker1 {
     TaskChemistryMix.registerTasks(this)
     TaskChemistryMixPaint.registerTasks(this)
     TaskLifeSpan.registerTasks(this)
-    TaskIdentifyLifeStages.registerTasks(this)
+    TaskIdentifyLifeStages1.registerTasks(this)
+    TaskIdentifyLifeStages2.registerTasks(this)
   }
 
 

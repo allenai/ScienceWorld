@@ -3,8 +3,11 @@ package scienceworld.objects.livingthing.animals
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.processes.lifestage.{AnimalLifeStage, BirdLifeStage, ButterflyLifeStage, FrogLifeStage, TortoiseLifeStage}
 import scienceworld.properties.{LifePropertiesAnimal, LifePropertiesAnt, LifePropertiesBeaver, LifePropertiesBlueJay, LifePropertiesBrownBear, LifePropertiesButterfly, LifePropertiesChameleon, LifePropertiesChipmunk, LifePropertiesCommonToad, LifePropertiesCrocodile, LifePropertiesDove, LifePropertiesDragonfly, LifePropertiesElephant, LifePropertiesFrog, LifePropertiesGiantTortoise, LifePropertiesHedgehog, LifePropertiesMoth, LifePropertiesMouse, LifePropertiesParrot, LifePropertiesRabbit, LifePropertiesTurtle, LifePropertiesWolf}
+import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 import util.StringHelpers
+
+import scala.collection.mutable.ArrayBuffer
 
 class Animal extends LivingThing {
   this.name = "animal"
@@ -122,16 +125,59 @@ class GiantTortoise extends Animal {
   lifecycle = Some( TortoiseLifeStage.mkTortoiseLifeCycle(this) )
 }
 
+object GiantTortoise {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = TortoiseLifeStage.mkTortoiseLifeCycle(new Animal)     //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new GiantTortoise()                                    //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
+}
+
 class Turtle extends Animal {
   this.name = "turtle"
   this.propLife = Some( new LifePropertiesTurtle() )
   lifecycle = Some( TortoiseLifeStage.mkTortoiseLifeCycle(this) )
 }
 
+object Turtle {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = TortoiseLifeStage.mkTortoiseLifeCycle(new Animal)     //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new Turtle()                                           //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
+}
+
+
 class Parrot extends Animal {
   this.name = "parrot"
   this.propLife = Some( new LifePropertiesParrot() )
   lifecycle = Some( BirdLifeStage.mkBirdLifeCycle(this) )
+}
+
+object Parrot {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = BirdLifeStage.mkBirdLifeCycle(new Animal)           //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new Parrot()                                         //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
 }
 
 class Elephant extends Animal {
@@ -140,10 +186,38 @@ class Elephant extends Animal {
   lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )
 }
 
+object Elephant {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = AnimalLifeStage.mkAnimalLifeCycle(new Animal)         //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new Elephant()                                         //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
+}
+
 class Crocodile extends Animal {
   this.name = "crocodile"
   this.propLife = Some( new LifePropertiesCrocodile() )
   lifecycle = Some( TortoiseLifeStage.mkTortoiseLifeCycle(this) )
+}
+
+object Crocodile {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = TortoiseLifeStage.mkTortoiseLifeCycle(new Animal)      //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new Crocodile()                                         //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
 }
 
 class BrownBear extends Animal {
@@ -152,6 +226,19 @@ class BrownBear extends Animal {
   lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )
 }
 
+object BrownBear {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = AnimalLifeStage.mkAnimalLifeCycle(new Animal)          //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new BrownBear()                                         //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
+}
 
 class Beaver extends Animal {
   this.name = "beaver"
@@ -159,10 +246,38 @@ class Beaver extends Animal {
   lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )
 }
 
+object Beaver {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = AnimalLifeStage.mkAnimalLifeCycle(new Animal)          //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new Beaver()                                         //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
+}
+
 class Wolf extends Animal {
   this.name = "wolf"
   this.propLife = Some( new LifePropertiesWolf() )
   lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )
+}
+
+object Wolf {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = AnimalLifeStage.mkAnimalLifeCycle(new Animal)          //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new Wolf()                                         //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
 }
 
 class Chipmunk extends Animal {
@@ -175,6 +290,20 @@ class Toad extends Animal {
   this.name = "common toad"
   this.propLife = Some( new LifePropertiesCommonToad() )
   lifecycle = Some( FrogLifeStage.mkFrogLifeCycle(this) )
+}
+
+object Toad {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = FrogLifeStage.mkFrogLifeCycle(new Animal)          //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new Toad()                                         //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
 }
 
 class Rabbit extends Animal {
@@ -223,10 +352,39 @@ class Butterfly extends Animal {
   lifecycle = Some( ButterflyLifeStage.mkButterflyLifeCycle(this) )
 }
 
+object Butterfly {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = ButterflyLifeStage.mkButterflyLifeCycle(new Animal)          //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new Butterfly()                                         //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
+}
+
+
 class Moth extends Animal {
   this.name = "moth"
   this.propLife = Some( new LifePropertiesMoth() )
   lifecycle = Some( ButterflyLifeStage.mkButterflyLifeCycle(this) )
+}
+
+object Moth {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = ButterflyLifeStage.mkButterflyLifeCycle(new Animal)          //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new Moth()                                         //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
 }
 
 class Frog extends Animal {
@@ -235,6 +393,19 @@ class Frog extends Animal {
   lifecycle = Some( FrogLifeStage.mkFrogLifeCycle(this) )
 }
 
+object Frog {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = FrogLifeStage.mkFrogLifeCycle(new Animal)          //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new Frog()                                         //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
+}
 
 class Dove extends Animal {
   this.name = "dove"
@@ -242,8 +413,36 @@ class Dove extends Animal {
   lifecycle = Some( BirdLifeStage.mkBirdLifeCycle(this) )
 }
 
+object Dove {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = BirdLifeStage.mkBirdLifeCycle(new Animal)          //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new Dove()                                         //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
+}
+
 class BlueJay extends Animal {
   this.name = "blue jay"
   this.propLife = Some( new LifePropertiesBlueJay() )
   lifecycle = Some( BirdLifeStage.mkBirdLifeCycle(this) )
+}
+
+object BlueJay {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = BirdLifeStage.mkBirdLifeCycle(new Animal)          //##
+    for (lifestage <- lifecycle.stages) {
+      val animal = new BlueJay()                                         //##
+      animal.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(animal)
+    }
+    out.toArray
+  }
 }
