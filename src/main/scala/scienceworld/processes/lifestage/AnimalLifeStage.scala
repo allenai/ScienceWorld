@@ -173,6 +173,7 @@ object AnimalLifeStage {
 
     // TODO
     lifecycle.addStage( new AnimalLifeStageBaby(animal, lifecycle), isDefault = true )
+    lifecycle.addStage( new AnimalLifeStageJuvenile(animal, lifecycle) )
     lifecycle.addStage( new AnimalLifeStageAdult(animal, lifecycle) )
     lifecycle.addStage( new AnimalLifeStageDeath(animal, lifecycle) )
 
