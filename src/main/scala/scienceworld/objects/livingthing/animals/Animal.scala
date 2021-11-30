@@ -1,8 +1,8 @@
 package scienceworld.objects.livingthing.animals
 
 import scienceworld.objects.livingthing.LivingThing
-import scienceworld.processes.lifestage.AnimalLifeStage
-import scienceworld.properties.{LifePropertiesAnimal, LifePropertiesAnt, LifePropertiesBeaver, LifePropertiesBrownBear, LifePropertiesChameleon, LifePropertiesChipmunk, LifePropertiesCommonToad, LifePropertiesCrocodile, LifePropertiesDragonfly, LifePropertiesElephant, LifePropertiesGiantTortoise, LifePropertiesHedgehog, LifePropertiesMouse, LifePropertiesParrot, LifePropertiesRabbit, LifePropertiesWolf}
+import scienceworld.processes.lifestage.{AnimalLifeStage, ButterflyLifeStage}
+import scienceworld.properties.{LifePropertiesAnimal, LifePropertiesAnt, LifePropertiesBeaver, LifePropertiesBrownBear, LifePropertiesButterfly, LifePropertiesChameleon, LifePropertiesChipmunk, LifePropertiesCommonToad, LifePropertiesCrocodile, LifePropertiesDragonfly, LifePropertiesElephant, LifePropertiesGiantTortoise, LifePropertiesHedgehog, LifePropertiesMouse, LifePropertiesParrot, LifePropertiesRabbit, LifePropertiesWolf}
 import scienceworld.struct.EnvObject._
 import util.StringHelpers
 
@@ -41,6 +41,31 @@ class Animal extends LivingThing {
     super.tick()
   }
 
+  // Gets the cannonical name of the life form, given it's current life stage (e.g. baby, adult, etc), handling any special overrides that don't follow regular patterns (e.g. baby butterfly = caterpillar)
+  def getCannonicalName():String = {
+    // Check to make sure that this life form has a defined life cycle.
+    if (lifecycle.isEmpty) return this.name
+
+    // Check for cannonical name override
+    val curStage = lifecycle.get.getCurStage()
+    if (curStage.hasCannonicalName()) {
+      return curStage.getCannonicalName()
+    }
+
+    // If no cannonical name override, default to <stageName> + <lifeformName> pattern
+    if (propLife.isEmpty) return curStage.stageName + " " + this.name
+
+    return curStage.stageName + " " + propLife.get.lifeformType
+  }
+
+  override def getDescriptName(overrideName:String = ""):String = {
+    if (overrideName.length > 0) {
+      return super.getDescriptName(overrideName)
+    } else {
+      return super.getDescriptName(this.getCannonicalName())
+    }
+  }
+
   override def getReferents(): Set[String] = {
     Set("living thing", "organism", this.name, this.getDescriptName(), lifecycle.get.getCurStageName() + " " + this.name, lifecycle.get.getCurStageName() + " " + this.getDescriptName())
   }
@@ -50,12 +75,14 @@ class Animal extends LivingThing {
 
     // If dead, simplify the name
     if (propLife.get.isDead) {
-      os.append("a dead " + this.getDescriptName())
+      os.append("a " + this.getDescriptName())
       return os.toString()
     }
 
     // If alive, give a verbose name
-    os.append("a " + lifecycle.get.getCurStageName() + " " +  this.getDescriptName())
+    //os.append("a " + lifecycle.get.getCurStageName() + " " +  this.getDescriptName())
+    // This is now all handled in the getCannonicalName()/getDescriptName() functions
+    os.append("a " + this.getDescriptName())
     if (propLife.get.isSickly) os.append(" (that looks unwell)")
 
     /*
@@ -169,4 +196,13 @@ class Hedgehog extends Animal {
   this.name = "hedgehog"
   this.propLife = Some( new LifePropertiesHedgehog() )
   lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )
+}
+
+/*
+ * Animals with detailed life stages
+ */
+class Butterfly extends Animal {
+  this.name = "butterfly"
+  this.propLife = Some( new LifePropertiesButterfly() )
+  lifecycle = Some( ButterflyLifeStage.mkButterflyLifeCycle(this) )
 }

@@ -2,7 +2,7 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.livingthing.LivingThing
-import scienceworld.objects.livingthing.animals.{Ant, Beaver, BrownBear, Chameleon, Chipmunk, Crocodile, Dragonfly, Elephant, GiantTortoise, Hedgehog, Mouse, Parrot, Rabbit, Toad, Wolf}
+import scienceworld.objects.livingthing.animals.{Ant, Beaver, BrownBear, Butterfly, Chameleon, Chipmunk, Crocodile, Dragonfly, Elephant, GiantTortoise, Hedgehog, Mouse, Parrot, Rabbit, Toad, Wolf}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
@@ -22,6 +22,7 @@ class TaskIdentifyLifeStages(val mode:String = MODE_LIFESTAGES) extends TaskPara
   for (location <- locations) {
 
     animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Elephant(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Butterfly(), location = location) )
     animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new GiantTortoise(), location = location) )
     animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Parrot(), location = location) )
 
@@ -94,7 +95,9 @@ class TaskIdentifyLifeStages(val mode:String = MODE_LIFESTAGES) extends TaskPara
       if (stage4.isDefined) gSequence.append(new GoalFindLivingThingStage(livingThingType = animalName.get, lifeStage = stage4.get, failIfWrong = true, _defocusOnSuccess = true))
       if (stage5.isDefined) gSequence.append(new GoalFindLivingThingStage(livingThingType = animalName.get, lifeStage = stage5.get, failIfWrong = true, _defocusOnSuccess = true))
 
-      description = "Your task is to focus on the life stages of the " + animalName.get + ", starting from earliest to latest." // TODO: Better description?
+      val numLifeStages = gSequence.length
+
+      description = "Your task is to focus on the " + numLifeStages + " life stages of the " + animalName.get + ", starting from earliest to latest." // TODO: Better description?
 
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
@@ -137,15 +140,12 @@ object TaskIdentifyLifeStages {
 
     // Get living thing life stages
     var lifestages = livingThing.lifecycle.get.stages.map(_.stageName)
-    // Remove the last life stage, since it should always assumed to be death
-    lifestages = lifestages.slice(0, lifestages.size - 1)
-    // Create array of stages
+    lifestages = lifestages.slice(0, lifestages.length - 1)               // Remove identifying the last life stage from the task, since it's usually always 'dead'
     val stageKeys = new ArrayBuffer[TaskModifier]
     for (i <- 0 until lifestages.length) {
       val lifestageName = lifestages(i)
-      stageKeys.append(new TaskValueStr(key = "stage" + (i+1), value = lifestageName))
-      println ("stage" + i + "\t" + lifestageName)
-
+      stageKeys.append(new TaskValueStr(key = "stage" + (i + 1), value = lifestageName))
+      println("stage" + i + "\t" + lifestageName)
     }
 
     // Create task modifier

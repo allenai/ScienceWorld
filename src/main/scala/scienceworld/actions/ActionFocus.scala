@@ -26,7 +26,7 @@ class ActionFocus(action:ActionRequestDef, assignments:Map[String, EnvObject], o
     objMonitor.clearMonitoredObjects()
     objMonitor.addMonitor(obj)
 
-    return ("You focus on the " + obj.name + ".", true)
+    return ("You focus on the " + obj.getDescriptName() + ".", true)
   }
 
 }

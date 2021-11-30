@@ -152,5 +152,8 @@ class LifePropertiesAnt extends LifePropertiesAnimal {
   this.lifespanTypical      = 0.1f
 }
 
-
+class LifePropertiesButterfly extends LifePropertiesAnimal {
+  this.lifeformType         = "butterfly"
+  this.lifespanTypical      = 0.1f
+}
 

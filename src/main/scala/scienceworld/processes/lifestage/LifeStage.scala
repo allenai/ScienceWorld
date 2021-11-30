@@ -59,7 +59,8 @@ class LifeCycle(lifeCycleName:String = "life cycle of the X organism") {
 /*
  * Life stage (prototype)
  */
-class LifeStage(val stageName: String, obj:EnvObject, lifecycle:LifeCycle) {
+// If cannonicalName is empty, then defaults to e.g. 'stageName' + 'animalName' (e.g. 'baby elephant').  Cannonical name is for special cases (e.g. 'baby butterfly' is a caterpillar).
+class LifeStage(val stageName: String, obj:EnvObject, lifecycle:LifeCycle, cannonicalName:String = "") {
   // Is this life stage completed?
   private var _isCompleted: Boolean = false
   // How many ticks has this life stage been active so far (if not completed), or total (if completed)?
@@ -69,6 +70,12 @@ class LifeStage(val stageName: String, obj:EnvObject, lifecycle:LifeCycle) {
   def isCompleted(): Boolean = this._isCompleted
   def duration(): Int = this.durationTicks
   def incrementDuration() { this.durationTicks += 1 }
+
+  def getCannonicalName():String = this.cannonicalName
+  def hasCannonicalName():Boolean = {
+    if (this.cannonicalName.length > 0) return true
+    return false
+  }
 
   // Tick
   def tick(): Unit = {
