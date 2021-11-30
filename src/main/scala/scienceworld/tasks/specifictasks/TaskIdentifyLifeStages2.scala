@@ -19,8 +19,6 @@ class TaskIdentifyLifeStages2(val mode:String = MODE_LIFESTAGES) extends TaskPar
 
   val locations = Array("outside")
 
-  // TODO: Add distractor animals
-
   // Variation 1: Which seeds to grow
   val numDistractors = 2
   val animalsAndStages = new ArrayBuffer[ Array[TaskModifier] ]()
@@ -114,7 +112,7 @@ class TaskIdentifyLifeStages2(val mode:String = MODE_LIFESTAGES) extends TaskPar
 
       val numLifeStages = gSequence.length
 
-      description = "Your task is to focus on the " + numLifeStages + " life stages of the " + animalName.get + ", starting from earliest to latest." // TODO: Better description?
+      description = "Your task is to focus on the life stages of the " + animalName.get + ", starting from earliest to latest." // TODO: Better description?
 
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
