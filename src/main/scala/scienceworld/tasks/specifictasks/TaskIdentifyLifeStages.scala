@@ -2,7 +2,7 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.livingthing.LivingThing
-import scienceworld.objects.livingthing.animals.{Ant, Beaver, BrownBear, Butterfly, Chameleon, Chipmunk, Crocodile, Dragonfly, Elephant, GiantTortoise, Hedgehog, Mouse, Parrot, Rabbit, Toad, Wolf}
+import scienceworld.objects.livingthing.animals.{Ant, Beaver, BlueJay, BrownBear, Butterfly, Chameleon, Chipmunk, Crocodile, Dove, Dragonfly, Elephant, Frog, GiantTortoise, Hedgehog, Moth, Mouse, Parrot, Rabbit, Toad, Turtle, Wolf}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
@@ -17,15 +17,29 @@ class TaskIdentifyLifeStages(val mode:String = MODE_LIFESTAGES) extends TaskPara
 
   val locations = Array("outside")
 
+  // TODO: Add distractor animals
+
   // Variation 1: Which seeds to grow
   val animalsAndStages = new ArrayBuffer[ Array[TaskModifier] ]()
   for (location <- locations) {
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Butterfly(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Moth(), location = location) )
+
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Frog(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Toad(), location = location) )
+
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new GiantTortoise(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Turtle(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Crocodile(), location = location) )
+
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Parrot(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Dove(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new BlueJay(), location = location) )
 
     animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Elephant(), location = location) )
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Butterfly(), location = location) )
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new GiantTortoise(), location = location) )
-    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Parrot(), location = location) )
-
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new BrownBear(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Beaver(), location = location) )
+    animalsAndStages.append( TaskIdentifyLifeStages.mkTaskVariation(livingThing = new Wolf(), location = location) )
   }
 
   // Combinations

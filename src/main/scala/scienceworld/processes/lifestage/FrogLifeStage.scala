@@ -4,11 +4,12 @@ import scienceworld.objects.livingthing.animals.Animal
 import scienceworld.objects.livingthing.plant.{Flower, Plant}
 import scienceworld.struct.EnvObject
 
+
 /*
- * Animal Life Stages
+ * Frog Life Stages
  */
 // Baby stage
-class AnimalLifeStageBaby(obj:Animal, lifecycle:LifeCycle) extends LifeStage(AnimalLifeStage.ANIMAL_STAGE_BABY, obj, lifecycle) {
+class FrogLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_EGG, obj, lifecycle, cannonicalName = "frog egg") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 10
 
@@ -40,14 +41,14 @@ class AnimalLifeStageBaby(obj:Animal, lifecycle:LifeCycle) extends LifeStage(Ani
       */
 
       // Move onto next stage
-      lifecycle.changeStage(AnimalLifeStage.ANIMAL_STAGE_JUVENILE)
+      lifecycle.changeStage(FrogLifeStage.FROG_STAGE_TADPOLE)
     }
 
   }
 
 }
 
-class AnimalLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage(AnimalLifeStage.ANIMAL_STAGE_JUVENILE, obj, lifecycle) {
+class FrogLifeStageTadpole(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_TADPOLE, obj, lifecycle, cannonicalName = "tadpole") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 10
 
@@ -79,14 +80,15 @@ class AnimalLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage
       */
 
       // Move onto next stage
-      lifecycle.changeStage(AnimalLifeStage.ANIMAL_STAGE_ADULT)
+      lifecycle.changeStage(FrogLifeStage.FROG_STAGE_ADULT)
     }
 
   }
 
 }
 
-class AnimalLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(AnimalLifeStage.ANIMAL_STAGE_ADULT, obj, lifecycle) {
+
+class FrogLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_ADULT, obj, lifecycle, cannonicalName = "adult frog") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 10
 
@@ -118,15 +120,16 @@ class AnimalLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(An
       */
 
       // Move onto next stage
-      lifecycle.changeStage(AnimalLifeStage.ANIMAL_STAGE_DEATH)
+      lifecycle.changeStage(FrogLifeStage.FROG_STAGE_DEATH)
     }
 
   }
 
 }
 
-// Seed stage
-class AnimalLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(AnimalLifeStage.ANIMAL_STAGE_DEATH, obj, lifecycle) {
+
+
+class FrogLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_DEATH, obj, lifecycle, cannonicalName = "dead frog") {
   var ticksMeetingCriteria:Int = 0
 
   override def tick(): Unit = {
@@ -152,29 +155,30 @@ class AnimalLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(An
 }
 
 
-object AnimalLifeStage {
+object FrogLifeStage {
   // Plant life cycle
-  val ANIMAL_STAGE_BABY           = "baby"
-  val ANIMAL_STAGE_JUVENILE       = "juvenile"
-  val ANIMAL_STAGE_ADULT          = "adult"
-  val ANIMAL_STAGE_DEATH          = "dead"
+  val FROG_STAGE_EGG         = "egg"
+  val FROG_STAGE_TADPOLE     = "tadpole"
+  val FROG_STAGE_ADULT       = "adult"
+  val FROG_STAGE_DEATH       = "death"
 
 
   // Check to see if a given lifecycle is in the seed stage
-  def isBaby(in:LifeCycle):Boolean = {
-    if (in.getCurStageName() == ANIMAL_STAGE_BABY) return true
+  def isEgg(in:LifeCycle):Boolean = {
+    if (in.getCurStageName() == FROG_STAGE_EGG) return true
     // Otherwise
     return false
   }
 
   // Make a default plant life cycle
-  def mkAnimalLifeCycle(animal:Animal):LifeCycle = {
-    val lifecycle = new LifeCycle("animal life cycle")
+  def mkFrogLifeCycle(animal:Animal):LifeCycle = {
+    val lifecycle = new LifeCycle("frog life cycle")
 
     // TODO
-    lifecycle.addStage( new AnimalLifeStageBaby(animal, lifecycle), isDefault = true )
-    lifecycle.addStage( new AnimalLifeStageAdult(animal, lifecycle) )
-    lifecycle.addStage( new AnimalLifeStageDeath(animal, lifecycle) )
+    lifecycle.addStage( new FrogLifeStageEgg(animal, lifecycle), isDefault = true )
+    lifecycle.addStage( new FrogLifeStageTadpole(animal, lifecycle) )
+    lifecycle.addStage( new FrogLifeStageAdult(animal, lifecycle) )
+    lifecycle.addStage( new FrogLifeStageDeath(animal, lifecycle) )
 
     // Return
     lifecycle

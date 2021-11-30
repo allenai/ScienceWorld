@@ -1,8 +1,8 @@
 package scienceworld.objects.livingthing.animals
 
 import scienceworld.objects.livingthing.LivingThing
-import scienceworld.processes.lifestage.{AnimalLifeStage, ButterflyLifeStage}
-import scienceworld.properties.{LifePropertiesAnimal, LifePropertiesAnt, LifePropertiesBeaver, LifePropertiesBrownBear, LifePropertiesButterfly, LifePropertiesChameleon, LifePropertiesChipmunk, LifePropertiesCommonToad, LifePropertiesCrocodile, LifePropertiesDragonfly, LifePropertiesElephant, LifePropertiesGiantTortoise, LifePropertiesHedgehog, LifePropertiesMouse, LifePropertiesParrot, LifePropertiesRabbit, LifePropertiesWolf}
+import scienceworld.processes.lifestage.{AnimalLifeStage, BirdLifeStage, ButterflyLifeStage, FrogLifeStage, TortoiseLifeStage}
+import scienceworld.properties.{LifePropertiesAnimal, LifePropertiesAnt, LifePropertiesBeaver, LifePropertiesBlueJay, LifePropertiesBrownBear, LifePropertiesButterfly, LifePropertiesChameleon, LifePropertiesChipmunk, LifePropertiesCommonToad, LifePropertiesCrocodile, LifePropertiesDove, LifePropertiesDragonfly, LifePropertiesElephant, LifePropertiesFrog, LifePropertiesGiantTortoise, LifePropertiesHedgehog, LifePropertiesMoth, LifePropertiesMouse, LifePropertiesParrot, LifePropertiesRabbit, LifePropertiesTurtle, LifePropertiesWolf}
 import scienceworld.struct.EnvObject._
 import util.StringHelpers
 
@@ -53,9 +53,19 @@ class Animal extends LivingThing {
     }
 
     // If no cannonical name override, default to <stageName> + <lifeformName> pattern
-    if (propLife.isEmpty) return curStage.stageName + " " + this.name
+    if (propLife.isEmpty) {
+      if (curStage.stageName != "egg") {
+        return curStage.stageName + " " + this.name
+      } else {
+        return this.name + " " + curStage.stageName
+      }
+    }
 
-    return curStage.stageName + " " + propLife.get.lifeformType
+    if (curStage.stageName != "egg") {
+      return curStage.stageName + " " + propLife.get.lifeformType
+    } else {
+      return propLife.get.lifeformType + " " + curStage.stageName
+    }
   }
 
   override def getDescriptName(overrideName:String = ""):String = {
@@ -109,13 +119,19 @@ class Animal extends LivingThing {
 class GiantTortoise extends Animal {
   this.name = "giant tortoise"
   this.propLife = Some( new LifePropertiesGiantTortoise() )
-  lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )
+  lifecycle = Some( TortoiseLifeStage.mkTortoiseLifeCycle(this) )
+}
+
+class Turtle extends Animal {
+  this.name = "turtle"
+  this.propLife = Some( new LifePropertiesTurtle() )
+  lifecycle = Some( TortoiseLifeStage.mkTortoiseLifeCycle(this) )
 }
 
 class Parrot extends Animal {
   this.name = "parrot"
   this.propLife = Some( new LifePropertiesParrot() )
-  lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )
+  lifecycle = Some( BirdLifeStage.mkBirdLifeCycle(this) )
 }
 
 class Elephant extends Animal {
@@ -127,7 +143,7 @@ class Elephant extends Animal {
 class Crocodile extends Animal {
   this.name = "crocodile"
   this.propLife = Some( new LifePropertiesCrocodile() )
-  lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )
+  lifecycle = Some( TortoiseLifeStage.mkTortoiseLifeCycle(this) )
 }
 
 class BrownBear extends Animal {
@@ -158,7 +174,7 @@ class Chipmunk extends Animal {
 class Toad extends Animal {
   this.name = "common toad"
   this.propLife = Some( new LifePropertiesCommonToad() )
-  lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )
+  lifecycle = Some( FrogLifeStage.mkFrogLifeCycle(this) )
 }
 
 class Rabbit extends Animal {
@@ -177,19 +193,19 @@ class Mouse extends Animal {
 class Chameleon extends Animal {
   this.name = "chameleon"
   this.propLife = Some( new LifePropertiesChameleon() )
-  lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )
+  lifecycle = Some( TortoiseLifeStage.mkTortoiseLifeCycle(this) )
 }
 
 class Dragonfly extends Animal {
   this.name = "dragonfly"
   this.propLife = Some( new LifePropertiesDragonfly() )
-  lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )
+  lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )     // TODO
 }
 
 class Ant extends Animal {
   this.name = "ant"
   this.propLife = Some( new LifePropertiesAnt() )
-  lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )
+  lifecycle = Some( AnimalLifeStage.mkAnimalLifeCycle(this) )     // TODO
 }
 
 class Hedgehog extends Animal {
@@ -205,4 +221,29 @@ class Butterfly extends Animal {
   this.name = "butterfly"
   this.propLife = Some( new LifePropertiesButterfly() )
   lifecycle = Some( ButterflyLifeStage.mkButterflyLifeCycle(this) )
+}
+
+class Moth extends Animal {
+  this.name = "moth"
+  this.propLife = Some( new LifePropertiesMoth() )
+  lifecycle = Some( ButterflyLifeStage.mkButterflyLifeCycle(this) )
+}
+
+class Frog extends Animal {
+  this.name = "frog"
+  this.propLife = Some( new LifePropertiesFrog() )
+  lifecycle = Some( FrogLifeStage.mkFrogLifeCycle(this) )
+}
+
+
+class Dove extends Animal {
+  this.name = "dove"
+  this.propLife = Some( new LifePropertiesDove() )
+  lifecycle = Some( BirdLifeStage.mkBirdLifeCycle(this) )
+}
+
+class BlueJay extends Animal {
+  this.name = "blue jay"
+  this.propLife = Some( new LifePropertiesBlueJay() )
+  lifecycle = Some( BirdLifeStage.mkBirdLifeCycle(this) )
 }

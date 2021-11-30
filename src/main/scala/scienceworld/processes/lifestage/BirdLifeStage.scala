@@ -4,11 +4,13 @@ import scienceworld.objects.livingthing.animals.Animal
 import scienceworld.objects.livingthing.plant.{Flower, Plant}
 import scienceworld.struct.EnvObject
 
+
+
 /*
- * Animal Life Stages
+ * Tortoise Life Stages
  */
 // Baby stage
-class AnimalLifeStageBaby(obj:Animal, lifecycle:LifeCycle) extends LifeStage(AnimalLifeStage.ANIMAL_STAGE_BABY, obj, lifecycle) {
+class BirdLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_EGG, obj, lifecycle, cannonicalName = "") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 10
 
@@ -40,14 +42,14 @@ class AnimalLifeStageBaby(obj:Animal, lifecycle:LifeCycle) extends LifeStage(Ani
       */
 
       // Move onto next stage
-      lifecycle.changeStage(AnimalLifeStage.ANIMAL_STAGE_JUVENILE)
+      lifecycle.changeStage(BirdLifeStage.BIRD_STAGE_HATCHLING)
     }
 
   }
 
 }
 
-class AnimalLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage(AnimalLifeStage.ANIMAL_STAGE_JUVENILE, obj, lifecycle) {
+class BirdLifeStageHatchling(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_HATCHLING, obj, lifecycle, cannonicalName = "") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 10
 
@@ -79,14 +81,15 @@ class AnimalLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage
       */
 
       // Move onto next stage
-      lifecycle.changeStage(AnimalLifeStage.ANIMAL_STAGE_ADULT)
+      lifecycle.changeStage(BirdLifeStage.BIRD_STAGE_JUVENILE)
     }
 
   }
 
 }
 
-class AnimalLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(AnimalLifeStage.ANIMAL_STAGE_ADULT, obj, lifecycle) {
+
+class BirdLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_JUVENILE, obj, lifecycle, cannonicalName = "") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 10
 
@@ -118,15 +121,53 @@ class AnimalLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(An
       */
 
       // Move onto next stage
-      lifecycle.changeStage(AnimalLifeStage.ANIMAL_STAGE_DEATH)
+      lifecycle.changeStage(BirdLifeStage.BIRD_STAGE_ADULT)
     }
 
   }
 
 }
 
-// Seed stage
-class AnimalLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(AnimalLifeStage.ANIMAL_STAGE_DEATH, obj, lifecycle) {
+class BirdLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_ADULT, obj, lifecycle, cannonicalName = "") {
+  var ticksMeetingCriteria:Int = 0
+  val stageDuration:Int = 10
+
+  override def tick(): Unit = {
+    this.incrementDuration()
+
+    /*
+    // Check to see if the container that the seed is in has water
+    val (hasWater, objWater) = this.checkContainerHas("water")
+    if (!hasWater) {
+      println ("* Plant (" + obj.name + " / " + this.stageName + "): Criteria not met: Missing water")
+      return
+    }
+
+    // Check to see if the container the seed is in has soil
+    val (hasSoil, objSoil) = this.checkContainerHas("soil")
+    if (!hasSoil) {
+      println ("* Plant (" + obj.name + " / " + this.stageName + "): Criteria not met: Missing soil")
+      return
+    }
+    */
+
+    ticksMeetingCriteria += 1
+    if (ticksMeetingCriteria >= stageDuration) {
+      /*
+      println ("* Plant (" + obj.name + " / " + this.stageName + "): Criteria met: (ticks: " + ticksMeetingCriteria + ")")
+      // Consume the water (delete it from the simulation)
+      objWater.get.delete()
+      */
+
+      // Move onto next stage
+      lifecycle.changeStage(BirdLifeStage.BIRD_STAGE_DEATH)
+    }
+
+  }
+
+}
+
+class BirdLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_DEATH, obj, lifecycle, cannonicalName = "") {
   var ticksMeetingCriteria:Int = 0
 
   override def tick(): Unit = {
@@ -152,31 +193,35 @@ class AnimalLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(An
 }
 
 
-object AnimalLifeStage {
+object BirdLifeStage {
   // Plant life cycle
-  val ANIMAL_STAGE_BABY           = "baby"
-  val ANIMAL_STAGE_JUVENILE       = "juvenile"
-  val ANIMAL_STAGE_ADULT          = "adult"
-  val ANIMAL_STAGE_DEATH          = "dead"
+  val BIRD_STAGE_EGG         = "egg"
+  val BIRD_STAGE_HATCHLING   = "hatchling"
+  val BIRD_STAGE_JUVENILE    = "juvenile"
+  val BIRD_STAGE_ADULT       = "adult"
+  val BIRD_STAGE_DEATH       = "dead"
 
 
   // Check to see if a given lifecycle is in the seed stage
-  def isBaby(in:LifeCycle):Boolean = {
-    if (in.getCurStageName() == ANIMAL_STAGE_BABY) return true
+  def isEgg(in:LifeCycle):Boolean = {
+    if (in.getCurStageName() == BIRD_STAGE_EGG) return true
     // Otherwise
     return false
   }
 
   // Make a default plant life cycle
-  def mkAnimalLifeCycle(animal:Animal):LifeCycle = {
-    val lifecycle = new LifeCycle("animal life cycle")
+  def mkBirdLifeCycle(animal:Animal):LifeCycle = {
+    val lifecycle = new LifeCycle("bird life cycle")
 
     // TODO
-    lifecycle.addStage( new AnimalLifeStageBaby(animal, lifecycle), isDefault = true )
-    lifecycle.addStage( new AnimalLifeStageAdult(animal, lifecycle) )
-    lifecycle.addStage( new AnimalLifeStageDeath(animal, lifecycle) )
+    lifecycle.addStage( new BirdLifeStageEgg(animal, lifecycle), isDefault = true )
+    lifecycle.addStage( new BirdLifeStageHatchling(animal, lifecycle) )
+    lifecycle.addStage( new BirdLifeStageJuvenile(animal, lifecycle) )
+    lifecycle.addStage( new BirdLifeStageAdult(animal, lifecycle) )
+    lifecycle.addStage( new BirdLifeStageDeath(animal, lifecycle) )
 
     // Return
     lifecycle
   }
 }
+
