@@ -75,7 +75,7 @@ def randomModel(jarPath:str):
     score = 0.0
     isCompleted = False
     curIter = 0
-    maxIter = 2
+    maxIter = 1000
 
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands) and (isCompleted == False) and (curIter < maxIter):
