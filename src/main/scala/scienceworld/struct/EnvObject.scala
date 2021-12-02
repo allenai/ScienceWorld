@@ -82,10 +82,28 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     this.portals.remove(portalIn)
   }
 
-  def getPortals():Set[Portal] = this.portals.toSet
+  def getPortals(includeHidden:Boolean = true):Set[Portal] = {
+    if (includeHidden) {
+      return this.portals.toSet
+    } else {
+      val out = mutable.Set[Portal]()
+      for (p <- this.portals) {
+        if (!p.isHidden()) out.add(p)
+      }
+      return out.toSet
+    }
+  }
 
   // Get both portals and objects
-  def getContainedObjectsAndPortals():Set[EnvObject] = (this.containedObjects ++ this.portals).toSet
+  def getContainedObjectsAndPortals(includeHidden:Boolean = true):Set[EnvObject] = {
+    if (includeHidden) {
+      return (this.containedObjects ++ this.portals).toSet
+    } else {
+      this.getContainedObjectsNotHidden() ++ this.getPortals()
+    }
+
+  }
+
 
   def getContainedObjectsAndPortalsRecursive():Set[EnvObject] = {
     var out = mutable.Set[EnvObject]()

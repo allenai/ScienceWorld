@@ -8,7 +8,7 @@ import scienceworld.objects.electricalcomponent.{Battery, LightBulb, SolarPanel,
 import scienceworld.objects.environmentoutside.{FirePit, Fountain}
 import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree, Plant, Soil}
 import scienceworld.objects.location.{Location, Outside, Room, Universe}
-import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
+import scienceworld.objects.misc.{ForkMetal, ForkPlastic, InclinedPlane, Picture}
 import scienceworld.objects.portal.Door
 import scienceworld.objects.substance.food.{Apple, Banana, Orange, OrangeJuice, Potato}
 import scienceworld.objects.substance.paint.{BluePaint, GreenPaint, OrangePaint, RedPaint, VioletPaint, YellowPaint}
@@ -259,6 +259,10 @@ object RoomMaker {
     room.addObject( new AnswerBox("green") )
     room.addObject( new AnswerBox("red") )
     */
+
+    //##
+    val inclinedPlane = new InclinedPlane()
+    room.addObject(inclinedPlane)
 
 
 
