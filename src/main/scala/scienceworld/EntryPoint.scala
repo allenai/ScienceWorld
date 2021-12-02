@@ -9,7 +9,7 @@ import scienceworld.input.{ActionDefinitions, ActionHandler, InputParser}
 import scienceworld.objects.substance.food.Apple
 import scienceworld.properties.BlackPaintProp
 import scienceworld.runtime.AgentInterface
-import scienceworld.tasks.{Task, TaskMaker, TaskMaker1}
+import scienceworld.tasks.{Task, TaskMaker1}
 import scienceworld.tasks.goals.ObjMonitor
 import scienceworld.tasks.specifictasks.TaskChangeOfState
 import scienceworld.tasks.specifictasks.TaskChangeOfState.MODE_MELT

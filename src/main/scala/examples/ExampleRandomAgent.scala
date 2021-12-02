@@ -16,8 +16,16 @@ object ExampleRandomAgent {
     val interface = new PythonInterface()
 
     // Create environment
+    // Get a task name
     val taskNames = interface.getTaskNames().asScala.toList
-    interface.load(taskNames(0))
+    val taskName = taskNames(0)
+
+    // Choose a variation
+    val maxVariations = interface.getTaskMaxVariations(taskName)
+    val variationIdx = Random.nextInt(maxVariations)
+
+    // Load the task/variation
+    interface.load(taskName, variationIdx)
 
     // Get reference to AgentInterface
     val agentInterface = interface.agentInterface
