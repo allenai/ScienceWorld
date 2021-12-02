@@ -1,14 +1,15 @@
 package scienceworld.objects.misc
 
-import scienceworld.properties.{IsContainer, IsOpenUnclosableContainer, SteelProp}
+import scienceworld.properties.{IsContainer, IsOpenUnclosableContainer, MaterialProperties, SteelProp}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject.MODE_CURSORY_DETAIL
 import util.StringHelpers
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 
-class InclinedPlane (val angleDeg:Double = 45.0f) extends EnvObject {
+class InclinedPlane (val angleDeg:Double = 45.0f, val surfaceMaterial:MaterialProperties = new SteelProp() ) extends EnvObject {
   this.name = "inclined plane"
   this.propContainer = Some(new IsOpenUnclosableContainer())
   this.propMaterial = Some(new SteelProp())
@@ -34,7 +35,7 @@ class InclinedPlane (val angleDeg:Double = 45.0f) extends EnvObject {
   }
 
   def slideObjectDownPlane(obj:EnvObject): Unit = {
-    val planeFriction:Double = 0.50f
+    val planeMaterialFriction:Double = 0.50f
 
     // Check that the object is on the plane
     if (!normalizedLocations.contains(obj.uuid)) return
@@ -63,7 +64,7 @@ class InclinedPlane (val angleDeg:Double = 45.0f) extends EnvObject {
     // Pretend that speed is constant instead of accelerating
 
     val oldPosition = normalizedLocations(obj.uuid)
-    val delta = forceDown
+    val delta = (forceDown * planeMaterialFriction)
     val newPosition = math.max(oldPosition - delta, 0.0f)     // Calculate new position.  If less than zero, set to zero
     normalizedLocations(obj.uuid) = newPosition
 
@@ -98,27 +99,31 @@ class InclinedPlane (val angleDeg:Double = 45.0f) extends EnvObject {
   override def getDescription(mode:Int): String = {
     val containedObjects = this.getContainedObjectsAndPortals(includeHidden = false)
     if (containedObjects.size == 0) {
-      return "an empty " + this.getDescriptName()
+      return "an " + this.getDescriptName() + " with a " + surfaceMaterial.substanceName + " surface "
     } else {
       //return "a " + this.getDescriptName() + " (containing " + StringHelpers.objectListToStringDescription(containedObjects, this, mode=MODE_CURSORY_DETAIL, multiline = false) + ")"
       val os = new StringBuilder()
-      os.append("a " + this.getDescriptName() + ", with: ")
+
+      os.append("an " + this.getDescriptName() + " with a " + surfaceMaterial.substanceName + " surface, with: ")
+      val objDescList = new ArrayBuffer[String]
       for (cObj <- containedObjects) {
         val objPosition = this.getObjectPositionOnPlane(cObj)
-        os.append(" a " + cObj.getDescriptName())
+        val objStr = new StringBuilder
+        objStr.append(" a " + cObj.getDescriptName())
         if (objPosition.isDefined) {
           if (objPosition.get == 0.0f) {
-            os.append(" at the bottom of the plane")
+            objStr.append(" at the bottom of the plane")
           } else if (objPosition.get >= 0.99f) {
-            os.append(" at the top of the plane")
+            objStr.append(" at the top of the plane")
           } else {
             val percentDownPlane = 100 - (100 * objPosition.get)
-
-
-            os.append(" approximately " + percentDownPlane.formatted("%3.0f").trim() + "%" + " down the plane\n")
+            objStr.append(" approximately " + percentDownPlane.formatted("%3.0f").trim() + "%" + " down the plane")
           }
         }
+        objDescList.append(objStr.toString())
       }
+
+      os.append(objDescList.mkString(","))
 
       os.toString()
     }
