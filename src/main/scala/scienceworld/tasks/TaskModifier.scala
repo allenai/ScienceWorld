@@ -28,7 +28,7 @@ trait TaskModifier {
 // (c) if generation is required, what room to generate it in (set to "" for n/a)
 // (d) if generation if required, what container name(s) are valid to place it into (e.g. "desk", "table").  If blank, it will be placed in the root container (e.g. the 'floor')
 // (e) generateNear: If non-zero, it will generate the object within 'generateNear' steps of the original location.  e.g. if the generation location is 'kitchen', and generateNear is 2, then the object could be generated in (e.g.) the hallway or bathroom, but not a far-off location.
-class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roomToGenerateIn:String, val possibleContainerNames:Array[String], val generateNear:Int=0, val disableRecursiveCheck:Boolean = false) extends TaskModifier {
+class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roomToGenerateIn:String, val possibleContainerNames:Array[String], val generateNear:Int=0, val disableRecursiveCheck:Boolean = false, forceAdd:Boolean = false) extends TaskModifier {
   // Does this task object need to be generated in the environment?
   val needsToBeGenerated:Boolean = exampleInstance.isDefined
 
@@ -62,7 +62,7 @@ class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roo
             if (cObj.name == name) {
               // An existing object with this name has been found -- exit
               println("### TaskObject: Existing object with that name (" + name + ") has been found in container (" + obj.name + ")")
-              return true
+              if (!forceAdd) return true
             }
           }
         } else {
@@ -83,7 +83,7 @@ class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roo
                 if (ccObj.name == name) {
                   // An existing object with this name has been found -- exit
                   println("### TaskObject: Existing object with that name (" + name + ") has been found in container (" + ccObj.name + ")")
-                  return true
+                  if (!forceAdd) return true
                 }
               }
             }
