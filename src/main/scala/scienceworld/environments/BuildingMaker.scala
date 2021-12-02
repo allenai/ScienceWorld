@@ -3,7 +3,7 @@ package scienceworld.environments
 import scienceworld.objects.livingthing.animals.{Animal, Bee}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, GlassJar, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, SteelTable, WoodTable}
-import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, Stove, Thermometer, Toilet}
+import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, StopWatch, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, SolarPanel, Switch, Wire}
 import scienceworld.objects.environmentoutside.{FirePit, Fountain}
 import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree, Plant, Soil}
@@ -199,6 +199,7 @@ object RoomMaker {
     // Soap
     room.addObject(new Soap())
 
+    room.addObject(new StopWatch())
 
     // Return
     room

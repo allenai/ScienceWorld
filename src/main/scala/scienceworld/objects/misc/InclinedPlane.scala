@@ -1,6 +1,6 @@
 package scienceworld.objects.misc
 
-import scienceworld.properties.{IsContainer, IsOpenUnclosableContainer}
+import scienceworld.properties.{IsContainer, IsOpenUnclosableContainer, SteelProp}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject.MODE_CURSORY_DETAIL
 import util.StringHelpers
@@ -11,6 +11,7 @@ import scala.collection.mutable
 class InclinedPlane (val angleDeg:Double = 45.0f) extends EnvObject {
   this.name = "inclined plane"
   this.propContainer = Some(new IsOpenUnclosableContainer())
+  this.propMaterial = Some(new SteelProp())
 
   // Inclined plane variables
   val planeRun = 1.0f                                                     // 1 meter run
@@ -38,6 +39,20 @@ class InclinedPlane (val angleDeg:Double = 45.0f) extends EnvObject {
     // Check that the object is on the plane
     if (!normalizedLocations.contains(obj.uuid)) return
 
+    // Change sliding behavior based on state of matter (if defined)
+    if (obj.propMaterial.isDefined) {
+      if (obj.propMaterial.get.stateOfMatter == "liquid") {
+        // Liquid -- move to the bottom of the ramp.
+        normalizedLocations(obj.uuid) = 0.0
+        return
+      } else if (obj.propMaterial.get.stateOfMatter == "gas") {
+        // Gas -- move to the top of the ramp.
+        normalizedLocations(obj.uuid) = 1.0
+        return
+      }
+    }
+    // Other: Solid (normal case) or undefined (assume solid)
+
     // Check that object isn't already at the bottom of the plane
     if (normalizedLocations(obj.uuid) <= 0) return
 
@@ -51,8 +66,6 @@ class InclinedPlane (val angleDeg:Double = 45.0f) extends EnvObject {
     val delta = forceDown
     val newPosition = math.max(oldPosition - delta, 0.0f)     // Calculate new position.  If less than zero, set to zero
     normalizedLocations(obj.uuid) = newPosition
-
-    println("OldPosition: " + oldPosition + "  delta: " + delta + "  newPosition: " + newPosition)
 
   }
 
@@ -79,7 +92,7 @@ class InclinedPlane (val angleDeg:Double = 45.0f) extends EnvObject {
    */
 
   override def getReferents(): Set[String] = {
-    Set("inclined plane", this.name, this.getDescriptName())
+    Set("inclined plane", "plane", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
