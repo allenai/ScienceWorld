@@ -35,7 +35,7 @@ class InclinedPlane (val angleDeg:Double = 45.0f, val surfaceMaterial:MaterialPr
   }
 
   def slideObjectDownPlane(obj:EnvObject): Unit = {
-    val planeMaterialFriction:Double = 0.50f
+    val planeMaterialFriction:Double = surfaceMaterial.frictionCoefficient
 
     // Check that the object is on the plane
     if (!normalizedLocations.contains(obj.uuid)) return
@@ -64,7 +64,7 @@ class InclinedPlane (val angleDeg:Double = 45.0f, val surfaceMaterial:MaterialPr
     // Pretend that speed is constant instead of accelerating
 
     val oldPosition = normalizedLocations(obj.uuid)
-    val delta = (forceDown * planeMaterialFriction)
+    val delta = forceDown * (1-planeMaterialFriction)
     val newPosition = math.max(oldPosition - delta, 0.0f)     // Calculate new position.  If less than zero, set to zero
     normalizedLocations(obj.uuid) = newPosition
 

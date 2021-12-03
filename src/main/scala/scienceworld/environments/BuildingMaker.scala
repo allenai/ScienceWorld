@@ -14,6 +14,7 @@ import scienceworld.objects.substance.food.{Apple, Banana, Orange, OrangeJuice, 
 import scienceworld.objects.substance.paint.{BluePaint, GreenPaint, OrangePaint, RedPaint, VioletPaint, YellowPaint}
 import scienceworld.objects.substance.{Soap, SodiumChloride, Wood}
 import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalConductivity}
+import scienceworld.properties.{PlasticProp, SandpaperProp}
 import scienceworld.struct.EnvObject
 
 import scala.util.Random
@@ -262,10 +263,13 @@ object RoomMaker {
     */
 
     //##
-    val inclinedPlane = new InclinedPlane()
-    room.addObject(inclinedPlane)
+    val inclinedPlane1 = new InclinedPlane(angleDeg = 45, surfaceMaterial = new SandpaperProp())
+    room.addObject(inclinedPlane1)
 
+    val inclinedPlane2 = new InclinedPlane(angleDeg = 45, surfaceMaterial = new PlasticProp())
+    room.addObject(inclinedPlane2)
 
+    // TODO: Task: Which inclined plane has the steepest angle?
 
     // Return
     room
