@@ -1110,3 +1110,8 @@ class UnknownFrictionMaterialJ extends UnknownFrictionMaterial {
   substanceName                   = "unknown material J"
   frictionCoefficient             = 0.9
 }
+
+class DefaultFrictionMaterialProp extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material J"
+  frictionCoefficient             = 0.5
+}

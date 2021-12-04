@@ -1,6 +1,6 @@
 package scienceworld.objects.misc
 
-import scienceworld.properties.{IsContainer, IsOpenUnclosableContainer, MaterialProperties, SteelProp}
+import scienceworld.properties.{DefaultFrictionMaterialProp, IsContainer, IsOpenUnclosableContainer, MaterialProperties, SteelProp}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject.MODE_CURSORY_DETAIL
 import util.StringHelpers
@@ -9,7 +9,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 
-class InclinedPlane (val angleDeg:Double = 45.0f, val surfaceMaterial:MaterialProperties = new SteelProp() ) extends EnvObject {
+class InclinedPlane (val angleDeg:Double = 45.0f, val surfaceMaterial:MaterialProperties = new DefaultFrictionMaterialProp(), val additionalName:String = "") extends EnvObject {
   this.name = "inclined plane"
   this.propContainer = Some(new IsOpenUnclosableContainer())
   this.propMaterial = Some(new SteelProp())
@@ -93,6 +93,10 @@ class InclinedPlane (val angleDeg:Double = 45.0f, val surfaceMaterial:MaterialPr
    */
 
   def nameSuffix():String = {
+    // If default material, do not name it
+    if (this.surfaceMaterial.isInstanceOf[DefaultFrictionMaterialProp]) return ""
+
+    // Otherwise, name surface material type
     return " with a " + surfaceMaterial.substanceName + " surface"
   }
 
@@ -100,11 +104,15 @@ class InclinedPlane (val angleDeg:Double = 45.0f, val surfaceMaterial:MaterialPr
     if (overrideName != "") return super.getDescriptName(overrideName)
 
     // Otherwise
-    super.getDescriptName(this.name + this.nameSuffix())
+    val name = (this.name + " " + this.additionalName + " " + this.nameSuffix()).replaceAll("\\s+", " ").trim()
+    super.getDescriptName(name)
   }
 
   override def getReferents(): Set[String] = {
-    Set("inclined plane", "plane", this.name, this.getDescriptName())
+    val out = Set("inclined plane", "plane", this.name, this.getDescriptName())
+    if (additionalName == "") return out
+
+    return out ++ Set("inclined plane " + additionalName, "plane " + additionalName, this.name + " " + additionalName, this.getDescriptName() + " " + additionalName)
   }
 
   override def getDescription(mode:Int): String = {

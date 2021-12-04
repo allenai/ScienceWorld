@@ -100,3 +100,33 @@ class GoalFindInclinedPlane(surfaceName:String = "", failIfWrong:Boolean = true,
   }
 
 }
+
+class GoalFindInclinedPlaneNamed(additionalName:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false) extends Goal {
+  this.defocusOnSuccess = _defocusOnSuccess
+
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
+    if (obj.name.toLowerCase == "inclined plane") {
+      obj match {
+        case x:InclinedPlane => {
+          if (x.additionalName == additionalName) {
+            // Case: The focus is on an object with the correct name
+            this.satisfiedWithObject = Some(obj)
+            return GoalReturn.mkSubgoalSuccess()
+          }
+        }
+        case _ => { }
+      }
+    }
+
+    // Case: The focus is on an object with a different name
+    if (failIfWrong) {
+      // Return: Task failure
+      return GoalReturn.mkTaskFailure()
+    } else {
+      // Return: Subgoal not passed
+      return GoalReturn.mkSubgoalUnsuccessful()
+    }
+
+  }
+
+}

@@ -4,35 +4,35 @@ import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.StopWatch
 import scienceworld.objects.misc.InclinedPlane
 import scienceworld.objects.substance.{Brick, SteelBlock, WoodBlock}
-import scienceworld.properties.{AluminumProp, BrassProp, BronzeProp, CaesiumProp, CeramicProp, ChocolateProp, CopperProp, CottonClothProp, GlassProp, GreenPaintProp, IronProp, LeadProp, PaperProp, PlasticProp, PlatinumProp, RubberProp, SandpaperProp, SoapyWaterProp, SteelProp, TinProp, TitaniumProp, UnknownFrictionMaterialA, UnknownFrictionMaterialB, UnknownFrictionMaterialC, UnknownFrictionMaterialD, UnknownFrictionMaterialE, UnknownFrictionMaterialF, UnknownFrictionMaterialG, UnknownFrictionMaterialH, UnknownFrictionMaterialJ, WoodProp, ZincProp}
+import scienceworld.properties.{UnknownFrictionMaterialA, UnknownFrictionMaterialB, UnknownFrictionMaterialC, UnknownFrictionMaterialD, UnknownFrictionMaterialE, UnknownFrictionMaterialF, UnknownFrictionMaterialG, UnknownFrictionMaterialH, UnknownFrictionMaterialJ}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.GoalFindInclinedPlane
-import TaskInclinedPlane2._
+import scienceworld.tasks.goals.specificgoals.{GoalFindInclinedPlane, GoalFindInclinedPlaneNamed}
+import TaskInclinedPlane3._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 import scala.util.control.Breaks.{break, breakable}
 
 
-class TaskInclinedPlane2(val mode:String = MODE_FRICTION_UNNAMED) extends TaskParametric {
+class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
   val taskName = "task-8-" + mode.replaceAll(" ", "-")
 
   val locations = Array("workshop")
 
-  // Variation 1 + 2: Inclined planes of various material surfaces (and frictions)
+  // Variation 1 + 2: Inclined planes of various material surfaces (and angles)
   val inclinedPlanes1 = new ArrayBuffer[ Array[TaskModifier] ]()
   val inclinedPlanes2 = new ArrayBuffer[ Array[TaskModifier] ]()
   for (location <- locations) {
 
     // Make a set of inclined plane objects of various surfaces
-    val inclinedPlaneObjects1 = TaskInclinedPlane2.mkInclinedPlaneSet(angleDeg = 45.0)
+    val inclinedPlaneObjects1 = TaskInclinedPlane3.mkInclinedPlaneSet()
     for (inclinedPlane <- inclinedPlaneObjects1) {
       inclinedPlanes1.append( Array(new TaskObject(inclinedPlane.name, Some(inclinedPlane), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true)) )
     }
 
-    val inclinedPlaneObjects2 = TaskInclinedPlane2.mkInclinedPlaneSet(angleDeg = 45.0)
+    val inclinedPlaneObjects2 = TaskInclinedPlane3.mkInclinedPlaneSet()
     for (inclinedPlane <- inclinedPlaneObjects2) {
       inclinedPlanes2.append( Array(new TaskObject(inclinedPlane.name, Some(inclinedPlane), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true)) )
     }
@@ -68,9 +68,9 @@ class TaskInclinedPlane2(val mode:String = MODE_FRICTION_UNNAMED) extends TaskPa
     m <- timeMeasurementDevice
   } yield List(i, j, k, m)
 
-  // Remove any combinations that have the same coefficient of friction
-  // Also add extra information as keys (e.g. most friction/least friction)
-  val combinations = TaskInclinedPlane2.filterDuplicatesAndAddMostLeast(combinations1)
+  // Remove any combinations that have the same angle
+  // Also add extra information as keys (e.g. steepest/shallowest angle)
+  val combinations = TaskInclinedPlane3.filterDuplicatesAndAddMostLeast(combinations1)
 
 
   println("Number of combinations: " + combinations.length)
@@ -111,27 +111,27 @@ class TaskInclinedPlane2(val mode:String = MODE_FRICTION_UNNAMED) extends TaskPa
   // Setup a set of subgoals for this task modifier combination.
   private def setupGoals(modifiers:Array[TaskModifier], combinationNum:Int): Task = {
     // Step 1: Find seed type
-    val leastFriction = this.getTaskValueStr(modifiers, "leastFriction")
-    if (leastFriction.isEmpty) throw new RuntimeException("ERROR: Failed to find name of inclined plane with least friction.")
-    val mostFriction = this.getTaskValueStr(modifiers, "mostFriction")
-    if (mostFriction.isEmpty) throw new RuntimeException("ERROR: Failed to find name of inclined plane with most friction.")
-    val modeMostLeastFriction = this.getTaskValueStr(modifiers, "mode")
-    if (modeMostLeastFriction.isEmpty) throw new RuntimeException("ERROR: Failed to find inclined plane friction task mode. ")
+    val steepestAngle = this.getTaskValueStr(modifiers, "steepestAngle")
+    if (steepestAngle.isEmpty) throw new RuntimeException("ERROR: Failed to find name of inclined plane with steepst angle.")
+    val shallowestAngle = this.getTaskValueStr(modifiers, "shallowestAngle")
+    if (shallowestAngle.isEmpty) throw new RuntimeException("ERROR: Failed to find name of inclined plane with shallowest angle.")
+    val modeSteepShallow = this.getTaskValueStr(modifiers, "mode")
+    if (modeSteepShallow.isEmpty) throw new RuntimeException("ERROR: Failed to find inclined plane friction task mode. ")
 
     val gSequence = new ArrayBuffer[Goal]
     var description:String = "<empty>"
-    if (mode == MODE_FRICTION_UNNAMED) {
+    if (mode == MODE_ANGLE) {
 
-      if (modeMostLeastFriction.get == "most") {
-        // Most friction
-        gSequence.append(new GoalFindInclinedPlane(surfaceName = mostFriction.get, failIfWrong = true, _defocusOnSuccess = true))
+      if (modeSteepShallow.get == "steepest") {
+        // Steepest angle
+        gSequence.append(new GoalFindInclinedPlaneNamed(additionalName = steepestAngle.get, failIfWrong = true, _defocusOnSuccess = true))
       } else {
-        // Least friction
-        gSequence.append(new GoalFindInclinedPlane(surfaceName = leastFriction.get, failIfWrong = true, _defocusOnSuccess = true))
+        // Shallowest angle
+        gSequence.append(new GoalFindInclinedPlaneNamed(additionalName = shallowestAngle.get, failIfWrong = true, _defocusOnSuccess = true))
       }
 
-      val planeNames = Random.shuffle( List(leastFriction.get, mostFriction.get) )
-      description = "Your task is to determine which of the two inclined planes (" + planeNames.mkString(", ") + ") has the " + modeMostLeastFriction.get + " friction. After completing your experiment, focus on the inclined plane with the " + modeMostLeastFriction.get + " friction."
+      val planeNames = Random.shuffle( List(steepestAngle.get, shallowestAngle.get) )
+      description = "Your task is to determine which of the two inclined planes (" + planeNames.mkString(", ") + ") has the " + modeSteepShallow.get + " angle. After completing your experiment, focus on the inclined plane with the " + modeSteepShallow.get + " angle."
 
 
     } else {
@@ -158,11 +158,11 @@ class TaskInclinedPlane2(val mode:String = MODE_FRICTION_UNNAMED) extends TaskPa
 }
 
 
-object TaskInclinedPlane2 {
-  val MODE_FRICTION_UNNAMED       = "inclined plane friction (unnamed surfaces)"
+object TaskInclinedPlane3 {
+  val MODE_ANGLE             = "inclined plane determine angle"
 
   def registerTasks(taskMaker:TaskMaker1): Unit = {
-    taskMaker.addTask( new TaskInclinedPlane2(mode = MODE_FRICTION_UNNAMED) )
+    taskMaker.addTask( new TaskInclinedPlane3(mode = MODE_ANGLE) )
   }
 
 
@@ -171,26 +171,25 @@ object TaskInclinedPlane2 {
    */
 
   // Make a set of inclined planes
-  def mkInclinedPlaneSet(angleDeg:Double = 45.0):Array[EnvObject] = {
+  def mkInclinedPlaneSet():Array[EnvObject] = {
     val out = new ArrayBuffer[EnvObject]
 
     // Metal surfaces
-    out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialA) )
-    out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialB) )
-    out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialC) )
-    out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialD) )
-    out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialE) )
-    out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialF) )
-    out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialG) )
-    out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialH) )
-    out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialJ) )
+    out.append( new InclinedPlane(angleDeg = 50.0, additionalName = "A") )
+    out.append( new InclinedPlane(angleDeg = 70.0, additionalName = "B") )
+    out.append( new InclinedPlane(angleDeg = 80.0, additionalName = "C") )
+    out.append( new InclinedPlane(angleDeg = 20.0, additionalName = "D") )
+    out.append( new InclinedPlane(angleDeg = 10.0, additionalName = "E") )
+    out.append( new InclinedPlane(angleDeg = 60.0, additionalName = "F") )
+    out.append( new InclinedPlane(angleDeg = 40.0, additionalName = "G") )
+    out.append( new InclinedPlane(angleDeg = 30.0, additionalName = "H") )
 
     // Return
     out.toArray
   }
 
 
-  def filterDuplicatesAndAddMostLeast(in:Traversable[List[Array[TaskModifier]]], threshold:Double = 0.05): Array[List[List[TaskModifier]]] = {
+  def filterDuplicatesAndAddMostLeast(in:Traversable[List[Array[TaskModifier]]], threshold:Double = 5.00): Array[List[List[TaskModifier]]] = {
     val out = new ArrayBuffer[ List[List[TaskModifier]] ]
 
     var count:Int = 0
@@ -217,10 +216,10 @@ object TaskInclinedPlane2 {
       }
 
       breakable {
-        var leastFriction:Double = 1.0
-        var leastFrictionName:String = "DEFAULT"
-        var mostFriction:Double = 0.0
-        var mostFrictionName:String = "DEFAULT"
+        var shallowestAngle:Double = 90.0
+        var shallowestAngleName:String = "DEFAULT"
+        var steepestAngle:Double = 0.0
+        var steepestAngleName:String = "DEFAULT"
 
         for (i <- 0 until inclinedPlanes.length) {
           val plane1 = inclinedPlanes(i)
@@ -230,18 +229,18 @@ object TaskInclinedPlane2 {
 
             if (i != j) {
               // Check to see if the friction coefficients of the two materials are too similar (i.e. within 'threshold').  If they are, don't keep them in the list.
-              val delta = math.abs(plane1.surfaceMaterial.frictionCoefficient - plane2.surfaceMaterial.frictionCoefficient)
+              val delta = math.abs(plane1.angleDeg - plane2.angleDeg)
               if (delta <= threshold) break
             }
           }
 
-          if (plane1.surfaceMaterial.frictionCoefficient < leastFriction) {
-            leastFriction = plane1.surfaceMaterial.frictionCoefficient
-            leastFrictionName = plane1.surfaceMaterial.substanceName
+          if (plane1.angleDeg < shallowestAngle) {
+            shallowestAngle = plane1.angleDeg
+            shallowestAngleName = plane1.additionalName
           }
-          if (plane1.surfaceMaterial.frictionCoefficient > mostFriction) {
-            mostFriction = plane1.surfaceMaterial.frictionCoefficient
-            mostFrictionName = plane1.surfaceMaterial.substanceName
+          if (plane1.angleDeg > steepestAngle) {
+            steepestAngle = plane1.angleDeg
+            steepestAngleName = plane1.additionalName
           }
 
         }
@@ -249,15 +248,15 @@ object TaskInclinedPlane2 {
         // If we reach here, the list is okay (i.e. no duplicates/near duplicates).  Store it.
 
         // First, pick whether the agent should find the inclined plane with the most or least friction
-        var modifierModeKey = new TaskValueStr(key = "mode", value = "least")
+        var modifierModeKey = new TaskValueStr(key = "mode", value = "steepest")
         if (count % 2 == 0) {
-          modifierModeKey = new TaskValueStr(key = "mode", value = "most")
+          modifierModeKey = new TaskValueStr(key = "mode", value = "shallowest")
         }
         count += 1
 
         // Then, assemble the task modifiers
         val taskModifiers = allModifiers ++
-          Array(new TaskValueStr(key = "leastFriction", leastFrictionName), new TaskValueStr(key = "mostFriction", mostFrictionName)) ++
+          Array(new TaskValueStr(key = "steepestAngle", steepestAngleName), new TaskValueStr(key = "shallowestAngle", shallowestAngleName)) ++
           Array(modifierModeKey)
 
 
@@ -271,3 +270,4 @@ object TaskInclinedPlane2 {
   }
 
 }
+
