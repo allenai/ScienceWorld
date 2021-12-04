@@ -1,6 +1,7 @@
 package scienceworld.tasks.goals.specificgoals
 
 import scienceworld.objects.livingthing.LivingThing
+import scienceworld.objects.misc.InclinedPlane
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn}
 
@@ -64,6 +65,37 @@ class GoalFindLivingThingStage(livingThingType:String = "", lifeStage:String = "
       return GoalReturn.mkSubgoalUnsuccessful()
     }
 
+
+  }
+
+}
+
+
+class GoalFindInclinedPlane(surfaceName:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false) extends Goal {
+  this.defocusOnSuccess = _defocusOnSuccess
+
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
+    if (obj.name.toLowerCase == "inclined plane") {
+      obj match {
+        case x:InclinedPlane => {
+          if (x.surfaceMaterial.substanceName == surfaceName) {
+            // Case: The focus is on an object with the correct name
+            this.satisfiedWithObject = Some(obj)
+            return GoalReturn.mkSubgoalSuccess()
+          }
+        }
+        case _ => { }
+      }
+    }
+
+    // Case: The focus is on an object with a different name
+    if (failIfWrong) {
+      // Return: Task failure
+      return GoalReturn.mkTaskFailure()
+    } else {
+      // Return: Subgoal not passed
+      return GoalReturn.mkSubgoalUnsuccessful()
+    }
 
   }
 

@@ -92,6 +92,17 @@ class InclinedPlane (val angleDeg:Double = 45.0f, val surfaceMaterial:MaterialPr
    * Normal functions
    */
 
+  def nameSuffix():String = {
+    return " with a " + surfaceMaterial.substanceName + " surface"
+  }
+
+  override def getDescriptName(overrideName: String = ""): String = {
+    if (overrideName != "") return super.getDescriptName(overrideName)
+
+    // Otherwise
+    super.getDescriptName(this.name + this.nameSuffix())
+  }
+
   override def getReferents(): Set[String] = {
     Set("inclined plane", "plane", this.name, this.getDescriptName())
   }
@@ -99,12 +110,12 @@ class InclinedPlane (val angleDeg:Double = 45.0f, val surfaceMaterial:MaterialPr
   override def getDescription(mode:Int): String = {
     val containedObjects = this.getContainedObjectsAndPortals(includeHidden = false)
     if (containedObjects.size == 0) {
-      return "an " + this.getDescriptName() + " with a " + surfaceMaterial.substanceName + " surface "
+      return "an " + this.getDescriptName()
     } else {
       //return "a " + this.getDescriptName() + " (containing " + StringHelpers.objectListToStringDescription(containedObjects, this, mode=MODE_CURSORY_DETAIL, multiline = false) + ")"
       val os = new StringBuilder()
 
-      os.append("an " + this.getDescriptName() + " with a " + surfaceMaterial.substanceName + " surface, with: ")
+      os.append("an " + this.getDescriptName() + ", with: ")
       val objDescList = new ArrayBuffer[String]
       for (cObj <- containedObjects) {
         val objPosition = this.getObjectPositionOnPlane(cObj)

@@ -17,7 +17,7 @@ class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskPar
   val taskName = "task-7-" + mode.replaceAll(" ", "-")
 
   val locations = Array("outside")
-  
+
   // Variation 1: Which seeds to grow
   val numDistractors = 5
   val animalsAndStages = new ArrayBuffer[ Array[TaskModifier] ]()

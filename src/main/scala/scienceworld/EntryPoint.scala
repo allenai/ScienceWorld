@@ -55,7 +55,7 @@ object EntryPoint {
     //val taskName = taskMaker.getTaskList()(8)
     //val taskName = taskMaker.getTaskList()(7)
     //val taskName = taskMaker.getTaskList()(0)
-    val taskName = taskMaker.getTaskList()(21)
+    val taskName = taskMaker.getTaskList()(22)
 
     // Setup task
     val (task_, taskErrStr) = taskMaker.doTaskSetup(taskName, 12, universe, agent)
