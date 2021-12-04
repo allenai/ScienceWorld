@@ -94,15 +94,24 @@ class TaskInclinedPlane1(val mode:String = MODE_FRICTION_NAMED) extends TaskPara
     if (leastFriction.isEmpty) throw new RuntimeException("ERROR: Failed to find name of inclined plane with least friction.")
     val mostFriction = this.getTaskValueStr(modifiers, "mostFriction")
     if (mostFriction.isEmpty) throw new RuntimeException("ERROR: Failed to find name of inclined plane with most friction.")
+    val modeMostLeastFriction = this.getTaskValueStr(modifiers, "mode")
+    if (modeMostLeastFriction.isEmpty) throw new RuntimeException("ERROR: Failed to find inclined plane friction task mode. ")
 
     val gSequence = new ArrayBuffer[Goal]
     var description:String = "<empty>"
     if (mode == MODE_FRICTION_NAMED) {
 
-      gSequence.append(new GoalFindInclinedPlane(surfaceName = leastFriction.get, failIfWrong = true, _defocusOnSuccess = true))
-      val planeNames = Random.shuffle( List(leastFriction.get, mostFriction.get) )
+      if (modeMostLeastFriction.get == "most") {
+        // Most friction
+        gSequence.append(new GoalFindInclinedPlane(surfaceName = mostFriction.get, failIfWrong = true, _defocusOnSuccess = true))
+      } else {
+        // Least friction
+        gSequence.append(new GoalFindInclinedPlane(surfaceName = leastFriction.get, failIfWrong = true, _defocusOnSuccess = true))
+      }
 
-      description = "Your task is to determine which of the two inclined planes (" + planeNames.mkString(", ") + ") has the least friction. After completing your experiment, focus on the inclined plane with the least friction." // TODO: Better description?
+      val planeNames = Random.shuffle( List(leastFriction.get, mostFriction.get) )
+      description = "Your task is to determine which of the two inclined planes (" + planeNames.mkString(", ") + ") has the " + modeMostLeastFriction.get + " friction. After completing your experiment, focus on the inclined plane with the " + modeMostLeastFriction.get + " friction."
+
 
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
@@ -179,6 +188,8 @@ object TaskInclinedPlane1 {
   def filterDuplicatesAndAddMostLeast(in:Traversable[List[Array[TaskModifier]]], threshold:Double = 0.05): Array[List[List[TaskModifier]]] = {
     val out = new ArrayBuffer[ List[List[TaskModifier]] ]
 
+    var count:Int = 0
+
     for (tmSet <- in) {
       val inclinedPlanes = tmSet.flatten
 
@@ -215,7 +226,23 @@ object TaskInclinedPlane1 {
         }
 
         // If we reach here, the list is okay (i.e. no duplicates/near duplicates).  Store it.
-        val taskModifiers = inclinedPlanes ++ Array(new TaskValueStr(key = "leastFriction", leastFrictionName), new TaskValueStr(key = "mostFriction", mostFrictionName))
+
+        // First, pick whether the agent should find the inclined plane with the most or least friction
+        var modifierModeKey = new TaskValueStr(key = "mode", value = "least")
+        if (count % 2 == 0) {
+          modifierModeKey = new TaskValueStr(key = "mode", value = "most")
+        }
+        count += 1
+
+        // TODO: Add wood block/other thing to slide down plane
+        // TODO: Add stop watch?
+
+        // Then, assemble the task modifiers
+        val taskModifiers = inclinedPlanes ++
+          Array(new TaskValueStr(key = "leastFriction", leastFrictionName), new TaskValueStr(key = "mostFriction", mostFrictionName)) ++
+          Array(modifierModeKey)
+
+
         out.append( List(taskModifiers.toList) )      // Wrapped in an extra List() to match how this appears in other Tasks
       }
 

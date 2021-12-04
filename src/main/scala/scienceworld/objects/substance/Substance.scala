@@ -81,6 +81,11 @@ class Wood extends Substance {
   this.propMaterial = Some (new WoodProp)
 }
 
+class WoodBlock extends Substance {
+  this.name = "wood block"
+  this.propMaterial = Some (new WoodProp)
+}
+
 // Combustion products
 class Ash extends Substance {
   this.name = "ash"
