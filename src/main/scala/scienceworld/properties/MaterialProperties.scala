@@ -837,6 +837,24 @@ class SoapyWaterProp extends MaterialProperties {
 }
 
 
+class BrickProp extends MaterialProperties {
+  substanceName                   = "brick"
+  nameInStateOfMatter             = Map()
+  color                           = "red"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.10
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 100001.0f
+  meltingPoint                    = 1500.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.90
+
+}
+
 /*
  * Paint
  */
@@ -1027,3 +1045,68 @@ class YellowGreenPaintProp extends GenericPaintProp {
 // Brown
 // Black
 // White
+
+/*
+ * Materials of unknown friction
+ */
+class UnknownFrictionMaterial extends MaterialProperties {
+  substanceName                   = "unknown material"
+  nameInStateOfMatter             = Map()
+  color                           = "grey"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.10
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 100002.0f
+  meltingPoint                    = 100001.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.0
+}
+
+class UnknownFrictionMaterialA extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material A"
+  frictionCoefficient             = 0.1
+}
+
+class UnknownFrictionMaterialB extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material B"
+  frictionCoefficient             = 0.7
+}
+
+class UnknownFrictionMaterialC extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material C"
+  frictionCoefficient             = 0.4
+}
+
+class UnknownFrictionMaterialD extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material D"
+  frictionCoefficient             = 0.6
+}
+
+class UnknownFrictionMaterialE extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material E"
+  frictionCoefficient             = 0.2
+}
+
+class UnknownFrictionMaterialF extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material F"
+  frictionCoefficient             = 0.8
+}
+
+class UnknownFrictionMaterialG extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material -G"
+  frictionCoefficient             = 0.3
+}
+
+class UnknownFrictionMaterialH extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material H"
+  frictionCoefficient             = 0.9
+}
+
+class UnknownFrictionMaterialJ extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material J"
+  frictionCoefficient             = 0.9
+}

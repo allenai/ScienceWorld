@@ -13,6 +13,8 @@ import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalFindInclinedPlane, 
 import scala.util.control.Breaks._
 import scala.collection.mutable.ArrayBuffer
 import TaskInclinedPlane1._
+import scienceworld.objects.devices.StopWatch
+import scienceworld.objects.substance.{Brick, SteelBlock, WoodBlock}
 
 import scala.util.Random
 
@@ -22,8 +24,7 @@ class TaskInclinedPlane1(val mode:String = MODE_FRICTION_NAMED) extends TaskPara
 
   val locations = Array("workshop")
 
-  // Variation 1: Which seeds to grow
-  val numDistractors = 5
+  // Variation 1 + 2: Inclined planes of various material surfaces (and frictions)
   val inclinedPlanes1 = new ArrayBuffer[ Array[TaskModifier] ]()
   val inclinedPlanes2 = new ArrayBuffer[ Array[TaskModifier] ]()
   for (location <- locations) {
@@ -41,11 +42,34 @@ class TaskInclinedPlane1(val mode:String = MODE_FRICTION_NAMED) extends TaskPara
 
   }
 
+  // Variation 3: Masses to roll down ramp
+  val masses = new ArrayBuffer[ Array[TaskModifier] ]()
+  for (location <- locations) {
+    val block1 = new WoodBlock()
+    masses.append( Array(new TaskObject(block1.name, Some(block1), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true) ))
+
+    val block2 = new SteelBlock()
+    masses.append( Array(new TaskObject(block2.name, Some(block2), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true) ))
+
+    val brick = new Brick()
+    masses.append( Array(new TaskObject(brick.name, Some(brick), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true) ))
+  }
+
+  // Variation 4: Time measurement device
+  val timeMeasurementDevice = new ArrayBuffer[ Array[TaskModifier] ]()
+  for (location <- locations) {
+    val stopwatch = new StopWatch()
+    timeMeasurementDevice.append( Array(new TaskObject(stopwatch.name, Some(stopwatch), roomToGenerateIn = location, Array.empty[String], generateNear = 0) ))
+  }
+
+
   // Combinations
   var combinations1 = for {
     i <- inclinedPlanes1
     j <- inclinedPlanes2
-  } yield List(i, j)
+    k <- masses
+    m <- timeMeasurementDevice
+  } yield List(i, j, k, m)
 
   // Remove any combinations that have the same coefficient of friction
   // Also add extra information as keys (e.g. most friction/least friction)
@@ -191,21 +215,37 @@ object TaskInclinedPlane1 {
     var count:Int = 0
 
     for (tmSet <- in) {
-      val inclinedPlanes = tmSet.flatten
+      val allModifiers = tmSet.flatten
+      // Find all inclined planes
+      val inclinedPlanes = new ArrayBuffer[InclinedPlane]
+      for (modifier <- allModifiers) {
+        modifier match {
+          case m:TaskObject => {
+            if (m.exampleInstance.isDefined) {
+              m.exampleInstance.get match {
+                case plane: InclinedPlane => {
+                  inclinedPlanes.append(plane)
+                }
+                case _ => {
+                  // Do nothing
+                }
+              }
+            }
+          }
+        }
+      }
 
       breakable {
         var leastFriction:Double = 1.0
-        var leastFrictionName:String = ""
+        var leastFrictionName:String = "DEFAULT"
         var mostFriction:Double = 0.0
-        var mostFrictionName:String = ""
+        var mostFrictionName:String = "DEFAULT"
 
         for (i <- 0 until inclinedPlanes.length) {
-          val tm1 = inclinedPlanes(i).asInstanceOf[TaskObject]
-          val plane1 = tm1.exampleInstance.get.asInstanceOf[InclinedPlane]
+          val plane1 = inclinedPlanes(i)
 
           for (j <- 0 until inclinedPlanes.length) {
-            val tm2 = inclinedPlanes(j).asInstanceOf[TaskObject]
-            val plane2 = tm2.exampleInstance.get.asInstanceOf[InclinedPlane]
+            val plane2 = inclinedPlanes(j)
 
             if (i != j) {
               // Check to see if the friction coefficients of the two materials are too similar (i.e. within 'threshold').  If they are, don't keep them in the list.
@@ -234,11 +274,8 @@ object TaskInclinedPlane1 {
         }
         count += 1
 
-        // TODO: Add wood block/other thing to slide down plane
-        // TODO: Add stop watch?
-
         // Then, assemble the task modifiers
-        val taskModifiers = inclinedPlanes ++
+        val taskModifiers = allModifiers ++
           Array(new TaskValueStr(key = "leastFriction", leastFrictionName), new TaskValueStr(key = "mostFriction", mostFrictionName)) ++
           Array(modifierModeKey)
 

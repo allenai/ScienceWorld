@@ -84,6 +84,36 @@ class Wood extends Substance {
 class WoodBlock extends Substance {
   this.name = "wood block"
   this.propMaterial = Some (new WoodProp)
+
+  override def getReferents():Set[String] = {
+    Set("block", this.name, this.getDescriptName())
+  }
+
+  override def getDescription(mode: Int): String = {
+    return "a " + this.getDescriptName()
+  }
+}
+
+class SteelBlock extends Substance {
+  this.name = "steel block"
+  this.propMaterial = Some (new SteelProp)
+
+  override def getReferents():Set[String] = {
+    Set("block", this.name, this.getDescriptName())
+  }
+
+  override def getDescription(mode: Int): String = {
+    return "a " + this.getDescriptName()
+  }
+}
+
+class Brick extends Substance {
+  this.name = "brick"
+  this.propMaterial = Some (new BrickProp)
+
+  override def getDescription(mode: Int): String = {
+    return "a " + this.getDescriptName()
+  }
 }
 
 // Combustion products
