@@ -456,7 +456,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
 
 
 object InputParser {
-  val stopWords = Array("a", "the")
+  val stopWords = Array("a", "an", "the")
 
   // DEBUG: Get a list of all possible valid referents, for debugging
   def getPossibleReferents(objTreeRoot:EnvObject, perspectiveContainer:EnvObject):Array[String] = {
