@@ -28,23 +28,33 @@ class ChromosomePair(val parent1:Chromosomes, val parent2:Chromosomes) {
   def getPhenotypes(): Array[GeneticTrait] = {
     val out = new ArrayBuffer[GeneticTrait]
 
-    for (alleleP1 <- parent1.chromosomes) {
-      val alleleP2 = parent2.getTrait(alleleP1.traitName)
-      if (alleleP2.isEmpty) throw new RuntimeException("ERROR: ChromosomePair.gePhenotypes(): One parent is missing critical genes (" + alleleP1.traitName + ").")
-
-      // Figure out ultimate trait phenotype
-      // If both recessive, then the value will be recessive
-      if (alleleP1.isRecessiveValue() && alleleP2.get.isRecessiveValue()) {
-        val phenotype = new GeneticTrait(alleleP1.traitName, alleleP1.valueDominant, alleleP1.valueRecessive, GeneticTrait.RECESSIVE)
-        out.append(phenotype)
-      } else {
-        // Otherwise, if one or more dominant genes are present, then the phenotype will be dominant
-        val phenotype = new GeneticTrait(alleleP1.traitName, alleleP1.valueDominant, alleleP1.valueRecessive, GeneticTrait.DOMINANT)
-        out.append(phenotype)
-      }
+    for (traitName <- this.getTraitNames()) {
+      val phenotype = this.getPhenotype(traitName)
+      out.append( phenotype.get )
     }
 
     out.toArray
+  }
+
+  def getPhenotype(traitName:String):Option[GeneticTrait] = {
+    val alleleP1 = parent1.getTrait(traitName)
+    if (alleleP1.isEmpty) throw new RuntimeException("ERROR: ChromosomePair.gePhenotype(): One parent is missing critical genes (" + alleleP1.get.traitName + ").")
+    val alleleP2 = parent2.getTrait(traitName)
+    if (alleleP2.isEmpty) throw new RuntimeException("ERROR: ChromosomePair.gePhenotype(): One parent is missing critical genes (" + alleleP1.get.traitName + ").")
+
+    // Figure out ultimate trait phenotype
+    // If both recessive, then the value will be recessive
+    if (alleleP1.get.isRecessiveValue() && alleleP2.get.isRecessiveValue()) {
+      val phenotype = new GeneticTrait(alleleP1.get.traitName, alleleP1.get.valueDominant, alleleP1.get.valueRecessive, strSuffix = alleleP1.get.strSuffix, GeneticTrait.RECESSIVE)
+      return Some(phenotype)
+    } else {
+      // Otherwise, if one or more dominant genes are present, then the phenotype will be dominant
+      val phenotype = new GeneticTrait(alleleP1.get.traitName, alleleP1.get.valueDominant, alleleP1.get.valueRecessive, strSuffix = alleleP1.get.strSuffix, GeneticTrait.DOMINANT)
+      return Some(phenotype)
+    }
+
+    // Otherwise (note, execution should never reach here -- if graceful failure is desired, add a return None instead of throwing an exception to the checks at the top)
+    return None
   }
 
   def getGenotype(traitName:String):Option[(GeneticTrait, GeneticTrait)] = {
@@ -63,6 +73,22 @@ class ChromosomePair(val parent1:Chromosomes, val parent2:Chromosomes) {
     // Return
     if (traitP1.isEmpty || traitP2.isEmpty) return None
     return Some(traitP1.get, traitP2.get)
+  }
+
+  /*
+   * String methods
+   */
+  override def toString():String = {
+    val os = new StringBuilder
+
+    val sortedNames = this.getTraitNames().toArray.sorted
+    for (traitName <- sortedNames) {
+      val genotype = this.getGenotype(traitName)
+      val phenotype = this.getPhenotype(traitName)
+      os.append("\t" + traitName.formatted("%20s") + "\t" + genotype.get._1.formatted("%15s") + "\t" + genotype.get._2.formatted("%15s") + "\t" + phenotype.get.formatted("%15s") + "\n")
+    }
+
+    os.toString()
   }
 
 }
@@ -124,7 +150,7 @@ object GeneticReproduction {
 
 
 // One genetic trait
-class GeneticTrait(val traitName:String, val valueDominant:String, val valueRecessive:String, dominantOrRecessive:String) {
+class GeneticTrait(val traitName:String, val valueDominant:String, val valueRecessive:String, val strSuffix:String, dominantOrRecessive:String) {
 
   def getValue():String = {
     if (this.dominantOrRecessive == DOMINANT) return this.valueDominant
@@ -144,6 +170,10 @@ class GeneticTrait(val traitName:String, val valueDominant:String, val valueRece
     // Otherwise
     return false
   }
+
+  def mkHumanReadableDescStr():String = {
+    this.getValue() + " " + strSuffix
+  }
 }
 
 object GeneticTrait {
@@ -159,19 +189,65 @@ object GeneticTrait {
 
 
 // Subclases
-class GeneticTraitPeaPlantHeight(dominantOrRecessive:String) extends GeneticTrait(TRAIT_PLANT_HEIGHT, valueDominant = "tall", valueRecessive = "short", dominantOrRecessive) {
+object GeneticTraitPeas {
 
+  def mkTraitPlantHeight(dominantOrRecessive:String):GeneticTrait = {
+    new GeneticTrait(TRAIT_PLANT_HEIGHT, valueDominant = "tall", valueRecessive = "short", strSuffix = "height", dominantOrRecessive)
+  }
+
+  def mkTraitPeaShape(dominantOrRecessive:String):GeneticTrait = {
+    new GeneticTrait(TRAIT_PEA_SHAPE, valueDominant = "round", valueRecessive = "wrinkly", strSuffix = "peas", dominantOrRecessive)
+  }
+
+  def mkTraitPeaColor(dominantOrRecessive:String):GeneticTrait = {
+    new GeneticTrait(TRAIT_PEA_COLOR, valueDominant = "green", valueRecessive = "orange", strSuffix = "peas", dominantOrRecessive)
+  }
+
+  def mkTraitFlowerColor(dominantOrRecessive:String):GeneticTrait = {
+    new GeneticTrait(TRAIT_FLOWER_COLOR, valueDominant = "purple", valueRecessive = "white", strSuffix = "flowers", dominantOrRecessive)
+  }
+
+
+  def mkRandom():Array[GeneticTrait] = {
+    val out = new ArrayBuffer[GeneticTrait]()
+
+    out.append( mkTraitPlantHeight(this.mkRandomDomRec()) )
+    out.append( mkTraitPeaShape(this.mkRandomDomRec()) )
+    out.append( mkTraitPeaColor(this.mkRandomDomRec()) )
+    out.append( mkTraitFlowerColor(this.mkRandomDomRec()) )
+
+    // Return
+    out.toArray
+  }
+
+  def mkRandomDomRec():String = {
+    if (Random.nextInt(2) == 0) return GeneticTrait.DOMINANT
+    // Return
+    return GeneticTrait.RECESSIVE
+  }
 }
 
-class GeneticTraitPeaPlantPeaShape(dominantOrRecessive:String) extends GeneticTrait(TRAIT_PEA_SHAPE, valueDominant = "round", valueRecessive = "wrinkly", dominantOrRecessive) {
+
+
+object GeneticTest {
+
+  def main(args:Array[String]): Unit = {
+
+    val plantGP1aGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
+    val plantGP1bGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
+    val plant1ChromosomePairs = new ChromosomePair(plantGP1aGenes, plantGP1bGenes)
+    println("Plant 1")
+    println(plant1ChromosomePairs.toString())
+
+    println("")
+
+    val plantGP2aGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
+    val plantGP2bGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
+    val plant2ChromosomePairs = new ChromosomePair(plantGP2aGenes, plantGP2bGenes)
+    println("Plant 2")
+    println(plant2ChromosomePairs.toString())
+
+
+  }
 
 }
-
-class GeneticTraitPeaPlantPeaColor(dominantOrRecessive:String) extends GeneticTrait(TRAIT_PEA_SHAPE, valueDominant = "green", valueRecessive = "orange", dominantOrRecessive) {
-
-}
-
-class GeneticTraitPeaPlantFlowerColor(dominantOrRecessive:String) extends GeneticTrait(TRAIT_FLOWER_COLOR, valueDominant = "purple", valueRecessive = "white", dominantOrRecessive) {
-
-}
-
