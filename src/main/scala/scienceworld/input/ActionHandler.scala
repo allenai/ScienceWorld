@@ -1,7 +1,7 @@
 package scienceworld.input
 
 import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
-import scienceworld.actions.Action
+import scienceworld.actions.{Action, ActionFocus, ActionInventory, ActionLookAround, ActionTaskDesc}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -62,6 +62,27 @@ class ActionHandler {
     return out.mkString("\n")
   }
 
+  /*
+   * Check whether queued actions consume time
+   * true = takes time
+   * false = free action
+   */
+  def doesActionTakeTime(action:Action):Boolean = {
+    action match {
+      case x:ActionLookAround => return false
+      case x:ActionInventory => return false
+      case x:ActionTaskDesc => return false
+      case _ => return true
+    }
+  }
+
+  def doQueuedActionsTakeTime():Boolean = {
+    for (action <- queuedActions) {
+      if (this.doesActionTakeTime(action)) return true
+    }
+    // Return
+    false
+  }
 
   /*
    * User-facing functions
