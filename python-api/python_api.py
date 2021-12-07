@@ -178,4 +178,19 @@ class VirtualEnv:
         return observation, score, isCompleted, {'moves': numMoves, 'score': score}
 
 
+    # Special actions that are "free" (consume zero time)
+    def look(self):
+        inputStr = "look around"        
+        observation = self.gateway.step(inputStr)
+        return observation
+
+    def inventory(self):
+        inputStr = "inventory"
+        observation = self.gateway.step(inputStr)
+        return observation
+
+    def taskdescription(self):
+        inputStr = "task"
+        observation = self.gateway.step(inputStr)
+        return observation
 

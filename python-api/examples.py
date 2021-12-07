@@ -71,11 +71,15 @@ def randomModel(jarPath:str):
     print("Task Description: " + str(env.getTaskDescription()) )    
     
 
+    print("look: " + str(env.look()) )
+    print("inventory: " + str(env.inventory()) )
+    print("taskdescription: " + str(env.taskdescription()) )
+    
 
     score = 0.0
     isCompleted = False
     curIter = 0
-    maxIter = 1000
+    maxIter = 10
 
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands) and (isCompleted == False) and (curIter < maxIter):
