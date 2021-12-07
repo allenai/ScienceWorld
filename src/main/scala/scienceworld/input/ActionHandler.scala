@@ -77,6 +77,10 @@ class ActionHandler {
   }
 
   def doQueuedActionsTakeTime():Boolean = {
+    // Case: No actions are queued.  This means we're in a wait state -- return true.
+    if (queuedActions.length == 0) return true
+
+    // Check whether any queued actions take time
     for (action <- queuedActions) {
       if (this.doesActionTakeTime(action)) return true
     }

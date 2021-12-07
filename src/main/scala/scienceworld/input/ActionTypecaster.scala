@@ -1,6 +1,6 @@
 package scienceworld.input
 
-import scienceworld.actions.{Action, ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMix, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionTaskDesc, ActionUseDevice, ActionWait}
+import scienceworld.actions.{Action, ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMix, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionTaskDesc, ActionUseDevice, ActionWait1, ActionWait10}
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
@@ -31,7 +31,8 @@ object ActionTypecaster {
       case ActionFlush.ACTION_NAME => new ActionFlush(action, assignments)
       case ActionConnectElectrical.ACTION_NAME => new ActionConnectElectrical(action, assignments)
       case ActionDisconnectElectrical.ACTION_NAME => new ActionDisconnectElectrical(action, assignments)
-      case ActionWait.ACTION_NAME => new ActionWait(action, assignments)
+      case ActionWait1.ACTION_NAME => new ActionWait1(action, assignments)
+      case ActionWait10.ACTION_NAME => new ActionWait10(action, assignments)
       case ActionInventory.ACTION_NAME => new ActionInventory(action, assignments)
       case ActionMix.ACTION_NAME => new ActionMix(action, assignments)
       case ActionTaskDesc.ACTION_NAME => new ActionTaskDesc(action, assignments)
