@@ -85,7 +85,7 @@ class ChromosomePair(val parent1:Chromosomes, val parent2:Chromosomes) {
     for (traitName <- sortedNames) {
       val genotype = this.getGenotype(traitName)
       val phenotype = this.getPhenotype(traitName)
-      os.append("\t" + traitName.formatted("%20s") + "\t" + genotype.get._1.formatted("%15s") + "\t" + genotype.get._2.formatted("%15s") + "\t" + phenotype.get.formatted("%15s") + "\n")
+      os.append("\t" + traitName.formatted("%20s") + "\tGenotype\t" + genotype.get._1.formatted("%20s") + "\t" + genotype.get._2.formatted("%20s") + "\tPhenotype\t" + phenotype.get.formatted("%20s") + "\n")
     }
 
     os.toString()
@@ -96,7 +96,7 @@ class ChromosomePair(val parent1:Chromosomes, val parent2:Chromosomes) {
 object GeneticReproduction {
 
   // Mate the genes (chromosome pairs) from two parents using a Punnet Square, to generate a new set of chromosome pairs for an offspring
-  def mateGenesPunnetSquare(cpairParent1:ChromosomePair, cpairParent2:ChromosomePair): Unit = {
+  def mateGenesPunnetSquare(cpairParent1:ChromosomePair, cpairParent2:ChromosomePair): ChromosomePair = {
     val traitNames = cpairParent1.getTraitNames() ++ cpairParent2.getTraitNames()
 
     val genesParent1 = new ArrayBuffer[GeneticTrait]()
@@ -174,6 +174,16 @@ class GeneticTrait(val traitName:String, val valueDominant:String, val valueRece
   def mkHumanReadableDescStr():String = {
     this.getValue() + " " + strSuffix
   }
+
+  override def toString():String = {
+    val os = new StringBuilder
+
+    os.append(this.getValue())
+    if (this.isDominantValue()) os.append(" (Dom)")
+    if (this.isRecessiveValue()) os.append(" (Rec)")
+
+    os.toString
+  }
 }
 
 object GeneticTrait {
@@ -233,6 +243,7 @@ object GeneticTest {
 
   def main(args:Array[String]): Unit = {
 
+    // Parent plants (and, grandparents)
     val plantGP1aGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
     val plantGP1bGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
     val plant1ChromosomePairs = new ChromosomePair(plantGP1aGenes, plantGP1bGenes)
@@ -246,6 +257,13 @@ object GeneticTest {
     val plant2ChromosomePairs = new ChromosomePair(plantGP2aGenes, plantGP2bGenes)
     println("Plant 2")
     println(plant2ChromosomePairs.toString())
+
+    println("")
+
+    // Offspring
+    val offspring = GeneticReproduction.mateGenesPunnetSquare(plant1ChromosomePairs, plant2ChromosomePairs)
+    println("Offspring")
+    println(offspring.toString())
 
 
   }
