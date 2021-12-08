@@ -3,17 +3,18 @@ package scienceworld.environments
 import scienceworld.objects.livingthing.animals.{Animal, Bee}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, GlassJar, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, SteelTable, WoodTable}
-import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, Stove, Thermometer, Toilet}
+import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, StopWatch, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, SolarPanel, Switch, Wire}
 import scienceworld.objects.environmentoutside.{FirePit, Fountain}
 import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree, Plant, Soil}
 import scienceworld.objects.location.{Location, Outside, Room, Universe}
-import scienceworld.objects.misc.{ForkMetal, ForkPlastic, Picture}
+import scienceworld.objects.misc.{ForkMetal, ForkPlastic, InclinedPlane, Picture}
 import scienceworld.objects.portal.Door
 import scienceworld.objects.substance.food.{Apple, Banana, Orange, OrangeJuice, Potato}
 import scienceworld.objects.substance.paint.{BluePaint, GreenPaint, OrangePaint, RedPaint, VioletPaint, YellowPaint}
 import scienceworld.objects.substance.{Soap, SodiumChloride, Wood}
 import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalConductivity}
+import scienceworld.properties.{PlasticProp, SandpaperProp}
 import scienceworld.struct.EnvObject
 
 import scala.util.Random
@@ -199,6 +200,7 @@ object RoomMaker {
     // Soap
     room.addObject(new Soap())
 
+    room.addObject(new StopWatch())
 
     // Return
     room
@@ -260,7 +262,14 @@ object RoomMaker {
     room.addObject( new AnswerBox("red") )
     */
 
+    //##
+    val inclinedPlane1 = new InclinedPlane(angleDeg = 45, surfaceMaterial = new SandpaperProp())
+    room.addObject(inclinedPlane1)
 
+    val inclinedPlane2 = new InclinedPlane(angleDeg = 45, surfaceMaterial = new PlasticProp())
+    room.addObject(inclinedPlane2)
+
+    // TODO: Task: Which inclined plane has the steepest angle?
 
     // Return
     room

@@ -1,7 +1,7 @@
 package scienceworld.input
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
-import scienceworld.actions.{ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMix, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionUseDevice, ActionWait, PossibleAction}
+import scienceworld.actions.{ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMix, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionTaskDesc, ActionUseDevice, ActionWait1, ActionWait10, PossibleAction}
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 
@@ -30,11 +30,13 @@ object ActionDefinitions {
   val ACTION_ID_FLUSH         = 15
   val ACTION_ID_CONNECT       = 16
   val ACTION_ID_DISCONNECT    = 17
-  val ACTION_ID_WAIT          = 18
-  val ACTION_ID_INVENTORY     = 19
-  val ACTION_ID_PICKUP        = 20
-  val ACTION_ID_PUTDOWN       = 21
-  val ACTION_ID_MIX           = 22
+  val ACTION_ID_WAIT1         = 18
+  val ACTION_ID_WAIT10        = 19
+  val ACTION_ID_INVENTORY     = 20
+  val ACTION_ID_PICKUP        = 21
+  val ACTION_ID_PUTDOWN       = 22
+  val ACTION_ID_MIX           = 23
+  val ACTION_ID_TASKDESC      = 24
 
 
   /*
@@ -97,7 +99,8 @@ object ActionDefinitions {
     ActionDisconnectElectrical.registerAction(actionHandler)
 
     // Wait
-    ActionWait.registerAction(actionHandler)
+    ActionWait1.registerAction(actionHandler)
+    ActionWait10.registerAction(actionHandler)
 
     // Inventory
     ActionInventory.registerAction(actionHandler)
@@ -106,6 +109,9 @@ object ActionDefinitions {
 
     // Mix
     ActionMix.registerAction(actionHandler)
+
+    // Task description
+    ActionTaskDesc.registerAction(actionHandler)
 
     // Return
     actionHandler
@@ -158,13 +164,16 @@ object ActionDefinitions {
     out.insertAll(out.length, ActionDisconnectElectrical.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
 
     // Wait
-    out.insertAll(out.length, ActionWait.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+    out.insertAll(out.length, ActionWait1.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+    out.insertAll(out.length, ActionWait10.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
 
     // Inventory
     out.insertAll(out.length, ActionInventory.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
     out.insertAll(out.length, ActionPickUpObjectIntoInventory.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
     out.insertAll(out.length, ActionPutDownObjectIntoInventory.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
 
+    // Task Description
+    out.insertAll(out.length, ActionTaskDesc.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
 
     // Return
     return out.toArray

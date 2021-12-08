@@ -20,6 +20,9 @@ class Agent extends EnvObject {
   val inventory = new InventoryContainer()
   this.addObject(inventory)
 
+  // Task description
+  var taskDescriptionStr:String = ""
+
   /*
    * Inventory methods
    */
@@ -48,7 +51,14 @@ class Agent extends EnvObject {
     return false
   }
 
+  /*
+   * Task description
+   */
+  def getTaskDescription():String = this.taskDescriptionStr
 
+  def setTaskDescription(taskStr:String): Unit = {
+    this.taskDescriptionStr = taskStr
+  }
 
   /*
    * Standard methods
@@ -56,9 +66,9 @@ class Agent extends EnvObject {
 
   override def tick(): Boolean = {
     // Decrease waiting time (if agent is waiting)
-    if (this.isWaiting()) {
-      this.decrementWait()
-    }
+    //if (this.isWaiting()) {
+    //  this.decrementWait()
+    //}
 
 
     super.tick()

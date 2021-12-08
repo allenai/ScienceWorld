@@ -6,7 +6,7 @@ import scienceworld.objects.devices.Stove
 import scienceworld.objects.substance.food.{AppleJuice, Chocolate, IceCream, Marshmallow, OrangeJuice}
 import scienceworld.objects.substance.{Caesium, Gallium, Ice, Lead, Mercury, Soap, Tin}
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.{Task, TaskDisable, TaskMaker, TaskMaker1, TaskModifier, TaskObject}
+import scienceworld.tasks.{Task, TaskDisable, TaskMaker1, TaskModifier, TaskObject}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalChangeStateOfMatter, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter}
 import scienceworld.tasks.specifictasks.TaskChangeOfState.{MODE_BOIL, MODE_CHANGESTATE, MODE_FREEZE, MODE_MELT}

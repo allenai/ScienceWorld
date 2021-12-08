@@ -9,7 +9,7 @@ import scienceworld.input.{ActionDefinitions, ActionHandler, InputParser}
 import scienceworld.objects.substance.food.Apple
 import scienceworld.properties.BlackPaintProp
 import scienceworld.runtime.AgentInterface
-import scienceworld.tasks.{Task, TaskMaker, TaskMaker1}
+import scienceworld.tasks.{Task, TaskMaker1}
 import scienceworld.tasks.goals.ObjMonitor
 import scienceworld.tasks.specifictasks.TaskChangeOfState
 import scienceworld.tasks.specifictasks.TaskChangeOfState.MODE_MELT
@@ -55,7 +55,7 @@ object EntryPoint {
     //val taskName = taskMaker.getTaskList()(8)
     //val taskName = taskMaker.getTaskList()(7)
     //val taskName = taskMaker.getTaskList()(0)
-    val taskName = taskMaker.getTaskList()(18)
+    val taskName = taskMaker.getTaskList()(22)
 
     // Setup task
     val (task_, taskErrStr) = taskMaker.doTaskSetup(taskName, 100, universe, agent)

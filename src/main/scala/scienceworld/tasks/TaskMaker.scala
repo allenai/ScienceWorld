@@ -10,12 +10,16 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
-class TaskMaker {
+/*
+ * DEPRICATED (Replaced with other TaskMaker)
+ */
+
+class TaskMakerDepricated {
 
 }
 
 
-object TaskMaker {
+object TaskMakerDepricated {
   val tasks = mutable.Map[String, Task]()
   // Constructor
   this.registerTasks()

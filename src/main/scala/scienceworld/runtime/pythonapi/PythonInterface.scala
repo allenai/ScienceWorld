@@ -6,7 +6,7 @@ import scienceworld.input.{ActionDefinitions, InputParser}
 import scienceworld.objects.agent.Agent
 import scienceworld.runtime.AgentInterface
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.{Task, TaskMaker}
+import scienceworld.tasks.{Task, TaskMaker1}
 import util.{UniqueIdentifier, UniqueTypeID}
 
 import collection.JavaConverters._
@@ -24,31 +24,43 @@ class PythonInterface() {
   var agent:Option[Agent] = None
   val actionHandler = ActionDefinitions.mkActionDefinitions()
 
-  var environmentStr:String = ""
+  var taskStr:String = ""                // Environment/task name
+  var taskVariationIdx:Int = 0           // Task variation seed
 
   var score:Double = 0.0
   var isComplete:Boolean = false
 
   var errorUnknownEnvironment:Boolean = false
+  var errorStr:String = ""
+
+  val taskMaker = new TaskMaker1()
 
   /*
    * Load/reset/shutdown server
    */
-  def load(environmentStr:String): Unit = {
-    this.environmentStr = environmentStr
+  def load(taskStr:String, variationIdx:Int): Unit = {
+    this.taskStr = taskStr
+    this.taskVariationIdx = variationIdx
+
+    // Clear error string
+    this.errorStr = ""
 
     // Reset UUID counter
     UniqueIdentifier.reset()
 
-    //## Currently, get a random task instead of using the environment string
-    var task:Option[Task] = None
-    if (environmentStr == "random") {
-      task = Some(TaskMaker.getRandomTask())
-    } else {
-      task = TaskMaker.getTask(environmentStr)
-    }
-
+    // Make environment and agent
     val (universe, agent_) = EnvironmentMaker.mkKitchenEnvironment()
+
+    //## Currently, get a random task instead of using the environment string
+    // Set up task
+    val (task_, taskErrStr) = taskMaker.doTaskSetup(taskStr, this.taskVariationIdx, universe, agent_)
+    var task:Option[Task] = None
+    if (task_.isDefined) {
+      task = task_
+    } else {
+      task = Some( Task.mkUnaccomplishableTask() )
+      errorStr += "ERROR: Task (" + this.taskStr + "): " + taskErrStr
+    }
 
     if (task.isDefined) {
       this.errorUnknownEnvironment = false
@@ -61,7 +73,7 @@ class PythonInterface() {
   }
 
   def reset() = {
-    this.load(environmentStr)
+    this.load(this.taskStr, this.taskVariationIdx)
   }
 
   def shutdown(): Unit = {
@@ -72,7 +84,12 @@ class PythonInterface() {
    * Get valid tasks/environments
    */
   def getTaskNames():java.util.List[String] = {
-    TaskMaker.getAllTaskNames().toList.asJava
+    taskMaker.getTaskList().toList.asJava
+  }
+
+  // Get the maximum variations for a given task
+  def getTaskMaxVariations(taskName:String): Int = {
+    taskMaker.getMaxVariations(taskName)
   }
 
   /*
@@ -148,7 +165,8 @@ class PythonInterface() {
   def step(userInputString:String): String = {
     val outStr = new StringBuilder
     // Error checking
-    if (this.errorUnknownEnvironment) return "ERROR: Unknown environment (" + this.environmentStr + ")."
+    if (this.errorStr != "") return this.errorStr
+    if (this.errorUnknownEnvironment) return "ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ")."
     if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
     if (agent.isEmpty) return "ERROR: No agent is marked as main."
     if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."

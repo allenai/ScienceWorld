@@ -17,8 +17,11 @@ def speedTest(jarPath:str):
 
     # Initialize environment    
     env = VirtualEnv("", jarPath, threadNum = 0)
-    taskName = env.getTaskNames()[0]        # Just get first task    
-    env.load(taskName)
+    taskNames = env.getTaskNames()
+    taskName = taskNames[0]        # Just get first task    
+    maxVariations = env.getMaxVariations(taskName)
+    randVariationIdx = random.randrange(0, maxVariations)           # Pick a random variation
+    env.load(taskName, randVariationIdx)
     initialObs, initialDict = env.reset()
 
     numEpochs = 1000
@@ -46,10 +49,15 @@ def randomModel(jarPath:str):
     # Initialize environment    
     env = VirtualEnv("", jarPath, threadNum = 0)
 
-    taskName = env.getTaskNames()[0]        # Just get first task    
-    env.load(taskName)
+    taskNames = env.getTaskNames()
+    taskName = taskNames[0]        # Just get first task    
+    maxVariations = env.getMaxVariations(taskName)
+    randVariationIdx = random.randrange(0, maxVariations)           # Pick a random variation
+    env.load(taskName, randVariationIdx)
     
     initialObs, initialDict = env.reset()
+
+    print("Task Names: " + str(taskNames))
 
     print("Possible actions: " + str(env.getPossibleActions()) )
     print("Possible objects: " + str(env.getPossibleObjects()) )
@@ -57,11 +65,21 @@ def randomModel(jarPath:str):
 
     #print("Possible action/object combinations: " + str(templates))
     #print("Object IDX to Object Referent LUT: " + str(lut))
+
+    print("Task Name: " + taskName)
+    print("Task Variation: " + str(randVariationIdx) + " / " + str(maxVariations))
+    print("Task Description: " + str(env.getTaskDescription()) )    
     
+
+    print("look: " + str(env.look()) )
+    print("inventory: " + str(env.inventory()) )
+    print("taskdescription: " + str(env.taskdescription()) )
+    
+
     score = 0.0
     isCompleted = False
     curIter = 0
-    maxIter = 1000
+    maxIter = 10
 
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands) and (isCompleted == False) and (curIter < maxIter):
@@ -123,10 +141,16 @@ def userConsole(jarPath:str):
 
     # Initialize environment
     env = VirtualEnv("", jarPath, threadNum = 0)
-    taskName = env.getTaskNames()[0]        # Just get first task    
-    env.load(taskName)
+    taskNames = env.getTaskNames()
+    taskName = taskNames[0]        # Just get first task    
+    maxVariations = env.getMaxVariations(taskName)
+    randVariationIdx = random.randrange(0, maxVariations)           # Pick a random variation
+    env.load(taskName, randVariationIdx)
+
     initialObs, initialDict = env.reset()
     
+    print("Task Names: " + str(taskNames))
+
     print("Possible actions: " + str(env.getPossibleActions()) )
     print("Possible objects: " + str(env.getPossibleObjects()) )
     templates, lut = env.getPossibleActionObjectCombinations()
@@ -147,7 +171,11 @@ def userConsole(jarPath:str):
     print("\n")
     print("Valid action-object combinations (with templates): " + str(env.getValidActionObjectCombinationsWithTemplates() ))
     print("\n")
+    
+    print("Task Name: " + taskName)
+    print("Task Variation: " + str(randVariationIdx) + " / " + str(maxVariations))
     print("Task Description: " + str(env.getTaskDescription()) )    
+
 
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands):

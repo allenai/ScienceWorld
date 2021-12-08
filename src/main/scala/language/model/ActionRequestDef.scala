@@ -95,7 +95,7 @@ case class ActionExprIdentifier(val identifier:String) extends ActionExpr {
 
     // Create a plain-text description of the object
     val objDesc = new StringBuilder()
-    objDesc.append( obj.getName() )
+    objDesc.append( obj.getDescriptName() )
 
     // Add text that describes it's location
     val container = obj.getContainer()

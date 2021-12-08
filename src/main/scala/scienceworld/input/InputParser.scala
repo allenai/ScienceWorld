@@ -15,7 +15,6 @@ import scala.util.Random
 import scala.util.control.Breaks.{break, breakable}
 
 class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
-  val stopWords = Array("a", "the")
   var lastAmbiguousMatches:Option[Array[InputMatch]] = None
 
   // Get a list of all referents
@@ -119,7 +118,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   // Perspective container: The container where the agent is located
   def parse(inputStr:String, objTreeRoot:EnvObject, agent:Agent, objMonitor:ObjMonitor, goalSequence:GoalSequence, perspectiveContainer:EnvObject): (Boolean, String, String, Option[Action]) = {      // (Success, errorMessage, userString)
     // TODO: Only include observable objects in the list of all objects
-    val tokens = this.tokenize(inputStr.toLowerCase)
+    val tokens = InputParser.tokenize(inputStr.toLowerCase)
     val allObjs = (InputParser.collectAccessibleObjects(objTreeRoot, includeHidden = true) ++ InputParser.collectAccessibleObjects(agent, includeHidden = true)).toArray
 
     //println ("inputStr: " + inputStr)
@@ -340,7 +339,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
 
     for (obj <- allObjs) {
       val referents = InputParser.getObjectReferents(obj, perspectiveContainer)
-      // println ("\t matchObj: " + referents.mkString(", "))
+      //println ("\t matchObj: " + referents.mkString(", "))
       for (referent <- referents) {
         if (inStr.startsWith(referent)) {
           val restOfStr = inStr.substring(referent.length).trim()
@@ -356,17 +355,6 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   /*
    * Helper functions
    */
-  def tokenize(inputStr:String):Array[String] = {
-    val out = new ArrayBuffer[String]
-    val tokens = inputStr.trim.replaceAll("\\s+", " ").split(" ")
-    for (token <- tokens) {
-      if (!stopWords.contains(token)) {
-        out.append(token)
-      }
-    }
-    // Return
-    out.toArray
-  }
 
   // Removes duplicate matches
   def removeDuplicates(in:Array[Array[EnvObject]]):Array[Array[EnvObject]] = {
@@ -468,6 +456,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
 
 
 object InputParser {
+  val stopWords = Array("a", "an", "the")
 
   // DEBUG: Get a list of all possible valid referents, for debugging
   def getPossibleReferents(objTreeRoot:EnvObject, perspectiveContainer:EnvObject):Array[String] = {
@@ -483,7 +472,27 @@ object InputParser {
   }
 
   def getObjectReferents(obj:EnvObject, perspectiveContainer:EnvObject):Array[String] = {
-    return obj.getReferentsWithContainers(perspectiveContainer).map(_.toLowerCase).toArray
+    val referents = obj.getReferentsWithContainers(perspectiveContainer).map(_.toLowerCase).toArray
+
+    val out = new ArrayBuffer[String]
+    for (referent <- referents) {
+      val filtered = tokenize(referent).mkString(" ")     // Tokenize, remove stop words, etc.
+      out.append(filtered)
+    }
+
+    out.toArray
+  }
+
+  def tokenize(inputStr:String):Array[String] = {
+    val out = new ArrayBuffer[String]
+    val tokens = inputStr.trim.replaceAll("\\s+", " ").split(" ")
+    for (token <- tokens) {
+      if (!stopWords.contains(token)) {
+        out.append(token)
+      }
+    }
+    // Return
+    out.toArray
   }
 
 

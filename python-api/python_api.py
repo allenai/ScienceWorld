@@ -20,8 +20,8 @@ class VirtualEnv:
     #
     # Constructor
     #
-    def __init__(self, scriptFilename, serverPath, threadNum=0):
-        self.scriptFilename = scriptFilename
+    def __init__(self, taskName, serverPath, threadNum=0):
+        self.taskName = taskName
 
         # Define the port number
         self.portNum = 25335 + threadNum        
@@ -33,7 +33,7 @@ class VirtualEnv:
         self.gateway = JavaGateway(gateway_parameters=GatewayParameters(auto_field=True, port=self.portNum))
 
         # Load the script
-        self.load(self.scriptFilename)
+        self.load(self.taskName, 0)
 
     #
     #   Destructor
@@ -57,12 +57,12 @@ class VirtualEnv:
         time.sleep(1)
 
     # Ask the simulator to load an environment from a script
-    def load(self, taskName):
+    def load(self, taskName, variationIdx):
         # TODO: Error handling
         self.scriptFilename = taskName
 
-        print("Load: " + self.scriptFilename)
-        self.gateway.load(self.scriptFilename)
+        print("Load: " + self.scriptFilename + " (variation: " + str(variationIdx) + ")")
+        self.gateway.load(self.scriptFilename, variationIdx)
 
 
     # Ask the simulator to reset an environment back to it's initial state
@@ -84,6 +84,9 @@ class VirtualEnv:
     def getTaskNames(self):
         return self.gateway.getTaskNames()
 
+    # Get the maximum number of variations for this task
+    def getMaxVariations(self, taskName):
+        return self.gateway.getTaskMaxVariations(taskName)
 
     # Get possible actions
     def getPossibleActions(self):
@@ -175,4 +178,19 @@ class VirtualEnv:
         return observation, score, isCompleted, {'moves': numMoves, 'score': score}
 
 
+    # Special actions that are "free" (consume zero time)
+    def look(self):
+        inputStr = "look around"        
+        observation = self.gateway.step(inputStr)
+        return observation
+
+    def inventory(self):
+        inputStr = "inventory"
+        observation = self.gateway.step(inputStr)
+        return observation
+
+    def taskdescription(self):
+        inputStr = "task"
+        observation = self.gateway.step(inputStr)
+        return observation
 

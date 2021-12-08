@@ -19,6 +19,9 @@ trait MaterialProperties {
   // Electrical
   var electricallyConductive:Boolean  = false
 
+  // Friction
+  var frictionCoefficient:Double      = 0.50      // 0 is no friction, 1 is complete friction
+
 }
 
 
@@ -35,6 +38,10 @@ class AirProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = false
+
+  // Friction
+  frictionCoefficient             = 0.0      // 0 is no friction, 1 is complete friction
+
 }
 
 /*
@@ -53,6 +60,8 @@ class SodiumProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.0      // 0 is no friction, 1 is complete friction
 }
 
 
@@ -72,6 +81,9 @@ class MetalProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.5
+
 }
 
 class AluminumProp extends MetalProp {
@@ -87,6 +99,8 @@ class AluminumProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.45
 
 }
 
@@ -103,6 +117,8 @@ class BrassProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.50
 
 }
 
@@ -119,6 +135,8 @@ class BronzeProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.40
 
 }
 
@@ -135,6 +153,8 @@ class CaesiumProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.50
 
 }
 
@@ -151,6 +171,8 @@ class CopperProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.60
 
 }
 
@@ -167,6 +189,8 @@ class GalliumProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.0      // 0 is no friction, 1 is complete friction
 
 }
 
@@ -183,6 +207,8 @@ class GoldProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.0      // 0 is no friction, 1 is complete friction
 
 }
 
@@ -199,6 +225,8 @@ class IronProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.7
 
 }
 
@@ -215,6 +243,8 @@ class LeadProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.43
 
 }
 
@@ -231,6 +261,8 @@ class MercuryProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.1
 
 }
 
@@ -247,6 +279,8 @@ class PlatinumProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.8
 
 }
 
@@ -263,6 +297,8 @@ class SiliconProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.0      // 0 is no friction, 1 is complete friction
 
 }
 
@@ -279,6 +315,8 @@ class SteelProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.6
 
 }
 
@@ -295,6 +333,8 @@ class TinProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.3
 
 }
 
@@ -311,6 +351,8 @@ class TitaniumProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.0      // 0 is no friction, 1 is complete friction
 
 }
 
@@ -327,6 +369,8 @@ class ZincProp extends MetalProp {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.62
 
 }
 
@@ -346,6 +390,8 @@ class GlassProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.20
 
 }
 
@@ -366,6 +412,8 @@ class PlasticProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.1
 
 }
 
@@ -385,6 +433,8 @@ class CeramicProp extends MaterialProperties {
   combustionPoint                 = 10000.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.65
 
 }
 
@@ -406,6 +456,8 @@ class WoodProp extends MaterialProperties {
   combustionPoint                 = 350.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.2
 
 }
 
@@ -423,6 +475,29 @@ class PaperProp extends MaterialProperties {
   combustionPoint                 = 210.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.2
+
+}
+
+/*
+ * Sand paper
+ */
+class SandpaperProp extends MaterialProperties {
+  substanceName                   = "sandpaper"
+  nameInStateOfMatter             = Map()
+  color                           = "brown"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 230.0f
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.98
 
 }
 
@@ -443,6 +518,8 @@ class CottonClothProp extends MaterialProperties {
   combustionPoint                 = 300.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.3
 
 }
 
@@ -462,6 +539,8 @@ class RubberProp extends MaterialProperties {
   combustionPoint                 = 260.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.95      // 0 is no friction, 1 is complete friction
 
 }
 
@@ -482,6 +561,8 @@ class WaterProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.1
 
 }
 
@@ -499,6 +580,9 @@ class OrangeJuiceProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.1
+
 }
 
 class AppleJuiceProp extends MaterialProperties {
@@ -514,6 +598,9 @@ class AppleJuiceProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.1
+
 }
 
 /*
@@ -532,6 +619,9 @@ class SoilProp extends MaterialProperties {
   combustionPoint                 = 10000.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.3      // 0 is no friction, 1 is complete friction  (GUESS)
+
 
 }
 
@@ -548,6 +638,8 @@ class PlantMatterProp extends MaterialProperties {
   combustionPoint                 = 200.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.3      // 0 is no friction, 1 is complete friction  (GUESS)
 
 }
 
@@ -564,6 +656,8 @@ class FlowerMatterProp extends MaterialProperties {
   combustionPoint                 = 200.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.3      // 0 is no friction, 1 is complete friction  (GUESS)
 
 }
 
@@ -580,6 +674,8 @@ class PollenMatterProp extends MaterialProperties {
   combustionPoint                 = 200.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.5      // 0 is no friction, 1 is complete friction  (GUESS)
 
 }
 
@@ -600,6 +696,9 @@ class ChocolateProp extends MaterialProperties {
   combustionPoint                 = 95.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.32
+
 }
 
 class MarshmallowProp extends MaterialProperties {
@@ -615,6 +714,9 @@ class MarshmallowProp extends MaterialProperties {
   combustionPoint                 = 350.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.70      // 0 is no friction, 1 is complete friction (GUESS)
+
 }
 
 class SoapProp extends MaterialProperties {
@@ -630,6 +732,9 @@ class SoapProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.05      // 0 is no friction, 1 is complete friction (GUESS)
+
 }
 
 class IceCreamProp extends MaterialProperties {
@@ -645,6 +750,9 @@ class IceCreamProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.1      // 0 is no friction, 1 is complete friction (GUESS)
+
 }
 
 class AshProp extends MaterialProperties {
@@ -664,6 +772,8 @@ class AshProp extends MaterialProperties {
   combustionTicks                 = 0
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.9      // 0 is no friction, 1 is complete friction (GUESS)
 
 
 }
@@ -685,6 +795,9 @@ class SodiumChlorideProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.73
+
 }
 
 class SaltWaterProp extends MaterialProperties {
@@ -700,6 +813,9 @@ class SaltWaterProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = true
+  // Friction
+  frictionCoefficient             = 0.15
+
 }
 
 class SoapyWaterProp extends MaterialProperties {
@@ -715,8 +831,29 @@ class SoapyWaterProp extends MaterialProperties {
   combustionPoint                 = 100000.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.06
+
 }
 
+
+class BrickProp extends MaterialProperties {
+  substanceName                   = "brick"
+  nameInStateOfMatter             = Map()
+  color                           = "red"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.10
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 100001.0f
+  meltingPoint                    = 1500.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.90
+
+}
 
 /*
  * Paint
@@ -738,6 +875,9 @@ class GenericPaintProp extends MaterialProperties {
   combustionPoint                 = 293.0f
   // Electrical
   electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.3      // 0 is no friction, 1 is complete friction (GUESS)
+
 }
 
 class WhitePaintProp extends GenericPaintProp {
@@ -905,3 +1045,73 @@ class YellowGreenPaintProp extends GenericPaintProp {
 // Brown
 // Black
 // White
+
+/*
+ * Materials of unknown friction
+ */
+class UnknownFrictionMaterial extends MaterialProperties {
+  substanceName                   = "unknown material"
+  nameInStateOfMatter             = Map()
+  color                           = "grey"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.10
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 100002.0f
+  meltingPoint                    = 100001.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.0
+}
+
+class UnknownFrictionMaterialA extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material A"
+  frictionCoefficient             = 0.1
+}
+
+class UnknownFrictionMaterialB extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material B"
+  frictionCoefficient             = 0.7
+}
+
+class UnknownFrictionMaterialC extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material C"
+  frictionCoefficient             = 0.4
+}
+
+class UnknownFrictionMaterialD extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material D"
+  frictionCoefficient             = 0.6
+}
+
+class UnknownFrictionMaterialE extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material E"
+  frictionCoefficient             = 0.2
+}
+
+class UnknownFrictionMaterialF extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material F"
+  frictionCoefficient             = 0.8
+}
+
+class UnknownFrictionMaterialG extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material -G"
+  frictionCoefficient             = 0.3
+}
+
+class UnknownFrictionMaterialH extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material H"
+  frictionCoefficient             = 0.9
+}
+
+class UnknownFrictionMaterialJ extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material J"
+  frictionCoefficient             = 0.9
+}
+
+class DefaultFrictionMaterialProp extends UnknownFrictionMaterial {
+  substanceName                   = "unknown material J"
+  frictionCoefficient             = 0.5
+}

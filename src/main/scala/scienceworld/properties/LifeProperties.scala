@@ -153,4 +153,33 @@ class LifePropertiesAnt extends LifePropertiesAnimal {
 }
 
 
+// Other
+class LifePropertiesButterfly extends LifePropertiesAnimal {
+  this.lifeformType         = "butterfly"
+  this.lifespanTypical      = 0.1f
+}
 
+class LifePropertiesMoth extends LifePropertiesAnimal {
+  this.lifeformType         = "moth"
+  this.lifespanTypical      = 0.2f
+}
+
+class LifePropertiesFrog extends LifePropertiesAnimal {
+  this.lifeformType         = "frog"
+  this.lifespanTypical      = 6.0f
+}
+
+class LifePropertiesDove extends LifePropertiesAnimal {
+  this.lifeformType         = "dove"
+  this.lifespanTypical      = 2.0f
+}
+
+class LifePropertiesBlueJay extends LifePropertiesAnimal {
+  this.lifeformType         = "blue jay"
+  this.lifespanTypical      = 7.0f
+}
+
+class LifePropertiesTurtle extends LifePropertiesAnimal {
+  this.lifeformType         = "turtle"
+  this.lifespanTypical      = 30.0f
+}

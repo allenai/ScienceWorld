@@ -25,6 +25,9 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     agent.getInventoryContainer().addObject(taskObject)
   }
 
+  // Store a copy of the task description in the agent, for easy access through the action space
+  agent.setTaskDescription(this.getTaskDescription())
+
   private var curIter:Int = 0
 
   /*
@@ -350,34 +353,41 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     try {
       breakable {
         while (true) {
+          val willActionsTakeTime: Boolean = actionHandler.doQueuedActionsTakeTime()
+
           // Run queued actions
           val actionOutStr = actionHandler.runQueuedActions()
           userOutStr.append(actionOutStr)
 
           // Run universe tick
-          universe.clearTickProcessedRecursive()
-          universe.tick()
+          if (willActionsTakeTime) {
+            universe.clearTickProcessedRecursive()
+            universe.tick()
 
-          // Check whether the goal conditions are met
-          task.goalSequence.tick(objMonitor)
+            // Check whether the goal conditions are met
+            task.goalSequence.tick(objMonitor)
+
+          }
 
           // Increment the number of iterations
           this.curIter += 1
 
-          // If the agent is not waiting, then break.  But if the agent is waiting, continue cycling through until the agent is finished waiting X number of ticks. (wait time is automatically decreased in the agent's wait function)
-          if (!agent.isWaiting()) break
+          // If the agent is not waiting, then break.  But if the agent is waiting, continue cycling through until the agent is finished waiting X number of ticks.
+          if (agent.isWaiting()) {
+            agent.decrementWait()
+          } else {
+            break
+          }
         }
       }
       //## Uncomment when debugging in IntelliJ
-    }
-    /*
-        } catch {
-          case e:Throwable => {
-            this.setErrorState(e.toString)
-          }
+    } catch {
+      case e: Throwable => {
+        this.setErrorState(e.toString)
+      }
 
-        }
-    */
+    }
+
 
     val score = task.goalSequence.score()
     val isCompleted = task.goalSequence.isCompleted()
