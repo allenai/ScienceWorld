@@ -60,6 +60,11 @@ class LifePropertiesPeach extends LifePropertiesPlant {
 }
 
 
+class LifePropertiesPea extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_PEA
+}
+
+
 /*
  * Animals
  */
@@ -182,4 +187,10 @@ class LifePropertiesBlueJay extends LifePropertiesAnimal {
 class LifePropertiesTurtle extends LifePropertiesAnimal {
   this.lifeformType         = "turtle"
   this.lifespanTypical      = 30.0f
+}
+
+
+class LifePropertiesBee extends LifePropertiesAnimal {
+  this.lifeformType         = "bee"
+  this.lifespanTypical      = 0.1f
 }

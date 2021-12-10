@@ -2,6 +2,7 @@ package scienceworld.processes.genetics
 
 import GeneticTrait._
 
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
@@ -20,6 +21,9 @@ class Chromosomes(val chromosomes:Array[GeneticTrait]) {
 
 // Two complete sets of alleles, one from each parent, for the traits for a given lifeform
 class ChromosomePair(val parent1:Chromosomes, val parent2:Chromosomes) {
+  val phenotypes = this.getPhenotypes()                   // Precompute phenotypes
+  val phenotypeStrings = this.getPhenotypeStrings()       // Precompute phenotype descriptions
+  val phenotypeValues = this.getPhenotypeValues()
 
   def getTraitNames():Set[String] = {
     return parent1.chromosomes.map(_.traitName).toSet ++ parent2.chromosomes.map(_.traitName).toSet
@@ -57,6 +61,12 @@ class ChromosomePair(val parent1:Chromosomes, val parent2:Chromosomes) {
     return None
   }
 
+  def getPhenotypeValue(traitName:String):Option[String] = {
+    if (!this.phenotypeValues.contains(traitName)) return None
+    return Some(this.phenotypeValues(traitName))
+
+  }
+
   def getGenotype(traitName:String):Option[(GeneticTrait, GeneticTrait)] = {
     // Step 1: Find trait from both parents
     var traitP1:Option[GeneticTrait] = None
@@ -73,6 +83,41 @@ class ChromosomePair(val parent1:Chromosomes, val parent2:Chromosomes) {
     // Return
     if (traitP1.isEmpty || traitP2.isEmpty) return None
     return Some(traitP1.get, traitP2.get)
+  }
+
+  /*
+   * Helper methods
+   */
+  def getPhenotypeStrings():Map[String, String] = {
+    val out = mutable.Map[String, String]()
+    val phenotypes = this.getPhenotypes()
+
+    for (pTrait <- phenotypes) {
+      val traitName = pTrait.traitName
+      val traitValueDesc = pTrait.mkHumanReadableDescStr()
+      out(traitName) = traitValueDesc
+    }
+
+    out.toMap
+  }
+
+  def getPhenotypeValues():Map[String, String] = {
+    val out = mutable.Map[String, String]()
+    val phenotypes = this.getPhenotypes()
+
+    for (pTrait <- phenotypes) {
+      val traitName = pTrait.traitName
+      val traitValue = pTrait.getValue()
+      out(traitName) = traitValue
+    }
+
+    out.toMap
+  }
+
+  // Get the precomputed phenotype value strings
+  def getTraitPhenotypeHumanReadableStr(traitName:String):Option[String] = {
+    if (!this.phenotypeStrings.contains(traitName)) return None
+    return Some(this.phenotypeStrings(traitName))
   }
 
   /*
@@ -218,7 +263,13 @@ object GeneticTraitPeas {
   }
 
 
-  def mkRandom():Array[GeneticTrait] = {
+  def mkRandomChromosomePair():ChromosomePair = {
+    val parent1 = new Chromosomes( this.mkRandomTraits() )
+    val parent2 = new Chromosomes( this.mkRandomTraits() )
+    return new ChromosomePair(parent1, parent2)
+  }
+
+  def mkRandomTraits():Array[GeneticTrait] = {
     val out = new ArrayBuffer[GeneticTrait]()
 
     out.append( mkTraitPlantHeight(this.mkRandomDomRec()) )
@@ -244,16 +295,16 @@ object GeneticTest {
   def main(args:Array[String]): Unit = {
 
     // Parent plants (and, grandparents)
-    val plantGP1aGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
-    val plantGP1bGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
+    val plantGP1aGenes = new Chromosomes( GeneticTraitPeas.mkRandomTraits() )
+    val plantGP1bGenes = new Chromosomes( GeneticTraitPeas.mkRandomTraits() )
     val plant1ChromosomePairs = new ChromosomePair(plantGP1aGenes, plantGP1bGenes)
     println("Plant 1")
     println(plant1ChromosomePairs.toString())
 
     println("")
 
-    val plantGP2aGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
-    val plantGP2bGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
+    val plantGP2aGenes = new Chromosomes( GeneticTraitPeas.mkRandomTraits() )
+    val plantGP2bGenes = new Chromosomes( GeneticTraitPeas.mkRandomTraits() )
     val plant2ChromosomePairs = new ChromosomePair(plantGP2aGenes, plantGP2bGenes)
     println("Plant 2")
     println(plant2ChromosomePairs.toString())

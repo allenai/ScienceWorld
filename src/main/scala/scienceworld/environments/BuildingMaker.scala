@@ -6,7 +6,7 @@ import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Cou
 import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, StopWatch, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, SolarPanel, Switch, Wire}
 import scienceworld.objects.environmentoutside.{FirePit, Fountain}
-import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeachTree, Plant, Soil}
+import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeaPlant, PeachTree, Plant, Soil}
 import scienceworld.objects.location.{Location, Outside, Room, Universe}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic, InclinedPlane, Picture}
 import scienceworld.objects.portal.Door
@@ -349,6 +349,13 @@ object RoomMaker {
     flowerpot5.addObject(plant5)
     room.addObject(flowerpot5)
 */
+
+    val flowerpot5 = new FlowerPot()
+    flowerpot5.name = "flower pot 5"
+    flowerpot5.addObject(new Soil())
+    flowerpot5.addObject(new PeaPlant())
+    room.addObject(flowerpot5)
+
 
 
     val numBees = 5

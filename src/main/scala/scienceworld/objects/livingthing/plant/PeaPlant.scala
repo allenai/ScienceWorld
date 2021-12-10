@@ -1,19 +1,18 @@
 package scienceworld.objects.livingthing.plant
 
+import scienceworld.processes.genetics.{GeneticTrait, GeneticTraitPeas}
 import scienceworld.processes.lifestage.PlantLifeStages
-import scienceworld.properties.{Edible, LifePropertiesApple, LifePropertiesAvocado, LifePropertiesBanana, LifePropertiesCherry, LifePropertiesLemon, LifePropertiesOrange, LifePropertiesPeach}
+import scienceworld.properties.{Edible, LifePropertiesApple, LifePropertiesPea}
 import scienceworld.struct.EnvObject.{MODE_CURSORY_DETAIL, MODE_DETAILED}
 import util.StringHelpers
 
-/*
- * Generic Fruiting Tree
- */
-class Tree extends Plant {
 
-}
+class PeaPlant extends Tree {
+  this.name = "pea"
 
-class FruitingTree extends Tree {
   this.propEdibility = Some(new Edible())
+  propLife = Some(new LifePropertiesPea())
+  this.propChromosomePairs = Some( GeneticTraitPeas.mkRandomChromosomePair() )
 
   override def getPlantName():String = {
     // Check if we're in the seed stage
@@ -23,8 +22,8 @@ class FruitingTree extends Tree {
       return this.getDescriptName(seedName)
     } else {
       // Plant in some stage of growth
-      val treeName = propLife.get.lifeformType + " tree"
-      return this.getDescriptName(treeName)
+      val plantName = propLife.get.lifeformType + " plant"
+      return this.getDescriptName(plantName)
     }
 
   }
@@ -63,9 +62,23 @@ class FruitingTree extends Tree {
     out
   }
 
+  // Make PLANT-SPECIFIC (not flower or seed-specific) text to add to the description, based off genetic traits
+  override def mkGeneticTraitsStr():String = {
+    val os = new StringBuilder()
+
+    if (this.lifecycle.isDefined) {
+      if ((this.lifecycle.get.getCurStageName() == PlantLifeStages.PLANT_STAGE_ADULT_PLANT) || (this.lifecycle.get.getCurStageName() == PlantLifeStages.PLANT_STAGE_REPRODUCING)) {
+        if (propChromosomePairs.isDefined) os.append(" with a " + propChromosomePairs.get.getTraitPhenotypeHumanReadableStr(GeneticTrait.TRAIT_PLANT_HEIGHT).get)
+      }
+    }
+
+    return os.toString()
+  }
+
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
     val plantName = this.getPlantName()
+
 
     // If dead, simplify the name
     if (propLife.get.isDead) {
@@ -104,46 +117,5 @@ class FruitingTree extends Tree {
     os.toString
   }
 
-}
-
-
-
-/*
- * Specific trees
- */
-
-class AppleTree extends FruitingTree {
-  propLife = Some(new LifePropertiesApple())
 
 }
-
-class AvocadoTree extends FruitingTree {
-  propLife = Some(new LifePropertiesAvocado())
-
-}
-
-class BananaTree extends FruitingTree {
-  propLife = Some(new LifePropertiesBanana())
-
-}
-
-class CherryTree extends FruitingTree {
-  propLife = Some(new LifePropertiesCherry())
-
-}
-
-class LemonTree extends FruitingTree {
-  propLife = Some(new LifePropertiesLemon())
-
-}
-
-class OrangeTree extends FruitingTree {
-  propLife = Some(new LifePropertiesOrange())
-
-}
-
-class PeachTree extends FruitingTree {
-  propLife = Some(new LifePropertiesPeach())
-}
-
-

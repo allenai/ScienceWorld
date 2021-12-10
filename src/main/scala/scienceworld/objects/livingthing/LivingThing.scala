@@ -8,9 +8,9 @@ class LivingThing extends EnvObject {
   this.name = "living thing"
 
   // Life cycle
-  var lifecycle:Option[LifeCycle] = None
+  var lifecycle: Option[LifeCycle] = None
 
-  override def tick():Boolean = {
+  override def tick(): Boolean = {
     super.tick()
   }
 
@@ -18,7 +18,12 @@ class LivingThing extends EnvObject {
     Set("living thing", "organism", this.name, this.getDescriptName())
   }
 
-  override def getDescription(mode:Int): String = {
+  // Make LIFE-FORM-SPECIFIC (not flower or seed-specific) text to add to the description, based off genetic traits
+  def mkGeneticTraitsStr(): String = {
+    return ""
+  }
+
+  override def getDescription(mode: Int): String = {
     val os = new StringBuilder
 
     os.append("a " + this.getDescriptName() + ". ")
