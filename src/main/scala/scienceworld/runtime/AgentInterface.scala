@@ -393,7 +393,8 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     val isCompleted = task.goalSequence.isCompleted()
 
     // Return action string
-    return (userOutStr.toString(), score, isCompleted)
+    val outStr = userOutStr.toString().trim.replaceAll(" +", " ")
+    return (outStr, score, isCompleted)
   }
 
 }

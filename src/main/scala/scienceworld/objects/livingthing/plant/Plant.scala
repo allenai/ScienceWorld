@@ -4,7 +4,7 @@ import scienceworld.objects.devices.Stove
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.substance.food.Apple
 import scienceworld.processes.PlantReproduction
-import scienceworld.processes.genetics.GeneticTrait
+import scienceworld.processes.genetics.{ChromosomePair, GeneticTrait}
 import scienceworld.processes.lifestage.PlantLifeStages
 import scienceworld.properties.{FlowerMatterProp, IsNotContainer, IsOpenUnclosableContainer, LifePropertiesPlant, PlantMatterProp, PollenMatterProp, PollinationProperties}
 import scienceworld.struct.EnvObject
@@ -130,6 +130,12 @@ class Pollen(val parentPlant:Plant) extends EnvObject {
   this.propContainer = Some(new IsNotContainer())
   this.propMaterial = Some(new PollenMatterProp())
 
+  // Get the chromosome pairs stored in this pollen
+  def getChromosomePair():ChromosomePair = {
+    if (parentPlant.propChromosomePairs.isEmpty) return ChromosomePair.mkBlank()
+    return parentPlant.propChromosomePairs.get
+  }
+
   def getPlantType():String = this.parentPlant.getPlantType()
 
   override def tick():Boolean = {
@@ -193,6 +199,7 @@ class Flower(parentPlant:Plant) extends EnvObject {
 
     // Step 3: Get the flower -> fruit conversion going
     this.propPollination.get.pollinationStep = 1
+    this.propPollination.get.parent2ChromosomePairs = Some( pollen.getChromosomePair() )
 
     // Return
     return true
@@ -251,7 +258,11 @@ class Flower(parentPlant:Plant) extends EnvObject {
         if (this.getContainer().isDefined) {
           println("FRUIT MADE")
           // Create appropriate fruit
-          val fruit = PlantReproduction.createFruit(this.parentPlant.getPlantType())
+          val parent1Chromosomes = parentPlant.propChromosomePairs
+          //val parent2Chromosomes = parentPlant.propChromosomePairs
+          val parent2Chromosomes = this.propPollination.get.parent2ChromosomePairs
+
+          val fruit = PlantReproduction.createFruit(this.parentPlant.getPlantType(), parent1Chromosomes, parent2Chromosomes)
           if (fruit.isDefined) {
             this.getContainer().get.addObject( fruit.get )
           }

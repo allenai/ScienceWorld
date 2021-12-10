@@ -138,6 +138,14 @@ class ChromosomePair(val parent1:Chromosomes, val parent2:Chromosomes) {
 
 }
 
+object ChromosomePair {
+  // Generator for a blank set of chromosomes, for living things without modeled genetic traits
+  def mkBlank():ChromosomePair = {
+    return new ChromosomePair( new Chromosomes(Array.empty[GeneticTrait]), new Chromosomes(Array.empty[GeneticTrait]) )
+  }
+}
+
+
 object GeneticReproduction {
 
   // Mate the genes (chromosome pairs) from two parents using a Punnet Square, to generate a new set of chromosome pairs for an offspring

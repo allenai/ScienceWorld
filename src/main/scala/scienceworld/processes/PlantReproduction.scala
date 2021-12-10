@@ -2,6 +2,7 @@ package scienceworld.processes
 
 import scienceworld.objects.livingthing.plant.{AppleTree, AvocadoTree, BananaTree, CherryTree, LemonTree, OrangeTree, PeaPlant, PeachTree}
 import scienceworld.objects.substance.food.{Apple, Avocado, Banana, Cherry, Lemon, Orange, Peach}
+import scienceworld.processes.genetics.{ChromosomePair, GeneticReproduction}
 import scienceworld.struct.EnvObject
 
 class PlantReproduction {
@@ -21,7 +22,13 @@ object PlantReproduction {
   val PLANT_PEA         = "pea"
 
   // Generator: Create an appropriate fruit for a given plant
-  def createFruit(plantType:String):Option[EnvObject] = {
+  def createFruit(plantType:String, parent1Chromosomes:Option[ChromosomePair], parent2Chromosomes:Option[ChromosomePair]):Option[EnvObject] = {
+    // If specified, perform the genetic mating
+    var matedChromosomes:Option[ChromosomePair] = None
+    if ((parent1Chromosomes.isDefined) && (parent2Chromosomes.isDefined)) {
+      matedChromosomes = Some( GeneticReproduction.mateGenesPunnetSquare(parent1Chromosomes.get, parent2Chromosomes.get) )
+    }
+
     plantType match {
       case PLANT_APPLE    => { return Some(new Apple())   }
       case PLANT_AVOCADO  => { return Some(new Avocado()) }
@@ -31,7 +38,7 @@ object PlantReproduction {
       case PLANT_ORANGE   => { return Some(new Orange())  }
       case PLANT_PEACH    => { return Some(new Peach())   }
 
-      case PLANT_PEA      => { return Some(new Peach())   }   // TODO
+      case PLANT_PEA      => { return Some(new PeaPlant(matedChromosomes))   }
 
       case _ => {
         println ("ERROR: Unknown fruit for plant type (" + plantType + "). ")

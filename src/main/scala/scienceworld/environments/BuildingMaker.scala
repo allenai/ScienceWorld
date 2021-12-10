@@ -356,6 +356,12 @@ object RoomMaker {
     flowerpot5.addObject(new PeaPlant())
     room.addObject(flowerpot5)
 
+    val flowerpot6 = new FlowerPot()
+    flowerpot6.name = "flower pot 6"
+    flowerpot6.addObject(new Soil())
+    flowerpot6.addObject(new PeaPlant())
+    room.addObject(flowerpot6)
+
 
 
     val numBees = 5
