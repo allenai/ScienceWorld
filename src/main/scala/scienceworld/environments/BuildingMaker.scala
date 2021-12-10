@@ -1,8 +1,8 @@
 package scienceworld.environments
 
 import scienceworld.objects.livingthing.animals.{Animal, Bee}
-import scienceworld.objects.containers.{BookShelf, CeramicCup, FlowerPot, GlassCup, GlassJar, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
-import scienceworld.objects.containers.furniture.{Bed, Chair, Closet, Couch, Counter, Cupboard, Desk, SteelTable, WoodTable}
+import scienceworld.objects.containers.{BookShelf, CeramicCup, Container, FlowerPot, GlassCup, GlassJar, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
+import scienceworld.objects.containers.furniture.{Bed, BeeHive, Chair, Closet, Couch, Counter, Cupboard, Desk, SteelTable, WoodTable}
 import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, StopWatch, Stove, Thermometer, Toilet}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, SolarPanel, Switch, Wire}
 import scienceworld.objects.environmentoutside.{FirePit, Fountain}
@@ -349,7 +349,7 @@ object RoomMaker {
     flowerpot5.addObject(plant5)
     room.addObject(flowerpot5)
 */
-
+/*
     val flowerpot5 = new FlowerPot()
     flowerpot5.name = "flower pot 5"
     flowerpot5.addObject(new Soil())
@@ -361,15 +361,17 @@ object RoomMaker {
     flowerpot6.addObject(new Soil())
     flowerpot6.addObject(new PeaPlant())
     room.addObject(flowerpot6)
+*/
 
-
+    val beehive = new BeeHive()
 
     val numBees = 5
     for (i <- 0 until numBees) {
       val bee = new Bee()
       bee.name = "bee " + i
-      room.addObject(bee)
+      beehive.addObject(bee)
     }
+    room.addObject(beehive)
 
 
 

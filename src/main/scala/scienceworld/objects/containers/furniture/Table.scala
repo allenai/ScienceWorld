@@ -255,3 +255,46 @@ class Drawer extends Container {
   }
 
 }
+
+
+/*
+ * Bee Hive
+ */
+class BeeHive extends Container {
+  this.name = "bee hive"
+  this.propContainer = Some(new IsContainer())
+  this.propMaterial = Some(new WoodProp())
+
+
+  override def getReferents(): Set[String] = {
+    Set("bee hive", "hive", "beehive", this.name, this.getDescriptName())
+  }
+
+
+  override def getDescription(mode: Int): String = {
+    val os = new StringBuilder
+
+    os.append("a " + this.getDescriptName() + ". ")
+
+    os.append("The " + this.getDescriptName() + " door is ")
+    if (this.propContainer.get.isOpen) {
+      os.append("open. ")
+    } else {
+      os.append("closed. ")
+    }
+
+    if (this.propContainer.get.isOpen) {
+      if (mode == MODE_CURSORY_DETAIL) {
+        os.append("In the " + this.getDescriptName() + " is: ")
+        os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = false)  )
+        os.append(".")
+      } else if (mode == MODE_DETAILED) {
+        os.append("In the " + this.getDescriptName() + " is: \n")
+        os.append( StringHelpers.objectListToStringDescription(this.getContainedObjects(), perspectiveContainer=this, multiline = true)  )
+      }
+    }
+
+    os.toString
+  }
+
+}

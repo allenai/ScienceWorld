@@ -271,6 +271,9 @@ object GeneticTraitPeas {
   }
 
 
+  /*
+   * Make random traits
+   */
   def mkRandomChromosomePair():ChromosomePair = {
     val parent1 = new Chromosomes( this.mkRandomTraits() )
     val parent2 = new Chromosomes( this.mkRandomTraits() )
@@ -288,6 +291,47 @@ object GeneticTraitPeas {
     // Return
     out.toArray
   }
+
+  /*
+   * Make random traits (but, control one trait)
+   */
+  def mkRandomChromosomePairExcept(traitName:String, parent1DomOrRec:String, parent2DomOrRec:String):ChromosomePair = {
+    val parent1 = new Chromosomes( this.mkRandomTraitsExcept(traitName, parent1DomOrRec) )
+    val parent2 = new Chromosomes( this.mkRandomTraitsExcept(traitName, parent2DomOrRec) )
+    return new ChromosomePair(parent1, parent2)
+  }
+
+  def mkRandomTraitsExcept(traitName:String, domOrRec:String):Array[GeneticTrait] = {
+    val out = new ArrayBuffer[GeneticTrait]()
+
+    if (traitName == TRAIT_PLANT_HEIGHT) {
+      out.append(mkTraitPlantHeight(domOrRec))
+    } else {
+      out.append(mkTraitPlantHeight(this.mkRandomDomRec()))
+    }
+
+    if (traitName == TRAIT_PEA_SHAPE) {
+      out.append(mkTraitPeaShape(domOrRec))
+    } else {
+      out.append(mkTraitPeaShape(this.mkRandomDomRec()))
+    }
+
+    if (traitName == TRAIT_PEA_COLOR) {
+      out.append(mkTraitPeaColor(domOrRec))
+    } else {
+      out.append(mkTraitPeaColor(this.mkRandomDomRec()))
+    }
+
+    if (traitName == TRAIT_FLOWER_COLOR) {
+      out.append(mkTraitFlowerColor(domOrRec))
+    } else {
+      out.append(mkTraitFlowerColor(this.mkRandomDomRec()))
+    }
+
+    // Return
+    out.toArray
+  }
+
 
   def mkRandomDomRec():String = {
     if (Random.nextInt(2) == 0) return GeneticTrait.DOMINANT

@@ -27,6 +27,19 @@ object PlantReproduction {
     var matedChromosomes:Option[ChromosomePair] = None
     if ((parent1Chromosomes.isDefined) && (parent2Chromosomes.isDefined)) {
       matedChromosomes = Some( GeneticReproduction.mateGenesPunnetSquare(parent1Chromosomes.get, parent2Chromosomes.get) )
+
+      println("----------------------------------------")
+      println(" MATING CHROMOSOMES:")
+      println("----------------------------------------")
+      println("Parent 1: ")
+      println(parent1Chromosomes.get.toString())
+      println("")
+      println("Parent 2: ")
+      println(parent2Chromosomes.get.toString())
+      println("")
+      println("Offspring: ")
+      println(matedChromosomes.get.toString())
+      println("----------------------------------------")
     }
 
     plantType match {
