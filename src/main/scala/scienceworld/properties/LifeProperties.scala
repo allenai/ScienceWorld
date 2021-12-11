@@ -68,6 +68,18 @@ class LifePropertiesRandomGeneticsA extends LifePropertiesPlant {
   this.lifeformType = PlantReproduction.PLANT_RANDOMGENETICS_A
 }
 
+class LifePropertiesRandomGeneticsB extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_RANDOMGENETICS_B
+}
+
+class LifePropertiesRandomGeneticsC extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_RANDOMGENETICS_C
+}
+
+class LifePropertiesRandomGeneticsD extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_RANDOMGENETICS_D
+}
+
 
 /*
  * Animals

@@ -9,6 +9,15 @@ import scala.util.Random
 // One set of alleles for all the traits for a given life form
 class Chromosomes(val chromosomes:Array[GeneticTrait]) {
 
+  def getTraitNames():Array[String] = {
+    val out = new ArrayBuffer[String]()
+    for (chromosome <- chromosomes) {
+      out.append(chromosome.traitName)
+    }
+    // Return
+    out.toArray
+  }
+
   def getTrait(name:String):Option[GeneticTrait] = {
     for (chromosome <- chromosomes) {
       if (chromosome.traitName == name) return Some(chromosome)

@@ -55,10 +55,10 @@ object EntryPoint {
     //val taskName = taskMaker.getTaskList()(8)
     //val taskName = taskMaker.getTaskList()(7)
     //val taskName = taskMaker.getTaskList()(0)
-    val taskName = taskMaker.getTaskList()(25)
+    val taskName = taskMaker.getTaskList()(26)
 
     // Setup task
-    val (task_, taskErrStr) = taskMaker.doTaskSetup(taskName, 50, universe, agent)
+    val (task_, taskErrStr) = taskMaker.doTaskSetup(taskName, 400, universe, agent)
     var task:Option[Task] = None
     if (task_.isDefined) {
       task = task_

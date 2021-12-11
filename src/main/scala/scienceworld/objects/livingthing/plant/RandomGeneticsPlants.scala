@@ -1,8 +1,8 @@
 package scienceworld.objects.livingthing.plant
 
-import scienceworld.processes.genetics.{ChromosomePair, GeneticTrait, GeneticTraitPeas, GeneticTraitUnknownPlantA}
+import scienceworld.processes.genetics.{ChromosomePair, GeneticTrait, GeneticTraitPeas, GeneticTraitUnknownPlantA, GeneticTraitUnknownPlantB, GeneticTraitUnknownPlantC, GeneticTraitUnknownPlantD}
 import scienceworld.processes.lifestage.PlantLifeStages
-import scienceworld.properties.{Edible, LifePropertiesPea, LifePropertiesRandomGeneticsA}
+import scienceworld.properties.{Edible, LifePropertiesPea, LifePropertiesRandomGeneticsA, LifePropertiesRandomGeneticsB, LifePropertiesRandomGeneticsC, LifePropertiesRandomGeneticsD}
 import scienceworld.struct.EnvObject._
 import util.StringHelpers
 
@@ -91,8 +91,16 @@ class RandomGeneticsPlants(_chromosomePairs:Option[ChromosomePair] = None) exten
 
     // Traits in seed stage
     if (this.lifecycle.get.getCurStageName() == PlantLifeStages.PLANT_STAGE_SEED) {
-      os.append(propChromosomePairs.get.getPhenotypeValue(GeneticTrait.TRAIT_SEED_SHAPE).get + " ")
-      os.append(propChromosomePairs.get.getPhenotypeValue(GeneticTrait.TRAIT_SEED_COLOR).get + " ")
+      val seedFeatures = new ArrayBuffer[String]()
+      if (propChromosomePairs.get.getTraitNames().contains(GeneticTrait.TRAIT_SEED_SHAPE)) {
+        seedFeatures.append(propChromosomePairs.get.getPhenotypeValue(GeneticTrait.TRAIT_SEED_SHAPE).get)
+      }
+
+      if (propChromosomePairs.get.getTraitNames().contains(GeneticTrait.TRAIT_SEED_COLOR)) {
+        seedFeatures.append(propChromosomePairs.get.getPhenotypeValue(GeneticTrait.TRAIT_SEED_COLOR).get)
+      }
+
+      return seedFeatures.mkString(" ")
     }
 
     // Traits in adult stage
@@ -191,17 +199,15 @@ class RandomGeneticsPlantsA(_chromosomePairs:Option[ChromosomePair] = None) exte
 }
 
 
-// TODO: PLACEHOLDERS, MAKE SPECIFIC TO SUBCLASS
-
 class RandomGeneticsPlantsB(_chromosomePairs:Option[ChromosomePair] = None) extends RandomGeneticsPlants {
   this.name = "unknown B"
 
   this.propEdibility = Some(new Edible())
-  propLife = Some(new LifePropertiesRandomGeneticsA())
+  propLife = Some(new LifePropertiesRandomGeneticsB())
 
   // Genetics/Chromosomes
   if (this._chromosomePairs == None) {
-    this.propChromosomePairs = Some(GeneticTraitUnknownPlantA.mkRandomChromosomePair())      // Generate Random
+    this.propChromosomePairs = Some(GeneticTraitUnknownPlantB.mkRandomChromosomePair())      // Generate Random
   } else {
     this.propChromosomePairs = this._chromosomePairs                                // Defined starting chromosomes
   }
@@ -212,11 +218,11 @@ class RandomGeneticsPlantsC(_chromosomePairs:Option[ChromosomePair] = None) exte
   this.name = "unknown C"
 
   this.propEdibility = Some(new Edible())
-  propLife = Some(new LifePropertiesRandomGeneticsA())
+  propLife = Some(new LifePropertiesRandomGeneticsC())
 
   // Genetics/Chromosomes
   if (this._chromosomePairs == None) {
-    this.propChromosomePairs = Some(GeneticTraitUnknownPlantA.mkRandomChromosomePair())      // Generate Random
+    this.propChromosomePairs = Some(GeneticTraitUnknownPlantC.mkRandomChromosomePair())      // Generate Random
   } else {
     this.propChromosomePairs = this._chromosomePairs                                // Defined starting chromosomes
   }
@@ -227,11 +233,11 @@ class RandomGeneticsPlantsD(_chromosomePairs:Option[ChromosomePair] = None) exte
   this.name = "unknown D"
 
   this.propEdibility = Some(new Edible())
-  propLife = Some(new LifePropertiesRandomGeneticsA())
+  propLife = Some(new LifePropertiesRandomGeneticsD())
 
   // Genetics/Chromosomes
   if (this._chromosomePairs == None) {
-    this.propChromosomePairs = Some(GeneticTraitUnknownPlantA.mkRandomChromosomePair())      // Generate Random
+    this.propChromosomePairs = Some(GeneticTraitUnknownPlantD.mkRandomChromosomePair())      // Generate Random
   } else {
     this.propChromosomePairs = this._chromosomePairs                                // Defined starting chromosomes
   }

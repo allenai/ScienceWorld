@@ -1,56 +1,87 @@
 package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.devices.StopWatch
-import scienceworld.objects.misc.InclinedPlane
-import scienceworld.objects.substance.{Brick, SteelBlock, WoodBlock}
+import scienceworld.objects.containers.{CeramicCup, FlowerPot}
+import scienceworld.objects.livingthing.plant.{PeaPlant, RandomGeneticsPlantsA, RandomGeneticsPlantsB, RandomGeneticsPlantsC, RandomGeneticsPlantsD, Soil}
+import scienceworld.objects.taskitems.AnswerBox
+import scienceworld.processes.genetics.{Chromosomes, GeneticTrait, GeneticTraitPeas, GeneticTraitUnknownPlantA, GeneticTraitUnknownPlantB, GeneticTraitUnknownPlantC, GeneticTraitUnknownPlantD}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalFindInclinedPlaneNamed}
-import TaskMendelialGenetics1._
-import scienceworld.objects.containers.{CeramicCup, FlowerPot}
-import scienceworld.objects.livingthing.plant.{PeaPlant, Soil}
-import scienceworld.objects.taskitems.AnswerBox
-import scienceworld.processes.genetics.{Chromosomes, GeneticTrait, GeneticTraitPeas}
+import scienceworld.tasks.goals.specificgoals.GoalFind
+import TaskMendelialGenetics2._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
-import scala.util.control.Breaks.{break, breakable}
+
+class TaskMendelianGenetics2 {
+
+}
 
 
-class TaskMendelialGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskParametric {
+
+class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends TaskParametric {
   val taskName = "task-9-" + mode.replaceAll(" ", "-")
 
   val locations = Array("green house")
 
   // Variation 1: Genetic Trait
   val genetics = new ArrayBuffer[ Array[TaskModifier] ]()
-  val traitNames = Array(GeneticTrait.TRAIT_PLANT_HEIGHT, GeneticTrait.TRAIT_SEED_SHAPE, GeneticTrait.TRAIT_SEED_COLOR, GeneticTrait.TRAIT_SEED_SHAPE)
 
   // Generate a random set of traits, just to determine which are dominant/recessive.
-  val traits = new Chromosomes(GeneticTraitPeas.mkRandomTraits())
+
+  val maxUnknownPlants = 4
 
   for (location <- locations) {
 
-    for (traitName <- traitNames) {
-      for (domOrRec <- Array(GeneticTrait.DOMINANT, GeneticTrait.RECESSIVE)) {
-        var specificTraitValue = ""
-        if (domOrRec == GeneticTrait.DOMINANT) {
-          specificTraitValue = traits.getTrait(traitName).get.valueDominant
-        } else {
-          specificTraitValue = traits.getTrait(traitName).get.valueRecessive
-        }
+    // Cycle through unknown/random plants (e.g. randomPlantA, randomPlantB, randomPlantC, etc).
+    for (plantIdx <- 0 until maxUnknownPlants) {
+      var traits:Chromosomes = null
+      var traitNames:Array[String] = null
+      var plantName:String = ""
 
-        val seedJar = TaskMendelialGenetics1.mkPeaPlantSeedJar(traitName)
-
-        genetics.append(Array(new TaskObject(seedJar.name, Some(seedJar), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true),
-                              new TaskValueStr(key = "domOrRec", value = domOrRec),
-                              new TaskValueStr(key = "traitName", value = traitName),
-                              new TaskValueStr(key = "traitValue", value = specificTraitValue)
-                              ) )
-
+      if (plantIdx == 0) {
+        traits = new Chromosomes(GeneticTraitUnknownPlantA.mkRandomTraits()) // Make a random instance of the plant, just to get the genetic trait names
+        traitNames = traits.getTraitNames()
+        plantName = new RandomGeneticsPlantsA().name + " plant"
+      } else if (plantIdx == 1) {
+        traits = new Chromosomes(GeneticTraitUnknownPlantB.mkRandomTraits()) // Make a random instance of the plant, just to get the genetic trait names
+        traitNames = traits.getTraitNames()
+        plantName = new RandomGeneticsPlantsB().name + " plant"
+      } else if (plantIdx == 2) {
+        traits = new Chromosomes(GeneticTraitUnknownPlantC.mkRandomTraits()) // Make a random instance of the plant, just to get the genetic trait names
+        traitNames = traits.getTraitNames()
+        plantName = new RandomGeneticsPlantsC().name + " plant"
+      } else if (plantIdx == 3) {
+        traits = new Chromosomes(GeneticTraitUnknownPlantD.mkRandomTraits()) // Make a random instance of the plant, just to get the genetic trait names
+        traitNames = traits.getTraitNames()
+        plantName = new RandomGeneticsPlantsD().name + " plant"
+      } else {
+        throw new RuntimeException("ERROR: Unknown plantIdx (" + plantIdx + ")")
       }
+
+      // Cycle through all the genetic traits in the random plant
+      for (traitName <- traitNames) {
+        for (domOrRec <- Array(GeneticTrait.DOMINANT, GeneticTrait.RECESSIVE)) {
+          var specificTraitValue = ""
+          if (domOrRec == GeneticTrait.DOMINANT) {
+            specificTraitValue = traits.getTrait(traitName).get.valueDominant
+          } else {
+            specificTraitValue = traits.getTrait(traitName).get.valueRecessive
+          }
+
+          val seedJar = TaskMendelialGenetics2.mkUnknownPlantSeedJar(plantIdx, traitName)
+
+          genetics.append(Array(new TaskObject(seedJar.name, Some(seedJar), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true),
+            new TaskValueStr(key = "domOrRec", value = domOrRec),
+            new TaskValueStr(key = "traitName", value = traitName),
+            new TaskValueStr(key = "traitValue", value = specificTraitValue),
+            new TaskValueStr(key = "plantName", value = plantName)
+          ))
+
+        }
+      }
+
     }
 
   }
@@ -61,7 +92,7 @@ class TaskMendelialGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
 
     for (i <- 0 until 5) {      // 5 different variations of pot names
       val out = new ArrayBuffer[TaskModifier]()
-      val pots = TaskMendelialGenetics1.mkFlowerPots(numPots = 6)
+      val pots = TaskMendelialGenetics2.mkFlowerPots(numPots = 6)
       for (pot <- pots) {
         out.append(new TaskObject(pot.name, Some(pot), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = false))
       }
@@ -144,6 +175,8 @@ class TaskMendelialGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
     if (traitValue.isEmpty) throw new RuntimeException("ERROR: Failed to find trait value.")
     val domOrRec = this.getTaskValueStr(modifiers, "domOrRec")
     if (domOrRec.isEmpty) throw new RuntimeException("ERROR: Failed to find whether trait is dominant or recessive.")
+    val plantName = this.getTaskValueStr(modifiers, "plantName")
+    if (plantName.isEmpty) throw new RuntimeException("ERROR: Failed to find plant name.")
     val answerBoxDom = this.getTaskValueStr(modifiers, "answerBoxDom")
     if (answerBoxDom.isEmpty) throw new RuntimeException("ERROR: Failed to find answer box (dominant).")
     val answerBoxRec = this.getTaskValueStr(modifiers, "answerBoxRec")
@@ -152,7 +185,7 @@ class TaskMendelialGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
 
     val gSequence = new ArrayBuffer[Goal]
     var description:String = "<empty>"
-    if (mode == MODE_MENDEL_KNOWN) {
+    if (mode == MODE_MENDEL_UNKNOWN) {
 
       if (domOrRec.get == GeneticTrait.DOMINANT) {
         // Dominant
@@ -162,7 +195,7 @@ class TaskMendelialGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
         gSequence.append(new GoalFind(objectName = answerBoxRec.get, failIfWrong = true, _defocusOnSuccess = true))
       }
 
-      description = "Your task is to determine whether " + traitValue.get + " " + traitName.get + " is a dominant or recessive trait in the pea plant. "
+      description = "Your task is to determine whether " + traitValue.get + " " + traitName.get + " is a dominant or recessive trait in the " + plantName.get + ". "
       description += "If the trait is dominant, focus on the " + answerBoxDom.get + ". "
       description += "If the trait is recessive, focus on the " + answerBoxRec.get + ". "
 
@@ -190,11 +223,11 @@ class TaskMendelialGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
 }
 
 
-object TaskMendelialGenetics1 {
-  val MODE_MENDEL_KNOWN             = "mendellian genetics (known plant)"
+object TaskMendelialGenetics2 {
+  val MODE_MENDEL_UNKNOWN             = "mendellian genetics (unknown plant)"
 
   def registerTasks(taskMaker:TaskMaker1): Unit = {
-    taskMaker.addTask( new TaskMendelialGenetics1(mode = MODE_MENDEL_KNOWN) )
+    taskMaker.addTask( new TaskMendelialGenetics2(mode = MODE_MENDEL_UNKNOWN) )
   }
 
 
@@ -202,25 +235,63 @@ object TaskMendelialGenetics1 {
    * Helper functions
    */
 
+
   // Make a set of inclined planes
-  def mkPeaPlantSeedJar(traitName:String):EnvObject = {
-    // Double-dominant
-    val dom = GeneticTraitPeas.mkRandomChromosomePairExcept(traitName, GeneticTrait.DOMINANT, GeneticTrait.DOMINANT)
-    val plantDom = new PeaPlant(_chromosomePairs = Some(dom) )
-
-    // Double-recessive
-    val rec = GeneticTraitPeas.mkRandomChromosomePairExcept(traitName, GeneticTrait.RECESSIVE, GeneticTrait.RECESSIVE)
-    val plantRec = new PeaPlant(_chromosomePairs = Some(rec) )
-
+  def mkUnknownPlantSeedJar(plantIdx: Int, traitName: String): EnvObject = {
     // Seed jar
-    val jar = new CeramicCup()      // TODO, make jar
+    val jar = new CeramicCup() // TODO, make jar
     jar.name = "seed jar"
-    jar.addObject(plantDom)
-    jar.addObject(plantRec)
+
+    if (plantIdx == 0) {
+      // Double-dominant
+      val dom = GeneticTraitUnknownPlantA.mkRandomChromosomePairExcept(traitName, GeneticTrait.DOMINANT, GeneticTrait.DOMINANT)
+      val plantDom = new RandomGeneticsPlantsA(_chromosomePairs = Some(dom))
+      jar.addObject(plantDom)
+      // Double-recessive
+      val rec = GeneticTraitUnknownPlantA.mkRandomChromosomePairExcept(traitName, GeneticTrait.RECESSIVE, GeneticTrait.RECESSIVE)
+      val plantRec = new RandomGeneticsPlantsA(_chromosomePairs = Some(rec))
+      jar.addObject(plantRec)
+
+    } else if (plantIdx == 1) {
+      // Double-dominant
+      val dom = GeneticTraitUnknownPlantB.mkRandomChromosomePairExcept(traitName, GeneticTrait.DOMINANT, GeneticTrait.DOMINANT)
+      val plantDom = new RandomGeneticsPlantsB(_chromosomePairs = Some(dom))
+      jar.addObject(plantDom)
+      // Double-recessive
+      val rec = GeneticTraitUnknownPlantB.mkRandomChromosomePairExcept(traitName, GeneticTrait.RECESSIVE, GeneticTrait.RECESSIVE)
+      val plantRec = new RandomGeneticsPlantsB(_chromosomePairs = Some(rec))
+      jar.addObject(plantRec)
+
+    } else if (plantIdx == 2) {
+      // Double-dominant
+      val dom = GeneticTraitUnknownPlantC.mkRandomChromosomePairExcept(traitName, GeneticTrait.DOMINANT, GeneticTrait.DOMINANT)
+      val plantDom = new RandomGeneticsPlantsC(_chromosomePairs = Some(dom))
+      jar.addObject(plantDom)
+      // Double-recessive
+      val rec = GeneticTraitUnknownPlantC.mkRandomChromosomePairExcept(traitName, GeneticTrait.RECESSIVE, GeneticTrait.RECESSIVE)
+      val plantRec = new RandomGeneticsPlantsC(_chromosomePairs = Some(rec))
+      jar.addObject(plantRec)
+
+    } else if (plantIdx == 3) {
+      // Double-dominant
+      val dom = GeneticTraitUnknownPlantD.mkRandomChromosomePairExcept(traitName, GeneticTrait.DOMINANT, GeneticTrait.DOMINANT)
+      val plantDom = new RandomGeneticsPlantsD(_chromosomePairs = Some(dom))
+      jar.addObject(plantDom)
+      // Double-recessive
+      val rec = GeneticTraitUnknownPlantD.mkRandomChromosomePairExcept(traitName, GeneticTrait.RECESSIVE, GeneticTrait.RECESSIVE)
+      val plantRec = new RandomGeneticsPlantsD(_chromosomePairs = Some(rec))
+      jar.addObject(plantRec)
+
+    } else {
+      throw new RuntimeException("ERROR: Unknown plant index (" + plantIdx + ").")
+    }
+
 
     // Return
     jar
   }
+
+
 
   // Make N flower pots
   def mkFlowerPots(numPots:Int): Array[EnvObject] = {
