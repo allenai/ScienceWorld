@@ -64,6 +64,10 @@ class LifePropertiesPea extends LifePropertiesPlant {
   this.lifeformType = PlantReproduction.PLANT_PEA
 }
 
+class LifePropertiesRandomGeneticsA extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_RANDOMGENETICS_A
+}
+
 
 /*
  * Animals

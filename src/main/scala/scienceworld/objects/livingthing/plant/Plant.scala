@@ -11,6 +11,7 @@ import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 import util.StringHelpers
 
+import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks._
 
 
@@ -235,9 +236,17 @@ class Flower(parentPlant:Plant) extends EnvObject {
     val os = new StringBuilder()
     if (parentPlant.propChromosomePairs.isEmpty) return ""
 
-    val flowerColor = parentPlant.propChromosomePairs.get.getPhenotypeValue(GeneticTrait.TRAIT_FLOWER_COLOR)
-    if ((flowerColor.isDefined) && (flowerColor.get.length > 0)) os.append(flowerColor.get)
+    val flowerTraits = new ArrayBuffer[String]()
 
+    // Size
+    val flowerSize = parentPlant.propChromosomePairs.get.getPhenotypeValue(GeneticTrait.TRAIT_FLOWER_SIZE)
+    if ((flowerSize.isDefined) && (flowerSize.get.length > 0)) flowerTraits.append(flowerSize.get)
+
+    // Color
+    val flowerColor = parentPlant.propChromosomePairs.get.getPhenotypeValue(GeneticTrait.TRAIT_FLOWER_COLOR)
+    if ((flowerColor.isDefined) && (flowerColor.get.length > 0)) flowerTraits.append(flowerColor.get)
+
+    os.append( flowerTraits.mkString(" ") )
     return os.toString()
   }
 

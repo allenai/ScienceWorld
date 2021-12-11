@@ -26,7 +26,7 @@ class TaskMendelialGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
 
   // Variation 1: Genetic Trait
   val genetics = new ArrayBuffer[ Array[TaskModifier] ]()
-  val traitNames = Array(GeneticTrait.TRAIT_PLANT_HEIGHT, GeneticTrait.TRAIT_PEA_SHAPE, GeneticTrait.TRAIT_PEA_COLOR, GeneticTrait.TRAIT_PEA_SHAPE)
+  val traitNames = Array(GeneticTrait.TRAIT_PLANT_HEIGHT, GeneticTrait.TRAIT_SEED_SHAPE, GeneticTrait.TRAIT_SEED_COLOR, GeneticTrait.TRAIT_SEED_SHAPE)
 
   // Generate a random set of traits, just to determine which are dominant/recessive.
   val traits = new Chromosomes(GeneticTraitPeas.mkRandomTraits())

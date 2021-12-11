@@ -244,14 +244,31 @@ object GeneticTrait {
   val RECESSIVE                 = "recessive"
 
   val TRAIT_PLANT_HEIGHT        = "plant height"
-  val TRAIT_PEA_SHAPE           = "pea shape"
-  val TRAIT_PEA_COLOR           = "pea color"
+  val TRAIT_SEED_SHAPE          = "seed shape"
+  val TRAIT_SEED_COLOR          = "seed color"
   val TRAIT_FLOWER_COLOR        = "flower color"
+
+  // Extra
+  val TRAIT_FLOWER_SIZE         = "flower size"
+  val TRAIT_LEAF_SIZE           = "leaf size"
+  val TRAIT_LEAF_SHAPE          = "leaf shape"
+
+
+  // Randomly return either DOMINANT or RECESSIVE
+  def mkRandomDomRec():String = {
+    if (Random.nextInt(2) == 0) return GeneticTrait.DOMINANT
+    // Return
+    return GeneticTrait.RECESSIVE
+  }
 
 }
 
 
-// Subclases
+/*
+ * Genetic traits for plants
+ */
+
+// Pea Plant
 object GeneticTraitPeas {
 
   def mkTraitPlantHeight(dominantOrRecessive:String):GeneticTrait = {
@@ -259,11 +276,11 @@ object GeneticTraitPeas {
   }
 
   def mkTraitPeaShape(dominantOrRecessive:String):GeneticTrait = {
-    new GeneticTrait(TRAIT_PEA_SHAPE, valueDominant = "round", valueRecessive = "wrinkly", strSuffix = "peas", dominantOrRecessive)
+    new GeneticTrait(TRAIT_SEED_SHAPE, valueDominant = "round", valueRecessive = "wrinkly", strSuffix = "peas", dominantOrRecessive)
   }
 
   def mkTraitPeaColor(dominantOrRecessive:String):GeneticTrait = {
-    new GeneticTrait(TRAIT_PEA_COLOR, valueDominant = "green", valueRecessive = "orange", strSuffix = "peas", dominantOrRecessive)
+    new GeneticTrait(TRAIT_SEED_COLOR, valueDominant = "green", valueRecessive = "orange", strSuffix = "peas", dominantOrRecessive)
   }
 
   def mkTraitFlowerColor(dominantOrRecessive:String):GeneticTrait = {
@@ -283,10 +300,10 @@ object GeneticTraitPeas {
   def mkRandomTraits():Array[GeneticTrait] = {
     val out = new ArrayBuffer[GeneticTrait]()
 
-    out.append( mkTraitPlantHeight(this.mkRandomDomRec()) )
-    out.append( mkTraitPeaShape(this.mkRandomDomRec()) )
-    out.append( mkTraitPeaColor(this.mkRandomDomRec()) )
-    out.append( mkTraitFlowerColor(this.mkRandomDomRec()) )
+    out.append( mkTraitPlantHeight(GeneticTrait.mkRandomDomRec()) )
+    out.append( mkTraitPeaShape(GeneticTrait.mkRandomDomRec()) )
+    out.append( mkTraitPeaColor(GeneticTrait.mkRandomDomRec()) )
+    out.append( mkTraitFlowerColor(GeneticTrait.mkRandomDomRec()) )
 
     // Return
     out.toArray
@@ -307,40 +324,39 @@ object GeneticTraitPeas {
     if (traitName == TRAIT_PLANT_HEIGHT) {
       out.append(mkTraitPlantHeight(domOrRec))
     } else {
-      out.append(mkTraitPlantHeight(this.mkRandomDomRec()))
+      out.append(mkTraitPlantHeight(GeneticTrait.mkRandomDomRec()))
     }
 
-    if (traitName == TRAIT_PEA_SHAPE) {
+    if (traitName == TRAIT_SEED_SHAPE) {
       out.append(mkTraitPeaShape(domOrRec))
     } else {
-      out.append(mkTraitPeaShape(this.mkRandomDomRec()))
+      out.append(mkTraitPeaShape(GeneticTrait.mkRandomDomRec()))
     }
 
-    if (traitName == TRAIT_PEA_COLOR) {
+    if (traitName == TRAIT_SEED_COLOR) {
       out.append(mkTraitPeaColor(domOrRec))
     } else {
-      out.append(mkTraitPeaColor(this.mkRandomDomRec()))
+      out.append(mkTraitPeaColor(GeneticTrait.mkRandomDomRec()))
     }
 
     if (traitName == TRAIT_FLOWER_COLOR) {
       out.append(mkTraitFlowerColor(domOrRec))
     } else {
-      out.append(mkTraitFlowerColor(this.mkRandomDomRec()))
+      out.append(mkTraitFlowerColor(GeneticTrait.mkRandomDomRec()))
     }
 
     // Return
     out.toArray
   }
 
-
-  def mkRandomDomRec():String = {
-    if (Random.nextInt(2) == 0) return GeneticTrait.DOMINANT
-    // Return
-    return GeneticTrait.RECESSIVE
-  }
 }
 
 
+
+
+/*
+ * Quick debug tester for plants
+ */
 
 object GeneticTest {
 

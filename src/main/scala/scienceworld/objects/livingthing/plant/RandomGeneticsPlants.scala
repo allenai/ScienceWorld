@@ -1,22 +1,27 @@
 package scienceworld.objects.livingthing.plant
 
-import scienceworld.processes.genetics.{ChromosomePair, GeneticTrait, GeneticTraitPeas}
+import scienceworld.processes.genetics.{ChromosomePair, GeneticTrait, GeneticTraitPeas, GeneticTraitUnknownPlantA}
 import scienceworld.processes.lifestage.PlantLifeStages
-import scienceworld.properties.{Edible, LifePropertiesApple, LifePropertiesPea}
-import scienceworld.struct.EnvObject.{MODE_CURSORY_DETAIL, MODE_DETAILED}
+import scienceworld.properties.{Edible, LifePropertiesPea, LifePropertiesRandomGeneticsA}
+import scienceworld.struct.EnvObject._
 import util.StringHelpers
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
-
-class PeaPlant(_chromosomePairs:Option[ChromosomePair] = None) extends Tree {
-  this.name = "pea"
+/*
+ * The generic superclass for unknown plants with random/unknown genetic traits
+ */
+class RandomGeneticsPlants(_chromosomePairs:Option[ChromosomePair] = None) extends Tree {
+  this.name = "unknown"
 
   this.propEdibility = Some(new Edible())
   propLife = Some(new LifePropertiesPea())
   // Genetics/Chromosomes
+
+  // TODO: specific to subclass
   if (this._chromosomePairs == None) {
-    this.propChromosomePairs = Some(GeneticTraitPeas.mkRandomChromosomePair())      // Generate Random
+    this.propChromosomePairs = Some(GeneticTraitUnknownPlantA.mkRandomChromosomePair())      // Generate Random
   } else {
     this.propChromosomePairs = this._chromosomePairs                                // Defined starting chromosomes
   }
@@ -92,7 +97,30 @@ class PeaPlant(_chromosomePairs:Option[ChromosomePair] = None) extends Tree {
 
     // Traits in adult stage
     if ((this.lifecycle.get.getCurStageName() == PlantLifeStages.PLANT_STAGE_ADULT_PLANT) || (this.lifecycle.get.getCurStageName() == PlantLifeStages.PLANT_STAGE_REPRODUCING)) {
-      if (propChromosomePairs.isDefined) os.append(" with a " + propChromosomePairs.get.getTraitPhenotypeHumanReadableStr(GeneticTrait.TRAIT_PLANT_HEIGHT).get)
+      // Plant height
+      var heightStr:String = ""
+      if (propChromosomePairs.get.getTraitNames().contains(GeneticTrait.TRAIT_PLANT_HEIGHT)) {
+        heightStr = ("a " + propChromosomePairs.get.getTraitPhenotypeHumanReadableStr(GeneticTrait.TRAIT_PLANT_HEIGHT).get)
+      }
+
+      // Leaf features
+      val leafFeatures = new ArrayBuffer[String]()
+      if (propChromosomePairs.get.getTraitNames().contains(GeneticTrait.TRAIT_LEAF_SIZE)) {
+        leafFeatures.append( propChromosomePairs.get.getPhenotypeValue(GeneticTrait.TRAIT_LEAF_SIZE).get)
+      }
+      if (propChromosomePairs.get.getTraitNames().contains(GeneticTrait.TRAIT_LEAF_SHAPE)) {
+        leafFeatures.append( propChromosomePairs.get.getPhenotypeValue(GeneticTrait.TRAIT_LEAF_SHAPE).get)
+      }
+
+      // Assemble into single string
+      if ((heightStr.length > 0) || (leafFeatures.size > 0)) {
+        os.append(" with ")
+        os.append(heightStr)
+        if ((heightStr.length > 0) && (leafFeatures.size > 0)) os.append(" and ")
+        if (leafFeatures.size > 0) {
+          os.append( leafFeatures.mkString(" ") + " leaves")
+        }
+      }
     }
 
     return os.toString()
@@ -140,5 +168,72 @@ class PeaPlant(_chromosomePairs:Option[ChromosomePair] = None) extends Tree {
     os.toString
   }
 
+
+}
+
+
+/*
+ * Specific subclasses
+ */
+class RandomGeneticsPlantsA(_chromosomePairs:Option[ChromosomePair] = None) extends RandomGeneticsPlants {
+  this.name = "unknown A"
+
+  this.propEdibility = Some(new Edible())
+  propLife = Some(new LifePropertiesRandomGeneticsA())
+
+  // Genetics/Chromosomes
+  if (this._chromosomePairs == None) {
+    this.propChromosomePairs = Some(GeneticTraitUnknownPlantA.mkRandomChromosomePair())      // Generate Random
+  } else {
+    this.propChromosomePairs = this._chromosomePairs                                // Defined starting chromosomes
+  }
+
+}
+
+
+// TODO: PLACEHOLDERS, MAKE SPECIFIC TO SUBCLASS
+
+class RandomGeneticsPlantsB(_chromosomePairs:Option[ChromosomePair] = None) extends RandomGeneticsPlants {
+  this.name = "unknown B"
+
+  this.propEdibility = Some(new Edible())
+  propLife = Some(new LifePropertiesRandomGeneticsA())
+
+  // Genetics/Chromosomes
+  if (this._chromosomePairs == None) {
+    this.propChromosomePairs = Some(GeneticTraitUnknownPlantA.mkRandomChromosomePair())      // Generate Random
+  } else {
+    this.propChromosomePairs = this._chromosomePairs                                // Defined starting chromosomes
+  }
+
+}
+
+class RandomGeneticsPlantsC(_chromosomePairs:Option[ChromosomePair] = None) extends RandomGeneticsPlants {
+  this.name = "unknown C"
+
+  this.propEdibility = Some(new Edible())
+  propLife = Some(new LifePropertiesRandomGeneticsA())
+
+  // Genetics/Chromosomes
+  if (this._chromosomePairs == None) {
+    this.propChromosomePairs = Some(GeneticTraitUnknownPlantA.mkRandomChromosomePair())      // Generate Random
+  } else {
+    this.propChromosomePairs = this._chromosomePairs                                // Defined starting chromosomes
+  }
+
+}
+
+class RandomGeneticsPlantsD(_chromosomePairs:Option[ChromosomePair] = None) extends RandomGeneticsPlants {
+  this.name = "unknown D"
+
+  this.propEdibility = Some(new Edible())
+  propLife = Some(new LifePropertiesRandomGeneticsA())
+
+  // Genetics/Chromosomes
+  if (this._chromosomePairs == None) {
+    this.propChromosomePairs = Some(GeneticTraitUnknownPlantA.mkRandomChromosomePair())      // Generate Random
+  } else {
+    this.propChromosomePairs = this._chromosomePairs                                // Defined starting chromosomes
+  }
 
 }
