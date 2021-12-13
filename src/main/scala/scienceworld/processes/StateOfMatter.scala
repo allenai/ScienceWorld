@@ -9,7 +9,7 @@ class StateOfMatter {
 object StateOfMatter {
 
 
-  def ChangeOfState(obj:EnvObject): Unit = {
+  def ChangeOfState(obj:EnvObject, forceNameUpdate:Boolean = false): Unit = {
     // Only continue if the object has material properties
     if (obj.propMaterial.isEmpty) return
     val objProp = obj.propMaterial.get
@@ -25,7 +25,7 @@ object StateOfMatter {
       inferredStateOfMatter = "liquid"
     }
 
-    if (curStateOfMatter != inferredStateOfMatter) {
+    if ((curStateOfMatter != inferredStateOfMatter) || (forceNameUpdate)) {
       println ("Changing object (" + obj.name + ") from state of matter (" + curStateOfMatter + ") to state (" + inferredStateOfMatter + ")")
       obj.propMaterial.get.stateOfMatter = inferredStateOfMatter
 
