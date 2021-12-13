@@ -10,6 +10,7 @@ import scala.collection.mutable.ArrayBuffer
 import EnvObject._
 import scienceworld.objects.electricalcomponent.ElectricalComponent.ROLE_VOLTAGE_USER
 import scienceworld.objects.electricalcomponent.Terminal
+import scienceworld.processes.genetics.ChromosomePair
 
 import scala.reflect.ClassTag
 
@@ -61,6 +62,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   var propMoveable:Option[MoveableProperties] = Some( new MoveableProperties(isMovable = true) )
   var propElectricalConnection:Option[ElectricalConnectionProperties] = None
   var propLife:Option[LifeProperties] = None
+  var propChromosomePairs:Option[ChromosomePair] = None
   var propPollination:Option[PollinationProperties] = None
 
   /*

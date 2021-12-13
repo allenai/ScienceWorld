@@ -175,7 +175,7 @@ object TaskIdentifyLifeStages1 {
     for (i <- 0 until lifestages.length) {
       val lifestageName = lifestages(i)
       stageKeys.append(new TaskValueStr(key = "stage" + (i + 1), value = lifestageName))
-      println("stage" + i + "\t" + lifestageName)
+      //## println("stage" + i + "\t" + lifestageName)
     }
 
     // Create task modifier

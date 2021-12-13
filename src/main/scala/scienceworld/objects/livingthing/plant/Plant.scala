@@ -4,12 +4,14 @@ import scienceworld.objects.devices.Stove
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.substance.food.Apple
 import scienceworld.processes.PlantReproduction
+import scienceworld.processes.genetics.{ChromosomePair, GeneticTrait}
 import scienceworld.processes.lifestage.PlantLifeStages
 import scienceworld.properties.{FlowerMatterProp, IsNotContainer, IsOpenUnclosableContainer, LifePropertiesPlant, PlantMatterProp, PollenMatterProp, PollinationProperties}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 import util.StringHelpers
 
+import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks._
 
 
@@ -38,6 +40,20 @@ class Plant extends LivingThing {
   }
 
 
+  def getPlantName():String = {
+    // Check if we're in the seed stage
+    if (this.isSeed()) {
+      // Seed
+      val seedName = propLife.get.lifeformType + " seed"
+      return this.getDescriptName(seedName)
+    } else {
+      // Plant in some stage of growth
+      val plantName = propLife.get.lifeformType + " plant"
+      return this.getDescriptName(plantName)
+    }
+
+  }
+
   override def tick():Boolean = {
     // Life cycle tick
     println ("### TICK!")
@@ -63,21 +79,36 @@ class Plant extends LivingThing {
 
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
+    val plantName = this.getPlantName()
 
     // If dead, simplify the name
     if (propLife.get.isDead) {
-      os.append("a dead " + this.getDescriptName())
+      os.append("a dead " + plantName)
       return os.toString()
     }
 
-    // If alive, give a verbose name
-    os.append("a " + this.getDescriptName() + " in the " + lifecycle.get.getCurStageName() + " stage")
+    // SEED
+    if (this.isSeed()) {
+      os.append("a " + plantName)
+      if (mode == MODE_DETAILED) {
+        // ...
+      }
+      return os.toString()
+    }
+
+    os.append("a " + plantName + " in the " + lifecycle.get.getCurStageName() + " stage")
+
+    // Property: Various genetic traits
+    os.append( this.mkGeneticTraitsStr() )
+
+    // Property: Sick
     if (propLife.get.isSickly) os.append(" (that looks unwell)")
 
+    // Property: Contains
     val cObjs = this.getContainedObjectsNotHidden()
     if (cObjs.size > 0) {
       os.append(". ")
-      os.append("On the plant you see: " + StringHelpers.objectListToStringDescription(cObjs, this, mode = MODE_CURSORY_DETAIL, multiline = false) + ". ")
+      os.append("On the " + plantName + " you see: " + StringHelpers.objectListToStringDescription(cObjs, this, mode = MODE_CURSORY_DETAIL, multiline = false) + ". ")
     }
 
     if (mode == MODE_DETAILED) {
@@ -99,6 +130,12 @@ class Pollen(val parentPlant:Plant) extends EnvObject {
 
   this.propContainer = Some(new IsNotContainer())
   this.propMaterial = Some(new PollenMatterProp())
+
+  // Get the chromosome pairs stored in this pollen
+  def getChromosomePair():ChromosomePair = {
+    if (parentPlant.propChromosomePairs.isEmpty) return ChromosomePair.mkBlank()
+    return parentPlant.propChromosomePairs.get
+  }
 
   def getPlantType():String = this.parentPlant.getPlantType()
 
@@ -163,6 +200,7 @@ class Flower(parentPlant:Plant) extends EnvObject {
 
     // Step 3: Get the flower -> fruit conversion going
     this.propPollination.get.pollinationStep = 1
+    this.propPollination.get.parent2ChromosomePairs = Some( pollen.getChromosomePair() )
 
     // Return
     return true
@@ -190,6 +228,27 @@ class Flower(parentPlant:Plant) extends EnvObject {
 
   }
 
+  /*
+   * String functions
+   */
+  // Make FLOWER-SPECIFIC text to add to the description, based off genetic traits
+  def mkGeneticTraitsStr(): String = {
+    val os = new StringBuilder()
+    if (parentPlant.propChromosomePairs.isEmpty) return ""
+
+    val flowerTraits = new ArrayBuffer[String]()
+
+    // Size
+    val flowerSize = parentPlant.propChromosomePairs.get.getPhenotypeValue(GeneticTrait.TRAIT_FLOWER_SIZE)
+    if ((flowerSize.isDefined) && (flowerSize.get.length > 0)) flowerTraits.append(flowerSize.get)
+
+    // Color
+    val flowerColor = parentPlant.propChromosomePairs.get.getPhenotypeValue(GeneticTrait.TRAIT_FLOWER_COLOR)
+    if ((flowerColor.isDefined) && (flowerColor.get.length > 0)) flowerTraits.append(flowerColor.get)
+
+    os.append( flowerTraits.mkString(" ") )
+    return os.toString()
+  }
 
   /*
    * Regular functions
@@ -208,7 +267,11 @@ class Flower(parentPlant:Plant) extends EnvObject {
         if (this.getContainer().isDefined) {
           println("FRUIT MADE")
           // Create appropriate fruit
-          val fruit = PlantReproduction.createFruit(this.parentPlant.getPlantType())
+          val parent1Chromosomes = parentPlant.propChromosomePairs
+          //val parent2Chromosomes = parentPlant.propChromosomePairs
+          val parent2Chromosomes = this.propPollination.get.parent2ChromosomePairs
+
+          val fruit = PlantReproduction.createFruit(this.parentPlant.getPlantType(), parent1Chromosomes, parent2Chromosomes)
           if (fruit.isDefined) {
             this.getContainer().get.addObject( fruit.get )
           }
@@ -271,10 +334,10 @@ class Flower(parentPlant:Plant) extends EnvObject {
 
     // If flower is pollinated, then it begins to wilt
     if (this.propPollination.get.pollinationStep > 0) {
-      os.append("a wilting " + this.getDescriptName())
+      os.append("a wilting " + this.mkGeneticTraitsStr() + " " + this.getDescriptName())
     } else {
       // Normal (non-wilted) flower
-      os.append("a " + this.getDescriptName())
+      os.append("a " + this.mkGeneticTraitsStr() + " " + this.getDescriptName())
     }
 
     if (mode == MODE_DETAILED) {
@@ -284,6 +347,6 @@ class Flower(parentPlant:Plant) extends EnvObject {
       os.append("Inside the flower is: " + StringHelpers.objectListToStringDescription(cObjs, this, mode = MODE_CURSORY_DETAIL, multiline = false))
     }
 
-    os.toString
+    os.toString.replaceAll("\\s+", " ").trim()
   }
 }

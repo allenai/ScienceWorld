@@ -1,19 +1,26 @@
 package scienceworld.objects.livingthing.plant
 
+import scienceworld.processes.genetics.{ChromosomePair, GeneticTrait, GeneticTraitPeas}
 import scienceworld.processes.lifestage.PlantLifeStages
-import scienceworld.properties.{Edible, LifePropertiesApple, LifePropertiesAvocado, LifePropertiesBanana, LifePropertiesCherry, LifePropertiesLemon, LifePropertiesOrange, LifePropertiesPeach}
+import scienceworld.properties.{Edible, LifePropertiesApple, LifePropertiesPea}
 import scienceworld.struct.EnvObject.{MODE_CURSORY_DETAIL, MODE_DETAILED}
 import util.StringHelpers
 
-/*
- * Generic Fruiting Tree
- */
-class Tree extends Plant {
+import scala.collection.mutable
 
-}
 
-class FruitingTree extends Tree {
+class PeaPlant(_chromosomePairs:Option[ChromosomePair] = None) extends Tree {
+  this.name = "pea"
+
   this.propEdibility = Some(new Edible())
+  propLife = Some(new LifePropertiesPea())
+  // Genetics/Chromosomes
+  if (this._chromosomePairs == None) {
+    this.propChromosomePairs = Some(GeneticTraitPeas.mkRandomChromosomePair())      // Generate Random
+  } else {
+    this.propChromosomePairs = this._chromosomePairs                                // Defined starting chromosomes
+  }
+
 
   override def getPlantName():String = {
     // Check if we're in the seed stage
@@ -23,8 +30,8 @@ class FruitingTree extends Tree {
       return this.getDescriptName(seedName)
     } else {
       // Plant in some stage of growth
-      val treeName = propLife.get.lifeformType + " tree"
-      return this.getDescriptName(treeName)
+      val plantName = propLife.get.lifeformType + " plant"
+      return this.getDescriptName(plantName)
     }
 
   }
@@ -48,10 +55,17 @@ class FruitingTree extends Tree {
   override def getReferents(): Set[String] = {
     val plantName = this.getPlantName()
 
-    var out = Set("living thing", "organism", this.name, this.name + " in the " + lifecycle.get.getCurStageName() + " stage", lifecycle.get.getCurStageName() + " plant",
+    var out = Set("living thing", "organism", this.name, this.propLife.get.lifeformType, this.name + " in the " + lifecycle.get.getCurStageName() + " stage", lifecycle.get.getCurStageName() + " plant",
       plantName, plantName + " in the " + lifecycle.get.getCurStageName() + " stage", lifecycle.get.getCurStageName() + " " + plantName)
 
     out ++= Set(this.getDescriptName(), this.getDescriptName() + " in the " + lifecycle.get.getCurStageName() + " stage")
+
+    // Substitute in the genetic trait string to the rest of it
+    val out2 = mutable.Set[String]()
+    for (elem <- out) {
+      out2 += elem.replaceAll(plantName, mkGeneticTraitsStr + " " + plantName)
+    }
+    out ++= out2
 
     // If ill, append ill referents too
     if (this.propLife.get.isSickly) {
@@ -63,9 +77,31 @@ class FruitingTree extends Tree {
     out
   }
 
+  // Make PLANT-SPECIFIC (not flower or seed-specific) text to add to the description, based off genetic traits
+  override def mkGeneticTraitsStr():String = {
+    val os = new StringBuilder()
+
+    if (this.lifecycle.isEmpty) return ""
+    if (this.propChromosomePairs.isEmpty) return ""
+
+    // Traits in seed stage
+    if (this.lifecycle.get.getCurStageName() == PlantLifeStages.PLANT_STAGE_SEED) {
+      os.append(propChromosomePairs.get.getPhenotypeValue(GeneticTrait.TRAIT_SEED_SHAPE).get + " ")
+      os.append(propChromosomePairs.get.getPhenotypeValue(GeneticTrait.TRAIT_SEED_COLOR).get + " ")
+    }
+
+    // Traits in adult stage
+    if ((this.lifecycle.get.getCurStageName() == PlantLifeStages.PLANT_STAGE_ADULT_PLANT) || (this.lifecycle.get.getCurStageName() == PlantLifeStages.PLANT_STAGE_REPRODUCING)) {
+      if (propChromosomePairs.isDefined) os.append(" with a " + propChromosomePairs.get.getTraitPhenotypeHumanReadableStr(GeneticTrait.TRAIT_PLANT_HEIGHT).get)
+    }
+
+    return os.toString()
+  }
+
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
     val plantName = this.getPlantName()
+
 
     // If dead, simplify the name
     if (propLife.get.isDead) {
@@ -75,7 +111,7 @@ class FruitingTree extends Tree {
 
     // SEED
     if (this.isSeed()) {
-      os.append("a " + plantName)
+      os.append("a " + mkGeneticTraitsStr + " " + plantName)
       if (mode == MODE_DETAILED) {
         // ...
       }
@@ -104,46 +140,5 @@ class FruitingTree extends Tree {
     os.toString
   }
 
-}
-
-
-
-/*
- * Specific trees
- */
-
-class AppleTree extends FruitingTree {
-  propLife = Some(new LifePropertiesApple())
 
 }
-
-class AvocadoTree extends FruitingTree {
-  propLife = Some(new LifePropertiesAvocado())
-
-}
-
-class BananaTree extends FruitingTree {
-  propLife = Some(new LifePropertiesBanana())
-
-}
-
-class CherryTree extends FruitingTree {
-  propLife = Some(new LifePropertiesCherry())
-
-}
-
-class LemonTree extends FruitingTree {
-  propLife = Some(new LifePropertiesLemon())
-
-}
-
-class OrangeTree extends FruitingTree {
-  propLife = Some(new LifePropertiesOrange())
-
-}
-
-class PeachTree extends FruitingTree {
-  propLife = Some(new LifePropertiesPeach())
-}
-
-

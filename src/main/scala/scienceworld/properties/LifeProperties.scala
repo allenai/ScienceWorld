@@ -60,6 +60,27 @@ class LifePropertiesPeach extends LifePropertiesPlant {
 }
 
 
+class LifePropertiesPea extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_PEA
+}
+
+class LifePropertiesRandomGeneticsA extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_RANDOMGENETICS_A
+}
+
+class LifePropertiesRandomGeneticsB extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_RANDOMGENETICS_B
+}
+
+class LifePropertiesRandomGeneticsC extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_RANDOMGENETICS_C
+}
+
+class LifePropertiesRandomGeneticsD extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_RANDOMGENETICS_D
+}
+
+
 /*
  * Animals
  */
@@ -182,4 +203,10 @@ class LifePropertiesBlueJay extends LifePropertiesAnimal {
 class LifePropertiesTurtle extends LifePropertiesAnimal {
   this.lifeformType         = "turtle"
   this.lifespanTypical      = 30.0f
+}
+
+
+class LifePropertiesBee extends LifePropertiesAnimal {
+  this.lifeformType         = "bee"
+  this.lifespanTypical      = 0.1f
 }

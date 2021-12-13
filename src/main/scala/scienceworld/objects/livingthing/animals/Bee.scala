@@ -3,6 +3,8 @@ package scienceworld.objects.livingthing.animals
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.livingthing.plant.{Flower, Pollen}
 import scienceworld.objects.location.Location
+import scienceworld.processes.lifestage.{AdultForeverLifeStage, TortoiseLifeStage}
+import scienceworld.properties.{LifePropertiesBee, LifePropertiesGiantTortoise}
 import scienceworld.struct.EnvObject._
 
 import scala.util.Random
@@ -88,6 +90,9 @@ class WanderingAnimal extends Animal {
 
 class Bee extends WanderingAnimal {
   this.name = "bee"
+
+  this.propLife = Some( new LifePropertiesBee() )
+  lifecycle = Some( AdultForeverLifeStage.mkAdultForeverLifeCycle(this) )
 
   val maxPollen:Int = 5
 
@@ -191,7 +196,7 @@ class Bee extends WanderingAnimal {
   }
 
   override def getReferents(): Set[String] = {
-    Set("living thing", "organism", this.name, this.getDescriptName())
+    Set("living thing", "organism", this.name, this.propLife.get.lifeformType, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
@@ -205,7 +210,8 @@ class Bee extends WanderingAnimal {
     }
 
     // If alive, give a verbose name
-    os.append("a " + lifecycle.get.getCurStageName() + " " + this.getDescriptName())
+    os.append("a " + this.getDescriptName())
+
     if (propLife.get.isSickly) os.append(" (that looks unwell)")
 
     if (mode == MODE_DETAILED) {

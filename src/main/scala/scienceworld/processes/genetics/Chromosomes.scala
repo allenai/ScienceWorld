@@ -2,11 +2,21 @@ package scienceworld.processes.genetics
 
 import GeneticTrait._
 
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
 // One set of alleles for all the traits for a given life form
 class Chromosomes(val chromosomes:Array[GeneticTrait]) {
+
+  def getTraitNames():Array[String] = {
+    val out = new ArrayBuffer[String]()
+    for (chromosome <- chromosomes) {
+      out.append(chromosome.traitName)
+    }
+    // Return
+    out.toArray
+  }
 
   def getTrait(name:String):Option[GeneticTrait] = {
     for (chromosome <- chromosomes) {
@@ -20,6 +30,9 @@ class Chromosomes(val chromosomes:Array[GeneticTrait]) {
 
 // Two complete sets of alleles, one from each parent, for the traits for a given lifeform
 class ChromosomePair(val parent1:Chromosomes, val parent2:Chromosomes) {
+  val phenotypes = this.getPhenotypes()                   // Precompute phenotypes
+  val phenotypeStrings = this.getPhenotypeStrings()       // Precompute phenotype descriptions
+  val phenotypeValues = this.getPhenotypeValues()
 
   def getTraitNames():Set[String] = {
     return parent1.chromosomes.map(_.traitName).toSet ++ parent2.chromosomes.map(_.traitName).toSet
@@ -57,6 +70,12 @@ class ChromosomePair(val parent1:Chromosomes, val parent2:Chromosomes) {
     return None
   }
 
+  def getPhenotypeValue(traitName:String):Option[String] = {
+    if (!this.phenotypeValues.contains(traitName)) return None
+    return Some(this.phenotypeValues(traitName))
+
+  }
+
   def getGenotype(traitName:String):Option[(GeneticTrait, GeneticTrait)] = {
     // Step 1: Find trait from both parents
     var traitP1:Option[GeneticTrait] = None
@@ -76,6 +95,41 @@ class ChromosomePair(val parent1:Chromosomes, val parent2:Chromosomes) {
   }
 
   /*
+   * Helper methods
+   */
+  def getPhenotypeStrings():Map[String, String] = {
+    val out = mutable.Map[String, String]()
+    val phenotypes = this.getPhenotypes()
+
+    for (pTrait <- phenotypes) {
+      val traitName = pTrait.traitName
+      val traitValueDesc = pTrait.mkHumanReadableDescStr()
+      out(traitName) = traitValueDesc
+    }
+
+    out.toMap
+  }
+
+  def getPhenotypeValues():Map[String, String] = {
+    val out = mutable.Map[String, String]()
+    val phenotypes = this.getPhenotypes()
+
+    for (pTrait <- phenotypes) {
+      val traitName = pTrait.traitName
+      val traitValue = pTrait.getValue()
+      out(traitName) = traitValue
+    }
+
+    out.toMap
+  }
+
+  // Get the precomputed phenotype value strings
+  def getTraitPhenotypeHumanReadableStr(traitName:String):Option[String] = {
+    if (!this.phenotypeStrings.contains(traitName)) return None
+    return Some(this.phenotypeStrings(traitName))
+  }
+
+  /*
    * String methods
    */
   override def toString():String = {
@@ -92,6 +146,14 @@ class ChromosomePair(val parent1:Chromosomes, val parent2:Chromosomes) {
   }
 
 }
+
+object ChromosomePair {
+  // Generator for a blank set of chromosomes, for living things without modeled genetic traits
+  def mkBlank():ChromosomePair = {
+    return new ChromosomePair( new Chromosomes(Array.empty[GeneticTrait]), new Chromosomes(Array.empty[GeneticTrait]) )
+  }
+}
+
 
 object GeneticReproduction {
 
@@ -191,14 +253,31 @@ object GeneticTrait {
   val RECESSIVE                 = "recessive"
 
   val TRAIT_PLANT_HEIGHT        = "plant height"
-  val TRAIT_PEA_SHAPE           = "pea shape"
-  val TRAIT_PEA_COLOR           = "pea color"
+  val TRAIT_SEED_SHAPE          = "seed shape"
+  val TRAIT_SEED_COLOR          = "seed color"
   val TRAIT_FLOWER_COLOR        = "flower color"
+
+  // Extra
+  val TRAIT_FLOWER_SIZE         = "flower size"
+  val TRAIT_LEAF_SIZE           = "leaf size"
+  val TRAIT_LEAF_SHAPE          = "leaf shape"
+
+
+  // Randomly return either DOMINANT or RECESSIVE
+  def mkRandomDomRec():String = {
+    if (Random.nextInt(2) == 0) return GeneticTrait.DOMINANT
+    // Return
+    return GeneticTrait.RECESSIVE
+  }
 
 }
 
 
-// Subclases
+/*
+ * Genetic traits for plants
+ */
+
+// Pea Plant
 object GeneticTraitPeas {
 
   def mkTraitPlantHeight(dominantOrRecessive:String):GeneticTrait = {
@@ -206,11 +285,11 @@ object GeneticTraitPeas {
   }
 
   def mkTraitPeaShape(dominantOrRecessive:String):GeneticTrait = {
-    new GeneticTrait(TRAIT_PEA_SHAPE, valueDominant = "round", valueRecessive = "wrinkly", strSuffix = "peas", dominantOrRecessive)
+    new GeneticTrait(TRAIT_SEED_SHAPE, valueDominant = "round", valueRecessive = "wrinkly", strSuffix = "peas", dominantOrRecessive)
   }
 
   def mkTraitPeaColor(dominantOrRecessive:String):GeneticTrait = {
-    new GeneticTrait(TRAIT_PEA_COLOR, valueDominant = "green", valueRecessive = "orange", strSuffix = "peas", dominantOrRecessive)
+    new GeneticTrait(TRAIT_SEED_COLOR, valueDominant = "green", valueRecessive = "orange", strSuffix = "peas", dominantOrRecessive)
   }
 
   def mkTraitFlowerColor(dominantOrRecessive:String):GeneticTrait = {
@@ -218,42 +297,91 @@ object GeneticTraitPeas {
   }
 
 
-  def mkRandom():Array[GeneticTrait] = {
+  /*
+   * Make random traits
+   */
+  def mkRandomChromosomePair():ChromosomePair = {
+    val parent1 = new Chromosomes( this.mkRandomTraits() )
+    val parent2 = new Chromosomes( this.mkRandomTraits() )
+    return new ChromosomePair(parent1, parent2)
+  }
+
+  def mkRandomTraits():Array[GeneticTrait] = {
     val out = new ArrayBuffer[GeneticTrait]()
 
-    out.append( mkTraitPlantHeight(this.mkRandomDomRec()) )
-    out.append( mkTraitPeaShape(this.mkRandomDomRec()) )
-    out.append( mkTraitPeaColor(this.mkRandomDomRec()) )
-    out.append( mkTraitFlowerColor(this.mkRandomDomRec()) )
+    out.append( mkTraitPlantHeight(GeneticTrait.mkRandomDomRec()) )
+    out.append( mkTraitPeaShape(GeneticTrait.mkRandomDomRec()) )
+    out.append( mkTraitPeaColor(GeneticTrait.mkRandomDomRec()) )
+    out.append( mkTraitFlowerColor(GeneticTrait.mkRandomDomRec()) )
 
     // Return
     out.toArray
   }
 
-  def mkRandomDomRec():String = {
-    if (Random.nextInt(2) == 0) return GeneticTrait.DOMINANT
-    // Return
-    return GeneticTrait.RECESSIVE
+  /*
+   * Make random traits (but, control one trait)
+   */
+  def mkRandomChromosomePairExcept(traitName:String, parent1DomOrRec:String, parent2DomOrRec:String):ChromosomePair = {
+    val parent1 = new Chromosomes( this.mkRandomTraitsExcept(traitName, parent1DomOrRec) )
+    val parent2 = new Chromosomes( this.mkRandomTraitsExcept(traitName, parent2DomOrRec) )
+    return new ChromosomePair(parent1, parent2)
   }
+
+  def mkRandomTraitsExcept(traitName:String, domOrRec:String):Array[GeneticTrait] = {
+    val out = new ArrayBuffer[GeneticTrait]()
+
+    if (traitName == TRAIT_PLANT_HEIGHT) {
+      out.append(mkTraitPlantHeight(domOrRec))
+    } else {
+      out.append(mkTraitPlantHeight(GeneticTrait.mkRandomDomRec()))
+    }
+
+    if (traitName == TRAIT_SEED_SHAPE) {
+      out.append(mkTraitPeaShape(domOrRec))
+    } else {
+      out.append(mkTraitPeaShape(GeneticTrait.mkRandomDomRec()))
+    }
+
+    if (traitName == TRAIT_SEED_COLOR) {
+      out.append(mkTraitPeaColor(domOrRec))
+    } else {
+      out.append(mkTraitPeaColor(GeneticTrait.mkRandomDomRec()))
+    }
+
+    if (traitName == TRAIT_FLOWER_COLOR) {
+      out.append(mkTraitFlowerColor(domOrRec))
+    } else {
+      out.append(mkTraitFlowerColor(GeneticTrait.mkRandomDomRec()))
+    }
+
+    // Return
+    out.toArray
+  }
+
 }
 
 
+
+
+/*
+ * Quick debug tester for plants
+ */
 
 object GeneticTest {
 
   def main(args:Array[String]): Unit = {
 
     // Parent plants (and, grandparents)
-    val plantGP1aGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
-    val plantGP1bGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
+    val plantGP1aGenes = new Chromosomes( GeneticTraitPeas.mkRandomTraits() )
+    val plantGP1bGenes = new Chromosomes( GeneticTraitPeas.mkRandomTraits() )
     val plant1ChromosomePairs = new ChromosomePair(plantGP1aGenes, plantGP1bGenes)
     println("Plant 1")
     println(plant1ChromosomePairs.toString())
 
     println("")
 
-    val plantGP2aGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
-    val plantGP2bGenes = new Chromosomes( GeneticTraitPeas.mkRandom() )
+    val plantGP2aGenes = new Chromosomes( GeneticTraitPeas.mkRandomTraits() )
+    val plantGP2bGenes = new Chromosomes( GeneticTraitPeas.mkRandomTraits() )
     val plant2ChromosomePairs = new ChromosomePair(plantGP2aGenes, plantGP2bGenes)
     println("Plant 2")
     println(plant2ChromosomePairs.toString())
