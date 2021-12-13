@@ -196,9 +196,14 @@ def app():
     htmlLog.addHorizontalRule()    
 
     taskName = select("Select a task:", env.getTaskNames())    
+    maxVariations = env.getMaxVariations(taskName)
+
+    #variationIdx = slider("Task Variation: ", min_value=0, max_value=(maxVariations-1))    
+    variationIdx = input('Enter the task variation (min = 0, max = ' + str(maxVariations) + "):")
+    variationIdx = int(variationIdx) if variationIdx.isdigit() else 0
 
     # Load environment
-    env.load(taskName)
+    env.load(taskName, variationIdx)
     initialObs, initialDict = env.reset()
     
     #print("Possible actions: " + str(env.getPossibleActions()) )
@@ -206,10 +211,12 @@ def app():
     #print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
 
     put_table([
-        ["Task", env.getTaskDescription()]
+        ["Task", env.getTaskDescription()],
+        ["Variation", str(variationIdx) + " / " + str(maxVariations)]
     ])
 
     htmlLog.addStr("<b>Task:</b> " + env.getTaskDescription() + "<br>")
+    htmlLog.addStr("<b>Variation:</b> " + str(variationIdx) + "<br>")
     htmlLog.addHorizontalRule()
 
 
