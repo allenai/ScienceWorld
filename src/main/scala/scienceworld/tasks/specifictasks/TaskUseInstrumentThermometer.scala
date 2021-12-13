@@ -8,7 +8,7 @@ import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalCond
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueBool, TaskValueDouble, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalObjectInContainerByName}
+import scienceworld.tasks.goals.specificgoals.{GoalContainerByTemperature, GoalFind, GoalObjectInContainerByName}
 import TaskUseInstrumentThermometer._
 import scienceworld.objects.containers.WoodCup
 import scienceworld.objects.devices.Thermometer
@@ -172,7 +172,8 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
 
       // Goal sequence
       gSequence.append(new GoalFind(objectName = instrumentName.get, failIfWrong = true, _defocusOnSuccess = true))
-      gSequence.append(new GoalFind(objectName = objectName.get, failIfWrong = true, _defocusOnSuccess = true))
+      gSequence.append(new GoalFind(objectName = objectName.get, failIfWrong = true, _defocusOnSuccess = false))    // Keep focus for next step
+      gSequence.append(new GoalContainerByTemperature(tempThreshold = tempPoint.get, containerNameAbove = boxAbove.get, containerNameBelow = boxBelow.get))
 
       //gSequence.append(new GoalObjectInContainerByName(containerName = correctContainerName, failureContainers = List(incorrectContainerName))) // Then, make sure it's in the correct answer container
 
