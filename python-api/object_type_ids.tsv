@@ -93,7 +93,6 @@ scienceworld.objects.devices.Bathtub	40
 scienceworld.objects.electricalcomponent.Terminal	0
 scienceworld.objects.misc.InclinedPlane	128
 scienceworld.objects.agent.InventoryContainer	56
-scienceworld.objects.containers.WaterJug	49
 scienceworld.objects.livingthing.plant.Plant	50
 scienceworld.objects.substance.Water	39
 scienceworld.objects.electricalcomponent.WindGenerator	78

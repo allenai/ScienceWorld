@@ -209,7 +209,7 @@ def main():
     print("Virtual Text Environment API demo")
 
     # Run a user console
-    #userConsole(jarPath)
+    userConsole(jarPath)
 
     # Run speed test
     #speedTest(jarPath)
