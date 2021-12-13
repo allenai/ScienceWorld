@@ -43,3 +43,20 @@ object UnknownSubstanceElectricalConductivity {
   }
 
 }
+
+// An unknown substance used for temperature experiments
+class UnknownSubstanceThermal(letterName:String = "A") extends EnvObject {
+  this.name = "unknown substance " + letterName
+
+  this.propMaterial = Some(new MetalProp)
+
+  override def getReferents(): Set[String] = {
+    Set(this.name, "unknown substance", this.getDescriptName())
+  }
+
+  override def getDescription(mode: Int): String = {
+    return this.name
+  }
+
+}
+
