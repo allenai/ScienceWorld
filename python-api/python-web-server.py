@@ -265,7 +265,7 @@ def app():
 
 
     print("Shutting down server...")    
-    #env.shutdown()
+    env.shutdown()
 
     print("Completed.")
 
