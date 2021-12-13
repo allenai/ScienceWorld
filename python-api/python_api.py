@@ -51,7 +51,7 @@ class VirtualEnv:
     # Launches the PY4J server
     def launchServer(self, serverPath):
         # /home/ruoyao/Documents/projects/virtualenv-scala2/python-api/virtualenv-scala-assembly-1.0.jar            
-        cmd = f"nohup java -cp {serverPath} scienceworld.runtime.pythonapi.PythonInterface " + str(self.portNum) + " >/dev/null 2>&1 &"
+        cmd = "nohup java -cp " + serverPath + " scienceworld.runtime.pythonapi.PythonInterface " + str(self.portNum) + " >/dev/null 2>&1 &"
         #"nohup usr/local/bin/otherscript.pl {0} >/dev/null 2>&1 &", shell=True
         subprocess.Popen(cmd, shell=True)
         time.sleep(1)
