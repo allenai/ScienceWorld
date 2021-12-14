@@ -183,9 +183,9 @@ class OutputLog:
 #
 def saveJSONHistory(history:list):
     pathOut = "recordings/"
-    taskName = history[0]['taskName']
-    varIdx = history[0]['variationIdx']
-    score = history[0]['score']
+    taskName = history[-1]['taskName']
+    varIdx = history[-1]['variationIdx']
+    score = history[-1]['score']
     
     result = "success"
     if (score != 1.0):
