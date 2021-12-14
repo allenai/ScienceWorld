@@ -2,10 +2,12 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.environments.ContainerMaker
 import scienceworld.objects.agent.Agent
+import scienceworld.objects.containers.FlowerPot
 import scienceworld.objects.devices.Stove
 import scienceworld.objects.livingthing.animals.{Beaver, BlueJay, BrownBear, Butterfly, Crocodile, Dove, Elephant, Frog, GiantTortoise, Moth, Parrot, Toad, Turtle, Wolf}
-import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeaPlant}
+import scienceworld.objects.livingthing.plant.{AppleTree, AvocadoTree, BananaTree, CherryTree, LemonTree, OrangeTree, PeaPlant, PeachTree, Soil}
 import scienceworld.objects.taskitems.AnswerBox
+import scienceworld.processes.lifestage.PlantLifeStages
 import scienceworld.properties.LeadProp
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskDisable, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
@@ -25,7 +27,9 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
   // Variation 1: Animals
   val livingThings = new ArrayBuffer[ Array[TaskModifier] ]()
   for (i <- 0 until 10) {
-    livingThings.append( TaskFindLivingNonLiving.mkRandomAnimals(location = "outside", numAnimals = 3, variationIdx = i) )
+    val livingThingsToAdd = TaskFindLivingNonLiving.mkRandomAnimals(location = "outside", numAnimals = 3, variationIdx = i) ++
+                            TaskFindLivingNonLiving.mkRandomPlants(location = "green house", numPlants = 3, variationIdx = i)
+    livingThings.append( livingThingsToAdd )
   }
 
 
@@ -160,22 +164,34 @@ object TaskFindLivingNonLiving {
     out.toArray
   }
 
-/*
   // Randomly choose a set of N distractor animals to include in the environment
-  def mkRandomPlants(location:String, numAnimals:Int = 5, variationIdx:Int):Array[TaskModifier] = {
-    val allPlants = List(new AppleTree(), new OrangeTree(), new PeaPlant(), new Toad(), new GiantTortoise(), new Turtle(), new Crocodile(), new Parrot(), new Dove(), new BlueJay(), new Elephant(), new BrownBear(), new Beaver(), new Wolf() )
+  def mkRandomPlants(location:String, numPlants:Int = 5, variationIdx:Int):Array[TaskModifier] = {
+    val allPlants = List(new AppleTree(), new AvocadoTree(), new BananaTree(), new CherryTree(), new LemonTree(), new OrangeTree(), new PeachTree(), new PeaPlant())
+
+    val allPlantsInPots = new ArrayBuffer[EnvObject]
+    for (plant <- allPlants) {
+      val flowerpot = new FlowerPot()
+
+      // Try to change the plant into an adult plant
+      plant.lifecycle.get.changeStage(PlantLifeStages.PLANT_STAGE_ADULT_PLANT, failGracefully = true)
+
+      flowerpot.addObject(plant)
+      flowerpot.addObject(new Soil())
+      allPlantsInPots.append(flowerpot)
+    }
+
     val rand = new Random(variationIdx)     // Use variationIdx for seed
     // Shuffle
-    val shuffled = rand.shuffle(allAnimals)
+    val shuffled = rand.shuffle(allPlantsInPots)
 
     val out = new ArrayBuffer[TaskModifier]
-    for (i <- 0 until numAnimals) {
-      val animal = shuffled(i)
-      out.append( new TaskObject(animal.name, Some(animal), roomToGenerateIn = location, Array.empty[String], generateNear = 0) )
+    for (i <- 0 until numPlants) {
+      val plantInPot = shuffled(i)
+      out.append( new TaskObject(plantInPot.name, Some(plantInPot), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true) )
     }
 
     out.toArray
   }
-*/
+
 
 }

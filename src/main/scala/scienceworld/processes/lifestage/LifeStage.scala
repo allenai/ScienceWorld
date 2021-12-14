@@ -32,7 +32,7 @@ class LifeCycle(lifeCycleName:String = "life cycle of the X organism") {
 
 
   // Change the current stage to a new stage with a given name
-  def changeStage(stageName:String): Unit = {
+  def changeStage(stageName:String, failGracefully:Boolean = false): Unit = {
     for (i <- 0 until stages.length) {
       if (stages(i).stageName == stageName) {
         println("* Living Thing is changing life cycle stage from (" + getCurStage().stageName + ") to (" + stageName + ")")      // Debug statement
@@ -40,8 +40,11 @@ class LifeCycle(lifeCycleName:String = "life cycle of the X organism") {
         return
       }
     }
-    // If we reach here, the stage wasn't found
-    throw new RuntimeException("ERROR: Stage (" + stageName + ") not found in life cycle (" + this.lifeCycleName + ")")
+
+    if (!failGracefully) {
+      // If we reach here, the stage wasn't found
+      throw new RuntimeException("ERROR: Stage (" + stageName + ") not found in life cycle (" + this.lifeCycleName + ")")
+    }
   }
 
 
