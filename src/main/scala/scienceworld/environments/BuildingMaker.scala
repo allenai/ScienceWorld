@@ -263,11 +263,13 @@ object RoomMaker {
     */
 
     //##
+    /*
     val inclinedPlane1 = new InclinedPlane(angleDeg = 45, surfaceMaterial = new SandpaperProp())
     room.addObject(inclinedPlane1)
 
     val inclinedPlane2 = new InclinedPlane(angleDeg = 45, surfaceMaterial = new PlasticProp())
     room.addObject(inclinedPlane2)
+     */
 
     // TODO: Task: Which inclined plane has the steepest angle?
 

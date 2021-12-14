@@ -10,7 +10,10 @@ import subprocess
 import random
 import timeit
 import time
+import json
 import py4j
+
+from datetime import datetime
 
 from python_api import VirtualEnv
 
@@ -176,6 +179,31 @@ class OutputLog:
         return out
 
 #
+#   Save JSON history
+#
+def saveJSONHistory(history:list):
+    pathOut = "recordings/"
+    taskName = history[0]['taskName']
+    varIdx = history[0]['variationIdx']
+    score = history[0]['score']
+    
+    result = "success"
+    if (score != 1.0):
+        result = "failure"
+
+    # timestamp
+    dateTimeObj = datetime.now()
+    timestampStr = dateTimeObj.strftime("timestamp%Y-%b-%d-%H-%M-%S")
+
+    filenameOut = pathOut + "recording-" + str(taskName) + "-var" + str(varIdx) + "-" + str(result) + str(timestampStr) + ".json"
+
+    print ("Exporting " + filenameOut)
+
+    with open(filenameOut, "w") as jsonFile:
+        json.dump(history, jsonFile, indent=4, sort_keys=True)
+
+
+#
 #   Web server main
 #
 def app():
@@ -219,8 +247,10 @@ def app():
     htmlLog.addStr("<b>Variation:</b> " + str(variationIdx) + "<br>")
     htmlLog.addHorizontalRule()
 
+    historyRecording = []
 
     userInputStr = "look around"        # First action
+    consoleMoveCount = 0
     while (userInputStr not in exitCommands):
         put_markdown("### Move " + str(env.getNumMoves()) )
         htmlLog.addSubheading("Move " + str(env.getNumMoves()))
@@ -259,7 +289,27 @@ def app():
         htmlLog.addStr("User Input:<br>")
         htmlLog.addStr("<i> > " + userInputStr + "</i><br>")
     
-        time.sleep(1)
+        # Record history
+        packed = {
+            'observation': observation, 
+            'score': score,
+            'isCompeted': isCompleted,
+            'userInput': userInputStr,
+            'taskName': taskName,
+            'variationIdx': variationIdx,
+            'consoleMoveCount': consoleMoveCount,
+        }
+        historyRecording.append(packed)
+        
+        
+        saveJSONHistory(historyRecording)
+
+        consoleMoveCount += 1
+
+        time.sleep(1)    
+
+        # Save, if completed
+
 
         #print(htmlLog.getHTML())
 
