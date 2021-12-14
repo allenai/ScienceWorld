@@ -321,7 +321,7 @@ def app():
             'variationIdx': variationIdx,
             'consoleMoveCount': consoleMoveCount,
         }
-        historyRecording.append(packed)
+        historyRecording.append(packed) 
         
         # If this session is completed, save the recording
         if (isCompleted == True):
