@@ -193,7 +193,7 @@ def saveJSONHistory(history:list):
 
     # timestamp
     dateTimeObj = datetime.now()
-    timestampStr = dateTimeObj.strftime("timestamp%Y-%b-%d-%H-%M-%S")
+    timestampStr = dateTimeObj.strftime("timestamp%Y-%b-%d-%H-%M")
 
     filenameOut = pathOut + "recording-" + str(taskName) + "-var" + str(varIdx) + "-" + str(result) + str(timestampStr) + ".json"
 
@@ -279,6 +279,25 @@ def app():
         #print("Score: " + str(score))
         #print("isCompleted: " + str(isCompleted))
 
+        # (DUPLICATE): If this session is completed, save the recording
+        # The duplication is to get the save before the next input is entered. 
+        if (isCompleted == True):
+            packed = {
+                'observation': observation, 
+                'score': score,
+                'isCompeted': isCompleted,
+                'userInput': userInputStr,
+                'taskName': taskName,
+                'variationIdx': variationIdx,
+                'consoleMoveCount': consoleMoveCount,
+            }
+            historyRecording.append(packed)            
+            saveJSONHistory(historyRecording)
+
+            put_text("> Complete")
+
+            break
+
         # Get user input
         userInputStr = input('Enter your action (`help` for list of actions, `objects` for list of object referents) ')
         
@@ -301,8 +320,9 @@ def app():
         }
         historyRecording.append(packed)
         
-        
-        saveJSONHistory(historyRecording)
+        # If this session is completed, save the recording
+        if (isCompleted == True):
+            saveJSONHistory(historyRecording)
 
         consoleMoveCount += 1
 
