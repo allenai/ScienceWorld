@@ -1,0 +1,92 @@
+[
+    {
+        "consoleMoveCount": 0,
+        "isCompeted": false,
+        "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the kitchen. In it, you see: \n\ta oven, which is turned off. The oven door is closed. \n\ta chair. On the chair is: nothing.\n\ta cupboard. The cupboard door is closed. \n\ta lighter\n\ta glass jar (containing a substance called sodium chloride)\n\ta finger painting\n\tthe agent\n\ta stopwatch, which is deactivated. \n\ta counter. On the counter is: a drawer, a bowl (containing an orange, a potato, a banana, a red apple).\n\ta substance called air\n\ta stove, which is turned off. On the stove is: nothing.\n\ta table. On the table is: a glass cup (containing nothing).\n\ta substance called soap\n\ta fridge. The fridge door is closed. \n\ta sink, which is turned off. In the sink is: nothing.\n\ta thermometer, currently reading a temperature of 10 degrees celsius\n\ta freezer. The freezer door is closed. \nYou also see:\n\tA door to the hallway (that is closed)\n\tA door to the bathroom (that is closed)\n\tA door to the outside (that is closed)",
+        "score": 0.0,
+        "taskName": "task-3-find-non-living-thing",
+        "taslDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the yellow box in the bathroom.",
+        "userInput": "focus on chair",
+        "variationIdx": 100
+    },
+    {
+        "consoleMoveCount": 1,
+        "isCompeted": false,
+        "observation": "Input: Successfully parsed input into single action (focus on).\n\n(focus on):\nYou focus on the chair.",
+        "score": 0.5,
+        "taskName": "task-3-find-non-living-thing",
+        "taslDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the yellow box in the bathroom.",
+        "userInput": "take chair",
+        "variationIdx": 100
+    },
+    {
+        "consoleMoveCount": 2,
+        "isCompeted": false,
+        "observation": "Input: Successfully parsed input into single action (pick up).\n\n(pick up):\nYou move the chair to the inventory.",
+        "score": 0.5,
+        "taskName": "task-3-find-non-living-thing",
+        "taslDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the yellow box in the bathroom.",
+        "userInput": "task",
+        "variationIdx": 100
+    },
+    {
+        "consoleMoveCount": 3,
+        "isCompeted": false,
+        "observation": "Task description:\nYour task is to find a non-living thing. First, focus on the thing. Then, move it to the yellow box in the bathroom.",
+        "score": 0.5,
+        "taskName": "task-3-find-non-living-thing",
+        "taslDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the yellow box in the bathroom.",
+        "userInput": "look",
+        "variationIdx": 100
+    },
+    {
+        "consoleMoveCount": 4,
+        "isCompeted": false,
+        "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the kitchen. In it, you see: \n\ta oven, which is turned off. The oven door is closed. \n\ta cupboard. The cupboard door is closed. \n\ta lighter\n\ta glass jar (containing a substance called sodium chloride)\n\ta finger painting\n\tthe agent\n\ta stopwatch, which is deactivated. \n\ta counter. On the counter is: a drawer, a bowl (containing an orange, a potato, a banana, a red apple).\n\ta substance called air\n\ta stove, which is turned off. On the stove is: nothing.\n\ta table. On the table is: a glass cup (containing nothing).\n\ta substance called soap\n\ta fridge. The fridge door is closed. \n\ta sink, which is turned off. In the sink is: nothing.\n\ta thermometer, currently reading a temperature of 10 degrees celsius\n\ta freezer. The freezer door is closed. \nYou also see:\n\tA door to the hallway (that is closed)\n\tA door to the bathroom (that is closed)\n\tA door to the outside (that is closed)",
+        "score": 0.5,
+        "taskName": "task-3-find-non-living-thing",
+        "taslDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the yellow box in the bathroom.",
+        "userInput": "open bathroom door",
+        "variationIdx": 100
+    },
+    {
+        "consoleMoveCount": 5,
+        "isCompeted": false,
+        "observation": "Input: Successfully parsed input into single action (open door).\n\n(open door):\nThe door is now open.",
+        "score": 0.5,
+        "taskName": "task-3-find-non-living-thing",
+        "taslDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the yellow box in the bathroom.",
+        "userInput": "go bathroom door",
+        "variationIdx": 100
+    },
+    {
+        "consoleMoveCount": 6,
+        "isCompeted": false,
+        "observation": "Input: Successfully parsed input into single action (move through door).\n\n(move through door):\nYou move through the door to the bathroom.",
+        "score": 0.5,
+        "taskName": "task-3-find-non-living-thing",
+        "taslDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the yellow box in the bathroom.",
+        "userInput": "look",
+        "variationIdx": 100
+    },
+    {
+        "consoleMoveCount": 7,
+        "isCompeted": false,
+        "observation": "Input: Successfully parsed input into single action (look around).\n\n(look around):\nThis room is called the bathroom. In it, you see: \n\ta picture\n\ta substance called air\n\ta yellow box (containing nothing)\n\ta sink, which is turned off. In the sink is: nothing.\n\tthe agent\n\ta toilet. In the toilet is: A drain, which is closed, a substance called water.\n\ta glass cup (containing nothing)\n\ta bath tub, which is turned off. In the bath tub is: nothing.\nYou also see:\n\tA door to the kitchen (that is open)",
+        "score": 0.5,
+        "taskName": "task-3-find-non-living-thing",
+        "taslDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the yellow box in the bathroom.",
+        "userInput": "put chair in yellow box",
+        "variationIdx": 100
+    },
+    {
+        "consoleMoveCount": 8,
+        "isCompeted": true,
+        "observation": "Input: Successfully parsed input into single action (move object).\n\n(move object):\nYou move the chair to the yellow box.",
+        "score": 1.0,
+        "taskName": "task-3-find-non-living-thing",
+        "taslDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the yellow box in the bathroom.",
+        "userInput": "exit",
+        "variationIdx": 100
+    }
+]
