@@ -193,7 +193,7 @@ def saveJSONHistory(history:list):
 
     # timestamp
     dateTimeObj = datetime.now()
-    timestampStr = dateTimeObj.strftime("timestamp%Y-%b-%d-%H-%M")
+    timestampStr = dateTimeObj.strftime("timestamp%Y-%b-%d-%H-%M-%S")
 
     filenameOut = pathOut + "recording-" + str(taskName) + "-var" + str(varIdx) + "-" + str(result) + str(timestampStr) + ".json"
 
@@ -282,12 +282,14 @@ def app():
         # (DUPLICATE): If this session is completed, save the recording
         # The duplication is to get the save before the next input is entered. 
         if (isCompleted == True):
+            userInputStr = "exit"
             packed = {
                 'observation': observation, 
                 'score': score,
                 'isCompeted': isCompleted,
                 'userInput': userInputStr,
                 'taskName': taskName,
+                'taslDescription': env.getTaskDescription(),
                 'variationIdx': variationIdx,
                 'consoleMoveCount': consoleMoveCount,
             }
@@ -315,6 +317,7 @@ def app():
             'isCompeted': isCompleted,
             'userInput': userInputStr,
             'taskName': taskName,
+            'taslDescription': env.getTaskDescription(),
             'variationIdx': variationIdx,
             'consoleMoveCount': consoleMoveCount,
         }
