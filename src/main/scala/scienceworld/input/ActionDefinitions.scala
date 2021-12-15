@@ -160,8 +160,12 @@ object ActionDefinitions {
     out.insertAll(out.length, ActionFlush.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
 
     // Connect (electrically)
+    //TODO: TEMPORARILY DISABLED!!!
+    println ("NOTE: CONNECT/DISCONNECT ACTIONS TEMPORARILY DISABLED!")
+    /*
     out.insertAll(out.length, ActionConnectElectrical.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
     out.insertAll(out.length, ActionDisconnectElectrical.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+     */
 
     // Wait
     out.insertAll(out.length, ActionWait1.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))

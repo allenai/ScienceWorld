@@ -369,10 +369,10 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
             // Check whether the goal conditions are met
             task.goalSequence.tick(objMonitor)
 
-          }
+            // Increment the number of iterations
+            this.curIter += 1
 
-          // Increment the number of iterations
-          this.curIter += 1
+          }
 
           // If the agent is not waiting, then break.  But if the agent is waiting, continue cycling through until the agent is finished waiting X number of ticks.
           if (agent.isWaiting()) {
