@@ -45,6 +45,8 @@ object ExampleRandomAgent {
       println (observation)
 
       val (templates, uuidToRefLUT) = agentInterface.get.getPossibleActionObjectCombinations()
+      //## CRASH TEST
+      val test1 = agentInterface.get.getValidActionObjectCombinations()
 
       // Randomly pick a next action
       val randIdx = Random.nextInt(templates.length)

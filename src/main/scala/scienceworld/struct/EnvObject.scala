@@ -107,19 +107,25 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   }
 
 
-  def getContainedObjectsAndPortalsRecursive():Set[EnvObject] = {
+  def getContainedObjectsAndPortalsRecursive(includeHidden:Boolean = false):Set[EnvObject] = {
     var out = mutable.Set[EnvObject]()
 
     val thisObjects = this.getContainedObjects()
     val thisPortals = this.getPortals()
 
     // Add local objects
-    out = out ++ thisObjects
-    out = out ++ thisPortals
+    for (obj <- thisObjects) {
+      if (!obj.isHidden() || (includeHidden == true)) out.add(obj)
+    }
+    for (obj <- thisPortals) {
+      if (!obj.isHidden() || (includeHidden == true)) out.add(obj)
+    }
 
     // Recurse
     for (obj <- thisObjects) {
-      out = out ++ obj.getContainedObjectsAndPortalsRecursive()
+      if (!obj.isHidden() || (includeHidden == true)) {
+        out = out ++ obj.getContainedObjectsAndPortalsRecursive()
+      }
     }
 
     // Return

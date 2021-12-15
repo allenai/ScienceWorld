@@ -286,10 +286,12 @@ def app():
             packed = {
                 'observation': observation, 
                 'score': score,
-                'isCompeted': isCompleted,
+                'isCompleted': isCompleted,
                 'userInput': userInputStr,
                 'taskName': taskName,
-                'taslDescription': env.getTaskDescription(),
+                'taskDescription': env.getTaskDescription(),
+                'look': env.look(),
+                'inventory': env.inventory(),
                 'variationIdx': variationIdx,
                 'consoleMoveCount': consoleMoveCount,
             }
@@ -314,10 +316,12 @@ def app():
         packed = {
             'observation': observation, 
             'score': score,
-            'isCompeted': isCompleted,
+            'isCompleted': isCompleted,
             'userInput': userInputStr,
             'taskName': taskName,
-            'taslDescription': env.getTaskDescription(),
+            'taskDescription': env.getTaskDescription(),
+            'look': env.look(),
+            'inventory': env.inventory(),
             'variationIdx': variationIdx,
             'consoleMoveCount': consoleMoveCount,
         }

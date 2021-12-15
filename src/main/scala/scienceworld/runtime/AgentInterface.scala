@@ -35,13 +35,14 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
    */
 
   // TODO: Currently just returns the current room, rather than a list of all visible objects
-  def getAgentVisibleObjects():(Boolean, EnvObject)  = {
+  def getAgentVisibleObjects(includeHidden:Boolean = false):(Boolean, EnvObject)  = {
     val agentContainer = agent.getContainer()
     if (agentContainer.isEmpty) {
       val errStr = "ERROR: Agent is not in container."
       return (false, new EnvObject)
     }
 
+    //##val agentVisibleObjects = InputParser.collectAccessibleObjects(objectTreeRoot = agentContainer.get, includeHidden)
     return (true, agentContainer.get)
   }
 
@@ -142,7 +143,7 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     val agentInventory = agent.getInventoryContainer()
     val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList
     // Collect UUID -> Unique Referent LUT
-    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=false)
+    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(universe, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
 
     // Generate all possible valid actions
     val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
@@ -155,8 +156,9 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     val visibleObjTreeRoot = this.getAgentVisibleObjects()._2
     val agentInventory = agent.getInventoryContainer()
     val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList
+
     // Collect UUID -> Unique Referent LUT
-    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=false)
+    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(universe, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
 
     // Generate all possible valid actions
     val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)

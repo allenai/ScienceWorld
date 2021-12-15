@@ -29,10 +29,16 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   }
 
   // Get a list of all referents
-  def getAllUniqueReferents(objTreeRoot:EnvObject, includeHidden:Boolean):Array[(String, EnvObject)] = {
+  def getAllUniqueReferents(objTreeRoot:EnvObject, includeHidden:Boolean, recursive:Boolean=false):Array[(String, EnvObject)] = {
     // Step 1: Collect a list of all referents for each object
     val objReferents = new ArrayBuffer[Array[String]]()
-    val allObjs = InputParser.collectAccessibleObjects(objTreeRoot, includeHidden).toArray
+    var allObjs = Array.empty[EnvObject]
+    if (recursive) {
+      allObjs = objTreeRoot.getContainedObjectsAndPortalsRecursive(includeHidden).toArray
+    } else {
+      allObjs = InputParser.collectAccessibleObjects(objTreeRoot, includeHidden).toArray
+    }
+
     for (obj <- allObjs) {
       objReferents.append( obj.getReferentsWithContainers(perspectiveContainer = objTreeRoot).toArray.sorted )
     }
@@ -51,10 +57,10 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     out.toArray.sortBy(_._1)
   }
 
-  def getAllUniqueReferentsLUT(objTreeRoot:EnvObject, includeHidden:Boolean):Map[Long, String] = {
+  def getAllUniqueReferentsLUT(objTreeRoot:EnvObject, includeHidden:Boolean, recursive:Boolean = false):Map[Long, String] = {
     val out = mutable.Map[Long, String]()
 
-    val tuples = this.getAllUniqueReferents(objTreeRoot, includeHidden)
+    val tuples = this.getAllUniqueReferents(objTreeRoot, includeHidden, recursive)
     for (tuple <- tuples) {
       val referent = tuple._1
       val obj = tuple._2
@@ -514,6 +520,7 @@ object InputParser {
 
     // Step 2A: Also add the destination locations of any portals
     for (portal <- objectTreeRoot.getPortals()) {
+      out.add(portal)
       val destination = portal.getConnectsTo(perspectiveContainer = objectTreeRoot)
       if (destination.isDefined) {
         out.add(destination.get)
@@ -543,6 +550,7 @@ object InputParser {
 
     // Step 2: Also add the destination locations of any portals
     for (portal <- objectTreeRoot.getPortals()) {
+      out.add(portal)
       val destination = portal.getConnectsTo(perspectiveContainer = objectTreeRoot)
       if (destination.isDefined) {
         out.add(destination.get)

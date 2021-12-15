@@ -107,7 +107,6 @@ object ActionOpenDoor {
   def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
-
     for (obj <- visibleObjects) {
       // Pack for check
       val assignments = Map(
