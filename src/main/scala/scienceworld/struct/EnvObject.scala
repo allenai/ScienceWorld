@@ -123,6 +123,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
         out.add(obj)
         if (includePortalConnections) {
           portalConnections = portalConnections ++ obj.getConnectionPoints()
+          //println("Portal connections: " + portalConnections.map(_.toStringMinimal()).mkString(", "))
         }
       }
     }
@@ -130,7 +131,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     // Recurse
     for (obj <- thisObjects) {
       if (!obj.isHidden() || (includeHidden == true)) {
-        out = out ++ obj.getContainedObjectsAndPortalsRecursive()
+        out = out ++ obj.getContainedObjectsAndPortalsRecursive(includeHidden, includePortalConnections)
       }
     }
 

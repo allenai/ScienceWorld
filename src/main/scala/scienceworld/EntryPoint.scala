@@ -116,6 +116,7 @@ object EntryPoint {
         for (validAction <- validActions) {
           if (validAction.startsWith("open") || validAction.startsWith("close")) validActionsFiltered.append(validAction)
         }
+        println("Possible actions: " + validActions.mkString(", "))
         println("Possible actions: " + validActionsFiltered.mkString(", "))
          */
 
