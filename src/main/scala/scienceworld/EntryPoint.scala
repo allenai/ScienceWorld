@@ -56,7 +56,8 @@ object EntryPoint {
     //val taskName = taskMaker.getTaskList()(8)
     //val taskName = taskMaker.getTaskList()(7)
     //val taskName = taskMaker.getTaskList()(0)
-    val taskName = taskMaker.getTaskList()(5)
+    //val taskName = taskMaker.getTaskList()(5)
+    val taskName = taskMaker.getTaskList()(13)
 
     // Setup task
     val (task_, taskErrStr) = taskMaker.doTaskSetup(taskName, 400, universe, agent)
@@ -110,7 +111,6 @@ object EntryPoint {
         val referents = agentInterface.inputParser.getAllUniqueReferents(agentInterface.getAgentVisibleObjects()._2, includeHidden = false).map(_._1)
         println("Possible referents: " + referents.mkString(", "))
 
-        /*
         val validActions = agentInterface.getValidActionObjectCombinations().sorted.toList
         val validActionsFiltered = new ArrayBuffer[String]
         for (validAction <- validActions) {
@@ -118,7 +118,7 @@ object EntryPoint {
         }
         println("Possible actions: " + validActions.mkString(", "))
         println("Possible actions: " + validActionsFiltered.mkString(", "))
-         */
+
 
         //println("Possible actions:\n\t" + actionHandler.getActionExamplesPlainText().mkString("\n\t"))
         //println("Possible Combinations:\n\t" + agentInterface.getPossibleActionObjectCombinations().mkString("\n\t") )

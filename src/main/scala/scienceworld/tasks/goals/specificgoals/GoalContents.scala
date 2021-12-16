@@ -32,6 +32,8 @@ class GoalFocusOnNonlivingThing() extends Goal {
       if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable)) {
         this.satisfiedWithObject = Some(obj)
         return GoalReturn.mkSubgoalSuccess()
+      } else {
+        return GoalReturn.mkSubgoalUnsuccessful()     // Just go unsuccessful, not full on fail, if they focus on an unmovable object (for reward shaping)
       }
     }
 
