@@ -28,8 +28,11 @@ class GoalFocusOnNonlivingThing() extends Goal {
 
   override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
     if (!obj.isInstanceOf[LivingThing]) {
-      this.satisfiedWithObject = Some(obj)
-      return GoalReturn.mkSubgoalSuccess()
+      // Also check that the thing that's being focused on is movable
+      if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable)) {
+        this.satisfiedWithObject = Some(obj)
+        return GoalReturn.mkSubgoalSuccess()
+      }
     }
 
     // If we've focused on something different, the task has failed
