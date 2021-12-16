@@ -3,6 +3,7 @@ package scienceworld.objects.portal
 import scienceworld.properties.{IsContainer, MoveableProperties, PortalProperties}
 import scienceworld.struct.EnvObject
 
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 
@@ -70,6 +71,10 @@ class Portal (val _isOpen:Boolean, val connectsFrom:EnvObject, val connectsTo:En
     return None
   }
 
+  // Get both of the points the portal connects (unordered)
+  def getConnectionPoints():Set[EnvObject] = {
+    return Set(connectsFrom, connectsTo)
+  }
 
 
   /*

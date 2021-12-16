@@ -47,6 +47,7 @@ object EnvironmentMaker {
     //for (location <- locations) if (location.name == "green house") location.addObject(agent)
     //for (location <- locations) if (location.name == "outside") location.addObject(agent)
     //for (location <- locations) if (location.name == "art studio") location.addObject(agent)
+    //for (location <- locations) if (location.name == "hallway") location.addObject(agent)
 
 
     // Return

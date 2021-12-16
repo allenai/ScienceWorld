@@ -34,7 +34,8 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     val objReferents = new ArrayBuffer[Array[String]]()
     var allObjs = Array.empty[EnvObject]
     if (recursive) {
-      allObjs = objTreeRoot.getContainedObjectsAndPortalsRecursive(includeHidden).toArray
+      // PJ NOTE: Technically, InputParser.collectAccessibleObjects() should likely be modified to do this -- with a recursive option
+      allObjs = objTreeRoot.getContainedObjectsAndPortalsRecursive(includeHidden, includePortalConnections = true).toArray    // Also include portal destinations in the list of returned objects
     } else {
       allObjs = InputParser.collectAccessibleObjects(objTreeRoot, includeHidden).toArray
     }

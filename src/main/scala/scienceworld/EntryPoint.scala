@@ -14,6 +14,7 @@ import scienceworld.tasks.goals.ObjMonitor
 import scienceworld.tasks.specifictasks.TaskChangeOfState
 import scienceworld.tasks.specifictasks.TaskChangeOfState.MODE_MELT
 
+import scala.collection.mutable.ArrayBuffer
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks.{break, breakable}
 
@@ -107,9 +108,17 @@ object EntryPoint {
         //val referents = agentInterface.inputParser.getAllReferents(agentInterface.getAgentVisibleObjects()._2)
 
         val referents = agentInterface.inputParser.getAllUniqueReferents(agentInterface.getAgentVisibleObjects()._2, includeHidden = false).map(_._1)
-
-
         println("Possible referents: " + referents.mkString(", "))
+
+        /*
+        val validActions = agentInterface.getValidActionObjectCombinations().sorted.toList
+        val validActionsFiltered = new ArrayBuffer[String]
+        for (validAction <- validActions) {
+          if (validAction.startsWith("open") || validAction.startsWith("close")) validActionsFiltered.append(validAction)
+        }
+        println("Possible actions: " + validActionsFiltered.mkString(", "))
+         */
+
         //println("Possible actions:\n\t" + actionHandler.getActionExamplesPlainText().mkString("\n\t"))
         //println("Possible Combinations:\n\t" + agentInterface.getPossibleActionObjectCombinations().mkString("\n\t") )
 

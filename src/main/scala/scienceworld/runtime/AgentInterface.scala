@@ -143,7 +143,8 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     val agentInventory = agent.getInventoryContainer()
     val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList
     // Collect UUID -> Unique Referent LUT
-    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(universe, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
+    //val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(universe, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
+    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
 
     // Generate all possible valid actions
     val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
