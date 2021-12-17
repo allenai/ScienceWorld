@@ -16,7 +16,7 @@ object ExampleRandomAgent {
   def main(args:Array[String]) = {
     val interface = new PythonInterface()
 
-    val maxEpisodes:Int = 1
+    val maxEpisodes:Int = 1000
     val maxIterPerEpisode:Int = 100
 
     // Create environment
@@ -107,22 +107,25 @@ object ExampleRandomAgent {
         episodeScores.append(curScore)
       }
       taskScores.append(episodeScores.toArray)
+
+      println("")
+      println("---------------------------------")
+      println("Scores:")
+      println("---------------------------------")
+      println("maxEpisodes: " + maxEpisodes)
+      println("maxIterPerEpisode: " + maxIterPerEpisode)
+      println("equivalent steps per task: " + (maxEpisodes * maxIterPerEpisode) )
+      println("---------------------------------")
+
+      for (taskIdx <- 0 until taskScores.length) {
+        val taskName = taskNames(taskIdx)
+        println(taskIdx.formatted("%3s") + ": " + taskName.formatted("%60s") + "\t" + summaryStatistics(taskScores(taskIdx)))
+      }
+
+      println("---------------------------------")
     }
 
-    println("")
-    println("---------------------------------")
-    println("Scores:")
-    println("---------------------------------")
-    println("maxEpisodes: " + maxEpisodes)
-    println("maxIterPerEpisode: " + maxIterPerEpisode)
-    println("---------------------------------")
 
-    for (taskIdx <- 0 until taskNames.length) {
-      val taskName = taskNames(taskIdx)
-      println(taskIdx + ": " + taskName.formatted("%60s") + "\t" + summaryStatistics(taskScores(taskIdx)))
-    }
-
-    println("---------------------------------")
 
     println ("Completed...")
 
@@ -145,9 +148,9 @@ object ExampleRandomAgent {
 
     avg = avg / in.length.toDouble
 
-    os.append("min: " + min.formatted("%3.2f").formatted("%7s") + "  ")
-    os.append("max: " + max.formatted("%3.2f").formatted("%7s") + "  ")
-    os.append("avg: " + avg.formatted("%3.2f").formatted("%7s") + "  ")
+    os.append("min: " + min.formatted("%3.2f").formatted("%5s") + "      ")
+    os.append("max: " + max.formatted("%3.2f").formatted("%5s") + "      ")
+    os.append("avg: " + avg.formatted("%3.2f").formatted("%5s") + "      ")
 
     return os.toString()
   }
