@@ -413,6 +413,13 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     return false
   }
 
+  // Get the number of ambiguous matches currently waiting to be resolved
+  def getNumAmbiguousMatches():Int = {
+    if (this.lastAmbiguousMatches.isEmpty) return 0
+    // Otherwise
+    return this.lastAmbiguousMatches.get.size
+  }
+
   def clearAmbiguousState(): Unit = {
     this.lastAmbiguousMatches = None
   }

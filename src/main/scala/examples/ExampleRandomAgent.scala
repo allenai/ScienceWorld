@@ -16,7 +16,7 @@ object ExampleRandomAgent {
   def main(args:Array[String]) = {
     val interface = new PythonInterface()
 
-    val maxEpisodes:Int = 1000
+    val maxEpisodes:Int = 100
     val maxIterPerEpisode:Int = 100
 
     // Create environment
@@ -56,10 +56,10 @@ object ExampleRandomAgent {
           println("   Episode " + curEpisode + "  Iteration " + curIter + " / " + maxIterPerEpisode)
           println("   Total Steps: " + totalSteps)
           println("---------------------------")
+          
+          println(">> " + userInput)
           val observation = agentInterface.get.step(userInput)
           curScore = observation._2
-
-          println(">> " + userInput)
           println("Observation: ")
           println(observation)
 
@@ -143,7 +143,12 @@ object ExampleRandomAgent {
     for (elem <- in) {
       if (elem < min) min = elem
       if (elem > max) max = elem
-      avg += elem
+
+      // NOTE: Not including negative scores in the average
+      if (elem >= 0.0) {
+        avg += elem
+      }
+
     }
 
     avg = avg / in.length.toDouble

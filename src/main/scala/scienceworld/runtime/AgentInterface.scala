@@ -136,8 +136,24 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     return jsonOut
   }
 
+  // Returns the valid actions available (centrally, number choices) if the parser is in an ambiguity resolution state
+  def getValidActionsAmbiguousState():Array[String] = {
+    if (!this.inputParser.isInAmbiguousState()) return Array.empty[String]
+    println("AMBIGUITY RESOLUTION STATE!!!")
+
+    val out = new ArrayBuffer[String]()   // e.g. Array("0", "1", "2", "3", etc)
+    for (i <- 0 until this.inputParser.getNumAmbiguousMatches()) {
+      out.append( i.toString )
+    }
+
+    return out.toArray
+  }
+
   // Returns a list of only the valid action-agent combinations
   def getValidActionObjectCombinations(): Array[String] = {
+    // Special case: Check for parser being in ambiguity resolution state
+    if (this.inputParser.isInAmbiguousState()) return this.getValidActionsAmbiguousState()
+
     // Collect all objects visible to the agent
     val visibleObjTreeRoot = this.getAgentVisibleObjects()._2
     val agentInventory = agent.getInventoryContainer()
@@ -153,6 +169,17 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
   }
 
   def getValidActionObjectCombinationsJSON(): String = {
+    // Special case: Check for parser being in ambiguity resolution state
+    if (this.inputParser.isInAmbiguousState()) {
+      val ambiguityResolutionChoices = this.getValidActionsAmbiguousState()
+      val templatesJSON = new ArrayBuffer[String]()
+      for (choiceStr <- ambiguityResolutionChoices) {
+        templatesJSON.append( new TemplateAction(actionString = choiceStr, templateID = 999, objectIDs = List.empty[Int], typeIDs = List.empty[Int]).toJSON() )    // TODO: Fix this casting (proper template ID, object IDs, etc)
+      }
+      val outJSON = "{\"validActions\": [" + templatesJSON.mkString(",") + "]" + "}"
+      return outJSON
+    }
+
     // Collect all objects visible to the agent
     val visibleObjTreeRoot = this.getAgentVisibleObjects()._2
     val agentInventory = agent.getInventoryContainer()
@@ -186,6 +213,22 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
 
     val objects = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2, includeHidden = false)
 
+    // Special case: Check for parser being in ambiguity resolution state
+    if (this.inputParser.isInAmbiguousState()) {
+      val ambiguityResolutionChoices = this.getValidActionsAmbiguousState()
+      val templates = new ArrayBuffer[TemplateAction]()
+      for (choiceStr <- ambiguityResolutionChoices) {
+        templates.append( new TemplateAction(actionString = choiceStr, templateID = 999, objectIDs = List.empty[Int], typeIDs = List.empty[Int]) )    // TODO: Fix this casting (proper template ID, object IDs, etc)
+      }
+
+      for (obj <- objects) {
+        outObjectIdxLUT(obj._2.uuid.toInt) = obj._1     // TODO: Hacky, may not be correct.
+      }
+      return (templates.toArray, outObjectIdxLUT.toMap)
+    }
+
+
+    // Normal case
     val allActions = this.getPossibleActionsWithIDs()
     for (actionIdx <- 0 until allActions.length) {
       val actionStr = allActions(actionIdx).exampleStr
