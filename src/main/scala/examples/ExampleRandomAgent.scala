@@ -19,11 +19,11 @@ object ExampleRandomAgent {
     // Create environment
     // Get a task name
     val taskNames = interface.getTaskNames().asScala.toList
-    val taskName = taskNames(0)
+    val taskName = taskNames(13)
 
     // Simulation parameters
-    val maxEpisodes:Int = 1000
-    val maxIterPerEpisode:Int = 50
+    val maxEpisodes:Int = 10000
+    val maxIterPerEpisode:Int = 100
     var curEpisode:Int = 0
 
     var totalSteps:Long = 0

@@ -78,6 +78,8 @@ class GoalSequence(val subgoals:Array[Goal]) {
       breakable {
         for (obj <- objMonitor.getMonitoredObjects()) {
           println("Checking obj (" + obj.toStringMinimal() + ") against subgoal " + curSubgoalIdx)
+          println("## " + curSubgoal.get.getClass)
+
           goalReturn = curSubgoal.get.isGoalConditionSatisfied(obj, lastSubgoal)
           if (goalReturn.subgoalSuccess) {
             if (curSubgoal.get.defocusOnSuccess) objMonitor.clearMonitoredObjects()     // Clear focus, if the goal asks to do this
@@ -86,6 +88,8 @@ class GoalSequence(val subgoals:Array[Goal]) {
           if (goalReturn.taskFailure) break()
         }
       }
+
+      print("##>> out of break")
 
       if (goalReturn.taskFailure) {
         println ("Task failure.")

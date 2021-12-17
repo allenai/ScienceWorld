@@ -92,7 +92,7 @@ class InventoryContainer extends Container {
 
   this.propContainer = Some( new IsOpenUnclosableContainer )
   this.propMoveable = Some( new MoveableProperties(isMovable = false) )
-  
+
 
   override def tick(): Boolean = {
     super.tick()
