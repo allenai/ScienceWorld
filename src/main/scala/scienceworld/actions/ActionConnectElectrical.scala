@@ -85,6 +85,10 @@ object ActionConnectElectrical {
     if (!successB) return (errStrB, false)
     terminalB = _terminalB
 
+    if (terminalA.uuid == terminalB.uuid) {
+      return ("Something can't be connected to itself.", false)
+    }
+
     // Check 3: Check that the objects are connectable
     if (terminalA.propElectricalConnection.isEmpty) return ("It's not clear how to connect something to " + terminalA.name, false)
     if (terminalB.propElectricalConnection.isEmpty) return ("It's not clear how to connect something to " + terminalB.name, false)

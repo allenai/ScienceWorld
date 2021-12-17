@@ -76,6 +76,11 @@ object ActionMoveObject {
       return ("The " + objToMove.name + " is not moveable.", false)
     }
 
+    // Check that both arguments aren't the same
+    if (objToMove.uuid == container.uuid) {
+      return ("You can't move something into itself.", false)
+    }
+
     // Check that the object is not a liquid or a gas (which can't be directly held by the agent)
     if (objToMove.propMaterial.isDefined) {
       if (objToMove.propMaterial.get.stateOfMatter == "liquid") {
@@ -309,6 +314,10 @@ class ActionPourObject(action:ActionRequestDef, assignments:Map[String, EnvObjec
     var pouringOutContainer:Boolean = false
     if ((objToMove.propContainer.isDefined) && (objToMove.propContainer.get.isContainer)) pouringOutContainer = true
 
+    // Check that both arguments aren't the same
+    if (objToMove.uuid == container.uuid) {
+      return ("You can't move something into itself.", false)
+    }
 
     // Do the pouring
     val os = new StringBuilder
