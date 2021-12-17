@@ -16,48 +16,58 @@ object ExampleRandomAgent {
   def main(args:Array[String]) = {
     val interface = new PythonInterface()
 
+    val maxEpisodes:Int = 1
+    val maxIterPerEpisode:Int = 100
+
     // Create environment
     // Get a task name
     val taskNames = interface.getTaskNames().asScala.toList
-    val taskName = taskNames(13)
 
-    // Simulation parameters
-    val maxEpisodes:Int = 10000
-    val maxIterPerEpisode:Int = 100
-    var curEpisode:Int = 0
+    val taskScores = new ArrayBuffer[ Array[Double] ]()
+    for (taskIdx <- 0 until taskNames.length) {
+      val taskName = taskNames(taskIdx)
 
-    var totalSteps:Long = 0
+      // Simulation parameters
+      var curEpisode: Int = 0
 
-    var userInput = "look around"
-    while (curEpisode < maxEpisodes) {
+      var totalSteps: Long = 0
 
-      // Choose a variation
-      val maxVariations = interface.getTaskMaxVariations(taskName)
-      val variationIdx = Random.nextInt(maxVariations)
+      var userInput = "look around"
+      val episodeScores = new ArrayBuffer[Double]
+      while (curEpisode < maxEpisodes) {
 
-      // Load the task/variation
-      interface.load(taskName, variationIdx)
+        // Choose a variation
+        val maxVariations = interface.getTaskMaxVariations(taskName)
+        val variationIdx = Random.nextInt(maxVariations)
 
-      // Get reference to AgentInterface
-      val agentInterface = interface.agentInterface
+        // Load the task/variation
+        interface.load(taskName, variationIdx)
 
-      var curIter:Int = 0
-      var actionHistory = new ArrayBuffer[String]()
-      while (curIter < maxIterPerEpisode) {
-        println("---------------------------")
-        println("   Episode " + curEpisode + "  Iteration " + curIter + " / " + maxIterPerEpisode)
-        println("   Total Steps: " + totalSteps)
-        println("---------------------------")
-        val observation = agentInterface.get.step(userInput)
-        println(">> " + userInput)
-        println("Observation: ")
-        println(observation)
+        // Get reference to AgentInterface
+        val agentInterface = interface.agentInterface
 
-        actionHistory.append(userInput)
+        var curIter: Int = 0
+        var actionHistory = new ArrayBuffer[String]()
+
+        var curScore:Double = 0.0
+        while (curIter < maxIterPerEpisode) {
+          println("---------------------------")
+          println("   Task " + taskIdx + "   " + taskName)
+          println("   Episode " + curEpisode + "  Iteration " + curIter + " / " + maxIterPerEpisode)
+          println("   Total Steps: " + totalSteps)
+          println("---------------------------")
+          val observation = agentInterface.get.step(userInput)
+          curScore = observation._2
+
+          println(">> " + userInput)
+          println("Observation: ")
+          println(observation)
+
+          actionHistory.append(userInput)
 
 
-        // Mode 1: use getPossibleActions
-        /*
+          // Mode 1: use getPossibleActions
+          /*
         val (templates, uuidToRefLUT) = agentInterface.get.getPossibleActionObjectCombinations()
         val randIdx = Random.nextInt(templates.length)
         val randTemplate = templates(randIdx)
@@ -65,41 +75,81 @@ object ExampleRandomAgent {
         userInput = randTemplate.actionString
          */
 
-        // Mode 2: Use getValidActions
-        val validActions = agentInterface.get.getValidActionObjectCombinations()
-        val randIdx = Random.nextInt(validActions.length)
-        val randAction = validActions(randIdx)
-        //println (">>>>>>>>>>>> " + randTemplate.actionString )
-        userInput = randAction
+          // Mode 2: Use getValidActions
+          val validActions = agentInterface.get.getValidActionObjectCombinations()
+          val randIdx = Random.nextInt(validActions.length)
+          val randAction = validActions(randIdx)
+          //println (">>>>>>>>>>>> " + randTemplate.actionString )
+          userInput = randAction
 
-        // Randomly pick a next action
+          // Randomly pick a next action
 
-        // Check for error state:
-        if (agentInterface.get.isInErrorState()) {
+          // Check for error state:
+          if (agentInterface.get.isInErrorState()) {
 
-          println("Action History:")
-          for (i <- 0 until actionHistory.length) {
-            println(i + ": \t" + actionHistory(i))
+            println("Action History:")
+            for (i <- 0 until actionHistory.length) {
+              println(i + ": \t" + actionHistory(i))
+            }
+            println("")
+            println("ERROR STATE DETECTED!")
+            println("ERROR MESSAGE: ")
+            println(agentInterface.get.getErrorStateMessage())
+
+
+            sys.exit(1)
           }
-          println("")
-          println("ERROR STATE DETECTED!")
-          println("ERROR MESSAGE: ")
-          println(agentInterface.get.getErrorStateMessage())
 
-
-          sys.exit(1)
+          curIter += 1
+          totalSteps += 1
         }
-
-        curIter += 1
-        totalSteps += 1
+        curEpisode += 1
+        episodeScores.append(curScore)
       }
-      curEpisode += 1
+      taskScores.append(episodeScores.toArray)
     }
 
+    println("")
+    println("---------------------------------")
+    println("Scores:")
+    println("---------------------------------")
+    println("maxEpisodes: " + maxEpisodes)
+    println("maxIterPerEpisode: " + maxIterPerEpisode)
+    println("---------------------------------")
+
+    for (taskIdx <- 0 until taskNames.length) {
+      val taskName = taskNames(taskIdx)
+      println(taskIdx + ": " + taskName.formatted("%60s") + "\t" + summaryStatistics(taskScores(taskIdx)))
+    }
+
+    println("---------------------------------")
 
     println ("Completed...")
 
   }
 
+
+  def summaryStatistics(in:Array[Double]):String = {
+    val os = new StringBuilder
+    if (in.length == 0) return "no samples"
+
+    var min:Double = in(0)
+    var max:Double = in(0)
+    var avg:Double = 0.0
+
+    for (elem <- in) {
+      if (elem < min) min = elem
+      if (elem > max) max = elem
+      avg += elem
+    }
+
+    avg = avg / in.length.toDouble
+
+    os.append("min: " + min.formatted("%3.2f").formatted("%7s") + "  ")
+    os.append("max: " + max.formatted("%3.2f").formatted("%7s") + "  ")
+    os.append("avg: " + avg.formatted("%3.2f").formatted("%7s") + "  ")
+
+    return os.toString()
+  }
 
 }
