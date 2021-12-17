@@ -14,7 +14,7 @@ for filename in os.listdir(record_dir):
             output_text = f"[CLS] {data[i]['taslDescription']} [SEP] [SEP] {data[i]['observation']} [SEP]"
         else:
             output_text = f"[CLS] {data[i-1]['observation']} [SEP] {data[i-1]['userInput']} [SEP] {data[i]['observation']} [SEP]"
-        label = data[i]["userInput"]
+        label = output_text + ' ' + data[i]["userInput"]
         output.append({"text": output_text, "labels": label})
 
 with open("record_data.json", "w") as f:
