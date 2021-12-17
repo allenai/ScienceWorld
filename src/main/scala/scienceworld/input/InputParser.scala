@@ -73,6 +73,46 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     return out.toMap
   }
 
+  // Unique referents, but with presupplied list
+  // Get a list of all referents
+  def getAllUniqueReferentsObjList(allObjs:Array[EnvObject], perspectiveContainer:EnvObject, includeHidden:Boolean, recursive:Boolean=false):Array[(String, EnvObject)] = {
+    // Step 1: Collect a list of all referents for each object
+    val objReferents = new ArrayBuffer[Array[String]]()
+
+    for (obj <- allObjs) {
+      objReferents.append( obj.getReferentsWithContainers(perspectiveContainer = perspectiveContainer).toArray.sorted )
+    }
+
+    // Step 2: Choose unique referents (find their indices)
+    val indices = this.chooseUniqueReferents(objReferents.toArray)
+
+    // Step 2A: Populate an array of the unique referents (as strings)
+    val out = new ArrayBuffer[(String, EnvObject)]()
+    for (i <- 0 until allObjs.length) {
+      val referent = objReferents(i)(indices(i))
+      out.append( (referent.toLowerCase(), allObjs(i)) )
+    }
+
+    // Return
+    out.toArray.sortBy(_._1)
+  }
+
+  def getAllUniqueReferentsLUTObjList(allObjs:Array[EnvObject], perspectiveContainer:EnvObject, includeHidden:Boolean, recursive:Boolean = false):Map[Long, String] = {
+    val out = mutable.Map[Long, String]()
+
+    val tuples = this.getAllUniqueReferentsObjList(allObjs, perspectiveContainer, includeHidden, recursive)
+    for (tuple <- tuples) {
+      val referent = tuple._1
+      val obj = tuple._2
+      val uuid = obj.uuid
+
+      out(uuid) = referent
+    }
+
+    return out.toMap
+  }
+
+
   private def chooseUniqueReferents(objReferents:Array[Array[String]]): Array[Int] = {
     // Array of referent indicies
     val indices = Array.fill[Int](objReferents.length)(0)

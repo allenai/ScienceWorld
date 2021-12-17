@@ -132,6 +132,9 @@ object ActionLookAt {
       // Do check
       if (this.isValidAction(assignments)._2 == true) {
         println ("obj: " + obj.toStringMinimal())
+        if (obj.getContainer().isDefined) {
+          println("\t container: " + obj.getContainer().get.toStringMinimal())
+        }
 
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
