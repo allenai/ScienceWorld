@@ -204,6 +204,8 @@ class PythonInterface() {
     }
     //outStr.append("\nPossible referents: " + referents.mkString(", "))
 
+    println ("step() finished.")
+
     // Return
     return outStr.toString()
   }
