@@ -11,11 +11,9 @@ for filename in os.listdir(record_dir):
     
     for i in range(len(data)):
         if i == 0:
-            output_text = f"[CLS] {data[i]['taslDescription']} [SEP] [SEP] {data[i]['observation']} [SEP]"
+            output_text = f"[CLS] {data[i]['taslDescription']} [SEP] [SEP] {data[i]['observation']} [SEP] {data[i]['userInput']} [SEP]"
         else:
-            output_text = f"[CLS] {data[i-1]['observation']} [SEP] {data[i-1]['userInput']} [SEP] {data[i]['observation']} [SEP]"
-        label = output_text + ' ' + data[i]["userInput"]
-        output.append({"text": output_text, "labels": label})
+            output_text = f"[CLS] {data[i-1]['observation']} [SEP] {data[i-1]['userInput']} [SEP] {data[i]['observation']} [SEP] {data[i]['userInput']} [SEP]"
 
 with open("record_data.json", "w") as f:
     for data in output:
