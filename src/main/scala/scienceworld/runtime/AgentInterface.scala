@@ -1,5 +1,7 @@
 package scienceworld.runtime
 
+import language.model.{ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
+import scienceworld.actions.{Action, ActionInventory, ActionLookAround, ActionTaskDesc}
 import scienceworld.input.{ActionDefinitions, ActionHandler, ExampleAction, InputParser}
 import scienceworld.objects.agent.Agent
 import scienceworld.runtime.pythonapi.TemplateAction
@@ -139,7 +141,6 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
   // Returns the valid actions available (centrally, number choices) if the parser is in an ambiguity resolution state
   def getValidActionsAmbiguousState():Array[String] = {
     if (!this.inputParser.isInAmbiguousState()) return Array.empty[String]
-    println("AMBIGUITY RESOLUTION STATE!!!")
 
     val out = new ArrayBuffer[String]()   // e.g. Array("0", "1", "2", "3", etc)
     for (i <- 0 until this.inputParser.getNumAmbiguousMatches()) {
@@ -371,14 +372,55 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
 
   }
 
+  /*
+   * Free actions
+   */
+
+  private def runFreeAction(action:Action):String = {
+    // Check whether the simulator is in an error state (if so, return the error message)
+    if (this.isInErrorState()) {
+      return this.getErrorStateMessage()
+    }
+
+    actionHandler.queueAction(action)
+
+    // Run queued actions
+    val actionOutStr = actionHandler.runQueuedActions()
+
+    return actionOutStr
+  }
+
+  def freeActionLook():String = {
+    val actionRequest = new ActionRequestDef(name = ActionLookAround.ACTION_NAME, paramSigList = new ParamSigList(List.empty[ParamSig]), triggers = List.empty[ActionTrigger], uniqueActionID = ActionLookAround.ACTION_ID)
+    val lut = Map[String, EnvObject]("agent" -> this.agent)
+    val action = new ActionLookAround(actionRequest, lut)
+    this.runFreeAction( action )
+  }
+
+  def freeActionInventory():String = {
+    val actionRequest = new ActionRequestDef(name = ActionInventory.ACTION_NAME, paramSigList = new ParamSigList(List.empty[ParamSig]), triggers = List.empty[ActionTrigger], uniqueActionID = ActionInventory.ACTION_ID)
+    val lut = Map[String, EnvObject]("agent" -> this.agent)
+    val action = new ActionInventory(actionRequest, lut)
+    this.runFreeAction( action )
+  }
+
+  def freeActionTaskDesc():String = {
+    val actionRequest = new ActionRequestDef(name = ActionTaskDesc.ACTION_NAME, paramSigList = new ParamSigList(List.empty[ParamSig]), triggers = List.empty[ActionTrigger], uniqueActionID = ActionTaskDesc.ACTION_ID)
+    val lut = Map[String, EnvObject]("agent" -> this.agent)
+    val action = new ActionTaskDesc(actionRequest, lut)
+    this.runFreeAction( action )
+  }
+
 
   /*
    * Step
    */
 
+
   // Returns (observation, score, isCompleted)
   def step(userInputStr: String): (String, Double, Boolean) = {
     val userOutStr = new StringBuilder()
+
 
     // Check whether the simulator is in an error state (if so, return the error message)
     if (this.isInErrorState()) {
@@ -392,7 +434,8 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     }
 
     // Check for ambiguity resolution case after parsing new input
-    if (this.inputParser.isInAmbiguousState()) {
+    val freeActions = Array("look around", "inventory", "task")     // Actions that can be input (from the API) while not resolving an ambiguity
+    if (this.inputParser.isInAmbiguousState() && !freeActions.contains(userInputStr.toLowerCase.trim)) {
       // Request clarification from user to resolve ambiguity -- do not run tick(), etc.
       val score = task.goalSequence.score()
       val isCompleted = task.goalSequence.isCompleted()

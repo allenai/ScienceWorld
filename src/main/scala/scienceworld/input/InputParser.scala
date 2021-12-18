@@ -235,7 +235,8 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
         println (errStr)
         return (false, errStr, "Error Encountered", None)
       }
-      return (true, "", "Successfully parsed input into single action (" + oneMatch.get.actionRequestDef.get.name + ").", oneAction)
+      //return (true, "", "Successfully parsed input into single action (" + oneMatch.get.actionRequestDef.get.name + ").", oneAction)
+      return (true, "", oneMatch.get.actionRequestDef.get.name + ":", oneAction)
     }
   }
 

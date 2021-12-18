@@ -158,6 +158,8 @@ class PythonInterface() {
    * Take action steps and get observations/scores
    */
 
+  // Normal
+
   def getScore():Double = this.score
 
   def getCompleted():Boolean = this.isComplete
@@ -208,6 +210,40 @@ class PythonInterface() {
 
     // Return
     return outStr.toString()
+  }
+
+  // Free actions
+  def freeActionLook():String = {
+    // Error checking
+    if (this.errorStr != "") return this.errorStr
+    if (this.errorUnknownEnvironment) return "ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ")."
+    if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
+    if (agent.isEmpty) return "ERROR: No agent is marked as main."
+    if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
+
+    return agentInterface.get.freeActionLook()
+  }
+
+  def freeActionInventory():String = {
+    // Error checking
+    if (this.errorStr != "") return this.errorStr
+    if (this.errorUnknownEnvironment) return "ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ")."
+    if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
+    if (agent.isEmpty) return "ERROR: No agent is marked as main."
+    if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
+
+    return agentInterface.get.freeActionInventory()
+  }
+
+  def freeActionTaskDesc():String = {
+    // Error checking
+    if (this.errorStr != "") return this.errorStr
+    if (this.errorUnknownEnvironment) return "ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ")."
+    if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
+    if (agent.isEmpty) return "ERROR: No agent is marked as main."
+    if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
+
+    return agentInterface.get.freeActionTaskDesc()
   }
 
 
