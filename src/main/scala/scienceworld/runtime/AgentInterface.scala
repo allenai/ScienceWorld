@@ -434,8 +434,7 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     }
 
     // Check for ambiguity resolution case after parsing new input
-    val freeActions = Array("look around", "inventory", "task")     // Actions that can be input (from the API) while not resolving an ambiguity
-    if (this.inputParser.isInAmbiguousState() && !freeActions.contains(userInputStr.toLowerCase.trim)) {
+    if (this.inputParser.isInAmbiguousState()) {
       // Request clarification from user to resolve ambiguity -- do not run tick(), etc.
       val score = task.goalSequence.score()
       val isCompleted = task.goalSequence.isCompleted()
