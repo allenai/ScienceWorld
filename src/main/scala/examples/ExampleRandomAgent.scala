@@ -4,7 +4,9 @@ import scienceworld.runtime.pythonapi.PythonInterface
 
 import scala.collection.JavaConverters.collectionAsScalaIterableConverter
 import scala.collection.mutable.ArrayBuffer
+import scala.util.control.Breaks._
 import scala.util.Random
+
 
 class ExampleRandomAgent {
 
@@ -16,6 +18,8 @@ object ExampleRandomAgent {
   def main(args:Array[String]) = {
     val interface = new PythonInterface()
 
+    val specificTasks = Array(13)           // Do specific tasks
+    //val specificTasks = Array.empty[Int]    // Do all
     val maxEpisodes:Int = 1000
     val maxIterPerEpisode:Int = 100
 
@@ -25,49 +29,56 @@ object ExampleRandomAgent {
 
     val taskScores = new ArrayBuffer[ Array[Double] ]()
     for (taskIdx <- 0 until taskNames.length) {
-      val taskName = taskNames(taskIdx)
-
-      // Simulation parameters
-      var curEpisode: Int = 0
-
-      var totalSteps: Long = 0
-
-      var userInput = "look around"
-      val episodeScores = new ArrayBuffer[Double]
-      while (curEpisode < maxEpisodes) {
-
-        // Choose a variation
-        val maxVariations = interface.getTaskMaxVariations(taskName)
-        val variationIdx = Random.nextInt(maxVariations)
-
-        // Load the task/variation
-        interface.load(taskName, variationIdx)
-
-        // Get reference to AgentInterface
-        val agentInterface = interface.agentInterface
-
-        var curIter: Int = 0
-        var actionHistory = new ArrayBuffer[String]()
-
-        var curScore:Double = 0.0
-        while (curIter < maxIterPerEpisode) {
-          println("---------------------------")
-          println("   Task " + taskIdx + "   " + taskName)
-          println("   Episode " + curEpisode + "  Iteration " + curIter + " / " + maxIterPerEpisode)
-          println("   Total Steps: " + totalSteps)
-          println("---------------------------")
-          
-          println(">> " + userInput)
-          val observation = agentInterface.get.step(userInput)
-          curScore = observation._2
-          println("Observation: ")
-          println(observation)
-
-          actionHistory.append(userInput)
+      breakable {
+        val taskName = taskNames(taskIdx)
+        // If we've specified specific tasks to run, skip this one
+        if ((!specificTasks.isEmpty) && (!specificTasks.contains(taskIdx))) {
+          taskScores.append(Array.empty[Double])
+          break
+        }
 
 
-          // Mode 1: use getPossibleActions
-          /*
+        // Simulation parameters
+        var curEpisode: Int = 0
+
+        var totalSteps: Long = 0
+
+        var userInput = "look around"
+        val episodeScores = new ArrayBuffer[Double]
+        while (curEpisode < maxEpisodes) {
+
+          // Choose a variation
+          val maxVariations = interface.getTaskMaxVariations(taskName)
+          val variationIdx = Random.nextInt(maxVariations)
+
+          // Load the task/variation
+          interface.load(taskName, variationIdx)
+
+          // Get reference to AgentInterface
+          val agentInterface = interface.agentInterface
+
+          var curIter: Int = 0
+          var actionHistory = new ArrayBuffer[String]()
+
+          var curScore: Double = 0.0
+          while (curIter < maxIterPerEpisode) {
+            println("---------------------------")
+            println("   Task " + taskIdx + "   " + taskName)
+            println("   Episode " + curEpisode + "  Iteration " + curIter + " / " + maxIterPerEpisode)
+            println("   Total Steps: " + totalSteps)
+            println("---------------------------")
+
+            println(">> " + userInput)
+            val observation = agentInterface.get.step(userInput)
+            curScore = observation._2
+            println("Observation: ")
+            println(observation)
+
+            actionHistory.append(userInput)
+
+
+            // Mode 1: use getPossibleActions
+            /*
         val (templates, uuidToRefLUT) = agentInterface.get.getPossibleActionObjectCombinations()
         val randIdx = Random.nextInt(templates.length)
         val randTemplate = templates(randIdx)
@@ -75,54 +86,55 @@ object ExampleRandomAgent {
         userInput = randTemplate.actionString
          */
 
-          // Mode 2: Use getValidActions
-          val validActions = agentInterface.get.getValidActionObjectCombinations()
-          val randIdx = Random.nextInt(validActions.length)
-          val randAction = validActions(randIdx)
-          //println (">>>>>>>>>>>> " + randTemplate.actionString )
-          userInput = randAction
+            // Mode 2: Use getValidActions
+            val validActions = agentInterface.get.getValidActionObjectCombinations()
+            val randIdx = Random.nextInt(validActions.length)
+            val randAction = validActions(randIdx)
+            //println (">>>>>>>>>>>> " + randTemplate.actionString )
+            userInput = randAction
 
-          // Randomly pick a next action
+            // Randomly pick a next action
 
-          // Check for error state:
-          if (agentInterface.get.isInErrorState()) {
+            // Check for error state:
+            if (agentInterface.get.isInErrorState()) {
 
-            println("Action History:")
-            for (i <- 0 until actionHistory.length) {
-              println(i + ": \t" + actionHistory(i))
+              println("Action History:")
+              for (i <- 0 until actionHistory.length) {
+                println(i + ": \t" + actionHistory(i))
+              }
+              println("")
+              println("ERROR STATE DETECTED!")
+              println("ERROR MESSAGE: ")
+              println(agentInterface.get.getErrorStateMessage())
+
+
+              sys.exit(1)
             }
-            println("")
-            println("ERROR STATE DETECTED!")
-            println("ERROR MESSAGE: ")
-            println(agentInterface.get.getErrorStateMessage())
 
-
-            sys.exit(1)
+            curIter += 1
+            totalSteps += 1
           }
-
-          curIter += 1
-          totalSteps += 1
+          curEpisode += 1
+          episodeScores.append(curScore)
         }
-        curEpisode += 1
-        episodeScores.append(curScore)
+        taskScores.append(episodeScores.toArray)
+
+        println("")
+        println("---------------------------------")
+        println("Scores:")
+        println("---------------------------------")
+        println("maxEpisodes: " + maxEpisodes)
+        println("maxIterPerEpisode: " + maxIterPerEpisode)
+        println("equivalent steps per task: " + (maxEpisodes * maxIterPerEpisode))
+        println("---------------------------------")
+
+        for (taskIdx <- 0 until taskScores.length) {
+          val taskName = taskNames(taskIdx)
+          println(taskIdx.formatted("%3s") + ": " + taskName.formatted("%60s") + "\t" + summaryStatistics(taskScores(taskIdx)))
+        }
+
+        println("---------------------------------")
       }
-      taskScores.append(episodeScores.toArray)
-
-      println("")
-      println("---------------------------------")
-      println("Scores:")
-      println("---------------------------------")
-      println("maxEpisodes: " + maxEpisodes)
-      println("maxIterPerEpisode: " + maxIterPerEpisode)
-      println("equivalent steps per task: " + (maxEpisodes * maxIterPerEpisode) )
-      println("---------------------------------")
-
-      for (taskIdx <- 0 until taskScores.length) {
-        val taskName = taskNames(taskIdx)
-        println(taskIdx.formatted("%3s") + ": " + taskName.formatted("%60s") + "\t" + summaryStatistics(taskScores(taskIdx)))
-      }
-
-      println("---------------------------------")
     }
 
 

@@ -132,7 +132,7 @@ case class ActionExprIdentifier(val identifier:String) extends ActionExpr {
 case class ActionExprObject(val obj:EnvObject, val referent:String) extends ActionExpr {
   override def mkHumanReadableExample(): String = {
     //return obj.name
-    return referent
+    return referent + " (" + obj.getDescriptName() + ")"
   }
 }
 

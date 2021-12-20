@@ -2,6 +2,7 @@ package scienceworld.tasks.goals.specificgoals
 
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.livingthing.LivingThing
+import scienceworld.objects.portal.Door
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn}
 
@@ -62,3 +63,38 @@ class GoalMoveToNewLocation() extends Goal {
 
 }
 
+
+// Success when an agent is in a room with an open door (principally, by opening that door)
+class GoalInRoomWithOpenDoor() extends Goal {
+
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal], agent:Agent):GoalReturn = {
+    // If agent is not in a container, do not continue evaluation
+    if (agent.getContainer().isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    // Get agent location
+    val agentLocation = agent.getContainer().get
+    val portals = agentLocation.getPortals()
+
+    var isAtLeastOneOpenDoor:Boolean = false
+    for (portal <- portals) {
+      println ("Checking: " + portal.toStringMinimal())
+      portal match {
+        case d:Door => {
+          if (d.isCurrentlyPassable()) {
+            print("\tIS OPEN!")
+            isAtLeastOneOpenDoor = true
+          }
+        }
+      }
+    }
+
+    // First initialization: Keep track of starting location
+    if (isAtLeastOneOpenDoor) {
+      return GoalReturn.mkSubgoalSuccess()
+    }
+
+    // Otherwise
+    return GoalReturn.mkSubgoalUnsuccessful()
+  }
+
+}

@@ -95,6 +95,10 @@ class Portal (val _isOpen:Boolean, val connectsFrom:EnvObject, val connectsTo:En
     return Set(this.name, this.name + " from " + connectsFrom.name + " to " + connectsTo.name, this.name + " from " + connectsTo.name + " to " + connectsFrom.name)
   }
 
+  override def getDescriptName(overrideName: String): String = {
+    return "door between " + this.connectsFrom.name + " and " + this.connectsTo.name
+  }
+
   override def getDescription(mode: Int): String = {
     return "ERROR: SHOULD USE OVERRIDE FOR PORTAL."
   }
