@@ -16,7 +16,7 @@ object ExampleRandomAgent {
   def main(args:Array[String]) = {
     val interface = new PythonInterface()
 
-    val maxEpisodes:Int = 100
+    val maxEpisodes:Int = 1000
     val maxIterPerEpisode:Int = 100
 
     // Create environment
