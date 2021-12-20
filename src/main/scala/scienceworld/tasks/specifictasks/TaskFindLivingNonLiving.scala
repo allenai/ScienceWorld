@@ -12,7 +12,7 @@ import scienceworld.properties.LeadProp
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskDisable, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalChangeStateOfMatter, GoalFocusOnAnimal, GoalFocusOnLivingThing, GoalFocusOnNonlivingThing, GoalFocusOnPlant, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter, GoalObjectInContainer}
+import scienceworld.tasks.goals.specificgoals.{GoalChangeStateOfMatter, GoalFocusOnAnimal, GoalFocusOnLivingThing, GoalFocusOnNonlivingThing, GoalFocusOnPlant, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter, GoalMoveToLocation, GoalMoveToNewLocation, GoalObjectInContainer}
 import scienceworld.tasks.specifictasks.TaskChangeOfState.{MODE_BOIL, MODE_CHANGESTATE, MODE_FREEZE, MODE_MELT}
 import scienceworld.tasks.specifictasks.TaskFindLivingNonLiving.{MODE_ANIMAL, MODE_LIVING, MODE_NONLIVING, MODE_PLANT}
 
@@ -98,19 +98,31 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     val gSequence = new ArrayBuffer[Goal]
     if (mode == MODE_LIVING) {
       subTask = "living thing"
-      gSequence.append( new GoalFocusOnLivingThing() )                  // Focus on a living thing
+      gSequence.append( new GoalFocusOnLivingThing() )                      // Focus on a living thing
+      gSequence.append( new GoalObjectInContainer("inventory") )    // Put object in inventory
+      gSequence.append( new GoalMoveToNewLocation() )                       // Move to any new location
+      gSequence.append( new GoalMoveToLocation(answerBoxLocation.get) )     // Move to answer box location
       gSequence.append( new GoalObjectInContainer(answerBoxName.get) )      // Move it into the answer box
     } else if (mode == MODE_NONLIVING) {
       subTask = "non-living thing"
-      gSequence.append( new GoalFocusOnNonlivingThing() )               // Focus on a non-living thing
+      gSequence.append( new GoalFocusOnNonlivingThing() )                   // Focus on a non-living thing
+      gSequence.append( new GoalObjectInContainer("inventory") )    // Put object in inventory
+      gSequence.append( new GoalMoveToNewLocation() )                       // Move to any new location
+      gSequence.append( new GoalMoveToLocation(answerBoxLocation.get) )     // Move to answer box location
       gSequence.append( new GoalObjectInContainer(answerBoxName.get) )      // Move it into the answer box
     } else if (mode == MODE_PLANT) {
       subTask = "plant"
-      gSequence.append( new GoalFocusOnPlant() )                        // Focus on a plant
+      gSequence.append( new GoalFocusOnPlant() )                            // Focus on a plant
+      gSequence.append( new GoalObjectInContainer("inventory") )    // Put object in inventory
+      gSequence.append( new GoalMoveToNewLocation() )                       // Move to any new location
+      gSequence.append( new GoalMoveToLocation(answerBoxLocation.get) )     // Move to answer box location
       gSequence.append( new GoalObjectInContainer(answerBoxName.get) )      // Move it into the answer box
     } else if (mode == MODE_ANIMAL) {
       subTask = "animal"
-      gSequence.append( new GoalFocusOnAnimal() )                       // Focus on an animal
+      gSequence.append( new GoalFocusOnAnimal() )                           // Focus on an animal
+      gSequence.append( new GoalObjectInContainer("inventory") )    // Put object in inventory
+      gSequence.append( new GoalMoveToNewLocation() )                       // Move to any new location
+      gSequence.append( new GoalMoveToLocation(answerBoxLocation.get) )     // Move to answer box location
       gSequence.append( new GoalObjectInContainer(answerBoxName.get) )      // Move it into the answer box
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)

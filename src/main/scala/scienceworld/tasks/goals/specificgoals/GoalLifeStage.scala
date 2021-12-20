@@ -1,5 +1,6 @@
 package scienceworld.tasks.goals.specificgoals
 
+import scienceworld.objects.agent.Agent
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn}
@@ -7,7 +8,7 @@ import scienceworld.tasks.goals.{Goal, GoalReturn}
 // Object must be in the container
 class GoalLifeStage(lifeFormType:String = "", lifeStageName:String = "", sameAsLastObj:Boolean = true) extends Goal {
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal], agent:Agent):GoalReturn = {
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (sameAsLastObj && lastGoal.isDefined) {
       if (lastGoal.get.satisfiedWithObject.get != obj) return GoalReturn.mkSubgoalUnsuccessful()

@@ -456,7 +456,7 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
             universe.tick()
 
             // Check whether the goal conditions are met
-            task.goalSequence.tick(objMonitor)
+            task.goalSequence.tick(objMonitor, agent)
 
             // Increment the number of iterations
             this.curIter += 1

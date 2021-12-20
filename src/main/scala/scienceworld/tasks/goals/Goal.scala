@@ -1,6 +1,8 @@
 package scienceworld.tasks.goals
 
+import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
+
 import scala.util.control.Breaks._
 
 // Storage class for a single goal
@@ -8,7 +10,7 @@ trait Goal {
   var satisfiedWithObject:Option[EnvObject] = None
   var defocusOnSuccess:Boolean = false
 
-  def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
+  def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal], agent:Agent):GoalReturn = {
     return GoalReturn.mkSubgoalUnsuccessful()
   }
 
@@ -66,7 +68,7 @@ class GoalSequence(val subgoals:Array[Goal]) {
    * Tick
    */
   // Checks the current subgoal for completeness.  If completed, it increments the subgoals.
-  def tick(objMonitor: ObjMonitor): Unit = {
+  def tick(objMonitor: ObjMonitor, agent:Agent): Unit = {
     while (true) {
       val curSubgoal = this.getCurrentSubgoal()
       var lastSubgoal = this.getLastSubgoal()
@@ -80,7 +82,7 @@ class GoalSequence(val subgoals:Array[Goal]) {
           println("Checking obj (" + obj.toStringMinimal() + ") against subgoal " + curSubgoalIdx)
           println("## " + curSubgoal.get.getClass)
 
-          goalReturn = curSubgoal.get.isGoalConditionSatisfied(obj, lastSubgoal)
+          goalReturn = curSubgoal.get.isGoalConditionSatisfied(obj, lastSubgoal, agent)
           if (goalReturn.subgoalSuccess) {
             if (curSubgoal.get.defocusOnSuccess) objMonitor.clearMonitoredObjects()     // Clear focus, if the goal asks to do this
             break()

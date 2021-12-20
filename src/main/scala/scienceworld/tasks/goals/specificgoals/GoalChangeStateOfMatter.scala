@@ -1,5 +1,6 @@
 package scienceworld.tasks.goals.specificgoals
 
+import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn}
 
@@ -8,7 +9,7 @@ import scienceworld.tasks.goals.{Goal, GoalReturn}
  */
 class GoalIsNotStateOfMatter(val isNotState:String) extends Goal {
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal], agent:Agent):GoalReturn = {
     // Check for material properties to be defined
     if (!obj.propMaterial.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
 
@@ -30,7 +31,7 @@ class GoalIsNotStateOfMatter(val isNotState:String) extends Goal {
 
 class GoalChangeStateOfMatter(val changeToState:String) extends Goal {
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal], agent:Agent):GoalReturn = {
     // Check for material properties to be defined
     if (!obj.propMaterial.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
 
@@ -56,7 +57,7 @@ class GoalChangeStateOfMatter(val changeToState:String) extends Goal {
 class GoalIsStateOfMatter() extends Goal {
   var stateOfMatter:String = ""
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal], agent:Agent):GoalReturn = {
     // Check for material properties to be defined
     if (!obj.propMaterial.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
 
@@ -76,7 +77,7 @@ class GoalIsStateOfMatter() extends Goal {
 
 class GoalIsDifferentStateOfMatter() extends Goal {
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal]):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal], agent:Agent):GoalReturn = {
     // Check for material properties to be defined
     if (!obj.propMaterial.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
 
