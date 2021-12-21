@@ -1,0 +1,110 @@
+[
+    {
+        "consoleMoveCount": 0,
+        "inventory": "Input: view inventory:\n\n(view inventory):\nIn your inventory, you see:\n\tan orange",
+        "isCompleted": false,
+        "look": "Input: look around:\n\n(look around):\nThis room is called the workshop. In it, you see: \n\ta substance called air\n\ta green box (containing nothing)\n\ta table. On the table is: a battery, a wire 2. , a light bulb 3, which is off, a light bulb 1, which is off, a wire 1. , a switch, which is off, a light bulb 2, which is off.\n\tthe agent\nYou also see:\n\tA door to the hallway (that is closed)",
+        "observation": "Input: look around:\n\n(look around):\nThis room is called the workshop. In it, you see: \n\ta substance called air\n\ta green box (containing nothing)\n\ta table. On the table is: a battery, a wire 2. , a light bulb 3, which is off, a light bulb 1, which is off, a wire 1. , a switch, which is off, a light bulb 2, which is off.\n\tthe agent\nYou also see:\n\tA door to the hallway (that is closed)",
+        "score": 0.0,
+        "taskDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the green box in the workshop.",
+        "taskName": "task-3-find-non-living-thing",
+        "userInput": "focus on switch",
+        "variationIdx": 85
+    },
+    {
+        "consoleMoveCount": 1,
+        "inventory": "Input: view inventory:\n\n(view inventory):\nIn your inventory, you see:\n\tan orange",
+        "isCompleted": false,
+        "look": "Input: look around:\n\n(look around):\nThis room is called the workshop. In it, you see: \n\ta substance called air\n\ta green box (containing nothing)\n\ta table. On the table is: a battery, a wire 2. , a light bulb 3, which is off, a light bulb 1, which is off, a wire 1. , a switch, which is off, a light bulb 2, which is off.\n\tthe agent\nYou also see:\n\tA door to the hallway (that is closed)",
+        "observation": "Input: focus on:\n\n(focus on):\nYou focus on the switch.",
+        "score": 0.16666666666666666,
+        "taskDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the green box in the workshop.",
+        "taskName": "task-3-find-non-living-thing",
+        "userInput": "take switch",
+        "variationIdx": 85
+    },
+    {
+        "consoleMoveCount": 2,
+        "inventory": "Input: view inventory:\n\n(view inventory):\nIn your inventory, you see:\n\tan orange\n\ta switch, which is off. its anode is connected to: nothing. its cathode is connected to: nothing.",
+        "isCompleted": false,
+        "look": "Input: look around:\n\n(look around):\nThis room is called the workshop. In it, you see: \n\ta substance called air\n\ta green box (containing nothing)\n\ta table. On the table is: a battery, a wire 2. , a light bulb 3, which is off, a light bulb 1, which is off, a wire 1. , a light bulb 2, which is off.\n\tthe agent\nYou also see:\n\tA door to the hallway (that is closed)",
+        "observation": "Input: pick up:\n\n(pick up):\nYou move the switch to the inventory.",
+        "score": 0.3333333333333333,
+        "taskDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the green box in the workshop.",
+        "taskName": "task-3-find-non-living-thing",
+        "userInput": "open hallway door",
+        "variationIdx": 85
+    },
+    {
+        "consoleMoveCount": 3,
+        "inventory": "Input: view inventory:\n\n(view inventory):\nIn your inventory, you see:\n\tan orange\n\ta switch, which is off. its anode is connected to: nothing. its cathode is connected to: nothing.",
+        "isCompleted": false,
+        "look": "Input: look around:\n\n(look around):\nThis room is called the workshop. In it, you see: \n\ta substance called air\n\ta green box (containing nothing)\n\ta table. On the table is: a battery, a wire 2. , a light bulb 3, which is off, a light bulb 1, which is off, a wire 1. , a light bulb 2, which is off.\n\tthe agent\nYou also see:\n\tA door to the hallway (that is open)",
+        "observation": "Input: open door:\n\n(open door):\nThe door is now open.",
+        "score": 0.5,
+        "taskDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the green box in the workshop.",
+        "taskName": "task-3-find-non-living-thing",
+        "userInput": "go hallway",
+        "variationIdx": 85
+    },
+    {
+        "consoleMoveCount": 4,
+        "inventory": "Input: view inventory:\n\n(view inventory):\nIn your inventory, you see:\n\tan orange\n\ta switch, which is off. its anode is connected to: nothing. its cathode is connected to: nothing.",
+        "isCompleted": false,
+        "look": "Input: look around:\n\n(look around):\nThis room is called the hallway. In it, you see: \n\ta painting\n\tthe agent\n\ta substance called air\nYou also see:\n\tA door to the art studio (that is closed)\n\tA door to the kitchen (that is closed)\n\tA door to the living room (that is closed)\n\tA door to the green house (that is closed)\n\tA door to the bedroom (that is closed)\n\tA door to the workshop (that is open)",
+        "observation": "Input: move through door:\n\n(move through door):\nYou move to the hallway.",
+        "score": 0.6666666666666666,
+        "taskDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the green box in the workshop.",
+        "taskName": "task-3-find-non-living-thing",
+        "userInput": "look",
+        "variationIdx": 85
+    },
+    {
+        "consoleMoveCount": 5,
+        "inventory": "Input: view inventory:\n\n(view inventory):\nIn your inventory, you see:\n\tan orange\n\ta switch, which is off. its anode is connected to: nothing. its cathode is connected to: nothing.",
+        "isCompleted": false,
+        "look": "Input: look around:\n\n(look around):\nThis room is called the hallway. In it, you see: \n\ta painting\n\tthe agent\n\ta substance called air\nYou also see:\n\tA door to the art studio (that is closed)\n\tA door to the kitchen (that is closed)\n\tA door to the living room (that is closed)\n\tA door to the green house (that is closed)\n\tA door to the bedroom (that is closed)\n\tA door to the workshop (that is open)",
+        "observation": "Input: look around:\n\n(look around):\nThis room is called the hallway. In it, you see: \n\ta painting\n\tthe agent\n\ta substance called air\nYou also see:\n\tA door to the art studio (that is closed)\n\tA door to the kitchen (that is closed)\n\tA door to the living room (that is closed)\n\tA door to the green house (that is closed)\n\tA door to the bedroom (that is closed)\n\tA door to the workshop (that is open)",
+        "score": 0.6666666666666666,
+        "taskDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the green box in the workshop.",
+        "taskName": "task-3-find-non-living-thing",
+        "userInput": "go workshop",
+        "variationIdx": 85
+    },
+    {
+        "consoleMoveCount": 6,
+        "inventory": "Input: view inventory:\n\n(view inventory):\nIn your inventory, you see:\n\tan orange\n\ta switch, which is off. its anode is connected to: nothing. its cathode is connected to: nothing.",
+        "isCompleted": false,
+        "look": "Input: look around:\n\n(look around):\nThis room is called the workshop. In it, you see: \n\ta substance called air\n\ta green box (containing nothing)\n\ta table. On the table is: a battery, a wire 2. , a light bulb 3, which is off, a light bulb 1, which is off, a wire 1. , a light bulb 2, which is off.\n\tthe agent\nYou also see:\n\tA door to the hallway (that is open)",
+        "observation": "Input: move through door:\n\n(move through door):\nYou move to the workshop.",
+        "score": 0.8333333333333334,
+        "taskDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the green box in the workshop.",
+        "taskName": "task-3-find-non-living-thing",
+        "userInput": "look",
+        "variationIdx": 85
+    },
+    {
+        "consoleMoveCount": 7,
+        "inventory": "Input: view inventory:\n\n(view inventory):\nIn your inventory, you see:\n\tan orange\n\ta switch, which is off. its anode is connected to: nothing. its cathode is connected to: nothing.",
+        "isCompleted": false,
+        "look": "Input: look around:\n\n(look around):\nThis room is called the workshop. In it, you see: \n\ta substance called air\n\ta green box (containing nothing)\n\ta table. On the table is: a battery, a wire 2. , a light bulb 3, which is off, a light bulb 1, which is off, a wire 1. , a light bulb 2, which is off.\n\tthe agent\nYou also see:\n\tA door to the hallway (that is open)",
+        "observation": "Input: look around:\n\n(look around):\nThis room is called the workshop. In it, you see: \n\ta substance called air\n\ta green box (containing nothing)\n\ta table. On the table is: a battery, a wire 2. , a light bulb 3, which is off, a light bulb 1, which is off, a wire 1. , a light bulb 2, which is off.\n\tthe agent\nYou also see:\n\tA door to the hallway (that is open)",
+        "score": 0.8333333333333334,
+        "taskDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the green box in the workshop.",
+        "taskName": "task-3-find-non-living-thing",
+        "userInput": "move switch in inventory to green box",
+        "variationIdx": 85
+    },
+    {
+        "consoleMoveCount": 8,
+        "inventory": "Input: view inventory:\n\n(view inventory):\nIn your inventory, you see:\n\tan orange",
+        "isCompleted": true,
+        "look": "Input: look around:\n\n(look around):\nThis room is called the workshop. In it, you see: \n\ta substance called air\n\ta green box (containing a switch, which is off)\n\ta table. On the table is: a battery, a wire 2. , a light bulb 3, which is off, a light bulb 1, which is off, a wire 1. , a light bulb 2, which is off.\n\tthe agent\nYou also see:\n\tA door to the hallway (that is open)",
+        "observation": "Input: move object:\n\n(move object):\nYou move the switch to the green box.",
+        "score": 1.0,
+        "taskDescription": "Your task is to find a non-living thing. First, focus on the thing. Then, move it to the green box in the workshop.",
+        "taskName": "task-3-find-non-living-thing",
+        "userInput": "exit",
+        "variationIdx": 85
+    }
+]
