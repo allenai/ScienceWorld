@@ -90,6 +90,11 @@ class GoalInRoomWithOpenDoor() extends Goal {
 
     // First initialization: Keep track of starting location
     if (isAtLeastOneOpenDoor) {
+      // Pass through last focus object
+      if (lastGoal.isDefined) {
+        this.satisfiedWithObject = lastGoal.get.satisfiedWithObject
+      }
+
       return GoalReturn.mkSubgoalSuccess()
     }
 

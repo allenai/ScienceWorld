@@ -215,7 +215,7 @@ def app():
     set_env(title='Awesome PyWebIO!!', auto_scroll_bottom=True)    
 
     # Initialize environment    
-    env = VirtualEnv("", jarPath, threadNum = 0)    
+    env = VirtualEnv("", jarPath, threadNum = 5)    
 
     put_markdown('## Science World (Text Simulation)')
     #put_button("Click here to export transcript", onclick=lambda: , color='success', outline=True)
