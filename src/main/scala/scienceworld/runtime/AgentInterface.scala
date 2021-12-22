@@ -472,11 +472,11 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
         }
       }
       //## Uncomment when debugging in IntelliJ
-    } /*catch {
+    } catch {
       case e: Throwable => {
         this.setErrorState(e.toString)
       }
-    }*/
+    }
 
 
     val score = task.goalSequence.score()
