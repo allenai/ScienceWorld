@@ -432,6 +432,12 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     if (statusStr.length > 0) {
       userOutStr.append("Input: " + statusStr + "\n\n")
     }
+    if (!success) {
+      // If input was not successfully matched to an action, then do not continue/do a tick/etc:
+      val score = task.goalSequence.score()
+      val isCompleted = task.goalSequence.isCompleted()
+      return (userOutStr.toString(), score, isCompleted)
+    }
 
     // Check for ambiguity resolution case after parsing new input
     if (this.inputParser.isInAmbiguousState()) {
