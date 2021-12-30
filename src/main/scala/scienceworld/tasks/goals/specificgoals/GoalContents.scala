@@ -11,7 +11,8 @@ import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
  * Focus on specific classes of objects
  */
 
-class GoalFocusOnLivingThing() extends Goal {
+class GoalFocusOnLivingThing(_isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     if (obj.isInstanceOf[LivingThing]) {
@@ -25,7 +26,8 @@ class GoalFocusOnLivingThing() extends Goal {
 
 }
 
-class GoalFocusOnNonlivingThing() extends Goal {
+class GoalFocusOnNonlivingThing(_isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     if (!obj.isInstanceOf[LivingThing]) {
@@ -46,7 +48,8 @@ class GoalFocusOnNonlivingThing() extends Goal {
 
 
 
-class GoalFocusOnAnimal() extends Goal {
+class GoalFocusOnAnimal(_isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     if (obj.isInstanceOf[Animal]) {
@@ -61,7 +64,8 @@ class GoalFocusOnAnimal() extends Goal {
 }
 
 
-class GoalFocusOnPlant() extends Goal {
+class GoalFocusOnPlant(_isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     if (obj.isInstanceOf[Plant]) {
@@ -85,7 +89,8 @@ class GoalFocusOnPlant() extends Goal {
 
 // Object must be in the container
 // If the focus object is in one of the containers listed in 'failureContainers', then it causes task failure.
-class GoalObjectInDirectContainer(containerName:String = "", failureContainers:List[EnvObject] = List.empty[EnvObject]) extends Goal {
+class GoalObjectInDirectContainer(containerName:String = "", failureContainers:List[EnvObject] = List.empty[EnvObject], _isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // Check that the focus object of this step is the same as the focus object of the previous step
@@ -115,7 +120,8 @@ class GoalObjectInDirectContainer(containerName:String = "", failureContainers:L
 
 // Object could be in the container, or a container within that container
 // If the focus object is in one of the containers listed in 'failureContainers', then it causes task failure.
-class GoalObjectInContainer(containerName:String = "", failureContainers:List[EnvObject] = List.empty[EnvObject]) extends Goal {
+class GoalObjectInContainer(containerName:String = "", failureContainers:List[EnvObject] = List.empty[EnvObject], _isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     val MAX_STEPS:Int = 20
@@ -164,7 +170,8 @@ class GoalObjectInContainer(containerName:String = "", failureContainers:List[En
 
 }
 
-class GoalObjectInContainerByName(containerName:String = "", failureContainers:List[String] = List.empty[String]) extends Goal {
+class GoalObjectInContainerByName(containerName:String = "", failureContainers:List[String] = List.empty[String], _isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     val MAX_STEPS:Int = 20

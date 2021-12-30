@@ -100,33 +100,33 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
       subTask = "living thing"
       gSequence.append( new GoalFocusOnLivingThing() )                      // Focus on a living thing
       gSequence.append( new GoalObjectInContainer("inventory") )    // Put object in inventory
-      gSequence.append( new GoalInRoomWithOpenDoor() )                      // In a room with an open door
-      gSequence.append( new GoalMoveToNewLocation() )                       // Move to any new location
-      gSequence.append( new GoalMoveToLocation(answerBoxLocation.get) )     // Move to answer box location
+      gSequence.append( new GoalInRoomWithOpenDoor(_isOptional = true) )                      // In a room with an open door
+      gSequence.append( new GoalMoveToNewLocation(_isOptional = true) )                       // Move to any new location
+      gSequence.append( new GoalMoveToLocation(answerBoxLocation.get, _isOptional = true) )     // Move to answer box location
       gSequence.append( new GoalObjectInContainer(answerBoxName.get) )      // Move it into the answer box
     } else if (mode == MODE_NONLIVING) {
       subTask = "non-living thing"
       gSequence.append( new GoalFocusOnNonlivingThing() )                   // Focus on a non-living thing
       gSequence.append( new GoalObjectInContainer("inventory") )    // Put object in inventory
-      gSequence.append( new GoalInRoomWithOpenDoor() )                      // In a room with an open door
-      gSequence.append( new GoalMoveToNewLocation() )                       // Move to any new location
-      gSequence.append( new GoalMoveToLocation(answerBoxLocation.get) )     // Move to answer box location
+      gSequence.append( new GoalInRoomWithOpenDoor(_isOptional = true) )                      // In a room with an open door
+      gSequence.append( new GoalMoveToNewLocation(_isOptional = true) )                       // Move to any new location
+      gSequence.append( new GoalMoveToLocation(answerBoxLocation.get, _isOptional = true) )     // Move to answer box location
       gSequence.append( new GoalObjectInContainer(answerBoxName.get) )      // Move it into the answer box
     } else if (mode == MODE_PLANT) {
       subTask = "plant"
       gSequence.append( new GoalFocusOnPlant() )                            // Focus on a plant
       gSequence.append( new GoalObjectInContainer("inventory") )    // Put object in inventory
-      gSequence.append( new GoalInRoomWithOpenDoor() )                      // In a room with an open door
-      gSequence.append( new GoalMoveToNewLocation() )                       // Move to any new location
-      gSequence.append( new GoalMoveToLocation(answerBoxLocation.get) )     // Move to answer box location
+      gSequence.append( new GoalInRoomWithOpenDoor(_isOptional = true) )                      // In a room with an open door
+      gSequence.append( new GoalMoveToNewLocation(_isOptional = true) )                       // Move to any new location
+      gSequence.append( new GoalMoveToLocation(answerBoxLocation.get, _isOptional = true) )     // Move to answer box location
       gSequence.append( new GoalObjectInContainer(answerBoxName.get) )      // Move it into the answer box
     } else if (mode == MODE_ANIMAL) {
       subTask = "animal"
       gSequence.append( new GoalFocusOnAnimal() )                           // Focus on an animal
       gSequence.append( new GoalObjectInContainer("inventory") )    // Put object in inventory
-      gSequence.append( new GoalInRoomWithOpenDoor() )                      // In a room with an open door
-      gSequence.append( new GoalMoveToNewLocation() )                       // Move to any new location
-      gSequence.append( new GoalMoveToLocation(answerBoxLocation.get) )     // Move to answer box location
+      gSequence.append( new GoalInRoomWithOpenDoor(_isOptional = true) )                      // In a room with an open door
+      gSequence.append( new GoalMoveToNewLocation(_isOptional = true) )                       // Move to any new location
+      gSequence.append( new GoalMoveToLocation(answerBoxLocation.get, _isOptional = true) )     // Move to answer box location
       gSequence.append( new GoalObjectInContainer(answerBoxName.get) )      // Move it into the answer box
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)

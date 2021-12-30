@@ -5,7 +5,8 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 
 
-class GoalContainerByTemperature(tempThreshold:Double, containerNameAbove:String = "", containerNameBelow:String = "") extends Goal {
+class GoalContainerByTemperature(tempThreshold:Double, containerNameAbove:String = "", containerNameBelow:String = "", _isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // Check that the focus object of this step is the same as the focus object of the previous step

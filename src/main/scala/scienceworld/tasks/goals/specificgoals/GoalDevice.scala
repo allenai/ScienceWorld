@@ -6,7 +6,8 @@ import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 
 
 
-class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false) extends Goal {
+class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false, _isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // Check for material properties to be defined
@@ -33,7 +34,8 @@ class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = fals
 }
 
 
-class GoalDeactivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false) extends Goal {
+class GoalDeactivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false, _isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // Check for material properties to be defined

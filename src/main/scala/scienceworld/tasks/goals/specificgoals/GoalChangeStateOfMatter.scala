@@ -7,7 +7,8 @@ import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 /*
  * Goal for changing to a given state of matter
  */
-class GoalIsNotStateOfMatter(val isNotState:String) extends Goal {
+class GoalIsNotStateOfMatter(val isNotState:String, _isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // Check for material properties to be defined
@@ -29,7 +30,8 @@ class GoalIsNotStateOfMatter(val isNotState:String) extends Goal {
 
 }
 
-class GoalChangeStateOfMatter(val changeToState:String) extends Goal {
+class GoalChangeStateOfMatter(val changeToState:String, _isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // Check for material properties to be defined
@@ -54,7 +56,8 @@ class GoalChangeStateOfMatter(val changeToState:String) extends Goal {
 /*
  *  Goal for changing to a given state of matter
  */
-class GoalIsStateOfMatter() extends Goal {
+class GoalIsStateOfMatter(_isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // Check for material properties to be defined
@@ -75,7 +78,8 @@ class GoalIsStateOfMatter() extends Goal {
 }
 
 
-class GoalIsDifferentStateOfMatter() extends Goal {
+class GoalIsDifferentStateOfMatter(_isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // Check for material properties to be defined

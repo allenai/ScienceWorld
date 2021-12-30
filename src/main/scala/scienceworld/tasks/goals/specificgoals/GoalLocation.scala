@@ -7,7 +7,8 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 
 // Success when an agent moves to the specified location(/container)
-class GoalMoveToLocation(locationToBeIn:String) extends Goal {
+class GoalMoveToLocation(locationToBeIn:String, _isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // If agent is not in a container, do not continue evaluation
@@ -26,8 +27,9 @@ class GoalMoveToLocation(locationToBeIn:String) extends Goal {
 }
 
 // Success when an agent moves to a different location than it started in
-class GoalMoveToNewLocation() extends Goal {
+class GoalMoveToNewLocation(_isOptional:Boolean = false) extends Goal {
   var startingLocation:Option[String] = None
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // If agent is not in a container, do not continue evaluation
@@ -38,6 +40,7 @@ class GoalMoveToNewLocation() extends Goal {
 
     // First initialization: Keep track of starting location
     if (startingLocation.isEmpty) {
+      gs.setKey("startingLocation", agentLocation)      // PJ: Added, just in case we need this information later
       startingLocation = Some(agentLocation)
       return GoalReturn.mkSubgoalUnsuccessful()
     }
@@ -55,7 +58,8 @@ class GoalMoveToNewLocation() extends Goal {
 
 
 // Success when an agent is in a room with an open door (principally, by opening that door)
-class GoalInRoomWithOpenDoor() extends Goal {
+class GoalInRoomWithOpenDoor(_isOptional:Boolean = false) extends Goal {
+  this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // If agent is not in a container, do not continue evaluation
