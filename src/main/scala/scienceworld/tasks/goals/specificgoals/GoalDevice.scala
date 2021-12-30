@@ -2,13 +2,13 @@ package scienceworld.tasks.goals.specificgoals
 
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.goals.{Goal, GoalReturn}
+import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 
 
 
 class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false) extends Goal {
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal], agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // Check for material properties to be defined
     if (!obj.propDevice.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
 
@@ -16,8 +16,8 @@ class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = fals
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (sameAsLastDevice) {
-      if (lastGoal.isDefined) {
-        if (lastGoal.get.satisfiedWithObject.get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+      if (gs.getLastSatisfiedObject().isDefined) {
+        if (gs.getLastSatisfiedObject().get != obj) return GoalReturn.mkSubgoalUnsuccessful()
       }
     }
 
@@ -35,7 +35,7 @@ class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = fals
 
 class GoalDeactivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false) extends Goal {
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal], agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // Check for material properties to be defined
     if (!obj.propDevice.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
 
@@ -43,8 +43,8 @@ class GoalDeactivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = fa
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (sameAsLastDevice) {
-      if (lastGoal.isDefined) {
-        if (lastGoal.get.satisfiedWithObject.get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+      if (gs.getLastSatisfiedObject().isDefined) {
+        if (gs.getLastSatisfiedObject().get != obj) return GoalReturn.mkSubgoalUnsuccessful()
       }
     }
 

@@ -8,7 +8,7 @@ import scienceworld.objects.substance.{Caesium, Gallium, Ice, Lead, Mercury, Soa
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskDisable, TaskMaker1, TaskModifier, TaskObject}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalChangeStateOfMatter, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter}
+import scienceworld.tasks.goals.specificgoals.{GoalChangeStateOfMatter, GoalFind, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter}
 import scienceworld.tasks.specifictasks.TaskChangeOfState.{MODE_BOIL, MODE_CHANGESTATE, MODE_FREEZE, MODE_MELT}
 
 import scala.collection.mutable.ArrayBuffer
@@ -120,14 +120,17 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
       gSequence.append( new GoalIsDifferentStateOfMatter() )    // Be in any state but the first state
     } else if (mode == MODE_MELT) {
       subTask = "melt"
+      gSequence.append( new GoalFind(objectName = substanceName) )
       gSequence.append( new GoalChangeStateOfMatter("solid") )
       gSequence.append( new GoalChangeStateOfMatter("liquid") )
     } else if (mode == MODE_BOIL) {
       subTask = "boil"
+      gSequence.append( new GoalFind(objectName = substanceName) )
       gSequence.append( new GoalChangeStateOfMatter("liquid") )
       gSequence.append( new GoalChangeStateOfMatter("gas") )
     } else if (mode == MODE_FREEZE) {
       subTask = "freeze"
+      gSequence.append( new GoalFind(objectName = substanceName) )
       gSequence.append( new GoalChangeStateOfMatter("liquid") )
       gSequence.append( new GoalChangeStateOfMatter("solid") )
     } else {

@@ -3,14 +3,16 @@ package scienceworld.tasks.goals
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 
+import scala.collection.mutable
 import scala.util.control.Breaks._
 
 // Storage class for a single goal
 trait Goal {
   var satisfiedWithObject:Option[EnvObject] = None
   var defocusOnSuccess:Boolean = false
+  var isOptional:Boolean = false
 
-  def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal], agent:Agent):GoalReturn = {
+  def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     return GoalReturn.mkSubgoalUnsuccessful()
   }
 
@@ -22,9 +24,14 @@ class GoalSequence(val subgoals:Array[Goal]) {
 
   var curSubgoalIdx:Int = 0
   var failed:Boolean = false
+  var lastSatisfiedWithObject:Option[EnvObject] = None
+  val subgoalsCompleted = Array.fill[Boolean](subgoals.length)(false)
+  val storedValues = mutable.Map[String, String]()
   this.reset()
 
-
+  /*
+   * Subgoals
+   */
   def getCurrentSubgoal():Option[Goal] = {
     if (this.isCompleted()) return None
     return Some(this.subgoals(curSubgoalIdx))
@@ -34,6 +41,34 @@ class GoalSequence(val subgoals:Array[Goal]) {
     if (this.curSubgoalIdx == 0) return None
     return Some( this.subgoals(this.curSubgoalIdx-1) )
   }
+
+  def getLastSatisfiedObject():Option[EnvObject] = {
+    return this.lastSatisfiedWithObject
+  }
+
+  def getNumCompletedSubgoals():Int = {
+    var sum:Int = 0
+    for (sgc <- subgoalsCompleted) {
+      if (sgc == true) sum += 1
+    }
+    return sum
+  }
+
+  /*
+   * Keys
+   */
+  def setKey(key:String, value:String): Unit = {
+    storedValues(key) = value
+  }
+
+  def getKey(key:String):String = {
+    if (!storedValues.contains(key)) return ""
+    return storedValues(key)
+  }
+
+  /*
+   * Scoring
+   */
 
   // Generate a normalized score (0-1) representing progress on this sequence of goals
   def score():Double = {
@@ -61,6 +96,7 @@ class GoalSequence(val subgoals:Array[Goal]) {
 
   def reset() {
     this.curSubgoalIdx = 0
+    this.lastSatisfiedWithObject = None
     this.failed = false
   }
 
@@ -82,8 +118,11 @@ class GoalSequence(val subgoals:Array[Goal]) {
           println("Checking obj (" + obj.toStringMinimal() + ") against subgoal " + curSubgoalIdx)
           println("## " + curSubgoal.get.getClass)
 
-          goalReturn = curSubgoal.get.isGoalConditionSatisfied(obj, lastSubgoal, agent)
+          val isFirstGoal = if (this.getNumCompletedSubgoals() == 0) true else false
+
+          goalReturn = curSubgoal.get.isGoalConditionSatisfied(obj, isFirstGoal, this, agent)
           if (goalReturn.subgoalSuccess) {
+            if (curSubgoal.get.satisfiedWithObject != None) this.lastSatisfiedWithObject = curSubgoal.get.satisfiedWithObject
             if (curSubgoal.get.defocusOnSuccess) objMonitor.clearMonitoredObjects()     // Clear focus, if the goal asks to do this
             break()
           }

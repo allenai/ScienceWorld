@@ -4,13 +4,13 @@ import scienceworld.objects.agent.Agent
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.misc.InclinedPlane
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.goals.{Goal, GoalReturn}
+import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 
 // Find an object with a specific name
 class GoalFind(objectName:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false) extends Goal {
   this.defocusOnSuccess = _defocusOnSuccess
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal], agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     if (obj.name.toLowerCase == objectName.toLowerCase) {
       // Case: The focus is on an object with the correct name
       this.satisfiedWithObject = Some(obj)
@@ -34,7 +34,7 @@ class GoalFind(objectName:String = "", failIfWrong:Boolean = true, _defocusOnSuc
 class GoalFindLivingThingStage(livingThingType:String = "", lifeStage:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false) extends Goal {
   this.defocusOnSuccess = _defocusOnSuccess
 
-  override def isGoalConditionSatisfied(obj: EnvObject, lastGoal: Option[Goal], agent:Agent): GoalReturn = {
+  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
 
     // Case: The focus is on a living thing of the correct species type
     if ((obj.propLife.isDefined) && (obj.propLife.get.lifeformType == livingThingType.toLowerCase)) {
@@ -75,7 +75,7 @@ class GoalFindLivingThingStage(livingThingType:String = "", lifeStage:String = "
 class GoalFindInclinedPlane(surfaceName:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false) extends Goal {
   this.defocusOnSuccess = _defocusOnSuccess
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal], agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     if (obj.name.toLowerCase == "inclined plane") {
       obj match {
         case x:InclinedPlane => {
@@ -105,7 +105,7 @@ class GoalFindInclinedPlane(surfaceName:String = "", failIfWrong:Boolean = true,
 class GoalFindInclinedPlaneNamed(additionalName:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false) extends Goal {
   this.defocusOnSuccess = _defocusOnSuccess
 
-  override def isGoalConditionSatisfied(obj:EnvObject, lastGoal:Option[Goal], agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     if (obj.name.toLowerCase == "inclined plane") {
       obj match {
         case x:InclinedPlane => {
