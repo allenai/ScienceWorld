@@ -98,6 +98,8 @@ object SimplifierProcessor {
     this.simplifications.clear()    // Clear out any current simplifications
     val allSimplifications = this.getAllSimplifications()
 
+    if (simplificationStr.length == 0) return (true, "")
+
     val fields = simplificationStr.toLowerCase.trim().split(",")
 
     for (field <- fields) {
