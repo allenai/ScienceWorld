@@ -1,5 +1,6 @@
 package scienceworld
 
+import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.environments.EnvironmentMaker
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove}
@@ -78,6 +79,11 @@ object EntryPoint {
 
     println ("Task: " + agentInterface.getTaskDescription() )
 
+    // Simplifications
+    println ("Possible simplifications: " + SimplifierProcessor.getPossibleSimplifications())
+    SimplifierProcessor.parseSimplificationStr("openDoors")
+    println ("Selected simpifications: " + SimplifierProcessor.getSimplificationsUsed())
+    SimplifierProcessor.runSimplificationsInitialization(universe, agent)
 
     // DEBUG: Set the task/goals
     var curIter:Int = 0
