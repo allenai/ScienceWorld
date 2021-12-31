@@ -93,7 +93,7 @@ object SimplifierProcessor {
 
   // A CSV string with all the simplifications that should be added
   // e.g. openDoors,openContainers
-  def parseSimplificationStr(simplificationStr:String) = {
+  def parseSimplificationStr(simplificationStr:String):(Boolean, String) = {
     val fields = simplificationStr.toLowerCase.trim().split(",")
     val allSimplifications = this.getAllSimplifications()
 
@@ -107,9 +107,10 @@ object SimplifierProcessor {
           }
         }
 
-        throw new RuntimeException("ERROR: Unknown simplification label: " + field)
+        return (false, "ERROR: Unknown simplification label: " + field)
       }
     }
+    return (true, "")
   }
 
   /*

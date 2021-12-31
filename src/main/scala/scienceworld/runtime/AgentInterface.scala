@@ -1,6 +1,7 @@
 package scienceworld.runtime
 
 import language.model.{ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
+import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.actions.{Action, ActionInventory, ActionLookAround, ActionTaskDesc}
 import scienceworld.input.{ActionDefinitions, ActionHandler, ExampleAction, InputParser}
 import scienceworld.objects.agent.Agent
@@ -14,7 +15,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks._
 
-class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandler, task:Task) {
+class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandler, task:Task, simplificationStr:String = "") {
   val inputParser = new InputParser(actionHandler.getActions())
   val objMonitor = new ObjMonitor()
   // Store whether the environment is in an unexpected error state
@@ -29,6 +30,13 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
 
   // Store a copy of the task description in the agent, for easy access through the action space
   agent.setTaskDescription(this.getTaskDescription())
+
+  // Run any simplifications that need to be run at initialization
+  val (simplifierSuccess, simplifierErrStr) = SimplifierProcessor.parseSimplificationStr(simplificationStr)
+  if (!simplifierSuccess) this.setErrorState(simplifierErrStr)
+  println ("Selected simpifications: " + SimplifierProcessor.getSimplificationsUsed())
+  SimplifierProcessor.runSimplificationsInitialization(universe, agent)
+
 
   private var curIter:Int = 0
 
@@ -460,6 +468,9 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
           if (willActionsTakeTime) {
             universe.clearTickProcessedRecursive()
             universe.tick()
+
+            // Run any simplifications that need to be run
+            SimplifierProcessor.runSimplificationsEachTick(universe, agent)
 
             // Check whether the goal conditions are met
             task.goalSequence.tick(objMonitor, agent)

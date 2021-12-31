@@ -81,9 +81,6 @@ object EntryPoint {
 
     // Simplifications
     println ("Possible simplifications: " + SimplifierProcessor.getPossibleSimplifications())
-    SimplifierProcessor.parseSimplificationStr("openDoors")
-    println ("Selected simpifications: " + SimplifierProcessor.getSimplificationsUsed())
-    SimplifierProcessor.runSimplificationsInitialization(universe, agent)
 
     // DEBUG: Set the task/goals
     var curIter:Int = 0
@@ -91,6 +88,8 @@ object EntryPoint {
     breakable {
       var userInputString:String = "look around"
       while (true) {
+        SimplifierProcessor.runSimplificationsEachTick(universe, agent)
+
         curIter = agentInterface.getCurIterations()
         println("")
         println("---------------------------------------")
