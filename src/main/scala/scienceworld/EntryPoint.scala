@@ -88,8 +88,6 @@ object EntryPoint {
     breakable {
       var userInputString:String = "look around"
       while (true) {
-        SimplifierProcessor.runSimplificationsEachTick(universe, agent)
-
         curIter = agentInterface.getCurIterations()
         println("")
         println("---------------------------------------")

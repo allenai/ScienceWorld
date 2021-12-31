@@ -33,7 +33,7 @@ class VirtualEnv:
         self.gateway = JavaGateway(gateway_parameters=GatewayParameters(auto_field=True, port=self.portNum))
 
         # Load the script
-        self.load(self.taskName, 0)
+        self.load(self.taskName, 0, "")
 
     #
     #   Destructor
@@ -57,12 +57,12 @@ class VirtualEnv:
         time.sleep(1)
 
     # Ask the simulator to load an environment from a script
-    def load(self, taskName, variationIdx):
+    def load(self, taskName, variationIdx, simplificationStr):
         # TODO: Error handling
         self.scriptFilename = taskName
 
         print("Load: " + self.scriptFilename + " (variation: " + str(variationIdx) + ")")
-        self.gateway.load(self.scriptFilename, variationIdx)
+        self.gateway.load(self.scriptFilename, variationIdx, simplificationStr)
 
 
     # Ask the simulator to reset an environment back to it's initial state
@@ -78,6 +78,14 @@ class VirtualEnv:
     # Shutdown the scala server
     def shutdown(self):
         self.gateway.shutdown()
+
+
+    # Simplifications
+    def getSimplificationsUsed(self):
+        return self.gateway.getSimplificationsUsed()
+
+    def getPossibleSimplifications(self):
+        return self.gateway.getPossibleSimplifications()
 
 
     # Get a list of valid tasks/environments

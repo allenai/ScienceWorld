@@ -93,9 +93,12 @@ object SimplifierProcessor {
 
   // A CSV string with all the simplifications that should be added
   // e.g. openDoors,openContainers
+  // NOTE: Clears out any simplifications currently being used
   def parseSimplificationStr(simplificationStr:String):(Boolean, String) = {
-    val fields = simplificationStr.toLowerCase.trim().split(",")
+    this.simplifications.clear()    // Clear out any current simplifications
     val allSimplifications = this.getAllSimplifications()
+
+    val fields = simplificationStr.toLowerCase.trim().split(",")
 
     for (field <- fields) {
       breakable {

@@ -1,5 +1,6 @@
 package examples
 
+import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.runtime.pythonapi.PythonInterface
 
 import scala.collection.JavaConverters.collectionAsScalaIterableConverter
@@ -20,6 +21,9 @@ object ExampleRandomAgent {
 
     val specificTasks = Array(13)           // Do specific tasks
     //val specificTasks = Array.empty[Int]    // Do all
+
+    val simplificationStr = ""
+
     val maxEpisodes:Int = 1000
     val maxIterPerEpisode:Int = 100
 
@@ -52,7 +56,7 @@ object ExampleRandomAgent {
           val variationIdx = Random.nextInt(maxVariations)
 
           // Load the task/variation
-          interface.load(taskName, variationIdx)
+          interface.load(taskName, variationIdx, simplificationStr)
 
           // Get reference to AgentInterface
           val agentInterface = interface.agentInterface
@@ -122,6 +126,7 @@ object ExampleRandomAgent {
         println("")
         println("---------------------------------")
         println("Scores:")
+        println("Simplifications: " + SimplifierProcessor.getSimplificationsUsed())
         println("---------------------------------")
         println("maxEpisodes: " + maxEpisodes)
         println("maxIterPerEpisode: " + maxIterPerEpisode)

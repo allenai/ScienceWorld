@@ -1,6 +1,7 @@
 package scienceworld.runtime.pythonapi
 
 import py4j.GatewayServer
+import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.environments.EnvironmentMaker
 import scienceworld.input.{ActionDefinitions, InputParser}
 import scienceworld.objects.agent.Agent
@@ -11,6 +12,7 @@ import util.{UniqueIdentifier, UniqueTypeID}
 
 import collection.JavaConverters._
 import scala.util.control.Breaks.{break, breakable}
+
 
 // Storage class
 class PythonInterfaceReturn(val observation:String, val score:Double, val isCompleted:Boolean) {
@@ -26,6 +28,7 @@ class PythonInterface() {
 
   var taskStr:String = ""                // Environment/task name
   var taskVariationIdx:Int = 0           // Task variation seed
+  var simplificationStr:String = ""      // CSV delimited string of simplifications to perform to the environment
 
   var score:Double = 0.0
   var isComplete:Boolean = false
@@ -38,9 +41,10 @@ class PythonInterface() {
   /*
    * Load/reset/shutdown server
    */
-  def load(taskStr:String, variationIdx:Int): Unit = {
+  def load(taskStr:String, variationIdx:Int, simplificationStr:String): Unit = {
     this.taskStr = taskStr
     this.taskVariationIdx = variationIdx
+    this.simplificationStr = simplificationStr
 
     // Clear error string
     this.errorStr = ""
@@ -65,7 +69,7 @@ class PythonInterface() {
     if (task.isDefined) {
       this.errorUnknownEnvironment = false
       agent = Some(agent_)
-      agentInterface = Some(new AgentInterface(universe, agent.get, actionHandler, task.get))
+      agentInterface = Some(new AgentInterface(universe, agent.get, actionHandler, task.get, simplificationStr))
     } else {
       this.errorUnknownEnvironment = true
     }
@@ -73,7 +77,7 @@ class PythonInterface() {
   }
 
   def reset() = {
-    this.load(this.taskStr, this.taskVariationIdx)
+    this.load(this.taskStr, this.taskVariationIdx, this.simplificationStr)
   }
 
   def shutdown(): Unit = {
@@ -90,6 +94,17 @@ class PythonInterface() {
   // Get the maximum variations for a given task
   def getTaskMaxVariations(taskName:String): Int = {
     taskMaker.getMaxVariations(taskName)
+  }
+
+  /*
+   * Simplifications
+   */
+  def getSimplificationsUsed():String = {
+    return SimplifierProcessor.getSimplificationsUsed()
+  }
+
+  def getPossibleSimplifications():String = {
+    return SimplifierProcessor.getPossibleSimplifications()
   }
 
   /*
