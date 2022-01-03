@@ -118,7 +118,7 @@ class GoalSequence(val subgoals:Array[Goal]) {
       var subgoalIdx = this.curSubgoalIdx
       if (firstSubgoalIdx == -1) firstSubgoalIdx = subgoalIdx
 
-      if (!curSubgoal.isDefined) return
+      if (curSubgoal.isEmpty) return
 
       // Check each object in the set of monitored objects to see if it meets a subgoal condition
       var goalReturn:GoalReturn = GoalReturn.mkSubgoalUnsuccessful()

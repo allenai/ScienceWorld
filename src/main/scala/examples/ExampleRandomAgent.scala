@@ -19,12 +19,12 @@ object ExampleRandomAgent {
   def main(args:Array[String]) = {
     val interface = new PythonInterface()
 
-    val specificTasks = Array(13)           // Do specific tasks
-    //val specificTasks = Array.empty[Int]    // Do all
+    //val specificTasks = Array(13)           // Do specific tasks
+    val specificTasks = Array.empty[Int]    // Do all
 
-    val simplificationStr = ""
+    val simplificationStr = "openDoors"
 
-    val maxEpisodes:Int = 1000
+    val maxEpisodes:Int = 100
     val maxIterPerEpisode:Int = 100
 
     // Create environment
