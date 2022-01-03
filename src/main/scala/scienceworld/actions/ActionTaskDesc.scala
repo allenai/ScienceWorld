@@ -36,7 +36,7 @@ class ActionTaskDesc(action:ActionRequestDef, assignments:Map[String, EnvObject]
 
 object ActionTaskDesc {
   val ACTION_NAME = "task description"
-  val ACTION_ID   = ActionDefinitions.ACTION_ID_INVENTORY
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_TASKDESC
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
