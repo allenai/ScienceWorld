@@ -474,6 +474,27 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     this.lastAmbiguousMatches = None
   }
 
+  // Get a list of the object UUIDs involved in each ambiguous choice (used for generating informative templates in the API)
+  def getAmbiguousObjectIDs():Array[Array[Int]] = {
+    if (!this.isInAmbiguousState()) return Array.empty[Array[Int]]
+    val out = new ArrayBuffer[Array[Int]]
+
+    for (i <- 0 until this.lastAmbiguousMatches.get.size) {
+      val objUUIDs = new ArrayBuffer[Int]
+      val ambMatch = this.lastAmbiguousMatches.get(i)
+      for (varName <- ambMatch.varLUT.keys) {
+        if (varName.toLowerCase != "agent") {
+          val obj = ambMatch.varLUT(varName)
+          objUUIDs.append( obj.uuid.toInt )
+        }
+      }
+
+      out.append(objUUIDs.toArray)
+    }
+
+    return out.toArray
+  }
+
   def resolveAmbiguity(inputStr:String, agent:Agent, objMonitor:ObjMonitor, goalSequence:GoalSequence):(String, Option[Action]) = {
     // Checks
     if (!this.isInAmbiguousState()) {
