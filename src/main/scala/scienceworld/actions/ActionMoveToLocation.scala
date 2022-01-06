@@ -71,6 +71,7 @@ class ActionMoveThroughDoor(action:ActionRequestDef, assignments:Map[String, Env
 object ActionMoveThroughDoor {
   val ACTION_NAME = "move through door"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_MOVETHRUDOOR
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move through door
@@ -78,7 +79,7 @@ object ActionMoveThroughDoor {
       new ActionExprOR(List("go", "go through", "walk through", "move through", "go to", "walk to", "move to", "go into", "move into")),
       new ActionExprIdentifier("doorOrLocation")
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 

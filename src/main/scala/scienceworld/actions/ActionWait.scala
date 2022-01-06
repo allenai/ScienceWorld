@@ -34,14 +34,14 @@ class ActionWait10(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
 object ActionWait10 {
   val ACTION_NAME = "wait10"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_WAIT10
-
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("wait")),
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 
@@ -92,14 +92,14 @@ class ActionWait1(action:ActionRequestDef, assignments:Map[String, EnvObject]) e
 object ActionWait1 {
   val ACTION_NAME = "wait1"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_WAIT1
-
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("wait1")),
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 

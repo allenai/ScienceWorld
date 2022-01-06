@@ -6,7 +6,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.util.parsing.input.Positional
 
-case class ActionRequestDef(val name:String, val paramSigList:ParamSigList, val triggers:List[ActionTrigger], val uniqueActionID:Int) extends Statement {
+case class ActionRequestDef(val name:String, val paramSigList:ParamSigList, val triggers:List[ActionTrigger], val uniqueActionID:Int, isOracleAction:Boolean = false) extends Statement {
 
   def getVarType(varName:String):String = {
     paramSigList.getVarType(varName)

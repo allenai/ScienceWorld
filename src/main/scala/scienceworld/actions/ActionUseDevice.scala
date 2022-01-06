@@ -35,6 +35,7 @@ class ActionUseDevice(action:ActionRequestDef, assignments:Map[String, EnvObject
 object ActionUseDevice {
   val ACTION_NAME = "use object"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_USEDEVICE
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
@@ -44,7 +45,7 @@ object ActionUseDevice {
       new ActionExprOR(List("on", "with")),
       new ActionExprIdentifier("patient")
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
 
   }

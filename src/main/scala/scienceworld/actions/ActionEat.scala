@@ -40,6 +40,7 @@ class ActionEat(action:ActionRequestDef, assignments:Map[String, EnvObject]) ext
 object ActionEat {
   val ACTION_NAME = "eat"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_EAT
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -47,7 +48,7 @@ object ActionEat {
       new ActionExprIdentifier("food")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 

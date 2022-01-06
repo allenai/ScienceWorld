@@ -8,7 +8,7 @@ import scienceworld.struct.EnvObject
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks._
-
+import SimplifierProcessor._
 
 // Generic
 class Simplification(val label:String, val description:String) {
@@ -22,7 +22,7 @@ class Simplification(val label:String, val description:String) {
 }
 
 // Simplification: Open all doors in the environment
-class SimplificationOpenDoors extends Simplification(label = "openDoors", description = "All doors are open by default.") {
+class SimplificationOpenDoors extends Simplification(label = SIMPLIFICATION_OPEN_DOORS, description = "All doors are open by default.") {
   runAtInitialization = true
 
   override def runSimplification(universe: EnvObject, agent:Agent): Boolean = {
@@ -47,7 +47,7 @@ class SimplificationOpenDoors extends Simplification(label = "openDoors", descri
 
 
 // Simplification: Open all doors in the environment
-class SimplificationOpenContainers extends Simplification(label = "openContainers", description = "All containers are open by default.") {
+class SimplificationOpenContainers extends Simplification(label = SIMPLIFICATION_OPEN_CONTAINERS, description = "All containers are open by default.") {
   runAtInitialization = true
 
   override def runSimplification(universe: EnvObject, agent:Agent): Boolean = {
@@ -71,11 +71,31 @@ class SimplificationOpenContainers extends Simplification(label = "openContainer
 }
 
 
+/*
+ * Action space simplifications
+ * These actions do not need to be explicitly run, but are essentially flags that are checked for during action initialization
+ */
+class SimplificationTeleportAction extends Simplification(label = SIMPLIFICATION_TELEPORT_ACTION, description = "Adds a teleport action.") {
 
+}
+
+class SimplificationNoElectricalActions extends Simplification(label = SIMPLIFICATION_NO_ELECTRICAL_ACTION, description = "Remove the electrical actions, which add a large number of possible valid actions to the action space.") {
+
+}
+
+
+
+/*
+ * Simplification Processor
+ */
 
 object SimplifierProcessor {
   val simplifications = new ArrayBuffer[Simplification]()
 
+  val SIMPLIFICATION_TELEPORT_ACTION        = "teleportAction"
+  val SIMPLIFICATION_NO_ELECTRICAL_ACTION   = "noElectricalAction"
+  val SIMPLIFICATION_OPEN_DOORS             = "openDoors"
+  val SIMPLIFICATION_OPEN_CONTAINERS        = "openContainers"
 
   // Accessors
   def addSimplification(simplification:Simplification): Unit = {
@@ -85,6 +105,15 @@ object SimplifierProcessor {
     }
     // Add if not a duplicate
     simplifications.append(simplification)
+  }
+
+  // Check to see if a simplification is enabled
+  def isSimplificationEnabled(label:String):Boolean = {
+    for (s <- simplifications) {
+      if (s.label.toLowerCase == label.toLowerCase) return true
+    }
+    // Default return
+    false
   }
 
   /*
@@ -166,6 +195,9 @@ object SimplifierProcessor {
 
     out.append( new SimplificationOpenDoors() )
     out.append( new SimplificationOpenContainers() )
+
+    out.append( new SimplificationTeleportAction() )
+    out.append( new SimplificationNoElectricalActions() )
 
     return out.toArray
   }

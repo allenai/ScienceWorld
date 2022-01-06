@@ -45,6 +45,7 @@ class ActionMoveObject(action:ActionRequestDef, assignments:Map[String, EnvObjec
 object ActionMoveObject {
   val ACTION_NAME = "move object"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_MOVEOBJECT
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
@@ -54,7 +55,7 @@ object ActionMoveObject {
       new ActionExprOR(List("to", "in", "into", "on")),
       new ActionExprIdentifier("moveTo")
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
 
   }
@@ -140,6 +141,7 @@ object ActionMoveObject {
 object ActionPickUpObjectIntoInventory {
   val ACTION_NAME = "pick up"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_PICKUP
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
@@ -147,7 +149,7 @@ object ActionPickUpObjectIntoInventory {
       new ActionExprOR(List("pick up", "get", "take")),
       new ActionExprIdentifier("obj"),
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
 
   }
@@ -218,6 +220,7 @@ object ActionPickUpObjectIntoInventory {
 object ActionPutDownObjectIntoInventory {
   val ACTION_NAME = "put down"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_PUTDOWN
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
@@ -225,7 +228,7 @@ object ActionPutDownObjectIntoInventory {
       new ActionExprOR(List("put down", "drop")),
       new ActionExprIdentifier("obj"),
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
 
   }
@@ -359,6 +362,7 @@ class ActionPourObject(action:ActionRequestDef, assignments:Map[String, EnvObjec
 object ActionPourObject {
   val ACTION_NAME = "pour object"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_POUROBJECT
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
@@ -368,7 +372,7 @@ object ActionPourObject {
       new ActionExprOR(List("in", "into", "on")),
       new ActionExprIdentifier("moveTo")
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
 
   }

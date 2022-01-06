@@ -37,13 +37,14 @@ class ActionTaskDesc(action:ActionRequestDef, assignments:Map[String, EnvObject]
 object ActionTaskDesc {
   val ACTION_NAME = "task description"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_TASKDESC
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("task")),
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
 
   }

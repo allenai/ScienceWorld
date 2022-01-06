@@ -33,6 +33,7 @@ class ActionMix(action:ActionRequestDef, assignments:Map[String, EnvObject]) ext
 object ActionMix {
   val ACTION_NAME = "mix"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_MIX
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -40,7 +41,7 @@ object ActionMix {
       new ActionExprIdentifier("container")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 

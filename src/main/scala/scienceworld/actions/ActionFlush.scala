@@ -37,6 +37,7 @@ class ActionFlush(action:ActionRequestDef, assignments:Map[String, EnvObject]) e
 object ActionFlush {
   val ACTION_NAME = "flush"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_FLUSH
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -44,7 +45,7 @@ object ActionFlush {
       new ActionExprIdentifier("device")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 

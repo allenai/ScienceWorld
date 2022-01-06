@@ -151,7 +151,7 @@ object EntryPoint {
             val uuid2referentLUT = agentInterface.inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=false)
 
             // Generate all possible valid actions
-            val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
+            val validActions = agentInterface.getValidActionObjectCombinations() // ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
 
             println("Valid actions (length = " + validActions.length + ")")
             for (i <- 0 until validActions.length) {

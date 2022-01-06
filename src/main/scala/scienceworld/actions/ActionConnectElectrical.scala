@@ -50,6 +50,7 @@ class ActionConnectElectrical(action:ActionRequestDef, assignments:Map[String, E
 object ActionConnectElectrical {
   val ACTION_NAME = "connect electrically"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_CONNECT
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
@@ -59,7 +60,7 @@ object ActionConnectElectrical {
       new ActionExprOR(List("to", "in", "into")),
       new ActionExprIdentifier("terminalB")
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
 
   }
@@ -193,6 +194,7 @@ class ActionDisconnectElectrical(action:ActionRequestDef, assignments:Map[String
 object ActionDisconnectElectrical {
   val ACTION_NAME = "disconnect electrically"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_DISCONNECT
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
@@ -200,7 +202,7 @@ object ActionDisconnectElectrical {
       new ActionExprOR(List("disconnect")),
       new ActionExprIdentifier("obj"),
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
 
   }

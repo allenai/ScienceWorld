@@ -163,10 +163,11 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
 
   // Main entry point
   // Perspective container: The container where the agent is located
-  def parse(inputStr:String, objTreeRoot:EnvObject, agent:Agent, objMonitor:ObjMonitor, goalSequence:GoalSequence, perspectiveContainer:EnvObject): (Boolean, String, String, Option[Action]) = {      // (Success, errorMessage, userString)
+  def parse(inputStr:String, objTreeRoot:EnvObject, universe:EnvObject, agent:Agent, objMonitor:ObjMonitor, goalSequence:GoalSequence, perspectiveContainer:EnvObject): (Boolean, String, String, Option[Action]) = {      // (Success, errorMessage, userString)
     // TODO: Only include observable objects in the list of all objects
     val tokens = InputParser.tokenize(inputStr.toLowerCase)
-    val allObjs = (InputParser.collectAccessibleObjects(objTreeRoot, includeHidden = true) ++ InputParser.collectAccessibleObjects(agent, includeHidden = true)).toArray
+    val allVisibleObjs = (InputParser.collectAccessibleObjects(objTreeRoot, includeHidden = true) ++ InputParser.collectAccessibleObjects(agent, includeHidden = true)).toArray
+    val allObjs = InputParser.collectAccessibleObjects(universe, includeHidden = true).toArray   // Assumes agent (and its inventory) is in Universe
 
     //println ("inputStr: " + inputStr)
 
@@ -178,7 +179,15 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
       // Iterate through all possible triggers for this action
       val matches = new ArrayBuffer[InputMatch]
       for (trigger <- actionRequestDef.triggers) {
-        matches.insertAll(matches.length, this.populate(tokens, actionRequestDef.paramSigList, trigger, allObjs, perspectiveContainer) )
+        // Use either visible objects or ALL objects, depending on whether this is an Oracle action or not
+        if (actionRequestDef.isOracleAction) {
+          // Oracle action
+          matches.insertAll(matches.length, this.populate(tokens, actionRequestDef.paramSigList, trigger, allObjs, perspectiveContainer) )
+        } else {
+          // Regular action
+          matches.insertAll(matches.length, this.populate(tokens, actionRequestDef.paramSigList, trigger, allVisibleObjs, perspectiveContainer) )
+        }
+
       }
 
       // Populate the actionRequestDef references in the storage class

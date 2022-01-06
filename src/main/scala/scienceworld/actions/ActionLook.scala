@@ -34,13 +34,14 @@ class ActionLookAround(action:ActionRequestDef, assignments:Map[String, EnvObjec
 object ActionLookAround {
   val ACTION_NAME = "look around"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_LOOK_AROUND
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("look around", "look"))
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 
@@ -93,6 +94,7 @@ class ActionLookAt(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
 object ActionLookAt {
   val ACTION_NAME = "look at"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_LOOK_AT
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -100,7 +102,7 @@ object ActionLookAt {
       new ActionExprIdentifier("obj")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 
@@ -203,6 +205,7 @@ class ActionLookIn(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
 object ActionLookIn {
   val ACTION_NAME = "look in"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_LOOK_IN
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -210,7 +213,7 @@ object ActionLookIn {
       new ActionExprIdentifier("obj")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 

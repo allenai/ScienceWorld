@@ -40,6 +40,7 @@ class ActionActivate(action:ActionRequestDef, assignments:Map[String, EnvObject]
 object ActionActivate {
   val ACTION_NAME = "activate"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_ACTIVATE
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -47,7 +48,7 @@ object ActionActivate {
       new ActionExprIdentifier("device")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 
@@ -135,6 +136,7 @@ class ActionDeactivate(action:ActionRequestDef, assignments:Map[String, EnvObjec
 object ActionDeactivate {
   val ACTION_NAME = "deactivate"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_DEACTIVATE
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -142,7 +144,7 @@ object ActionDeactivate {
       new ActionExprIdentifier("device")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 

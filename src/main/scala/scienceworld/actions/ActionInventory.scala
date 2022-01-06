@@ -37,13 +37,14 @@ class ActionInventory(action:ActionRequestDef, assignments:Map[String, EnvObject
 object ActionInventory {
   val ACTION_NAME = "view inventory"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_INVENTORY
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("inventory")),
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
 
   }

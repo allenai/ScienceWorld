@@ -51,13 +51,14 @@ class ActionOpenDoor(action:ActionRequestDef, assignments:Map[String, EnvObject]
 object ActionOpenDoor {
   val ACTION_NAME = "open door"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_OPEN
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("open")),
       new ActionExprIdentifier("door")
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 
@@ -173,13 +174,14 @@ class ActionCloseDoor(action:ActionRequestDef, assignments:Map[String, EnvObject
 object ActionCloseDoor {
   val ACTION_NAME = "close door"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_CLOSE
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("close")),
       new ActionExprIdentifier("door")
     ))
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 

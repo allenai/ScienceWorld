@@ -34,6 +34,7 @@ class ActionFocus(action:ActionRequestDef, assignments:Map[String, EnvObject], o
 object ActionFocus {
   val ACTION_NAME = "focus on"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_FOCUS
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -41,7 +42,7 @@ object ActionFocus {
       new ActionExprIdentifier("obj")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 
@@ -106,13 +107,14 @@ class ActionResetTask(action:ActionRequestDef, assignments:Map[String, EnvObject
 object ActionResetTask {
   val ACTION_NAME = "reset task"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_RESETTASK
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("reset task")),
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 

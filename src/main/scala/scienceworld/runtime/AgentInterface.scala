@@ -167,13 +167,18 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     val visibleObjTreeRoot = this.getAgentVisibleObjects()._2
     val agentInventory = agent.getInventoryContainer()
     val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toArray
+
     // Collect UUID -> Unique Referent LUT
     //val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(universe, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
     //val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
     val uuid2referentLUT = inputParser.getAllUniqueReferentsLUTObjList(allVisibleObjects, visibleObjTreeRoot, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
 
+    // For oracle actions
+    val allObjects = InputParser.collectObjects(universe, includeHidden = true).toArray
+    val uuid2referentLUTAll = inputParser.getAllUniqueReferentsLUTObjList(allObjects, visibleObjTreeRoot, includeHidden = true, recursive = true)
+
     // Generate all possible valid actions
-    val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects, uuid2referentLUT)
+    val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects, allObjects, uuid2referentLUT, uuid2referentLUTAll)
 
     return validActions.map(_.mkHumanReadableStr())
   }
@@ -199,9 +204,13 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     //val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(universe, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
     val uuid2referentLUT = inputParser.getAllUniqueReferentsLUTObjList(allVisibleObjects, visibleObjTreeRoot, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
 
+    // For oracle actions
+    val allObjects = InputParser.collectObjects(universe, includeHidden = true).toArray
+    val uuid2referentLUTAll = inputParser.getAllUniqueReferentsLUTObjList(allObjects, visibleObjTreeRoot, includeHidden = true, recursive = true)
+
 
     // Generate all possible valid actions
-    val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects, uuid2referentLUT)
+    val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects, allObjects, uuid2referentLUT, uuid2referentLUTAll)
 
     // To templates
     val validActionsTemplates = validActions.map(_.toTemplate())
@@ -345,8 +354,9 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     return inputStr
   }
 
-  def processUserInput(inputStr:String):(Boolean, String) = {   // (Success, statusString)
+  def processUserInput(inputStr:String, universe:EnvObject):(Boolean, String) = {   // (Success, statusString)
     val (successVisible, visibleObjects) = this.getAgentVisibleObjects()      // TODO: Currently just a reference to the container (current room), rather than a list
+
     if (!successVisible) throw new RuntimeException("ERROR: Agent is not in container.")
 
     // The agent's container (to render the agent's perspective)
@@ -357,7 +367,7 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
       // Case 1: Normal case
 
       //val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, interpreter.objectTreeRoot, agent)
-      val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, agent, objMonitor, task.goalSequence, agentContainer)
+      val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, universe, agent, objMonitor, task.goalSequence, agentContainer)
       if (!successUserInput) {
         println("ERROR: " + errStr)
       } else {
@@ -436,7 +446,7 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
     }
 
     // Parse user input
-    val (success, statusStr) = this.processUserInput(userInputStr)
+    val (success, statusStr) = this.processUserInput(userInputStr, universe)
     if (statusStr.length > 0) {
       userOutStr.append("Input: " + statusStr + "\n\n")
     }

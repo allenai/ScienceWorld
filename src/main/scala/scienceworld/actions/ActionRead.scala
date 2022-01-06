@@ -34,6 +34,7 @@ class ActionRead(action:ActionRequestDef, assignments:Map[String, EnvObject]) ex
 object ActionRead {
   val ACTION_NAME = "read"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_READ
+  val isOracleAction = false
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
@@ -41,7 +42,7 @@ object ActionRead {
       new ActionExprIdentifier("document")
     ))
 
-    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID)
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
     actionHandler.addAction(action)
   }
 

@@ -1,5 +1,6 @@
 package scienceworld.input
 
+import main.scala.scienceworld.actions.ActionTeleport
 import scienceworld.actions.{Action, ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMix, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionTaskDesc, ActionUseDevice, ActionWait1, ActionWait10}
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
@@ -36,6 +37,7 @@ object ActionTypecaster {
       case ActionInventory.ACTION_NAME => new ActionInventory(action, assignments)
       case ActionMix.ACTION_NAME => new ActionMix(action, assignments)
       case ActionTaskDesc.ACTION_NAME => new ActionTaskDesc(action, assignments)
+      case ActionTeleport.ACTION_NAME => new ActionTeleport(action, assignments)
 
       // Remapped actions
         // "Pick up" uses move, but substitutes in the agent's inventory as the 'moveTo' destination

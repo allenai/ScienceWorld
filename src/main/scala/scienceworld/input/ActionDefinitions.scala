@@ -1,9 +1,12 @@
 package scienceworld.input
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
+import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.actions.{ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMix, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionTaskDesc, ActionUseDevice, ActionWait1, ActionWait10, PossibleAction}
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
+import SimplifierProcessor._
+import main.scala.scienceworld.actions.ActionTeleport
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -37,17 +40,18 @@ object ActionDefinitions {
   val ACTION_ID_PUTDOWN       = 22
   val ACTION_ID_MIX           = 23
   val ACTION_ID_TASKDESC      = 24
+  val ACTION_ID_TELEPORT      = 25
 
 
   /*
    * Helper functions
    */
-  def mkActionRequest(name:String, triggerPhrase:List[ActionTrigger], uniqueActionID:Int):ActionRequestDef = {
-    new ActionRequestDef(name, new ParamSigList(List.empty[ParamSig]), triggerPhrase, uniqueActionID)
+  def mkActionRequest(name:String, triggerPhrase:List[ActionTrigger], uniqueActionID:Int, isOracleAction:Boolean):ActionRequestDef = {
+    new ActionRequestDef(name, new ParamSigList(List.empty[ParamSig]), triggerPhrase, uniqueActionID, isOracleAction)
   }
 
-  def mkActionRequest(name:String, triggerPhrase:ActionTrigger, uniqueActionID:Int):ActionRequestDef = {
-    new ActionRequestDef(name, new ParamSigList(List.empty[ParamSig]), List(triggerPhrase), uniqueActionID)
+  def mkActionRequest(name:String, triggerPhrase:ActionTrigger, uniqueActionID:Int, isOracleAction:Boolean):ActionRequestDef = {
+    new ActionRequestDef(name, new ParamSigList(List.empty[ParamSig]), List(triggerPhrase), uniqueActionID, isOracleAction)
   }
 
 
@@ -95,8 +99,10 @@ object ActionDefinitions {
     ActionFlush.registerAction(actionHandler)
 
     // Connect (electrically)
-    ActionConnectElectrical.registerAction(actionHandler)
-    ActionDisconnectElectrical.registerAction(actionHandler)
+    if (!SimplifierProcessor.isSimplificationEnabled(label = SIMPLIFICATION_NO_ELECTRICAL_ACTION)) {
+      ActionConnectElectrical.registerAction(actionHandler)
+      ActionDisconnectElectrical.registerAction(actionHandler)
+    }
 
     // Wait
     ActionWait1.registerAction(actionHandler)
@@ -113,6 +119,9 @@ object ActionDefinitions {
     // Task description
     ActionTaskDesc.registerAction(actionHandler)
 
+    // Teleport
+    ActionTeleport.registerAction(actionHandler)
+
     // Return
     actionHandler
   }
@@ -120,7 +129,7 @@ object ActionDefinitions {
   /*
    * Make possible actions
    */
-  def mkPossibleActions(agent:Agent, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+  def mkPossibleActions(agent:Agent, visibleObjects:Array[EnvObject], allObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String], uuid2referentLUTAll:Map[Long, String]):Array[PossibleAction] = {
     val out = new ArrayBuffer[PossibleAction]()
 
     // Open/close door
@@ -160,12 +169,10 @@ object ActionDefinitions {
     out.insertAll(out.length, ActionFlush.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
 
     // Connect (electrically)
-    //TODO: TEMPORARILY DISABLED!!!
-    println ("NOTE: CONNECT/DISCONNECT ACTIONS TEMPORARILY DISABLED!")
-    /*
-    out.insertAll(out.length, ActionConnectElectrical.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
-    out.insertAll(out.length, ActionDisconnectElectrical.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
-     */
+    if (!SimplifierProcessor.isSimplificationEnabled(label = SIMPLIFICATION_NO_ELECTRICAL_ACTION)) {
+      out.insertAll(out.length, ActionConnectElectrical.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+      out.insertAll(out.length, ActionDisconnectElectrical.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+    }
 
     // Wait
     out.insertAll(out.length, ActionWait1.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
@@ -176,8 +183,14 @@ object ActionDefinitions {
     out.insertAll(out.length, ActionPickUpObjectIntoInventory.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
     out.insertAll(out.length, ActionPutDownObjectIntoInventory.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
 
+    // Mix
+    out.insertAll(out.length, ActionMix.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
     // Task Description
     out.insertAll(out.length, ActionTaskDesc.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+
+    // Teleport
+    out.insertAll(out.length, ActionTeleport.generatePossibleValidActions(agent, allObjects, uuid2referentLUTAll))   // Oracle action, requires allObjects, allUUIDs
 
     // Return
     return out.toArray
