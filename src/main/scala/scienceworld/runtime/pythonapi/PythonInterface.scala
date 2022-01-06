@@ -69,7 +69,7 @@ class PythonInterface() {
     if (task.isDefined) {
       this.errorUnknownEnvironment = false
       agent = Some(agent_)
-      agentInterface = Some(new AgentInterface(universe, agent.get, actionHandler, task.get, simplificationStr))
+      agentInterface = Some(new AgentInterface(universe, agent.get, task.get, simplificationStr))
     } else {
       this.errorUnknownEnvironment = true
     }

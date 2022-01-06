@@ -15,8 +15,8 @@ import scala.collection.mutable.ArrayBuffer
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks._
 
-class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandler, task:Task, simplificationStr:String = "") {
-  val inputParser = new InputParser(actionHandler.getActions())
+class AgentInterface(universe:EnvObject, agent:Agent, task:Task, simplificationStr:String = "") {
+
   val objMonitor = new ObjMonitor()
   // Store whether the environment is in an unexpected error state
   var errorState:Boolean = false
@@ -36,6 +36,12 @@ class AgentInterface(universe:EnvObject, agent:Agent, actionHandler:ActionHandle
   if (!simplifierSuccess) this.setErrorState(simplifierErrStr)
   println ("Selected simpifications: " + SimplifierProcessor.getSimplificationsUsed())
   SimplifierProcessor.runSimplificationsInitialization(universe, agent)
+
+  // Action handler (must be run after simplifications -- as simplifications can affect action space)
+  val actionHandler = ActionDefinitions.mkActionDefinitions()
+
+  // Input parser
+  val inputParser = new InputParser(actionHandler.getActions())
 
 
   private var curIter:Int = 0

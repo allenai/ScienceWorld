@@ -120,7 +120,9 @@ object ActionDefinitions {
     ActionTaskDesc.registerAction(actionHandler)
 
     // Teleport
-    ActionTeleport.registerAction(actionHandler)
+    if (SimplifierProcessor.isSimplificationEnabled(label = SIMPLIFICATION_TELEPORT_ACTION)) {
+      ActionTeleport.registerAction(actionHandler)
+    }
 
     // Return
     actionHandler
@@ -190,7 +192,9 @@ object ActionDefinitions {
     out.insertAll(out.length, ActionTaskDesc.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
 
     // Teleport
-    out.insertAll(out.length, ActionTeleport.generatePossibleValidActions(agent, allObjects, uuid2referentLUTAll))   // Oracle action, requires allObjects, allUUIDs
+    if (SimplifierProcessor.isSimplificationEnabled(label = SIMPLIFICATION_TELEPORT_ACTION)) {
+      out.insertAll(out.length, ActionTeleport.generatePossibleValidActions(agent, allObjects, uuid2referentLUTAll)) // Oracle action, requires allObjects, allUUIDs
+    }
 
     // Return
     return out.toArray

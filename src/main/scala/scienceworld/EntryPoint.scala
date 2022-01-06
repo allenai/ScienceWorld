@@ -33,8 +33,6 @@ object EntryPoint {
   def main(args:Array[String]) = {
     println("Initializing... ")
 
-    val actionHandler = ActionDefinitions.mkActionDefinitions()
-
     val (universe, agent) = EnvironmentMaker.mkKitchenEnvironment()
     //val (universe, agent) = EnvironmentMaker.mkElectricalEnvironment()
 
@@ -61,6 +59,8 @@ object EntryPoint {
     //val taskName = taskMaker.getTaskList()(5)
     val taskName = taskMaker.getTaskList()(13)
 
+    val simplificationStr = "teleportAction,noElectricalAction"
+
     // Setup task
     val (task_, taskErrStr) = taskMaker.doTaskSetup(taskName, 5, universe, agent)
     var task:Option[Task] = None
@@ -71,7 +71,7 @@ object EntryPoint {
     }
 
     // Setup agent interface
-    val agentInterface = new AgentInterface(universe, agent, actionHandler, task.get)
+    val agentInterface = new AgentInterface(universe, agent, task.get, simplificationStr)
     // If there were any errors setting up the task, then note this.
     if (taskErrStr.length > 0) {
       agentInterface.setErrorState(taskErrStr)

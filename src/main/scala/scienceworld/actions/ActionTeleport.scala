@@ -5,7 +5,7 @@ import scienceworld.actions.{Action, PossibleAction}
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.location.Location
+import scienceworld.objects.location.{Location, Universe}
 import scienceworld.objects.portal.Door
 import scienceworld.struct.EnvObject
 
@@ -70,7 +70,9 @@ object ActionTeleport {
     // Step 2: Check that it's a valid thing to move through
     location match {
       case location:Location => {
-          return ("", true)
+          if (location.name.toLowerCase != "universe") {
+            return ("", true)
+          }
       }
       case _ => {
         return ("Its not clear how to go to " + location.name + ".", false)
