@@ -96,6 +96,70 @@ class PythonInterface() {
     taskMaker.getMaxVariations(taskName)
   }
 
+
+  /*
+   * Train/development/test sets
+   */
+
+  // Split into train/dev/test sets (using a 50%/25%/25% split).
+  def getSets():(List[Int], List[Int], List[Int]) = {
+    val maxVariations = this.getTaskMaxVariations(taskName = this.taskStr)
+    // Special cases with small numbers of variations
+    if (maxVariations == 0) return (List.empty[Int], List.empty[Int], List.empty[Int])
+    if (maxVariations == 1) return (List(0), List.empty[Int], List(0))
+    if (maxVariations == 2) return (List(0), List.empty[Int], List(1))
+    if (maxVariations == 3) return (List(0), List(1), List(2))
+    if (maxVariations == 4) return (List(0, 1), List(2), List(3))
+
+
+    // General case
+    val indices = Range(0, maxVariations).toList
+    val groupSize = math.floor(indices.length / 4).toInt
+    val groups = indices.grouped(groupSize).toList
+
+    // Split into train/dev/test groups
+    val train = groups(0) ++ groups(1)
+    val dev = groups(2)
+    var test = groups(3)
+    if (groups.length > 4) test = groups(3) ++ groups(4)
+
+    return (train, dev, test)
+  }
+
+  def getVariationsTrain():List[Int] = {
+    val (train, dev, test) = this.getSets()
+    return train
+  }
+
+  def getVariationsDev():List[Int] = {
+    val (train, dev, test) = this.getSets()
+    return train
+  }
+
+  def getVariationsTest():List[Int] = {
+    val (train, dev, test) = this.getSets()
+    return train
+  }
+
+  def getRandomVariationTrain():Int = {
+    val (train, dev, test) = this.getSets()
+    val randIdx = scala.util.Random.nextInt(train.length)
+    return train(randIdx)
+  }
+
+  def getRandomVariationDev():Int = {
+    val (train, dev, test) = this.getSets()
+    val randIdx = scala.util.Random.nextInt(dev.length)
+    return dev(randIdx)
+  }
+
+  def getRandomVariationTest():Int = {
+    val (train, dev, test) = this.getSets()
+    val randIdx = scala.util.Random.nextInt(test.length)
+    return test(randIdx)
+  }
+
+
   /*
    * Simplifications
    */
