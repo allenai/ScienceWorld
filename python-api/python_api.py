@@ -175,6 +175,26 @@ class VirtualEnv:
         return self.gateway.getTaskDescription()
 
 
+    # Train/development/test sets
+    def getVariationsTrain(self):
+        return self.gateway.getVariationsTrain()
+
+    def getVariationsDev(self):
+        return self.gateway.getVariationsDev()
+
+    def getVariationsTest(self):
+        return self.gateway.getVariationsTest()
+
+    def getRandomVariationTrain(self):
+        return self.gateway.getRandomVariationTrain()    
+
+    def getRandomVariationDev(self):
+        return self.gateway.getRandomVariationDev()    
+
+    def getRandomVariationTest(self):
+        return self.gateway.getRandomVariationTest()    
+
+
     # Step
     def step(self, inputStr:str):
         #observation, score, isCompleted = self.gateway.step(inputStr)
