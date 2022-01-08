@@ -77,6 +77,24 @@ class AgentInterface(universe:EnvObject, agent:Agent, task:Task, simplificationS
   def getPossibleActionsWithIDsJSON(): String = {
     val os = new StringBuilder
 
+    // Special case: Check for parser being in ambiguity resolution state
+    if (this.inputParser.isInAmbiguousState()) {
+      val AMBIGUOUS_BASE_TEMPLATE_ID    = 100
+      val ambiguousObjectUUIDs = this.inputParser.getAmbiguousObjectIDs()     // List of object IDs involved with each ambiguous choice
+
+      val ambiguityResolutionChoices = this.getValidActionsAmbiguousState()
+      val templatesJSONAmb = new ArrayBuffer[String]()
+
+      var ambIdx:Int = 0
+      for (choiceStr <- ambiguityResolutionChoices) {
+        //templatesJSON.append( new TemplateAction(actionString = choiceStr, templateID = AMBIGUOUS_BASE_TEMPLATE_ID + ambIdx, objectIDs = ambiguousObjectUUIDs(ambIdx).toList, typeIDs = List.empty[Int]).toJSON() )    // TODO: Fix this casting (proper template ID, object IDs, etc)
+        templatesJSONAmb.append("{\"action_example\":\"" + choiceStr + "\", \"template_id\":" + AMBIGUOUS_BASE_TEMPLATE_ID + ambIdx + "}" )
+        ambIdx += 1
+      }
+      val outJSON = ("[" + templatesJSONAmb.mkString(", ") + "]")
+      return outJSON
+    }
+
     val templates = actionHandler.getActionExamplesPlainTextWithID()
     val templateJSON = templates.map(_.toJSON())
     os.append("[" + templateJSON.mkString(", ") + "]")
