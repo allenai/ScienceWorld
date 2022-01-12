@@ -513,13 +513,13 @@ class AgentInterface(universe:EnvObject, agent:Agent, task:Task, simplificationS
             // Run any simplifications that need to be run
             SimplifierProcessor.runSimplificationsEachTick(universe, agent)
 
-            // Check whether the goal conditions are met
-            task.goalSequence.tick(objMonitor, agent)
-
             // Increment the number of iterations
             this.curIter += 1
 
           }
+
+          // Check whether the goal conditions are met
+          task.goalSequence.tick(objMonitor, agent)
 
           // If the agent is not waiting, then break.  But if the agent is waiting, continue cycling through until the agent is finished waiting X number of ticks.
           if (agent.isWaiting()) {

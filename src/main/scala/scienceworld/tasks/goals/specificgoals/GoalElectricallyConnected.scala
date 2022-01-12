@@ -8,16 +8,20 @@ import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 class GoalElectricallyConnected(connectedPartName:String = "", failIfWrong:Boolean = true, _isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     println ("GOAL CHECKING:")
+
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
       if (gs.getLastSatisfiedObject().get != obj) return GoalReturn.mkSubgoalUnsuccessful()
     }
 
     // Check that the focus object is electrically connected to an object with 'connectedPartName'
-    if (ElectricalConductivity.areComponentsElectricallyConnected(obj, connectedPartName)) {
-      this.satisfiedWithObject = Some(obj)
+    if (ElectricalConductivity.areComponentsElectricallyConnected(obj.get, connectedPartName)) {
+      this.satisfiedWithObject = obj
       return GoalReturn.mkSubgoalSuccess()
     } else {
       // Case: The focus object is not electrically connected to an object named 'connectedPartName'

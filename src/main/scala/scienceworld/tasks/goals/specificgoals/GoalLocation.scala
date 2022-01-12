@@ -10,7 +10,9 @@ import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 class GoalMoveToLocation(locationToBeIn:String, _isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // NOTE: Focus object not required
+
     // If agent is not in a container, do not continue evaluation
     if (agent.getContainer().isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
 
@@ -31,7 +33,9 @@ class GoalMoveToNewLocation(_isOptional:Boolean = false) extends Goal {
   var startingLocation:Option[String] = None
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // NOTE: Focus object not required
+
     // If agent is not in a container, do not continue evaluation
     if (agent.getContainer().isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
 
@@ -61,7 +65,9 @@ class GoalMoveToNewLocation(_isOptional:Boolean = false) extends Goal {
 class GoalInRoomWithOpenDoor(_isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // NOTE: Focus object not required
+
     // If agent is not in a container, do not continue evaluation
     if (agent.getContainer().isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
 
@@ -71,11 +77,11 @@ class GoalInRoomWithOpenDoor(_isOptional:Boolean = false) extends Goal {
 
     var isAtLeastOneOpenDoor:Boolean = false
     for (portal <- portals) {
-      println ("Checking: " + portal.toStringMinimal())
+      //println ("Checking: " + portal.toStringMinimal())
       portal match {
         case d:Door => {
           if (d.isCurrentlyPassable()) {
-            print("\tIS OPEN!")
+            //print("\tIS OPEN!")
             isAtLeastOneOpenDoor = true
           }
         }

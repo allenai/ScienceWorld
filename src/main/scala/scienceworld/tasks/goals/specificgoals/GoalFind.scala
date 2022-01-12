@@ -11,10 +11,13 @@ class GoalFind(objectName:String = "", failIfWrong:Boolean = true, _defocusOnSuc
   this.defocusOnSuccess = _defocusOnSuccess
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
-    if (obj.name.toLowerCase == objectName.toLowerCase) {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    if (obj.get.name.toLowerCase == objectName.toLowerCase) {
       // Case: The focus is on an object with the correct name
-      this.satisfiedWithObject = Some(obj)
+      this.satisfiedWithObject = obj
       return GoalReturn.mkSubgoalSuccess()
     } else {
       // Case: The focus is on an object with a different name
@@ -36,19 +39,21 @@ class GoalFindLivingThingStage(livingThingType:String = "", lifeStage:String = "
   this.defocusOnSuccess = _defocusOnSuccess
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
 
     // Case: The focus is on a living thing of the correct species type
-    if ((obj.propLife.isDefined) && (obj.propLife.get.lifeformType == livingThingType.toLowerCase)) {
+    if ((obj.get.propLife.isDefined) && (obj.get.propLife.get.lifeformType == livingThingType.toLowerCase)) {
 
       // Step 2: Check that it's in the correct life cycle stage
-      obj match {
+      obj.get match {
         case x:LivingThing => {
           // Check that the object has a Life Cycle defined
           if (x.lifecycle.isDefined) {
             // Check that the life cycle stage is the one we're looking for
             if (x.lifecycle.get.getCurStageName() == lifeStage) {
-              this.satisfiedWithObject = Some(obj)
+              this.satisfiedWithObject = obj
               return GoalReturn.mkSubgoalSuccess()
             }
           }
@@ -78,13 +83,16 @@ class GoalFindInclinedPlane(surfaceName:String = "", failIfWrong:Boolean = true,
   this.defocusOnSuccess = _defocusOnSuccess
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
-    if (obj.name.toLowerCase == "inclined plane") {
-      obj match {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    if (obj.get.name.toLowerCase == "inclined plane") {
+      obj.get match {
         case x:InclinedPlane => {
           if (x.surfaceMaterial.substanceName == surfaceName) {
             // Case: The focus is on an object with the correct name
-            this.satisfiedWithObject = Some(obj)
+            this.satisfiedWithObject = obj
             return GoalReturn.mkSubgoalSuccess()
           }
         }
@@ -109,13 +117,16 @@ class GoalFindInclinedPlaneNamed(additionalName:String = "", failIfWrong:Boolean
   this.defocusOnSuccess = _defocusOnSuccess
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
-    if (obj.name.toLowerCase == "inclined plane") {
-      obj match {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    if (obj.get.name.toLowerCase == "inclined plane") {
+      obj.get match {
         case x:InclinedPlane => {
           if (x.additionalName == additionalName) {
             // Case: The focus is on an object with the correct name
-            this.satisfiedWithObject = Some(obj)
+            this.satisfiedWithObject = obj
             return GoalReturn.mkSubgoalSuccess()
           }
         }

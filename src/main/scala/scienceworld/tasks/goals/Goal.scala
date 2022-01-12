@@ -12,7 +12,7 @@ trait Goal {
   var defocusOnSuccess:Boolean = false
   var isOptional:Boolean = false
 
-  def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+  def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     return GoalReturn.mkSubgoalUnsuccessful()
   }
 
@@ -159,22 +159,35 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
   def tickUnorderedSubgoals(objMonitor: ObjMonitor, agent:Agent): Unit = {
     var numCompletedThisCycle = -1
 
+    //println("* tickUndorderedSubgoals(): Started...")
     while (numCompletedThisCycle != 0) {
       numCompletedThisCycle = 0
 
       val numOptionalUnorderedSubgoals = optionalUnorderedSubgoals.length
       for (i <- 0 until numOptionalUnorderedSubgoals) {
+        //println("\tEvaluating Subgoal " + i)
         // If this subgoal has not been completed
         if (optionalUnorderedSubgoalsCompleted(i) == false) {
 
           // Evaluate whether the subgoal has been completed
           val subgoal = optionalUnorderedSubgoals(i)
           breakable {
+            // First, check without any focus object
+            val goalReturn = subgoal.isGoalConditionSatisfied(None, isFirstGoal = false, gs = this, agent)
+            if (goalReturn.subgoalSuccess) {
+              optionalUnorderedSubgoalsCompleted(i) = true
+              numCompletedThisCycle += 1
+              //println("\t\tTrue")
+              break
+            }
+
+            // Then, iterate through focus objects and check
             for (obj <- objMonitor.getMonitoredObjects()) {
-              val goalReturn = subgoal.isGoalConditionSatisfied(obj, isFirstGoal = false, gs = this, agent)
+              val goalReturn = subgoal.isGoalConditionSatisfied(Some(obj), isFirstGoal = false, gs = this, agent)
               if (goalReturn.subgoalSuccess) {
                 optionalUnorderedSubgoalsCompleted(i) = true
                 numCompletedThisCycle += 1
+                println("\t\tTrue")
                 break
               }
             }
@@ -208,7 +221,7 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
 
             val isFirstGoal = if (this.getNumCompletedSubgoals() == 0) true else false
 
-            goalReturn = curSubgoal.get.isGoalConditionSatisfied(obj, isFirstGoal, this, agent)
+            goalReturn = curSubgoal.get.isGoalConditionSatisfied(Some(obj), isFirstGoal, this, agent)         // TODO: Also add a condition that checks for it with no focus?
             if (goalReturn.subgoalSuccess) {
               if (curSubgoal.get.satisfiedWithObject != None) this.lastSatisfiedWithObject = curSubgoal.get.satisfiedWithObject
               if (curSubgoal.get.defocusOnSuccess) objMonitor.clearMonitoredObjects() // Clear focus, if the goal asks to do this

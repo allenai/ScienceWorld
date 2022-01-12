@@ -10,9 +10,12 @@ import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 class GoalIsNotStateOfMatter(val isNotState:String, _isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
     // Check for material properties to be defined
-    if (!obj.propMaterial.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
+    if (!obj.get.propMaterial.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
@@ -20,9 +23,9 @@ class GoalIsNotStateOfMatter(val isNotState:String, _isOptional:Boolean = false)
     }
 
     // Check for state of matter to NOT be a specific value
-    println ("obj.propMaterial.get.stateOfMatter: " + obj.propMaterial.get.stateOfMatter)
-    if (obj.propMaterial.get.stateOfMatter != isNotState) {
-      this.satisfiedWithObject = Some(obj)
+    println ("obj.propMaterial.get.stateOfMatter: " + obj.get.propMaterial.get.stateOfMatter)
+    if (obj.get.propMaterial.get.stateOfMatter != isNotState) {
+      this.satisfiedWithObject = obj
       return GoalReturn.mkSubgoalSuccess()
     }
     return GoalReturn.mkSubgoalUnsuccessful()
@@ -33,9 +36,12 @@ class GoalIsNotStateOfMatter(val isNotState:String, _isOptional:Boolean = false)
 class GoalChangeStateOfMatter(val changeToState:String, _isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
     // Check for material properties to be defined
-    if (!obj.propMaterial.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
+    if (!obj.get.propMaterial.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
@@ -43,8 +49,8 @@ class GoalChangeStateOfMatter(val changeToState:String, _isOptional:Boolean = fa
     }
 
     // Check for state of matter to be set to a specific value
-    if (obj.propMaterial.get.stateOfMatter == changeToState) {
-      this.satisfiedWithObject = Some(obj)
+    if (obj.get.propMaterial.get.stateOfMatter == changeToState) {
+      this.satisfiedWithObject = obj
       return GoalReturn.mkSubgoalSuccess()
     }
     return GoalReturn.mkSubgoalUnsuccessful()
@@ -59,9 +65,12 @@ class GoalChangeStateOfMatter(val changeToState:String, _isOptional:Boolean = fa
 class GoalIsStateOfMatter(_isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
     // Check for material properties to be defined
-    if (!obj.propMaterial.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
+    if (!obj.get.propMaterial.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
@@ -69,8 +78,8 @@ class GoalIsStateOfMatter(_isOptional:Boolean = false) extends Goal {
     }
 
     // Store the state of matter of this object
-    gs.setKey("stateOfMatter", obj.propMaterial.get.stateOfMatter)
-    this.satisfiedWithObject = Some(obj)
+    gs.setKey("stateOfMatter", obj.get.propMaterial.get.stateOfMatter)
+    this.satisfiedWithObject = obj
 
     return GoalReturn.mkSubgoalSuccess()
   }
@@ -81,9 +90,12 @@ class GoalIsStateOfMatter(_isOptional:Boolean = false) extends Goal {
 class GoalIsDifferentStateOfMatter(_isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
     // Check for material properties to be defined
-    if (!obj.propMaterial.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
+    if (!obj.get.propMaterial.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
@@ -91,14 +103,14 @@ class GoalIsDifferentStateOfMatter(_isOptional:Boolean = false) extends Goal {
     }
 
     // Get the state of matter of this object
-    val stateOfMatter = obj.propMaterial.get.stateOfMatter
+    val stateOfMatter = obj.get.propMaterial.get.stateOfMatter
 
     // Check against the state of matter of the previous object (stored in 'stateOfMatter' key)
     val lastStateOfMatter = gs.getKey("stateOfMatter")
     if (lastStateOfMatter.length == 0) GoalReturn.mkSubgoalUnsuccessful()     // key not present
 
     if (lastStateOfMatter == stateOfMatter) {                                 // key present
-      this.satisfiedWithObject = Some(obj)
+      this.satisfiedWithObject = obj
       return GoalReturn.mkSubgoalSuccess()
     }
 

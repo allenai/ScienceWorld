@@ -9,11 +9,14 @@ import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false, _isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
-    // Check for material properties to be defined
-    if (!obj.propDevice.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
 
-    if (obj.name != deviceName) return GoalReturn.mkSubgoalUnsuccessful()
+    // Check for material properties to be defined
+    if (!obj.get.propDevice.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
+
+    if (obj.get.name != deviceName) return GoalReturn.mkSubgoalUnsuccessful()
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (sameAsLastDevice) {
@@ -24,8 +27,8 @@ class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = fals
 
     // Check for state of matter to NOT be a specific value
     //println ("obj.propMaterial.get.stateOfMatter: " + obj.propMaterial.get.stateOfMatter)
-    if (obj.propDevice.get.isActivated == true) {
-      this.satisfiedWithObject = Some(obj)
+    if (obj.get.propDevice.get.isActivated == true) {
+      this.satisfiedWithObject = obj
       return GoalReturn.mkSubgoalSuccess()
     }
     return GoalReturn.mkSubgoalUnsuccessful()
@@ -37,11 +40,14 @@ class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = fals
 class GoalDeactivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false, _isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
-    // Check for material properties to be defined
-    if (!obj.propDevice.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
 
-    if (obj.name != deviceName) return GoalReturn.mkSubgoalUnsuccessful()
+    // Check for material properties to be defined
+    if (!obj.get.propDevice.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
+
+    if (obj.get.name != deviceName) return GoalReturn.mkSubgoalUnsuccessful()
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (sameAsLastDevice) {
@@ -52,8 +58,8 @@ class GoalDeactivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = fa
 
     // Check for state of matter to NOT be a specific value
     //println ("obj.propMaterial.get.stateOfMatter: " + obj.propMaterial.get.stateOfMatter)
-    if (obj.propDevice.get.isActivated == false) {
-      this.satisfiedWithObject = Some(obj)
+    if (obj.get.propDevice.get.isActivated == false) {
+      this.satisfiedWithObject = obj
       return GoalReturn.mkSubgoalSuccess()
     }
     return GoalReturn.mkSubgoalUnsuccessful()

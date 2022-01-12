@@ -14,9 +14,12 @@ import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 class GoalFocusOnLivingThing(_isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
-    if (obj.isInstanceOf[LivingThing]) {
-      this.satisfiedWithObject = Some(obj)
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    if (obj.get.isInstanceOf[LivingThing]) {
+      this.satisfiedWithObject = obj
       return GoalReturn.mkSubgoalSuccess()
     }
 
@@ -29,11 +32,14 @@ class GoalFocusOnLivingThing(_isOptional:Boolean = false) extends Goal {
 class GoalFocusOnNonlivingThing(_isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
-    if (!obj.isInstanceOf[LivingThing]) {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    if (!obj.get.isInstanceOf[LivingThing]) {
       // Also check that the thing that's being focused on is movable
-      if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable)) {
-        this.satisfiedWithObject = Some(obj)
+      if ((obj.get.propMoveable.isDefined) && (obj.get.propMoveable.get.isMovable)) {
+        this.satisfiedWithObject = obj
         return GoalReturn.mkSubgoalSuccess()
       } else {
         return GoalReturn.mkSubgoalUnsuccessful()     // Just go unsuccessful, not full on fail, if they focus on an unmovable object (for reward shaping)
@@ -51,9 +57,12 @@ class GoalFocusOnNonlivingThing(_isOptional:Boolean = false) extends Goal {
 class GoalFocusOnAnimal(_isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
-    if (obj.isInstanceOf[Animal]) {
-      this.satisfiedWithObject = Some(obj)
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    if (obj.get.isInstanceOf[Animal]) {
+      this.satisfiedWithObject = obj
       return GoalReturn.mkSubgoalSuccess()
     }
 
@@ -67,9 +76,12 @@ class GoalFocusOnAnimal(_isOptional:Boolean = false) extends Goal {
 class GoalFocusOnPlant(_isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
-    if (obj.isInstanceOf[Plant]) {
-      this.satisfiedWithObject = Some(obj)
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    if (obj.get.isInstanceOf[Plant]) {
+      this.satisfiedWithObject = obj
       return GoalReturn.mkSubgoalSuccess()
     }
 
@@ -92,26 +104,29 @@ class GoalFocusOnPlant(_isOptional:Boolean = false) extends Goal {
 class GoalObjectInDirectContainer(containerName:String = "", failureContainers:List[EnvObject] = List.empty[EnvObject], _isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
       if (gs.getLastSatisfiedObject().get != obj) return GoalReturn.mkSubgoalUnsuccessful()
     }
 
     // Check if the object is in one of the incorrect (failure) containers that would cause task failure
-    if (obj.getContainer().isDefined) {
+    if (obj.get.getContainer().isDefined) {
       for (failContainer <- failureContainers) {
-        if (obj.getContainer().get.name == failContainer.name) return GoalReturn.mkTaskFailure()
+        if (obj.get.getContainer().get.name == failContainer.name) return GoalReturn.mkTaskFailure()
       }
     }
 
     // Check that the object's container name is set to the desired container
-    if (obj.getContainer().isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
-    if (obj.getContainer().get.name.toLowerCase != containerName.toLowerCase) return GoalReturn.mkSubgoalUnsuccessful()
+    if (obj.get.getContainer().isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+    if (obj.get.getContainer().get.name.toLowerCase != containerName.toLowerCase) return GoalReturn.mkSubgoalUnsuccessful()
 
 
     // If we reach here, the condition is satisfied
-    this.satisfiedWithObject = Some(obj)
+    this.satisfiedWithObject = obj
     return GoalReturn.mkSubgoalSuccess()
   }
 
@@ -123,9 +138,12 @@ class GoalObjectInDirectContainer(containerName:String = "", failureContainers:L
 class GoalObjectInContainer(containerName:String = "", failureContainers:List[EnvObject] = List.empty[EnvObject], _isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     val MAX_STEPS:Int = 20
     var numSteps:Int = 0
+
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
@@ -133,10 +151,10 @@ class GoalObjectInContainer(containerName:String = "", failureContainers:List[En
     }
 
     // Check if the object is in one of the incorrect (failure) containers that would cause task failure
-    if (obj.getContainer().isDefined) {
+    if (obj.get.getContainer().isDefined) {
       for (failContainer <- failureContainers) {
         // First, start at the direct container
-        var objContainer:Option[EnvObject] = obj.getContainer()
+        var objContainer:Option[EnvObject] = obj.get.getContainer()
         // Also check recursive containers by recusing down to object tree root
         numSteps = 0
         while (objContainer.isDefined && (numSteps < MAX_STEPS)) {
@@ -150,12 +168,12 @@ class GoalObjectInContainer(containerName:String = "", failureContainers:List[En
     }
 
     // Check that the object's container name is set to the desired container
-    var container:Option[EnvObject] = obj.getContainer()
+    var container:Option[EnvObject] = obj.get.getContainer()
     numSteps = 0
     while (container.isDefined && (numSteps < MAX_STEPS)) {
       // Check to see if this container is the query container
       if (container.get.name.toLowerCase == containerName.toLowerCase()) {
-        this.satisfiedWithObject = Some(obj)
+        this.satisfiedWithObject = obj
         return GoalReturn.mkSubgoalSuccess()
       }
 
@@ -173,9 +191,12 @@ class GoalObjectInContainer(containerName:String = "", failureContainers:List[En
 class GoalObjectInContainerByName(containerName:String = "", failureContainers:List[String] = List.empty[String], _isOptional:Boolean = false) extends Goal {
   this.isOptional = _isOptional
 
-  override def isGoalConditionSatisfied(obj:EnvObject, isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     val MAX_STEPS:Int = 20
     var numSteps:Int = 0
+
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
@@ -183,10 +204,10 @@ class GoalObjectInContainerByName(containerName:String = "", failureContainers:L
     }
 
     // Check if the object is in one of the incorrect (failure) containers that would cause task failure
-    if (obj.getContainer().isDefined) {
+    if (obj.get.getContainer().isDefined) {
       for (failContainer <- failureContainers) {
         // First, start at the direct container
-        var objContainer:Option[EnvObject] = obj.getContainer()
+        var objContainer:Option[EnvObject] = obj.get.getContainer()
         // Also check recursive containers by recusing down to object tree root
         numSteps = 0
         while (objContainer.isDefined && (numSteps < MAX_STEPS)) {
@@ -202,12 +223,12 @@ class GoalObjectInContainerByName(containerName:String = "", failureContainers:L
     // Check that the object's container name is set to the desired container
 
 
-    var container:Option[EnvObject] = obj.getContainer()
+    var container:Option[EnvObject] = obj.get.getContainer()
     numSteps = 0
     while (container.isDefined && (numSteps < MAX_STEPS)) {
       // Check to see if this container is the query container
       if (container.get.name.toLowerCase == containerName.toLowerCase()) {
-        this.satisfiedWithObject = Some(obj)
+        this.satisfiedWithObject = obj
         return GoalReturn.mkSubgoalSuccess()
       }
 
