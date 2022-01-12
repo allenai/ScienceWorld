@@ -31,7 +31,7 @@ class GoalMoveToLocation(locationToBeIn:String, _isOptional:Boolean = false, des
 }
 
 // Success when an agent moves to a different location than it started in
-class GoalMoveToNewLocation(_isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalMoveToNewLocation(_isOptional:Boolean = false, unlessInLocation:String = "", description:String = "") extends Goal(description) {
   var startingLocation:Option[String] = None
   this.isOptional = _isOptional
 
@@ -43,6 +43,9 @@ class GoalMoveToNewLocation(_isOptional:Boolean = false, description:String = ""
 
     // Get agent location
     val agentLocation = agent.getContainer().get.name
+
+    // Sometimes the agent might initialize in the correct location.  Have a special case for this, so the agent doesn't get rewarded for moving away.
+    if (agentLocation == unlessInLocation) return GoalReturn.mkSubgoalSuccess()
 
     // First initialization: Keep track of starting location
     if (startingLocation.isEmpty) {

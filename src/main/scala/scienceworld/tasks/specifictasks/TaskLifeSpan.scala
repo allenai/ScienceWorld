@@ -9,7 +9,7 @@ import scienceworld.objects.substance.{Soap, SodiumChloride}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.GoalFind
+import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalMoveToLocation, GoalMoveToNewLocation}
 import scienceworld.tasks.specifictasks.TaskLifeSpan._
 
 import scala.collection.mutable.ArrayBuffer
@@ -112,10 +112,15 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
 
 
     val gSequence = new ArrayBuffer[Goal]
+    val gSequenceUnordered = new ArrayBuffer[Goal]
+
     var description:String = "<empty>"
     if (mode == MODE_LIFESPAN_LONGEST) {
 
       gSequence.append(new GoalFind(objectName = animalLong.get, failIfWrong = true))
+
+      gSequenceUnordered.append( new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = animalLocation.get, description = "Move to a new location (unless starting in task location)") )            // Move to any new location
+      gSequenceUnordered.append( new GoalMoveToLocation(animalLocation.get, _isOptional = true, description = "Move to the location asked by the task") )
 
       description = "Your task is to find the animal with the longest life span.  The animals are in the '" + animalLocation.get + "' location.  Focus on the animal with the longest life span."
 
@@ -123,12 +128,18 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
 
       gSequence.append(new GoalFind(objectName = animalShort.get, failIfWrong = true))
 
+      gSequenceUnordered.append( new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = animalLocation.get, description = "Move to a new location (unless starting in task location)") )            // Move to any new location
+      gSequenceUnordered.append( new GoalMoveToLocation(animalLocation.get, _isOptional = true, description = "Move to the location asked by the task") )
+
       description = "Your task is to find the animal with the shortest life span.  The animals are in the '" + animalLocation.get + "' location.  Focus on the animal with the shortest life span."
 
     } else if (mode == MODE_LIFESPAN_LONGTHENSHORT) {
 
       gSequence.append(new GoalFind(objectName = animalLong.get, failIfWrong = true, _defocusOnSuccess = true))
       gSequence.append(new GoalFind(objectName = animalShort.get, failIfWrong = true))
+
+      gSequenceUnordered.append( new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = animalLocation.get, description = "Move to a new location (unless starting in task location)") )            // Move to any new location
+      gSequenceUnordered.append( new GoalMoveToLocation(animalLocation.get, _isOptional = true, description = "Move to the location asked by the task") )
 
       description = "Your task is to find the animal with the longest life span, then the shortest life span. First, focus on the animal with the longest life span.  Then, focus on the animal with the shortest life span. The animals are in the '" + animalLocation.get + "' location. "
 
@@ -138,7 +149,7 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
 
     val taskLabel = taskName + "-variation" + combinationNum
     //val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName + " in the " + answerBoxLocation + "."
-    val goalSequence = new GoalSequence(gSequence.toArray)
+    val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
     val task = new Task(taskName, description, goalSequence)
 

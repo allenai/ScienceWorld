@@ -438,7 +438,7 @@ object RoomMaker {
     outside.addObject( new Axe() )
     outside.addObject( new Fountain() )
 
-    outside.addObject( new Animal() )
+    //outside.addObject( new Animal() )
 
     return outside
   }
