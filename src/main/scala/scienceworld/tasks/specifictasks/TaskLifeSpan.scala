@@ -117,7 +117,7 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
     var description:String = "<empty>"
     if (mode == MODE_LIFESPAN_LONGEST) {
 
-      gSequence.append(new GoalFind(objectName = animalLong.get, failIfWrong = true))
+      gSequence.append(new GoalFind(objectName = animalLong.get, failIfWrong = true, description = "focus on animal with longest life span"))
 
       gSequenceUnordered.append( new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = animalLocation.get, description = "Move to a new location (unless starting in task location)") )            // Move to any new location
       gSequenceUnordered.append( new GoalMoveToLocation(animalLocation.get, _isOptional = true, description = "Move to the location asked by the task") )
@@ -126,7 +126,7 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
 
     } else if (mode == MODE_LIFESPAN_SHORTEST) {
 
-      gSequence.append(new GoalFind(objectName = animalShort.get, failIfWrong = true))
+      gSequence.append(new GoalFind(objectName = animalShort.get, failIfWrong = true, description = "focus on animal with shortest life span"))
 
       gSequenceUnordered.append( new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = animalLocation.get, description = "Move to a new location (unless starting in task location)") )            // Move to any new location
       gSequenceUnordered.append( new GoalMoveToLocation(animalLocation.get, _isOptional = true, description = "Move to the location asked by the task") )
@@ -135,8 +135,8 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
 
     } else if (mode == MODE_LIFESPAN_LONGTHENSHORT) {
 
-      gSequence.append(new GoalFind(objectName = animalLong.get, failIfWrong = true, _defocusOnSuccess = true))
-      gSequence.append(new GoalFind(objectName = animalShort.get, failIfWrong = true))
+      gSequence.append(new GoalFind(objectName = animalLong.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on animal with longest life span"))
+      gSequence.append(new GoalFind(objectName = animalShort.get, failIfWrong = true, description = "focus on animal with shortest life span"))
 
       gSequenceUnordered.append( new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = animalLocation.get, description = "Move to a new location (unless starting in task location)") )            // Move to any new location
       gSequenceUnordered.append( new GoalMoveToLocation(animalLocation.get, _isOptional = true, description = "Move to the location asked by the task") )

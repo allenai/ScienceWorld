@@ -13,7 +13,7 @@ import scienceworld.tasks.specifictasks.TaskIdentifyLifeStages2._
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
-
+// TODO: CHANGE TO PLANTS INSTEAD OF ANIMALS?
 class TaskIdentifyLifeStages2(val mode:String = MODE_LIFESTAGES) extends TaskParametric {
   val taskName = "task-7-" + mode.replaceAll(" ", "-")
 

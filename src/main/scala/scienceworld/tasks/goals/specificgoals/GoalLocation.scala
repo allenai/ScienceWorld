@@ -198,3 +198,33 @@ class GoalObjectsInSingleContainer(objectNames:Array[String], _isOptional:Boolea
   }
 
 }
+
+
+// Success when an agent stays in a specific location for a period of time
+class GoalStayInLocation(locationToBeIn:String, minSteps:Int = 0, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+  this.isOptional = _isOptional
+  var numTicksInLocation:Int = 0
+
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // NOTE: Focus object not required
+
+    // If agent is not in a container, do not continue evaluation
+    if (agent.getContainer().isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    // If the agent is in the correct location
+    val agentLocation = agent.getContainer().get.name
+    if (agentLocation == locationToBeIn) {
+      // Keep track of how long in this location
+      numTicksInLocation += 1
+      // If in location past the threshold, then success
+      if (numTicksInLocation >= minSteps) return GoalReturn.mkSubgoalSuccess()
+    } else {
+      // Reset location count
+      numTicksInLocation = 0
+    }
+
+    // Otherwise
+    return GoalReturn.mkSubgoalUnsuccessful()
+  }
+
+}
