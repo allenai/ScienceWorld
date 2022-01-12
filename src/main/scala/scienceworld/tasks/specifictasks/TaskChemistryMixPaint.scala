@@ -8,7 +8,7 @@ import scienceworld.objects.substance.{Soap, SodiumChloride}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.GoalFind
+import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalInRoomWithObject, GoalObjectsInSingleContainer}
 import scienceworld.tasks.specifictasks.TaskChemistryMixPaint._
 
 import scala.collection.mutable.ArrayBuffer
@@ -47,33 +47,45 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
 
   // Green
   paintNames.append(Array(
+    new TaskValueStr(key = "inputChemicalsSecondary", value = "blue paint,yellow paint"),
+    new TaskValueStr(key = "inputChemicalsTertiary", value = "green paint,blue paint"),
     new TaskValueStr(key = "secondaryColor", value = "green paint"),
     new TaskValueStr(key = "tertiaryColor", value = "green-blue paint")
   ))
 
   paintNames.append(Array(
+    new TaskValueStr(key = "inputChemicalsSecondary", value = "blue paint,yellow paint"),
+    new TaskValueStr(key = "inputChemicalsTertiary", value = "green paint,yellow paint"),
     new TaskValueStr(key = "secondaryColor", value = "green paint"),
     new TaskValueStr(key = "tertiaryColor", value = "yellow-green paint")
   ))
 
   // Orange
   paintNames.append(Array(
+    new TaskValueStr(key = "inputChemicalsSecondary", value = "red paint,yellow paint"),
+    new TaskValueStr(key = "inputChemicalsTertiary", value = "orange paint,red paint"),
     new TaskValueStr(key = "secondaryColor", value = "orange paint"),
     new TaskValueStr(key = "tertiaryColor", value = "red-orange paint")
   ))
 
   paintNames.append(Array(
+    new TaskValueStr(key = "inputChemicalsSecondary", value = "red paint,yellow paint"),
+    new TaskValueStr(key = "inputChemicalsTertiary", value = "orange paint,yellow paint"),
     new TaskValueStr(key = "secondaryColor", value = "orange paint"),
     new TaskValueStr(key = "tertiaryColor", value = "yellow-orange paint")
   ))
 
   // Violet
   paintNames.append(Array(
+    new TaskValueStr(key = "inputChemicalsSecondary", value = "red paint,blue paint"),
+    new TaskValueStr(key = "inputChemicalsTertiary", value = "violet paint,red paint"),
     new TaskValueStr(key = "secondaryColor", value = "violet paint"),
     new TaskValueStr(key = "tertiaryColor", value = "violet-red paint")
   ))
 
   paintNames.append(Array(
+    new TaskValueStr(key = "inputChemicalsSecondary", value = "red paint,blue paint"),
+    new TaskValueStr(key = "inputChemicalsTertiary", value = "violet paint,blue paint"),
     new TaskValueStr(key = "secondaryColor", value = "violet paint"),
     new TaskValueStr(key = "tertiaryColor", value = "blue-violet paint")
   ))
@@ -130,21 +142,42 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
     if (secondaryColor.isEmpty) throw new RuntimeException("ERROR: Failed to find secondary color in task setup.")
     val tertiaryColor = this.getTaskValueStr(modifiers, "tertiaryColor")
     if (tertiaryColor.isEmpty) throw new RuntimeException("ERROR: Failed to find tertiary color in task setup.")
+    val inputColorsSecondary = this.getTaskValueStr(modifiers, "inputChemicalsSecondary").get.split(",")
+    val inputColorsTertiary = this.getTaskValueStr(modifiers, "inputChemicalsTertiary").get.split(",")
 
 
     var subTask = ""
     val gSequence = new ArrayBuffer[Goal]
+    val gSequenceUnordered = new ArrayBuffer[Goal]
+
     var description:String = "<empty>"
     if (mode == MODE_CHEMISTRY_MIX_PAINT_SECONDARY) {
 
-      gSequence.append(new GoalFind(objectName = secondaryColor.get, failIfWrong = true))
+      gSequence.append(new GoalFind(objectName = secondaryColor.get, failIfWrong = true, description = "focus on the mixing result (" + secondaryColor.get + ")"))
+
+      for (inputChemical <- inputColorsSecondary) {
+        gSequenceUnordered.append(new GoalInRoomWithObject(objectName = inputChemical, _isOptional = true, description = "be in same location as " + inputChemical))
+      }
+      gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = inputColorsSecondary, _isOptional = true, description = "have all ingredients alone in a single container"))
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = secondaryColor.get, _isOptional = true, description = "be in same location as " + secondaryColor.get))
 
       description = "Your task is to use chemistry to create " + secondaryColor.get + ". When you are done, focus on the " + secondaryColor.get + "."
 
     } else if (mode == MODE_CHEMISTRY_MIX_PAINT_TERTIARY) {
 
-      gSequence.append(new GoalFind(objectName = secondaryColor.get, failIfWrong = true, _defocusOnSuccess = true))
-      gSequence.append(new GoalFind(objectName = tertiaryColor.get, failIfWrong = true))
+      gSequence.append(new GoalFind(objectName = secondaryColor.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on the intermediate mixing result (" + secondaryColor.get + ")"))
+      gSequence.append(new GoalFind(objectName = tertiaryColor.get, failIfWrong = true, description = "focus on the final mixing result (" + tertiaryColor.get + ")"))
+
+      // Secondary
+      for (inputChemical <- inputColorsSecondary) {
+        gSequenceUnordered.append(new GoalInRoomWithObject(objectName = inputChemical, _isOptional = true, description = "be in same location as " + inputChemical))
+      }
+      gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = inputColorsSecondary, _isOptional = true, description = "have all ingredients (secondary) alone in a single container"))
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = secondaryColor.get, _isOptional = true, description = "be in same location as " + secondaryColor.get))
+      // Tertiary
+      gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = inputColorsTertiary, _isOptional = true, description = "have all ingredients (tertiary) alone in a single container"))
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = tertiaryColor.get, _isOptional = true, description = "be in same location as " + tertiaryColor.get))
+
 
       description = "Your task is to use chemistry to create " + tertiaryColor.get + ". When you are part-way done, focus on the intermediate (secondary color) paint you created.  When you are completely done, focus on the " + secondaryColor.get + "."
 
@@ -154,7 +187,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
 
     val taskLabel = taskName + "-variation" + combinationNum
     //val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName + " in the " + answerBoxLocation + "."
-    val goalSequence = new GoalSequence(gSequence.toArray)
+    val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
     val task = new Task(taskName, description, goalSequence)
 
