@@ -7,7 +7,7 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 
 // Find an object with a specific name
-class GoalFind(objectName:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false, _isOptional:Boolean = false) extends Goal {
+class GoalFind(objectName:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
   this.defocusOnSuccess = _defocusOnSuccess
   this.isOptional = _isOptional
 
@@ -35,7 +35,7 @@ class GoalFind(objectName:String = "", failIfWrong:Boolean = true, _defocusOnSuc
 }
 
 
-class GoalFindLivingThingStage(livingThingType:String = "", lifeStage:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false, _isOptional:Boolean = false) extends Goal {
+class GoalFindLivingThingStage(livingThingType:String = "", lifeStage:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
   this.defocusOnSuccess = _defocusOnSuccess
   this.isOptional = _isOptional
 
@@ -79,7 +79,7 @@ class GoalFindLivingThingStage(livingThingType:String = "", lifeStage:String = "
 }
 
 
-class GoalFindInclinedPlane(surfaceName:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false, _isOptional:Boolean = false) extends Goal {
+class GoalFindInclinedPlane(surfaceName:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
   this.defocusOnSuccess = _defocusOnSuccess
   this.isOptional = _isOptional
 
@@ -113,7 +113,7 @@ class GoalFindInclinedPlane(surfaceName:String = "", failIfWrong:Boolean = true,
 
 }
 
-class GoalFindInclinedPlaneNamed(additionalName:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false, _isOptional:Boolean = false) extends Goal {
+class GoalFindInclinedPlaneNamed(additionalName:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
   this.defocusOnSuccess = _defocusOnSuccess
   this.isOptional = _isOptional
 

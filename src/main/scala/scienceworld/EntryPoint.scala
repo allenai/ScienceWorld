@@ -120,6 +120,8 @@ object EntryPoint {
         println("Possible actions: " + agentInterface.getPossibleActionsWithIDsJSON() )
         println("Valid actions: " + agentInterface.getValidActionObjectCombinationsJSON() )
 
+        println("Goal sequence progress: \n" + agentInterface.getGoalProgressStr() )
+
         //println("Possible actions:\n\t" + actionHandler.getActionExamplesPlainText().mkString("\n\t"))
         //println("Possible Combinations:\n\t" + agentInterface.getPossibleActionObjectCombinations().mkString("\n\t") )
 
@@ -153,7 +155,6 @@ object EntryPoint {
             for (i <- 0 until validActions.length) {
               println (i + ": \t" + validActions(i).toString())
             }
-
           } else {
             validInput = true
           }

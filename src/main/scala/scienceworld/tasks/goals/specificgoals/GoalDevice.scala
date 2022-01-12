@@ -6,7 +6,7 @@ import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 
 
 
-class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false, _isOptional:Boolean = false) extends Goal {
+class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -37,7 +37,7 @@ class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = fals
 }
 
 
-class GoalDeactivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false, _isOptional:Boolean = false) extends Goal {
+class GoalDeactivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {

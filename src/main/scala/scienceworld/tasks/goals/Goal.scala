@@ -7,7 +7,7 @@ import scala.collection.mutable
 import scala.util.control.Breaks._
 
 // Storage class for a single goal
-trait Goal {
+class Goal(val description:String) {
   var satisfiedWithObject:Option[EnvObject] = None
   var defocusOnSuccess:Boolean = false
   var isOptional:Boolean = false
@@ -269,6 +269,42 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
     }
 
   }
+
+  /*
+   * String methods
+   */
+  def getProgressString():String = {
+    val os = new StringBuilder()
+
+    os.append("-" * 100 + "\n")
+    os.append("Sequential Subgoals:\n")
+    os.append("-" * 100 + "\n")
+    for (i <- 0 until this.subgoals.length) {
+      val subgoalDesc = this.subgoals(i).description
+      val subgoalClass = this.subgoals(i).getClass.toString.split("\\.").last
+      val passed = if (i<this.curSubgoalIdx) true else false
+
+      os.append(i + "\t" + passed + "\t" + subgoalClass.formatted("%30s") + "\t" + subgoalDesc + "\n")
+    }
+
+    os.append("-" * 100 + "\n")
+    os.append("Unordered and Optional Subgoals:\n")
+    os.append("-" * 100 + "\n")
+    for (i <- 0 until this.optionalUnorderedSubgoalsCompleted.length) {
+      val subgoalDesc = this.optionalUnorderedSubgoals(i).description
+      val subgoalClass = this.optionalUnorderedSubgoals(i).getClass.toString.split("\\.").last
+      val passed = this.optionalUnorderedSubgoalsCompleted(i)
+
+      os.append(i + "\t" + passed + "\t" + subgoalClass.formatted("%30s") + "\t" + subgoalDesc + "\n")
+    }
+
+    os.append("-" * 100 + "\n")
+
+
+    // Return
+    os.toString()
+  }
+
 
 }
 

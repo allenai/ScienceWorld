@@ -359,6 +359,13 @@ class AgentInterface(universe:EnvObject, agent:Agent, task:Task, simplificationS
   }
 
 
+  /*
+   * Goal sequence monitoring
+   */
+  def getGoalProgressStr():String = {
+    return this.task.goalSequence.getProgressString()
+  }
+
 
   /*
    * Error Handling
