@@ -20,13 +20,16 @@ trait Goal {
 
 
 // Storage class for a sequence of goals
-class GoalSequence(val subgoals:Array[Goal]) {
+class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goal] = Array.empty[Goal]) {
 
   var curSubgoalIdx:Int = 0
   var failed:Boolean = false
   var lastSatisfiedWithObject:Option[EnvObject] = None
   val subgoalsCompleted = Array.fill[Boolean](subgoals.length)(false)
   val storedValues = mutable.Map[String, String]()
+
+  val optionalUnorderedSubgoalsCompleted = Array.fill[Boolean](optionalUnorderedSubgoals.length)(false)
+
   this.reset()
 
   /*
@@ -78,10 +81,31 @@ class GoalSequence(val subgoals:Array[Goal]) {
 
   // Generate a normalized score (0-1) representing progress on this sequence of goals
   def score():Double = {
+    val MAX_SCORE = 1.0f
+
     // If the task has failed, return a negative score
     if (this.isFailed()) return -1.0f
+
     // If the task has not failed, return normally calculated progress score
-    return curSubgoalIdx.toDouble / subgoals.length.toDouble
+
+    val scoreOrdered = curSubgoalIdx.toDouble / subgoals.length.toDouble
+
+    // Each unordered subgoal is worth a small amount --
+    val scoreUnorderedUnit = (1/(subgoals.length.toDouble + 1)) / this.optionalUnorderedSubgoals.length.toDouble
+    var scoreUnordered:Double = 0.0f
+    for (i <- 0 until this.optionalUnorderedSubgoalsCompleted.length) {
+      if (this.optionalUnorderedSubgoalsCompleted(i) == true) {
+        scoreUnordered += scoreUnorderedUnit
+      }
+    }
+
+    // Calculate total score
+    var scoreTotal = scoreOrdered + scoreUnordered
+    if (scoreTotal > MAX_SCORE) scoreTotal = MAX_SCORE
+
+    println("Score: " + scoreTotal.formatted("%3.3f") + "    ordered: " + scoreOrdered.formatted("%3.3f") + "    unorderd: " + scoreUnordered.formatted("%3.3f"))
+
+    return scoreTotal
   }
 
   // Returns true if all the subgoals in this goal sequence are completed
@@ -101,16 +125,70 @@ class GoalSequence(val subgoals:Array[Goal]) {
   }
 
   def reset() {
+    // Reset ordered subgoals
     this.curSubgoalIdx = 0
     this.lastSatisfiedWithObject = None
+
+    // Reset unordered subgoals
+    for (i <- 0 until this.optionalUnorderedSubgoalsCompleted.length) {
+      this.optionalUnorderedSubgoalsCompleted(i) = false
+    }
+
+    // Reset failure
     this.failed = false
   }
+
+
+
 
   /*
    * Tick
    */
-  // Checks the current subgoal for completeness.  If completed, it increments the subgoals.
+
   def tick(objMonitor: ObjMonitor, agent:Agent): Unit = {
+    this.tickOrderedSubgoals(objMonitor, agent)
+    this.tickUnorderedSubgoals(objMonitor, agent)
+  }
+
+
+  /*
+   * Evaluating subgoal success
+   */
+
+  // Checks the unordered subgoals for completion
+  def tickUnorderedSubgoals(objMonitor: ObjMonitor, agent:Agent): Unit = {
+    var numCompletedThisCycle = -1
+
+    while (numCompletedThisCycle != 0) {
+      numCompletedThisCycle = 0
+
+      val numOptionalUnorderedSubgoals = optionalUnorderedSubgoals.length
+      for (i <- 0 until numOptionalUnorderedSubgoals) {
+        // If this subgoal has not been completed
+        if (optionalUnorderedSubgoalsCompleted(i) == false) {
+
+          // Evaluate whether the subgoal has been completed
+          val subgoal = optionalUnorderedSubgoals(i)
+          breakable {
+            for (obj <- objMonitor.getMonitoredObjects()) {
+              val goalReturn = subgoal.isGoalConditionSatisfied(obj, isFirstGoal = false, gs = this, agent)
+              if (goalReturn.subgoalSuccess) {
+                optionalUnorderedSubgoalsCompleted(i) = true
+                numCompletedThisCycle += 1
+                break
+              }
+            }
+          }
+
+        }
+      }
+
+    }
+
+  }
+
+  // Checks the current subgoal for completeness.  If completed, it increments the subgoals.
+  def tickOrderedSubgoals(objMonitor: ObjMonitor, agent:Agent): Unit = {
     var firstSubgoalIdx = -1
 
     while (true) {

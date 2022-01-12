@@ -116,13 +116,9 @@ object EntryPoint {
         println("Possible referents: " + referents.mkString(", "))
 
         val validActions = agentInterface.getValidActionObjectCombinations().sorted.toList
-        val validActionsFiltered = new ArrayBuffer[String]
-        for (validAction <- validActions) {
-          if (validAction.startsWith("open") || validAction.startsWith("close")) validActionsFiltered.append(validAction)
-        }
         println("Possible actions: " + validActions.mkString(", "))
-        println("Possible actions: " + validActionsFiltered.mkString(", "))
-
+        println("Possible actions: " + agentInterface.getPossibleActionsWithIDsJSON() )
+        println("Valid actions: " + agentInterface.getValidActionObjectCombinationsJSON() )
 
         //println("Possible actions:\n\t" + actionHandler.getActionExamplesPlainText().mkString("\n\t"))
         //println("Possible Combinations:\n\t" + agentInterface.getPossibleActionObjectCombinations().mkString("\n\t") )
