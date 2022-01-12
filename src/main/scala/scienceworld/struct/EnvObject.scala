@@ -147,7 +147,10 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
 
   def getContainer():Option[EnvObject] = this.inContainer
 
-  def getContainedObjects():Set[EnvObject] = this.containedObjects.toSet
+  def getContainedObjects(includeHidden:Boolean = true):Set[EnvObject] = {
+    if (includeHidden) return this.containedObjects.toSet
+    return this.containedObjects.filter(!_.isHidden()).toSet
+  }
 
   def getContainedObjectsRecursive():Set[EnvObject] = {
     var out = mutable.Set[EnvObject]()

@@ -57,12 +57,13 @@ object EntryPoint {
     //val taskName = taskMaker.getTaskList()(0)
 
     //val taskName = taskMaker.getTaskList()(5)
-    val taskName = taskMaker.getTaskList()(13)
+    //val taskName = taskMaker.getTaskList()(13)
+    val taskName = taskMaker.getTaskList()(17)
 
     val simplificationStr = "teleportAction,noElectricalAction,openDoors"
 
     // Setup task
-    val (task_, taskErrStr) = taskMaker.doTaskSetup(taskName, 5, universe, agent)
+    val (task_, taskErrStr) = taskMaker.doTaskSetup(taskName, 1, universe, agent)
     var task:Option[Task] = None
     if (task_.isDefined) {
       task = task_

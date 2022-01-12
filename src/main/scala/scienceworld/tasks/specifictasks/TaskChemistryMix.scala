@@ -9,7 +9,7 @@ import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalLifeStage}
+import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalInRoomWithObject, GoalLifeStage, GoalObjectsInSingleContainer}
 import scienceworld.tasks.specifictasks.TaskChemistryMix.MODE_CHEMISTRY_MIX
 import scienceworld.tasks.specifictasks.TaskFindLivingNonLiving.MODE_LIVING
 
@@ -29,6 +29,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     // Other is water
     baseChemicals.append( Array(
       new TaskObject(salt.name, Some(salt), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "inputChemicals", value = Array(salt.name, "water").mkString(",")),
       new TaskValueStr(key = "result", value = "salt water")
     ))
 
@@ -36,6 +37,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     // Other is water
     baseChemicals.append( Array(
       new TaskObject(soap.name, Some(soap), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "inputChemicals", value = Array(soap.name, "water").mkString(",")),
       new TaskValueStr(key = "result", value = "soapy water")
     ))
 
@@ -90,12 +92,21 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     // Step 1: Find seed type
     val resultChemical = this.getTaskValueStr(modifiers, key = "result")
     if (resultChemical.isEmpty) throw new RuntimeException("ERROR: Failed to find resultant chemical in task setup.")
+    val inputChemicals = this.getTaskValueStr(modifiers, key = "inputChemicals").get.split(",")
 
     var subTask = ""
     val gSequence = new ArrayBuffer[Goal]
+    val gSequenceUnordered = new ArrayBuffer[Goal]
+
     var description:String = "<empty>"
     if (mode == MODE_CHEMISTRY_MIX) {
-      gSequence.append( new GoalFind(objectName = resultChemical.get, failIfWrong = true) )
+      gSequence.append( new GoalFind(objectName = resultChemical.get, failIfWrong = true, description = "focus on result chemical (" + resultChemical.get + ")") )
+      for (inputChemical <- inputChemicals) {
+        gSequenceUnordered.append(new GoalInRoomWithObject(objectName = inputChemical, _isOptional = true, description = "be in same location as " + inputChemical))
+      }
+      gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = inputChemicals, _isOptional = true, description = "have all ingredients alone in a single container"))
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = resultChemical.get, _isOptional = true, description = "be in same location as " + resultChemical))
+
 
       description = "Your task is to use chemistry to create the substance '" + resultChemical.get + "'. When you are done, focus on the " + resultChemical.get + "."
 
@@ -105,7 +116,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
 
     val taskLabel = taskName + "-variation" + combinationNum
     //val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName + " in the " + answerBoxLocation + "."
-    val goalSequence = new GoalSequence(gSequence.toArray)
+    val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
     val task = new Task(taskName, description, goalSequence)
 
