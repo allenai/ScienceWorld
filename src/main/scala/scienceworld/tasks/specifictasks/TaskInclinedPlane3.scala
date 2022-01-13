@@ -8,7 +8,7 @@ import scienceworld.properties.{UnknownFrictionMaterialA, UnknownFrictionMateria
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalFindInclinedPlane, GoalFindInclinedPlaneNamed}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalFindInclinedPlane, GoalFindInclinedPlaneNamed, GoalMoveToLocation, GoalMoveToNewLocation, GoalSpecificObjectInDirectContainer}
 import TaskInclinedPlane3._
 
 import scala.collection.mutable.ArrayBuffer
@@ -29,7 +29,9 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
     // Make a set of inclined plane objects of various surfaces
     val inclinedPlaneObjects1 = TaskInclinedPlane3.mkInclinedPlaneSet()
     for (inclinedPlane <- inclinedPlaneObjects1) {
-      inclinedPlanes1.append( Array(new TaskObject(inclinedPlane.name, Some(inclinedPlane), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true)) )
+      inclinedPlanes1.append( Array(new TaskObject(inclinedPlane.name, Some(inclinedPlane), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true),
+        new TaskValueStr(key = "planeLocation", value = location) ) )
+
     }
 
     val inclinedPlaneObjects2 = TaskInclinedPlane3.mkInclinedPlaneSet()
@@ -43,20 +45,25 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
   val masses = new ArrayBuffer[ Array[TaskModifier] ]()
   for (location <- locations) {
     val block1 = new WoodBlock()
-    masses.append( Array(new TaskObject(block1.name, Some(block1), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true) ))
+    masses.append( Array(new TaskObject(block1.name, Some(block1), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true),
+      new TaskValueStr(key = "blockName", value = block1.name) ))
 
     val block2 = new SteelBlock()
-    masses.append( Array(new TaskObject(block2.name, Some(block2), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true) ))
+    masses.append( Array(new TaskObject(block2.name, Some(block2), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true),
+      new TaskValueStr(key = "blockName", value = block2.name) ))
 
     val brick = new Brick()
-    masses.append( Array(new TaskObject(brick.name, Some(brick), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true) ))
+    masses.append( Array(new TaskObject(brick.name, Some(brick), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true),
+      new TaskValueStr(key = "blockName", value = brick.name) ))
   }
 
   // Variation 4: Time measurement device
   val timeMeasurementDevice = new ArrayBuffer[ Array[TaskModifier] ]()
   for (location <- locations) {
     val stopwatch = new StopWatch()
-    timeMeasurementDevice.append( Array(new TaskObject(stopwatch.name, Some(stopwatch), roomToGenerateIn = location, Array.empty[String], generateNear = 0) ))
+    timeMeasurementDevice.append( Array(new TaskObject(stopwatch.name, Some(stopwatch), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+                                        new TaskValueStr(key = "timeDeviceName", value = stopwatch.name),
+                                        new TaskValueStr(key = "timeLocation", value = location) ))
   }
 
 
@@ -118,7 +125,16 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
     val modeSteepShallow = this.getTaskValueStr(modifiers, "mode")
     if (modeSteepShallow.isEmpty) throw new RuntimeException("ERROR: Failed to find inclined plane friction task mode. ")
 
+    val planeName1 = this.getTaskValueStr(modifiers, "planeName1")
+    val planeName2 = this.getTaskValueStr(modifiers, "planeName2")
+    val planeLocation = this.getTaskValueStr(modifiers, "planeLocation")
+    val blockName = this.getTaskValueStr(modifiers, "blockName")
+    val timeDeviceName = this.getTaskValueStr(modifiers, key = "timeDeviceName")
+
+
     val gSequence = new ArrayBuffer[Goal]
+    val gSequenceUnordered = new ArrayBuffer[Goal]
+
     var description:String = "<empty>"
     if (mode == MODE_ANGLE) {
 
@@ -130,6 +146,12 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
         gSequence.append(new GoalFindInclinedPlaneNamed(additionalName = shallowestAngle.get, failIfWrong = true, _defocusOnSuccess = true))
       }
 
+      gSequenceUnordered.append( new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = planeLocation.get, description = "move to a new location (unless starting in task location)") )            // Move to any new location
+      gSequenceUnordered.append( new GoalMoveToLocation(planeLocation.get, _isOptional = true, description = "move to the location asked by the task") )
+      gSequenceUnordered.append( new GoalSpecificObjectInDirectContainer(containerName = planeName1.get, validObjectNames = Array(blockName.get), description = "move block to plane 1") )
+      gSequenceUnordered.append( new GoalSpecificObjectInDirectContainer(containerName = planeName2.get, validObjectNames = Array(blockName.get), description = "move block to plane 2") )
+      gSequenceUnordered.append( new GoalActivateDeviceWithName(deviceName = timeDeviceName.get, description = "activate time keeping device") )
+
       val planeNames = Random.shuffle( List(steepestAngle.get, shallowestAngle.get) )
       description = "Your task is to determine which of the two inclined planes (" + planeNames.mkString(", ") + ") has the " + modeSteepShallow.get + " angle. After completing your experiment, focus on the inclined plane with the " + modeSteepShallow.get + " angle."
 
@@ -140,7 +162,7 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
 
     val taskLabel = taskName + "-variation" + combinationNum
     //val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName + " in the " + answerBoxLocation + "."
-    val goalSequence = new GoalSequence(gSequence.toArray)
+    val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
     val task = new Task(taskName, description, goalSequence)
 
@@ -212,6 +234,9 @@ object TaskInclinedPlane3 {
               }
             }
           }
+          case _ => {
+            // Do nothing
+          }
         }
       }
 
@@ -257,6 +282,7 @@ object TaskInclinedPlane3 {
         // Then, assemble the task modifiers
         val taskModifiers = allModifiers ++
           Array(new TaskValueStr(key = "steepestAngle", steepestAngleName), new TaskValueStr(key = "shallowestAngle", shallowestAngleName)) ++
+          Array(new TaskValueStr(key = "planeName1", inclinedPlanes(0).getDescriptName()), new TaskValueStr(key = "planeName2", inclinedPlanes(1).getDescriptName())) ++
           Array(modifierModeKey)
 
 
