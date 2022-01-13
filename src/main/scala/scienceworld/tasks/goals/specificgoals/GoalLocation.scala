@@ -228,3 +228,85 @@ class GoalStayInLocation(locationToBeIn:String, minSteps:Int = 0, _isOptional:Bo
   }
 
 }
+
+class GoalSpecificObjectInDirectContainer(containerName:String = "", validObjectNames:Array[String], _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+  this.isOptional = _isOptional
+
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // NOTE: Focus object not required
+
+    // If agent is not in a container, do not continue evaluation
+    if (agent.getContainer().isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+    // If no objects to find, then do not continue evaluation
+    if (validObjectNames.size == 0) return GoalReturn.mkSubgoalUnsuccessful()
+
+    // Get agent location
+    val agentLocation = agent.getContainer().get
+    val visibleObjects = agentLocation.getContainedObjectsAndPortalsRecursive(includeHidden = false, includePortalConnections = false)
+
+    var found:Boolean = false
+    breakable {
+      for (vObj <- visibleObjects) {
+        println("# " + vObj.name + " (" + containerName + ")")
+        if ((vObj.name.toLowerCase == containerName.toLowerCase) || (vObj.getDescriptName().toLowerCase == containerName.toLowerCase)) {
+          println ("### Found container: " + vObj.name )
+          val contents = vObj.getContainedObjects(includeHidden = false)
+          println("Contents: " + contents.mkString(", "))
+          println("Checking for " + validObjectNames.mkString(", "))
+          for (cObj <- contents) {
+            if (validObjectNames.contains(cObj.name) || validObjectNames.contains(cObj.getDescriptName())) {
+              println("\t CONTAINS")
+              found = true
+              break()
+            }
+          }
+        }
+      }
+    }
+
+    // First initialization: Keep track of starting location
+    if (found) {
+      return GoalReturn.mkSubgoalSuccess()
+    }
+
+    // Otherwise
+    return GoalReturn.mkSubgoalUnsuccessful()
+  }
+
+}
+
+class GoalActivateDeviceWithName(deviceName:String, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+  this.isOptional = _isOptional
+
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // NOTE: Focus object not required
+
+    // If agent is not in a container, do not continue evaluation
+    if (agent.getContainer().isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    // Get agent location
+    val agentLocation = agent.getContainer().get
+    val visibleObjects = agentLocation.getContainedObjectsAndPortalsRecursive(includeHidden = false, includePortalConnections = false)
+
+    var found:Boolean = false
+    breakable {
+      for (vObj <- visibleObjects) {
+        if ((vObj.name.toLowerCase == deviceName.toLowerCase) || (vObj.getDescriptName().toLowerCase == deviceName.toLowerCase)) {
+          if ((vObj.propDevice.isDefined) && (vObj.propDevice.get.isActivated)) {
+            found = true
+            break()
+          }
+        }
+      }
+    }
+
+    // First initialization: Keep track of starting location
+    if (found) {
+      return GoalReturn.mkSubgoalSuccess()
+    }
+
+    // Otherwise
+    return GoalReturn.mkSubgoalUnsuccessful()
+  }
+
+}
