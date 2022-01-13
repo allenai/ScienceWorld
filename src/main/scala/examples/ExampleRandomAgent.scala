@@ -22,10 +22,10 @@ object ExampleRandomAgent {
     //val specificTasks = Array(13)           // Do specific tasks
     val specificTasks = Array.empty[Int]    // Do all
 
-    val simplificationStr = "openDoors"
+    val simplificationStr = "teleportAction,noElectricalAction,openDoors"
 
     val maxEpisodes:Int = 100
-    val maxIterPerEpisode:Int = 100
+    val maxIterPerEpisode:Int = 20
 
     // Create environment
     // Get a task name

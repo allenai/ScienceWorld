@@ -247,15 +247,15 @@ class GoalSpecificObjectInDirectContainer(containerName:String = "", validObject
     var found:Boolean = false
     breakable {
       for (vObj <- visibleObjects) {
-        println("# " + vObj.name + " (" + containerName + ")")
+        //println("# " + vObj.name + " (" + containerName + ")")
         if ((vObj.name.toLowerCase == containerName.toLowerCase) || (vObj.getDescriptName().toLowerCase == containerName.toLowerCase)) {
-          println ("### Found container: " + vObj.name )
+          //println ("### Found container: " + vObj.name )
           val contents = vObj.getContainedObjects(includeHidden = false)
-          println("Contents: " + contents.mkString(", "))
-          println("Checking for " + validObjectNames.mkString(", "))
+          //println("Contents: " + contents.mkString(", "))
+          //println("Checking for " + validObjectNames.mkString(", "))
           for (cObj <- contents) {
             if (validObjectNames.contains(cObj.name) || validObjectNames.contains(cObj.getDescriptName())) {
-              println("\t CONTAINS")
+              //println("\t CONTAINS")
               found = true
               break()
             }
