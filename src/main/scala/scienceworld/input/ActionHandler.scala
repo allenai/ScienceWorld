@@ -2,6 +2,7 @@ package scienceworld.input
 
 import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
 import scienceworld.actions.{Action, ActionFocus, ActionInventory, ActionLookAround, ActionTaskDesc}
+import scienceworld.objects.agent.Agent
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -55,6 +56,20 @@ class ActionHandler {
       println ("Running action: " + action.name)
 
       val (resultDesc, success) = action.runAction()
+
+      // Record the action in the agent's action history
+      if (action.assignments.contains("agent")) {
+        val agent = action.assignments("agent")
+        agent match {
+          case a:Agent => {
+            a.addActionToHistory(action)
+          }
+          case _ => {
+            // Do nothing -- this should never happen
+          }
+        }
+      }
+
       out.append("(" + action.name + "):\n" + resultDesc)
     }
 

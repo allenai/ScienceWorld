@@ -8,7 +8,7 @@ import scienceworld.properties.{UnknownFrictionMaterialA, UnknownFrictionMateria
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalFindInclinedPlane, GoalFindInclinedPlaneNamed, GoalMoveToLocation, GoalMoveToNewLocation, GoalSpecificObjectInDirectContainer}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalFindInclinedPlane, GoalFindInclinedPlaneNamed, GoalMoveToLocation, GoalMoveToNewLocation, GoalPastActionExamineObject, GoalSpecificObjectInDirectContainer}
 import TaskInclinedPlane3._
 
 import scala.collection.mutable.ArrayBuffer
@@ -151,6 +151,7 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
       gSequenceUnordered.append( new GoalSpecificObjectInDirectContainer(containerName = planeName1.get, validObjectNames = Array(blockName.get), description = "move block to plane 1") )
       gSequenceUnordered.append( new GoalSpecificObjectInDirectContainer(containerName = planeName2.get, validObjectNames = Array(blockName.get), description = "move block to plane 2") )
       gSequenceUnordered.append( new GoalActivateDeviceWithName(deviceName = timeDeviceName.get, description = "activate time keeping device") )
+      gSequenceUnordered.append( new GoalPastActionExamineObject(objectName = timeDeviceName.get, description = "read time keeping device"))
 
       val planeNames = Random.shuffle( List(steepestAngle.get, shallowestAngle.get) )
       description = "Your task is to determine which of the two inclined planes (" + planeNames.mkString(", ") + ") has the " + modeSteepShallow.get + " angle. After completing your experiment, focus on the inclined plane with the " + modeSteepShallow.get + " angle."

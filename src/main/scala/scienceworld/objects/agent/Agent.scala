@@ -1,10 +1,13 @@
 package scienceworld.objects.agent
 
+import scienceworld.actions.Action
 import scienceworld.objects.containers.Container
 import scienceworld.objects.substance.food.Orange
 import scienceworld.properties.{IsOpenUnclosableContainer, MoveableProperties}
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
+
+import scala.collection.mutable.ArrayBuffer
 
 
 
@@ -22,6 +25,9 @@ class Agent extends EnvObject {
 
   // Task description
   var taskDescriptionStr:String = ""
+
+  // Action history
+  val actionHistory = new ArrayBuffer[Action]
 
   /*
    * Inventory methods
@@ -58,6 +64,17 @@ class Agent extends EnvObject {
 
   def setTaskDescription(taskStr:String): Unit = {
     this.taskDescriptionStr = taskStr
+  }
+
+  /*
+   * Action history
+   */
+  def addActionToHistory(action:Action): Unit = {
+    this.actionHistory.append(action)
+  }
+
+  def getActionHistory():Array[Action] = {
+    return this.actionHistory.toArray
   }
 
   /*

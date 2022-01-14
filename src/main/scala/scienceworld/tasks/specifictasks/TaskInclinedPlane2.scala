@@ -8,7 +8,7 @@ import scienceworld.properties.{AluminumProp, BrassProp, BronzeProp, CaesiumProp
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalFindInclinedPlane, GoalMoveToLocation, GoalMoveToNewLocation, GoalSpecificObjectInDirectContainer}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalFindInclinedPlane, GoalMoveToLocation, GoalMoveToNewLocation, GoalPastActionExamineObject, GoalSpecificObjectInDirectContainer}
 import TaskInclinedPlane2._
 
 import scala.collection.mutable.ArrayBuffer
@@ -149,6 +149,7 @@ class TaskInclinedPlane2(val mode:String = MODE_FRICTION_UNNAMED) extends TaskPa
       gSequenceUnordered.append( new GoalSpecificObjectInDirectContainer(containerName = planeName1.get, validObjectNames = Array(blockName.get), description = "move block to plane 1") )
       gSequenceUnordered.append( new GoalSpecificObjectInDirectContainer(containerName = planeName2.get, validObjectNames = Array(blockName.get), description = "move block to plane 2") )
       gSequenceUnordered.append( new GoalActivateDeviceWithName(deviceName = timeDeviceName.get, description = "activate time keeping device") )
+      gSequenceUnordered.append( new GoalPastActionExamineObject(objectName = timeDeviceName.get, description = "read time keeping device"))
 
 
       val planeNames = Random.shuffle( List(leastFriction.get, mostFriction.get) )
