@@ -6,7 +6,7 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 
 // Object must be in the container
-class GoalLifeStage(lifeFormType:String = "", lifeStageName:String = "", sameAsLastObj:Boolean = true, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalLifeStage(lifeFormType:String = "", lifeStageName:String = "", sameAsLastObj:Boolean = true, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {

@@ -11,7 +11,7 @@ import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
  * Focus on specific classes of objects
  */
 
-class GoalFocusOnLivingThing(_isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalFocusOnLivingThing(_isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -29,7 +29,7 @@ class GoalFocusOnLivingThing(_isOptional:Boolean = false, description:String = "
 
 }
 
-class GoalFocusOnNonlivingThing(_isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalFocusOnNonlivingThing(_isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -54,7 +54,7 @@ class GoalFocusOnNonlivingThing(_isOptional:Boolean = false, description:String 
 
 
 
-class GoalFocusOnAnimal(_isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalFocusOnAnimal(_isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -73,7 +73,7 @@ class GoalFocusOnAnimal(_isOptional:Boolean = false, description:String = "") ex
 }
 
 
-class GoalFocusOnPlant(_isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalFocusOnPlant(_isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -101,7 +101,7 @@ class GoalFocusOnPlant(_isOptional:Boolean = false, description:String = "") ext
 
 // Object must be in the container
 // If the focus object is in one of the containers listed in 'failureContainers', then it causes task failure.
-class GoalObjectInDirectContainer(containerName:String = "", failureContainers:List[EnvObject] = List.empty[EnvObject], _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalObjectInDirectContainer(containerName:String = "", failureContainers:List[EnvObject] = List.empty[EnvObject], _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -135,7 +135,7 @@ class GoalObjectInDirectContainer(containerName:String = "", failureContainers:L
 
 // Object could be in the container, or a container within that container
 // If the focus object is in one of the containers listed in 'failureContainers', then it causes task failure.
-class GoalObjectInContainer(containerName:String = "", failureContainers:List[EnvObject] = List.empty[EnvObject], _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalObjectInContainer(containerName:String = "", failureContainers:List[EnvObject] = List.empty[EnvObject], _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -188,7 +188,7 @@ class GoalObjectInContainer(containerName:String = "", failureContainers:List[En
 
 }
 
-class GoalObjectInContainerByName(containerName:String = "", failureContainers:List[String] = List.empty[String], _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalObjectInContainerByName(containerName:String = "", failureContainers:List[String] = List.empty[String], _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {

@@ -6,7 +6,7 @@ import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 
 
 
-class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -37,7 +37,7 @@ class GoalActivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = fals
 }
 
 
-class GoalDeactivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalDeactivateDevice(deviceName:String = "", sameAsLastDevice:Boolean = false, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {

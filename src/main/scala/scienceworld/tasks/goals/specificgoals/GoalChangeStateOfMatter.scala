@@ -7,7 +7,7 @@ import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 /*
  * Goal for changing to a given state of matter
  */
-class GoalIsNotStateOfMatter(val isNotState:String, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalIsNotStateOfMatter(val isNotState:String, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -33,7 +33,7 @@ class GoalIsNotStateOfMatter(val isNotState:String, _isOptional:Boolean = false,
 
 }
 
-class GoalChangeStateOfMatter(val changeToState:String, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalChangeStateOfMatter(val changeToState:String, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -62,7 +62,7 @@ class GoalChangeStateOfMatter(val changeToState:String, _isOptional:Boolean = fa
 /*
  *  Goal for changing to a given state of matter
  */
-class GoalIsStateOfMatter(_isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalIsStateOfMatter(_isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -87,7 +87,7 @@ class GoalIsStateOfMatter(_isOptional:Boolean = false, description:String = "") 
 }
 
 
-class GoalIsDifferentStateOfMatter(_isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalIsDifferentStateOfMatter(_isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {

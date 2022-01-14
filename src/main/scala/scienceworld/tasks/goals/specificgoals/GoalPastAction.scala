@@ -10,13 +10,17 @@ import scala.util.control.Breaks._
 
 // Success if the agent has examined an object with a specific name.
 // This is evaluated by checking the agents action history.
-class GoalPastActionExamineObject(objectName:String, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalPastActionExamineObject(objectName:String, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
+  var activatedAtStep:Int = -1   // The step that the preconditions for this action checker were met
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // NOTE: Focus object not required
 
-    val actionHistory = agent.getActionHistory()
+    // If this is the first activation, then the preconditions have been met -- populate what step this action was activated at, so we only look at post-activation history
+    if (activatedAtStep == -1) this.activatedAtStep = agent.getActionHistorySize()
+    // Get history
+    val actionHistory = agent.getActionHistorySince(activatedAtStep)
 
     var found = false
     breakable {

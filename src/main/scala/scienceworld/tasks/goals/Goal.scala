@@ -7,7 +7,7 @@ import scala.collection.mutable
 import scala.util.control.Breaks._
 
 // Storage class for a single goal
-class Goal(val description:String) {
+class Goal(val description:String, val key:String, val keysMustBeCompletedBefore:Array[String]) {
   var satisfiedWithObject:Option[EnvObject] = None
   var defocusOnSuccess:Boolean = false
   var isOptional:Boolean = false
@@ -29,6 +29,7 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
   val storedValues = mutable.Map[String, String]()
 
   val optionalUnorderedSubgoalsCompleted = Array.fill[Boolean](optionalUnorderedSubgoals.length)(false)
+  val completedKeys = mutable.Set[String]()
 
   this.reset()
 
@@ -73,6 +74,18 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
   def getKey(key:String):String = {
     if (!storedValues.contains(key)) return ""
     return storedValues(key)
+  }
+
+  // Keys that are specialized for subgoal competion
+  def areSubgoalPrerequisitesCompleted(prereqKeys:Array[String]):Boolean = {
+    // Case: True if there are no prerequisites
+    if (prereqKeys.length == 0) return true
+
+    // Check each prerequisite
+    for (key <- prereqKeys) {
+      if (!this.completedKeys.contains(key)) return false   // One prereq missing
+    }
+    return true
   }
 
   /*
@@ -172,10 +185,14 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
           // Evaluate whether the subgoal has been completed
           val subgoal = optionalUnorderedSubgoals(i)
           breakable {
+            // Do not process this subgoal if its prerequisites haven't been met
+            if (!this.areSubgoalPrerequisitesCompleted(subgoal.keysMustBeCompletedBefore)) break()
+
             // First, check without any focus object
             val goalReturn = subgoal.isGoalConditionSatisfied(None, isFirstGoal = false, gs = this, agent)
             if (goalReturn.subgoalSuccess) {
               optionalUnorderedSubgoalsCompleted(i) = true
+              if (subgoal.key.length > 0) this.completedKeys.add(subgoal.key)
               numCompletedThisCycle += 1
               //println("\t\tTrue")
               break
@@ -186,6 +203,7 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
               val goalReturn = subgoal.isGoalConditionSatisfied(Some(obj), isFirstGoal = false, gs = this, agent)
               if (goalReturn.subgoalSuccess) {
                 optionalUnorderedSubgoalsCompleted(i) = true
+                if (subgoal.key.length > 0) this.completedKeys.add(subgoal.key)
                 numCompletedThisCycle += 1
                 println("\t\tTrue")
                 break
@@ -214,20 +232,26 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
       // Check each object in the set of monitored objects to see if it meets a subgoal condition
       var goalReturn:GoalReturn = GoalReturn.mkSubgoalUnsuccessful()
       breakable {
+
         while (true) {
-          for (obj <- objMonitor.getMonitoredObjects()) {
-            println("Checking obj (" + obj.toStringMinimal() + ") against subgoal " + curSubgoalIdx)
-            println("## " + curSubgoal.get.getClass)
+          // Do not process this subgoal if it's prerequisites haven't been met
+          if (this.areSubgoalPrerequisitesCompleted(curSubgoal.get.keysMustBeCompletedBefore)) {
+            for (obj <- objMonitor.getMonitoredObjects()) {
+              println("Checking obj (" + obj.toStringMinimal() + ") against subgoal " + curSubgoalIdx)
+              println("## " + curSubgoal.get.getClass)
 
-            val isFirstGoal = if (this.getNumCompletedSubgoals() == 0) true else false
+              val isFirstGoal = if (this.getNumCompletedSubgoals() == 0) true else false
 
-            goalReturn = curSubgoal.get.isGoalConditionSatisfied(Some(obj), isFirstGoal, this, agent)         // TODO: Also add a condition that checks for it with no focus?
-            if (goalReturn.subgoalSuccess) {
-              if (curSubgoal.get.satisfiedWithObject != None) this.lastSatisfiedWithObject = curSubgoal.get.satisfiedWithObject
-              if (curSubgoal.get.defocusOnSuccess) objMonitor.clearMonitoredObjects() // Clear focus, if the goal asks to do this
-              break()
+              goalReturn = curSubgoal.get.isGoalConditionSatisfied(Some(obj), isFirstGoal, this, agent) // TODO: Also add a condition that checks for it with no focus?
+              if (goalReturn.subgoalSuccess) {
+                if (curSubgoal.get.satisfiedWithObject != None) this.lastSatisfiedWithObject = curSubgoal.get.satisfiedWithObject
+                if (curSubgoal.get.defocusOnSuccess) objMonitor.clearMonitoredObjects() // Clear focus, if the goal asks to do this
+                break()
+              }
+              if (goalReturn.taskFailure) break()
             }
-            if (goalReturn.taskFailure) break()
+          } else {
+            //println("Subgoal prerequisites not met")
           }
 
           println("## No success or failure")
@@ -258,6 +282,7 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
         println("Subgoal satisfied.")
         //curSubgoalIdx += 1
         this.curSubgoalIdx = subgoalIdx + 1
+        if (curSubgoal.get.key.length > 0) this.completedKeys.add(curSubgoal.get.key)
       } else {
         // Current goal condition not satisfied -- return
         println("Subgoal not satisfied.")

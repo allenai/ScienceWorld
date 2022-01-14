@@ -9,7 +9,7 @@ import scala.util.control.Breaks._
 
 
 // Success when an agent moves to the specified location(/container)
-class GoalMoveToLocation(locationToBeIn:String, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalMoveToLocation(locationToBeIn:String, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -31,7 +31,7 @@ class GoalMoveToLocation(locationToBeIn:String, _isOptional:Boolean = false, des
 }
 
 // Success when an agent moves to a different location than it started in
-class GoalMoveToNewLocation(_isOptional:Boolean = false, unlessInLocation:String = "", description:String = "") extends Goal(description) {
+class GoalMoveToNewLocation(_isOptional:Boolean = false, unlessInLocation:String = "", description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   var startingLocation:Option[String] = None
   this.isOptional = _isOptional
 
@@ -67,7 +67,7 @@ class GoalMoveToNewLocation(_isOptional:Boolean = false, unlessInLocation:String
 
 
 // Success when an agent is in a room with an open door (principally, by opening that door)
-class GoalInRoomWithOpenDoor(_isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalInRoomWithOpenDoor(_isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -106,7 +106,7 @@ class GoalInRoomWithOpenDoor(_isOptional:Boolean = false, description:String = "
 
 // Success when an agent is in a room with a particular object being visible.
 // Searches object names, object descript names, and object material names.
-class GoalInRoomWithObject(objectName:String, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalInRoomWithObject(objectName:String, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -145,7 +145,7 @@ class GoalInRoomWithObject(objectName:String, _isOptional:Boolean = false, descr
 
 // Success when an agent is in a room with a particular object being visible.
 // Searches object names, object descript names, and object material names.
-class GoalObjectsInSingleContainer(objectNames:Array[String], _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalObjectsInSingleContainer(objectNames:Array[String], _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -201,7 +201,7 @@ class GoalObjectsInSingleContainer(objectNames:Array[String], _isOptional:Boolea
 
 
 // Success when an agent stays in a specific location for a period of time
-class GoalStayInLocation(locationToBeIn:String, minSteps:Int = 0, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalStayInLocation(locationToBeIn:String, minSteps:Int = 0, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
   var numTicksInLocation:Int = 0
 
@@ -229,7 +229,7 @@ class GoalStayInLocation(locationToBeIn:String, minSteps:Int = 0, _isOptional:Bo
 
 }
 
-class GoalSpecificObjectInDirectContainer(containerName:String = "", validObjectNames:Array[String], _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalSpecificObjectInDirectContainer(containerName:String = "", validObjectNames:Array[String], _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -275,7 +275,7 @@ class GoalSpecificObjectInDirectContainer(containerName:String = "", validObject
 
 }
 
-class GoalActivateDeviceWithName(deviceName:String, _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalActivateDeviceWithName(deviceName:String, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -293,6 +293,42 @@ class GoalActivateDeviceWithName(deviceName:String, _isOptional:Boolean = false,
       for (vObj <- visibleObjects) {
         if ((vObj.name.toLowerCase == deviceName.toLowerCase) || (vObj.getDescriptName().toLowerCase == deviceName.toLowerCase)) {
           if ((vObj.propDevice.isDefined) && (vObj.propDevice.get.isActivated)) {
+            found = true
+            break()
+          }
+        }
+      }
+    }
+
+    // First initialization: Keep track of starting location
+    if (found) {
+      return GoalReturn.mkSubgoalSuccess()
+    }
+
+    // Otherwise
+    return GoalReturn.mkSubgoalUnsuccessful()
+  }
+
+}
+
+class GoalDeactivateDeviceWithName(deviceName:String, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
+  this.isOptional = _isOptional
+
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // NOTE: Focus object not required
+
+    // If agent is not in a container, do not continue evaluation
+    if (agent.getContainer().isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    // Get agent location
+    val agentLocation = agent.getContainer().get
+    val visibleObjects = agentLocation.getContainedObjectsAndPortalsRecursive(includeHidden = false, includePortalConnections = false)
+
+    var found:Boolean = false
+    breakable {
+      for (vObj <- visibleObjects) {
+        if ((vObj.name.toLowerCase == deviceName.toLowerCase) || (vObj.getDescriptName().toLowerCase == deviceName.toLowerCase)) {
+          if ((vObj.propDevice.isDefined) && (!vObj.propDevice.get.isActivated)) {
             found = true
             break()
           }

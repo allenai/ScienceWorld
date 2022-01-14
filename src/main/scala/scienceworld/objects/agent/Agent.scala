@@ -77,6 +77,16 @@ class Agent extends EnvObject {
     return this.actionHistory.toArray
   }
 
+  def getActionHistorySince(step:Int):Array[Action] = {
+    if (step > this.actionHistory.length) return Array.empty[Action]
+    return this.actionHistory.slice(step, this.actionHistory.length).toArray
+  }
+
+  def getActionHistorySize():Int = {
+    return this.actionHistory.size
+  }
+
+
   /*
    * Standard methods
    */

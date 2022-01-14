@@ -8,7 +8,7 @@ import scienceworld.properties.{AluminumProp, BrassProp, BronzeProp, CaesiumProp
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalFind, GoalFindInclinedPlane, GoalFindLivingThingStage, GoalMoveToLocation, GoalMoveToNewLocation, GoalPastActionExamineObject, GoalSpecificObjectInDirectContainer}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalDeactivateDeviceWithName, GoalFind, GoalFindInclinedPlane, GoalFindLivingThingStage, GoalMoveToLocation, GoalMoveToNewLocation, GoalPastActionExamineObject, GoalSpecificObjectInDirectContainer}
 
 import scala.util.control.Breaks._
 import scala.collection.mutable.ArrayBuffer
@@ -151,10 +151,16 @@ class TaskInclinedPlane1(val mode:String = MODE_FRICTION_NAMED) extends TaskPara
 
       gSequenceUnordered.append( new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = planeLocation.get, description = "move to a new location (unless starting in task location)") )            // Move to any new location
       gSequenceUnordered.append( new GoalMoveToLocation(planeLocation.get, _isOptional = true, description = "move to the location asked by the task") )
-      gSequenceUnordered.append( new GoalSpecificObjectInDirectContainer(containerName = planeName1.get, validObjectNames = Array(blockName.get), description = "move block to plane 1") )
-      gSequenceUnordered.append( new GoalSpecificObjectInDirectContainer(containerName = planeName2.get, validObjectNames = Array(blockName.get), description = "move block to plane 2") )
-      gSequenceUnordered.append( new GoalActivateDeviceWithName(deviceName = timeDeviceName.get, description = "activate time keeping device") )
-      gSequenceUnordered.append( new GoalPastActionExamineObject(objectName = timeDeviceName.get, description = "read time keeping device"))
+
+      gSequenceUnordered.append( new GoalSpecificObjectInDirectContainer(containerName = planeName1.get, validObjectNames = Array(blockName.get), description = "move block to plane 1", key = "b1") )
+      gSequenceUnordered.append( new GoalActivateDeviceWithName(deviceName = timeDeviceName.get, description = "activate time keeping device", key = "aTime1", keysMustBeCompletedBefore = Array("b1")) )
+      gSequenceUnordered.append( new GoalDeactivateDeviceWithName(deviceName = timeDeviceName.get, description = "deactivate time keeping device", key = "dTime1", keysMustBeCompletedBefore = Array("aTime1")) )
+      gSequenceUnordered.append( new GoalPastActionExamineObject(objectName = timeDeviceName.get, description = "read time keeping device", key = "readTime1", keysMustBeCompletedBefore = Array("dTime1") ))
+
+      gSequenceUnordered.append( new GoalSpecificObjectInDirectContainer(containerName = planeName2.get, validObjectNames = Array(blockName.get), description = "move block to plane 2", key = "b2") )
+      gSequenceUnordered.append( new GoalActivateDeviceWithName(deviceName = timeDeviceName.get, description = "activate time keeping device", key = "aTime2", keysMustBeCompletedBefore = Array("b2")) )
+      gSequenceUnordered.append( new GoalDeactivateDeviceWithName(deviceName = timeDeviceName.get, description = "deactivate time keeping device", key = "dTime2", keysMustBeCompletedBefore = Array("aTime2")) )
+      gSequenceUnordered.append( new GoalPastActionExamineObject(objectName = timeDeviceName.get, description = "read time keeping device", key = "readTime2", keysMustBeCompletedBefore = Array("dTime2") ))
 
 
       val planeNames = Random.shuffle( List(leastFriction.get, mostFriction.get) )

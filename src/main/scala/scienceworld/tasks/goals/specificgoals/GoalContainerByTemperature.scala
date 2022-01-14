@@ -5,7 +5,7 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 
 
-class GoalContainerByTemperature(tempThreshold:Double, containerNameAbove:String = "", containerNameBelow:String = "", _isOptional:Boolean = false, description:String = "") extends Goal(description) {
+class GoalContainerByTemperature(tempThreshold:Double, containerNameAbove:String = "", containerNameBelow:String = "", _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
