@@ -8,7 +8,7 @@ import scienceworld.objects.substance.{Soap, SodiumChloride}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalInRoomWithObject, GoalObjectsInSingleContainer}
+import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalInRoomWithObject, GoalMoveToLocation, GoalMoveToNewLocation, GoalObjectsInSingleContainer}
 import scienceworld.tasks.specifictasks.TaskChemistryMixPaint._
 
 import scala.collection.mutable.ArrayBuffer
@@ -36,7 +36,8 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
     cupboard.name = "paint cupboard"
 
     additionalPaint.append( Array(
-      new TaskObject(cupboard.name, Some(cupboard), roomToGenerateIn = location, Array.empty[String], generateNear = 0)
+      new TaskObject(cupboard.name, Some(cupboard), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "location", value = location)
     ))
 
   }
@@ -145,6 +146,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
     val inputColorsSecondary = this.getTaskValueStr(modifiers, "inputChemicalsSecondary").get.split(",")
     val inputColorsTertiary = this.getTaskValueStr(modifiers, "inputChemicalsTertiary").get.split(",")
 
+    val paintLocation = this.getTaskValueStr(modifiers, "location")
 
     var subTask = ""
     val gSequence = new ArrayBuffer[Goal]
@@ -168,13 +170,20 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
       gSequence.append(new GoalFind(objectName = secondaryColor.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on the intermediate mixing result (" + secondaryColor.get + ")"))
       gSequence.append(new GoalFind(objectName = tertiaryColor.get, failIfWrong = true, description = "focus on the final mixing result (" + tertiaryColor.get + ")"))
 
+      gSequenceUnordered.append( new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = paintLocation.get, description = "move to a new location (unless starting in task location)") )            // Move to any new location
+      gSequenceUnordered.append( new GoalMoveToLocation(paintLocation.get, _isOptional = true, description = "move to the location of the paint") )
+
       // Secondary
       for (inputChemical <- inputColorsSecondary) {
         gSequenceUnordered.append(new GoalInRoomWithObject(objectName = inputChemical, _isOptional = true, description = "be in same location as " + inputChemical))
       }
       gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = inputColorsSecondary, _isOptional = true, description = "have all ingredients (secondary) alone in a single container"))
-      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = secondaryColor.get, _isOptional = true, description = "be in same location as " + secondaryColor.get))
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = secondaryColor.get, _isOptional = true, description = "be in same location as (secondary) " + secondaryColor.get, key = "secondary"))
       // Tertiary
+      //gSequenceUnordered.append( new GoalActivateDeviceWithName(deviceName = timeDeviceName.get, description = "activate time keeping device (plane 2)", key = "aTime2", keysMustBeCompletedBefore = Array("b2")) )
+      for (inputChemical <- inputColorsTertiary) {
+        gSequenceUnordered.append(new GoalInRoomWithObject(objectName = inputChemical, _isOptional = true, description = "be in same location as (tertiary) " + inputChemical, key = "tertiary_" + inputChemical, keysMustBeCompletedBefore = Array("secondary")))
+      }
       gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = inputColorsTertiary, _isOptional = true, description = "have all ingredients (tertiary) alone in a single container"))
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = tertiaryColor.get, _isOptional = true, description = "be in same location as " + tertiaryColor.get))
 
