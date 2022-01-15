@@ -8,7 +8,7 @@ import scienceworld.objects.substance.{Caesium, Gallium, Ice, Lead, Mercury, Soa
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskDisable, TaskMaker1, TaskModifier, TaskObject}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalChangeStateOfMatter, GoalFind, GoalInRoomWithObject, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter, GoalMoveToLocation, GoalMoveToNewLocation, GoalObjectInContainer, GoalObjectInContainerByName, GoalObjectsInSingleContainer, GoalSpecificObjectInDirectContainer, GoalTemperatureIncrease, GoalTemperatureOnFire}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalChangeStateOfMatter, GoalFind, GoalInRoomWithObject, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter, GoalMoveToLocation, GoalMoveToNewLocation, GoalObjectInContainer, GoalObjectInContainerByName, GoalObjectsInSingleContainer, GoalSpecificObjectInDirectContainer, GoalTemperatureDecrease, GoalTemperatureIncrease, GoalTemperatureOnFire}
 import scienceworld.tasks.specifictasks.TaskChangeOfState.{MODE_BOIL, MODE_CHANGESTATE, MODE_FREEZE, MODE_MELT}
 
 import scala.collection.mutable.ArrayBuffer
@@ -152,14 +152,51 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
     } else if (mode == MODE_BOIL) {
       subTask = "boil"
-      gSequence.append( new GoalFind(objectName = substanceName) )
-      gSequence.append( new GoalChangeStateOfMatter("liquid") )
-      gSequence.append( new GoalChangeStateOfMatter("gas") )
+      gSequence.append( new GoalFind(objectName = substanceName, description = "focus on substance") )
+      gSequence.append( new GoalChangeStateOfMatter("liquid", description = "substance is in a liquid state") )
+      gSequence.append( new GoalChangeStateOfMatter("gas", description = "substance is in a gasseous state") )
+
+      // Unordered
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = substanceName, _isOptional = true, description = "be in same location as " + substanceName))
+      gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = Array(substanceName), _isOptional = true, description = "have substance alone in a single container"))
+
+      // Activate a heating device
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "stove", _isOptional = true, description = "activate heater (stove)"))
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "blast furnace", _isOptional = true, description = "activate heater (blast furnace)"))
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "oven", _isOptional = true, description = "activate heater (oven)"))
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "hot plate", _isOptional = true, description = "activate heater (hot plate)"))
+      // Or, build a fire in the fire pit
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("lighter"), _isOptional = true, description = "have lighter in inventory"))
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "fire pit", validObjectNames = Array("wood"), _isOptional = true, description = "move wood into fire pit", key = "wood1"))
+      gSequenceUnordered.append(new GoalTemperatureOnFire(objectName = "wood", _isOptional = true, description = "ignite wood", key = "ignite", keysMustBeCompletedBefore = Array("wood1")) )
+
+      // Put the substance on a heating device
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "stove", _isOptional = true, description = "have object on heater (stove)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "blast furnace", _isOptional = true, description = "have object on heater (blast furnace)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "oven", _isOptional = true, description = "have object on heater (oven)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "hot plate", _isOptional = true, description = "have object on heater (hot plate)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "fire pit", _isOptional = true, description = "have object on heater (fire pit)"))
+
+      // Heat object
+      gSequenceUnordered.append(new GoalTemperatureIncrease(minTempIncreaseC = 20.0, _isOptional = true, description = "heat object by at least 20C"))
+
     } else if (mode == MODE_FREEZE) {
       subTask = "freeze"
-      gSequence.append( new GoalFind(objectName = substanceName) )
-      gSequence.append( new GoalChangeStateOfMatter("liquid") )
-      gSequence.append( new GoalChangeStateOfMatter("solid") )
+      gSequence.append( new GoalFind(objectName = substanceName, description = "focus on substance") )
+      gSequence.append( new GoalChangeStateOfMatter("liquid", description = "substance is in a liquid state") )
+      gSequence.append( new GoalChangeStateOfMatter("solid", description = "substance is in a solid state") )
+
+      // Unordered
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = substanceName, _isOptional = true, description = "be in same location as " + substanceName))
+      gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = Array(substanceName), _isOptional = true, description = "have substance alone in a single container"))
+
+      // Put substance in a cooling device
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "fridge", _isOptional = true, description = "have object in cooler (fridge)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "freezer", _isOptional = true, description = "have object in cooler (freezer)"))
+
+      // Heat object
+      gSequenceUnordered.append(new GoalTemperatureDecrease(minTempDecreaseC = 5.0, _isOptional = true, description = "cool object by at least 5C"))
+
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
     }
