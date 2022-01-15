@@ -119,6 +119,39 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
       subTask = "change the state of matter of"
       gSequence.append( new GoalIsStateOfMatter() )             // Be in any state
       gSequence.append( new GoalIsDifferentStateOfMatter() )    // Be in any state but the first state
+
+      // Unordered
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = substanceName, _isOptional = true, description = "be in same location as " + substanceName))
+      gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = Array(substanceName), _isOptional = true, description = "have substance alone in a single container"))
+
+      // Activate a heating device
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "stove", _isOptional = true, description = "activate heater (stove)"))
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "blast furnace", _isOptional = true, description = "activate heater (blast furnace)"))
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "oven", _isOptional = true, description = "activate heater (oven)"))
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "hot plate", _isOptional = true, description = "activate heater (hot plate)"))
+      // Or, build a fire in the fire pit
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("lighter"), _isOptional = true, description = "have lighter in inventory"))
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "fire pit", validObjectNames = Array("wood"), _isOptional = true, description = "move wood into fire pit", key = "wood1"))
+      gSequenceUnordered.append(new GoalTemperatureOnFire(objectName = "wood", _isOptional = true, description = "ignite wood", key = "ignite", keysMustBeCompletedBefore = Array("wood1")) )
+
+      // Put the substance on a heating device
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "stove", _isOptional = true, description = "have object on heater (stove)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "blast furnace", _isOptional = true, description = "have object on heater (blast furnace)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "oven", _isOptional = true, description = "have object on heater (oven)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "hot plate", _isOptional = true, description = "have object on heater (hot plate)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "fire pit", _isOptional = true, description = "have object on heater (fire pit)"))
+
+      // Or, put substance in a cooling device
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "fridge", _isOptional = true, description = "have object in cooler (fridge)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "freezer", _isOptional = true, description = "have object in cooler (freezer)"))
+
+      // Heat object
+      gSequenceUnordered.append(new GoalTemperatureIncrease(minTempIncreaseC = 10.0, _isOptional = true, description = "heat object by at least 10C"))
+      // Or, cool object
+      gSequenceUnordered.append(new GoalTemperatureDecrease(minTempDecreaseC = 10.0, _isOptional = true, description = "cool object by at least 10C"))
+
+
+
     } else if (mode == MODE_MELT) {
       subTask = "melt"
       gSequence.append( new GoalFind(objectName = substanceName, description = "focus on substance") )
@@ -147,7 +180,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
       gSequenceUnordered.append(new GoalObjectInContainer(containerName = "fire pit", _isOptional = true, description = "have object on heater (fire pit)"))
 
       // Heat object
-      gSequenceUnordered.append(new GoalTemperatureIncrease(minTempIncreaseC = 10.0, _isOptional = true, description = "heat object by at least 10C"))
+      gSequenceUnordered.append(new GoalTemperatureIncrease(minTempIncreaseC = 20.0, _isOptional = true, description = "heat object by at least 20C"))
 
 
     } else if (mode == MODE_BOIL) {
@@ -194,7 +227,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
       gSequenceUnordered.append(new GoalObjectInContainer(containerName = "fridge", _isOptional = true, description = "have object in cooler (fridge)"))
       gSequenceUnordered.append(new GoalObjectInContainer(containerName = "freezer", _isOptional = true, description = "have object in cooler (freezer)"))
 
-      // Heat object
+      // Cool object
       gSequenceUnordered.append(new GoalTemperatureDecrease(minTempDecreaseC = 5.0, _isOptional = true, description = "cool object by at least 5C"))
 
     } else {
