@@ -19,7 +19,7 @@ class GoalIsNotStateOfMatter(val isNotState:String, _isOptional:Boolean = false,
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
-      if (gs.getLastSatisfiedObject().get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+      if (gs.getLastSatisfiedObject().get != obj.get) return GoalReturn.mkSubgoalUnsuccessful()
     }
 
     // Check for state of matter to NOT be a specific value
@@ -45,7 +45,7 @@ class GoalChangeStateOfMatter(val changeToState:String, _isOptional:Boolean = fa
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
-      if (gs.getLastSatisfiedObject().get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+      if (gs.getLastSatisfiedObject().get != obj.get) return GoalReturn.mkSubgoalUnsuccessful()
     }
 
     // Check for state of matter to be set to a specific value
@@ -59,6 +59,7 @@ class GoalChangeStateOfMatter(val changeToState:String, _isOptional:Boolean = fa
 }
 
 
+
 /*
  *  Goal for changing to a given state of matter
  */
@@ -69,12 +70,18 @@ class GoalIsStateOfMatter(_isOptional:Boolean = false, description:String = "", 
     // Check for a focus object
     if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
 
+    println ("### GoalIsStateOfMatter: ")
+
     // Check for material properties to be defined
     if (!obj.get.propMaterial.isDefined) return GoalReturn.mkSubgoalUnsuccessful()
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
-      if (gs.getLastSatisfiedObject().get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+      println("\t defined")
+      println("\t gs.lastsatisfied: " + gs.getLastSatisfiedObject())
+      println("\t obj: " + obj)
+      if (gs.getLastSatisfiedObject().get != obj.get) return GoalReturn.mkSubgoalUnsuccessful()
+      println("\t defined")
     }
 
     // Store the state of matter of this object
@@ -99,7 +106,7 @@ class GoalIsDifferentStateOfMatter(_isOptional:Boolean = false, description:Stri
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
-      if (gs.getLastSatisfiedObject().get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+      if (gs.getLastSatisfiedObject().get != obj.get) return GoalReturn.mkSubgoalUnsuccessful()
     }
 
     // Get the state of matter of this object

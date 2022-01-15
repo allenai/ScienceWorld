@@ -16,7 +16,7 @@ class GoalLifeStage(lifeFormType:String = "", lifeStageName:String = "", sameAsL
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (sameAsLastObj) {
       if (gs.getLastSatisfiedObject().isDefined) {
-        if (gs.getLastSatisfiedObject().get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+        if (gs.getLastSatisfiedObject().get != obj.get) return GoalReturn.mkSubgoalUnsuccessful()
       }
     }
 

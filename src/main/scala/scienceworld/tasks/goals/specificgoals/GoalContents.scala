@@ -110,7 +110,7 @@ class GoalObjectInDirectContainer(containerName:String = "", failureContainers:L
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
-      if (gs.getLastSatisfiedObject().get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+      if (gs.getLastSatisfiedObject().get != obj.get) return GoalReturn.mkSubgoalUnsuccessful()
     }
 
     // Check if the object is in one of the incorrect (failure) containers that would cause task failure
@@ -147,7 +147,7 @@ class GoalObjectInContainer(containerName:String = "", failureContainers:List[En
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
-      if (gs.getLastSatisfiedObject().get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+      if (gs.getLastSatisfiedObject().get != obj.get) return GoalReturn.mkSubgoalUnsuccessful()
     }
 
     // Check if the object is in one of the incorrect (failure) containers that would cause task failure
@@ -200,7 +200,7 @@ class GoalObjectInContainerByName(containerName:String = "", failureContainers:L
 
     // Check that the focus object of this step is the same as the focus object of the previous step
     if (gs.getLastSatisfiedObject().isDefined) {
-      if (gs.getLastSatisfiedObject().get != obj) return GoalReturn.mkSubgoalUnsuccessful()
+      if (gs.getLastSatisfiedObject().get != obj.get) return GoalReturn.mkSubgoalUnsuccessful()
     }
 
     // Check if the object is in one of the incorrect (failure) containers that would cause task failure
