@@ -9,7 +9,7 @@ import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceThermal}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueDouble, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.GoalFind
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalFind, GoalFindAnswerBox, GoalInRoomWithObject, GoalMoveToLocation, GoalMoveToNewLocation, GoalObjectInContainer, GoalObjectsInSingleContainer, GoalPastActionUseObjectOnObject, GoalSpecificObjectInDirectContainer, GoalTemperatureIncrease, GoalTemperatureOnFire}
 import TaskUseInstrumentThermometer3._
 
 import scala.collection.mutable.ArrayBuffer
@@ -140,20 +140,67 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
 
     var subTask = ""
     val gSequence = new ArrayBuffer[Goal]
+    val gSequenceUnordered = new ArrayBuffer[Goal]
     var description:String = "<empty>"
     if (mode == MODE_MEASURE_MELTING_UNKNOWN) {
       // Figure out the correct answer container based on the object's conductivity
 
       // Goal sequence
-      gSequence.append(new GoalFind(objectName = instrumentName.get, failIfWrong = true, _defocusOnSuccess = true))
-      gSequence.append(new GoalFind(objectName = objectName.get, failIfWrong = true, _defocusOnSuccess = true))
+      gSequence.append(new GoalFind(objectName = instrumentName.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on thermometer"))
+      gSequence.append(new GoalFind(objectName = objectName.get, failIfWrong = true, _defocusOnSuccess = false, key = "focusObject", description = "focus on substance"))   // Keep focus
       if (meltingPoint.get >= tempPoint.get) {
         println ("FOCUS 1")
-        gSequence.append(new GoalFind(objectName = boxAbove.get, failIfWrong = true))
+        gSequence.append(new GoalFindAnswerBox(objectName = boxAbove.get, failIfWrong = true, description = "focus on correct answer box"))
       } else {
         println ("FOCUS 2")
-        gSequence.append(new GoalFind(objectName = boxBelow.get, failIfWrong = true))
+        gSequence.append(new GoalFindAnswerBox(objectName = boxBelow.get, failIfWrong = true, description = "focus on correct answer box"))
       }
+
+      // Thermometer
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = "thermometer", _isOptional = true, description = "be in same location as thermometer"))
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("thermometer"), _isOptional = true, description = "have thermometer in inventory"))
+
+      // Moving to helpful locations
+      gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
+      gSequenceUnordered.append(new GoalMoveToLocation(objectLocation.get, _isOptional = true, key = "move1", description = "move to the location asked by the task (substance location)") )
+      gSequenceUnordered.append(new GoalMoveToLocation(boxLocation.get, _isOptional = true, key = "move1", description = "move to the location asked by the task (answer box location)") )
+      gSequenceUnordered.append(new GoalMoveToLocation("kitchen", _isOptional = true, key = "move2a", keysMustBeCompletedBefore = Array("move1"), description = "move to a location with a heating device (kitchen)") )
+      gSequenceUnordered.append(new GoalMoveToLocation("outside", _isOptional = true, key = "move2b", keysMustBeCompletedBefore = Array("move1"), description = "move to a location with a heating device (outside)") )
+      gSequenceUnordered.append(new GoalMoveToLocation("foundry", _isOptional = true, key = "move2c", keysMustBeCompletedBefore = Array("move1"), description = "move to a location with a heating device (foundry)") )
+
+      // Pick up substance (potentially useful)
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array(objectName.get), _isOptional = true, description = "have task object in inventory"))
+
+      // Use thermometer on substance
+      gSequenceUnordered.append(new GoalPastActionUseObjectOnObject(deviceName = instrumentName.get, patientObjectName = objectName.get, _isOptional = true, description = "use thermometer on substance"))
+      gSequenceUnordered.append(new GoalPastActionUseObjectOnObject(deviceName = instrumentName.get, patientObjectName = objectName.get, _isOptional = true, keysMustBeCompletedBefore = Array("heatObject"), description = "use thermometer on substance (after it has been heated)"))
+
+      // Have the substance alone in a single container
+      gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = Array(objectName.get), _isOptional = true, description = "have substance alone in a single container"))
+
+      // Activate a heating device
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "stove", _isOptional = true, description = "activate heater (stove)"))
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "blast furnace", _isOptional = true, description = "activate heater (blast furnace)"))
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "oven", _isOptional = true, description = "activate heater (oven)"))
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "hot plate", _isOptional = true, description = "activate heater (hot plate)"))
+      // Or, build a fire in the fire pit
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("lighter"), _isOptional = true, description = "have lighter in inventory"))
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "fire pit", validObjectNames = Array("wood"), _isOptional = true, description = "move wood into fire pit", key = "wood1"))
+      gSequenceUnordered.append(new GoalTemperatureOnFire(objectName = "wood", _isOptional = true, description = "ignite wood", key = "ignite", keysMustBeCompletedBefore = Array("wood1")) )
+
+      // Put the substance on a heating device
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "stove", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (stove)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "blast furnace", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (blast furnace)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "oven", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (oven)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "hot plate", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (hot plate)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "fire pit", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (fire pit)"))
+
+      // Heat object (when the substance is in focus)
+      gSequenceUnordered.append(new GoalTemperatureIncrease(minTempIncreaseC = 20.0, _isOptional = true, key = "heatObject", keysMustBeCompletedBefore = Array("focusObject"), description = "heat substance by at least 20C"))
+
+
+
+
 
       // Description
       description = "Your task is to measure the melting point of " + objectName.get + ", which is located around the " + objectLocation.get + ". "
@@ -167,7 +214,7 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
     }
 
     val taskLabel = taskName + "-variation" + combinationNum
-    val goalSequence = new GoalSequence(gSequence.toArray)
+    val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
     val task = new Task(taskName, description, goalSequence)
 

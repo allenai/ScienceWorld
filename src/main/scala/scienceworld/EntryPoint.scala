@@ -58,7 +58,7 @@ object EntryPoint {
 
     //val taskName = taskMaker.getTaskList()(5)
     //val taskName = taskMaker.getTaskList()(13)
-    val taskName = taskMaker.getTaskList()(4)
+    val taskName = taskMaker.getTaskList()(5)
 
     val simplificationStr = "teleportAction,noElectricalAction,openDoors"
     //val simplificationStr = ""
