@@ -176,8 +176,6 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
       gSequence.append(new GoalFind(objectName = objectName.get, failIfWrong = true, _defocusOnSuccess = false, description = "focus on object"))    // Keep focus for next step
       gSequence.append(new GoalContainerByTemperature(tempThreshold = tempPoint.get, containerNameAbove = boxAbove.get, containerNameBelow = boxBelow.get, description = "move object to correct answer box"))
 
-      //gSequence.append(new GoalObjectInContainerByName(containerName = correctContainerName, failureContainers = List(incorrectContainerName))) // Then, make sure it's in the correct answer container
-
       // Unordered
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = instrumentName.get, _isOptional = true, description = "be in same location as " + instrumentName.get))
       gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("thermometer"), _isOptional = true, description = "have thermometer in inventory"))

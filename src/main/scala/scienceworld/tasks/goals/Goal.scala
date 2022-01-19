@@ -246,6 +246,7 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
               if (goalReturn.subgoalSuccess) {
                 if (curSubgoal.get.satisfiedWithObject != None) this.lastSatisfiedWithObject = curSubgoal.get.satisfiedWithObject
                 if (curSubgoal.get.defocusOnSuccess) objMonitor.clearMonitoredObjects() // Clear focus, if the goal asks to do this
+                if (curSubgoal.get.key.length > 0) this.completedKeys.add(curSubgoal.get.key)
                 break()
               }
               if (goalReturn.taskFailure) break()
@@ -301,6 +302,7 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
   def getProgressString():String = {
     val os = new StringBuilder()
 
+    os.append("Completed keys: " + this.completedKeys.mkString(", "))
     os.append("-" * 100 + "\n")
     os.append("Sequential Subgoals:\n")
     os.append("-" * 100 + "\n")
@@ -309,7 +311,7 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
       val subgoalClass = this.subgoals(i).getClass.toString.split("\\.").last
       val passed = if (i<this.curSubgoalIdx) true else false
 
-      os.append(i + "\t" + passed + "\t" + subgoalClass.formatted("%30s") + "\t" + subgoalDesc + "\n")
+      os.append(i + "\t" + passed + "\t" + subgoalClass.formatted("%40s") + "\t" + subgoalDesc + "\n")
     }
 
     os.append("-" * 100 + "\n")
@@ -320,7 +322,7 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
       val subgoalClass = this.optionalUnorderedSubgoals(i).getClass.toString.split("\\.").last
       val passed = this.optionalUnorderedSubgoalsCompleted(i)
 
-      os.append(i + "\t" + passed + "\t" + subgoalClass.formatted("%30s") + "\t" + subgoalDesc + "\n")
+      os.append(i + "\t" + passed + "\t" + subgoalClass.formatted("%40s") + "\t" + subgoalDesc + "\n")
     }
 
     os.append("-" * 100 + "\n")

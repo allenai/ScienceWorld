@@ -3,6 +3,7 @@ package scienceworld.tasks.goals.specificgoals
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.misc.InclinedPlane
+import scienceworld.objects.taskitems.AnswerBox
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 
@@ -14,6 +15,36 @@ class GoalFind(objectName:String = "", failIfWrong:Boolean = true, _defocusOnSuc
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
     // Check for a focus object
     if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    if (obj.get.name.toLowerCase == objectName.toLowerCase) {
+      // Case: The focus is on an object with the correct name
+      this.satisfiedWithObject = obj
+      return GoalReturn.mkSubgoalSuccess()
+    } else {
+      // Case: The focus is on an object with a different name
+      if (failIfWrong) {
+        // Return: Task failure
+        return GoalReturn.mkTaskFailure()
+      } else {
+        // Return: Subgoal not passed
+        return GoalReturn.mkSubgoalUnsuccessful()
+      }
+    }
+
+  }
+
+}
+
+class GoalFindAnswerBox(objectName:String = "", failIfWrong:Boolean = true, _defocusOnSuccess:Boolean = false, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
+  this.defocusOnSuccess = _defocusOnSuccess
+  this.isOptional = _isOptional
+
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // Check for a focus object
+    if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    // Do not fail if the focus is on something other than an answer box
+    if (!obj.get.isInstanceOf[AnswerBox]) return GoalReturn.mkSubgoalUnsuccessful()
 
     if (obj.get.name.toLowerCase == objectName.toLowerCase) {
       // Case: The focus is on an object with the correct name
