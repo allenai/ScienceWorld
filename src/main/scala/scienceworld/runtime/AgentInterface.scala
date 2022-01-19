@@ -5,6 +5,7 @@ import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.actions.{Action, ActionInventory, ActionLookAround, ActionTaskDesc}
 import scienceworld.input.{ActionDefinitions, ActionHandler, ExampleAction, InputParser}
 import scienceworld.objects.agent.Agent
+import scienceworld.objects.electricalcomponent.Terminal
 import scienceworld.runtime.pythonapi.TemplateAction
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.Task
@@ -153,17 +154,30 @@ class AgentInterface(universe:EnvObject, agent:Agent, task:Task, simplificationS
 
     val elems = new ArrayBuffer[String]
     for (obj <- allObjs) {
-      println(obj.name)
-      val uuid = obj.uuid
-      val typeId = obj.typeID
-      val referents = obj.getReferents()
-      val referentsProcessed = new ArrayBuffer[String]
-      for (referent <- referents) {
-        referentsProcessed.append("\"" + referent + "\"")
+      //println(obj.name)
+      // If the electrical simplification is enabled, then remove all electrical terminals from the output list
+      var filter:Boolean = false
+      if (SimplifierProcessor.isSimplificationEnabled(SimplifierProcessor.SIMPLIFICATION_NO_ELECTRICAL_ACTION)) {
+        obj match {
+          case term:Terminal => { filter = true }
+          case _ => {
+            // Do nothing
+          }
+        }
       }
 
-      val json = "\"" + uuid + "\":{ \"type_id\":" + typeId + ", \"referents\":[" + referentsProcessed.mkString(", ") + "] }"
-      elems.append(json)
+      if (!filter) {
+        val uuid = obj.uuid
+        val typeId = obj.typeID
+        val referents = obj.getReferents()
+        val referentsProcessed = new ArrayBuffer[String]
+        for (referent <- referents) {
+          referentsProcessed.append("\"" + referent + "\"")
+        }
+
+        val json = "\"" + uuid + "\":{ \"type_id\":" + typeId + ", \"referents\":[" + referentsProcessed.mkString(", ") + "] }"
+        elems.append(json)
+      }
     }
 
     val jsonOut = "{ " + elems.mkString(", ") + " }"

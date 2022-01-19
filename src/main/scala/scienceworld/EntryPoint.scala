@@ -61,6 +61,7 @@ object EntryPoint {
     val taskName = taskMaker.getTaskList()(3)
 
     val simplificationStr = "teleportAction,noElectricalAction,openDoors"
+    //val simplificationStr = ""
 
     // Setup task
     val (task_, taskErrStr) = taskMaker.doTaskSetup(taskName, 10, universe, agent)
@@ -122,6 +123,8 @@ object EntryPoint {
         println("Valid actions: " + agentInterface.getValidActionObjectCombinationsJSON() )
 
         println("Goal sequence progress: \n" + agentInterface.getGoalProgressStr() )
+
+        println("Referents: " + agentInterface.getAllObjectIdsTypesReferentsLUTJSON() )
 
         //println("Possible actions:\n\t" + actionHandler.getActionExamplesPlainText().mkString("\n\t"))
         //println("Possible Combinations:\n\t" + agentInterface.getPossibleActionObjectCombinations().mkString("\n\t") )
