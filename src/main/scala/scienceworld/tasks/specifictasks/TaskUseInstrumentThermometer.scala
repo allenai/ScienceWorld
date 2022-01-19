@@ -8,7 +8,7 @@ import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalCond
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueBool, TaskValueDouble, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalContainerByTemperature, GoalFind, GoalObjectInContainerByName}
+import scienceworld.tasks.goals.specificgoals.{GoalContainerByTemperature, GoalFind, GoalInRoomWithObject, GoalMoveToLocation, GoalMoveToNewLocation, GoalObjectInContainerByName, GoalObjectsInSingleContainer, GoalPastActionUseObjectOnObject, GoalSpecificObjectInDirectContainer}
 import TaskUseInstrumentThermometer._
 import scienceworld.objects.containers.WoodCup
 import scienceworld.objects.devices.Thermometer
@@ -166,16 +166,28 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
 
     var subTask = ""
     val gSequence = new ArrayBuffer[Goal]
+    val gSequenceUnordered = new ArrayBuffer[Goal]
     var description:String = "<empty>"
     if (mode == MODE_USE_THERMOMETER) {
       // Figure out the correct answer container based on the object's conductivity
 
       // Goal sequence
-      gSequence.append(new GoalFind(objectName = instrumentName.get, failIfWrong = true, _defocusOnSuccess = true))
-      gSequence.append(new GoalFind(objectName = objectName.get, failIfWrong = true, _defocusOnSuccess = false))    // Keep focus for next step
-      gSequence.append(new GoalContainerByTemperature(tempThreshold = tempPoint.get, containerNameAbove = boxAbove.get, containerNameBelow = boxBelow.get))
+      gSequence.append(new GoalFind(objectName = instrumentName.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on instrument"))
+      gSequence.append(new GoalFind(objectName = objectName.get, failIfWrong = true, _defocusOnSuccess = false, description = "focus on object"))    // Keep focus for next step
+      gSequence.append(new GoalContainerByTemperature(tempThreshold = tempPoint.get, containerNameAbove = boxAbove.get, containerNameBelow = boxBelow.get, description = "move object to correct answer box"))
 
       //gSequence.append(new GoalObjectInContainerByName(containerName = correctContainerName, failureContainers = List(incorrectContainerName))) // Then, make sure it's in the correct answer container
+
+      // Unordered
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = instrumentName.get, _isOptional = true, description = "be in same location as " + instrumentName.get))
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("thermometer"), _isOptional = true, description = "have thermometer in inventory"))
+      gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
+      gSequenceUnordered.append(new GoalMoveToLocation(objectLocation.get, _isOptional = true, key = "move1", description = "move to the location asked by the task (object location)") )
+      gSequenceUnordered.append(new GoalMoveToLocation(boxLocation.get, _isOptional = true, key = "move2", keysMustBeCompletedBefore = Array("move1"), description = "move to the location asked by the task (answer box location)") )
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array(objectName.get), _isOptional = true, description = "have task object in inventory"))
+      gSequenceUnordered.append(new GoalPastActionUseObjectOnObject(deviceName = instrumentName.get, patientObjectName = objectName.get, _isOptional = true, description = "use instrument on object"))
+      gSequenceUnordered.append(new GoalPastActionUseObjectOnObject(deviceName = instrumentName.get, patientObjectName = objectName.get, _isOptional = true, keysMustBeCompletedBefore = Array("move2"), description = "use instrument on object (in answer box location)"))
+
 
       // Description
       description = "Your task is to measure the temperature of " + objectName.get + ", which is located around the " + objectLocation.get + ". "
@@ -189,7 +201,7 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
     }
 
     val taskLabel = taskName + "-variation" + combinationNum
-    val goalSequence = new GoalSequence(gSequence.toArray)
+    val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
     val task = new Task(taskName, description, goalSequence)
 
