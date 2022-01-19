@@ -1,5 +1,6 @@
 package scienceworld.objects.containers
 
+import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.objects.document.Book
 import scienceworld.objects.substance.Water
 import scienceworld.properties._
@@ -161,11 +162,12 @@ class FlowerPot extends Container {
   override def tick(): Boolean = {
     // DEBUG: Add water if there is none
 
-    println ("### FLOWER POT: Infinite water")
-    if (this.getContainedObjectsOfType[Water]().size == 0) {
-      this.addObject( new Water() )
+    //println ("### FLOWER POT: Infinite water")
+    if (SimplifierProcessor.isSimplificationEnabled(SimplifierProcessor.SIMPLIFICATION_SELF_WATERING_FLOWER_POTS)) {
+      if (this.getContainedObjectsOfType[Water]().size == 0) {
+        this.addObject(new Water())
+      }
     }
-
 
     super.tick()
   }

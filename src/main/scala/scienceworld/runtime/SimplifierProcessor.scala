@@ -92,10 +92,11 @@ class SimplificationNoElectricalActions extends Simplification(label = SIMPLIFIC
 object SimplifierProcessor {
   val simplifications = new ArrayBuffer[Simplification]()
 
-  val SIMPLIFICATION_TELEPORT_ACTION        = "teleportAction"
-  val SIMPLIFICATION_NO_ELECTRICAL_ACTION   = "noElectricalAction"
-  val SIMPLIFICATION_OPEN_DOORS             = "openDoors"
-  val SIMPLIFICATION_OPEN_CONTAINERS        = "openContainers"
+  val SIMPLIFICATION_TELEPORT_ACTION            = "teleportAction"
+  val SIMPLIFICATION_NO_ELECTRICAL_ACTION       = "noElectricalAction"
+  val SIMPLIFICATION_OPEN_DOORS                 = "openDoors"
+  val SIMPLIFICATION_OPEN_CONTAINERS            = "openContainers"
+  val SIMPLIFICATION_SELF_WATERING_FLOWER_POTS  = "selfWateringFlowerPots"
 
   // Accessors
   def addSimplification(simplification:Simplification): Unit = {
