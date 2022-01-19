@@ -165,10 +165,45 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
     var description:String = "<empty>"
     if (mode == MODE_GROW_PLANT) {
-      gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_SEED) )
-      gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_SEEDLING) )
-      gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_ADULT_PLANT) )
-      gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_REPRODUCING) )
+      gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_SEED, description = "focus plant is in seed stage") )
+      gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_SEEDLING, description = "focus plant is in seedling stage") )
+      gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_ADULT_PLANT, description = "focus plant is in adult stage") )
+      gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_REPRODUCING, description = "focus plant is in reproducing stage") )
+
+      // Seed Jar
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = "seed jar", _isOptional = true, description = "be in same location as seed jar"))
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("seed jar"), _isOptional = true, key = "haveSeedJar", description = "have seed jar in inventory"))
+
+      // Shovel/Soil
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("shovel"), _isOptional = true, description = "have shovel in inventory"))
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("soil"), _isOptional = true, description = "have soil in inventory"))
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = "soil", _isOptional = true, description = "be in same location as soil"))
+
+      // Moving to helpful locations
+      gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
+      gSequenceUnordered.append(new GoalMoveToLocation("green house", _isOptional = true, key = "move1", description = "move to the green house") )
+      gSequenceUnordered.append(new GoalMoveToLocation("green house", _isOptional = true, key = "move2", keysMustBeCompletedBefore = Array("haveSeedJar"), description = "move to the green house (after having seed jar)") )
+
+      // Have soil in flower pots
+      var cIdx:Int = 1
+      for (containerName <- containerNames) {
+        gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName, validObjectNames = Array("soil"), _isOptional = true, description = "have soil in flower pot (" + cIdx + ")"))
+        cIdx += 1
+      }
+
+      // Have water in flower pots
+      var wIdx:Int = 1
+      for (containerName <- containerNames) {
+        gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName, validObjectNames = Array("water"), _isOptional = true, description = "have water in flower pot (" + wIdx + ")"))
+        wIdx += 1
+      }
+
+      // Have seeds in flower pots
+      var sIdx:Int = 1
+      for (containerName <- containerNames) {
+        gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName, validObjectNames = Array(seedType + " seed"), _isOptional = true, description = "have seed in flower pot (" + sIdx + ")"))
+        sIdx += 1
+      }
 
       description = "Your task is to grow a " + seedType + " plant from seed. Seeds can be found in the " + seedLocation + ". First, focus on a seed. Then, make changes to the environment that grow the plant until it reaches the reproduction life stage."
 
@@ -228,38 +263,6 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
       // Have a fruit grow on the plant (i.e., be in the same location as that fruit, on the tree)
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = seedType, _isOptional = true, description = "be in same location as fruit"))
 
-
-      /*
-      // Pick up substance (potentially useful)
-      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array(objectName.get), _isOptional = true, description = "have task object in inventory"))
-
-      // Use thermometer on substance
-      gSequenceUnordered.append(new GoalPastActionUseObjectOnObject(deviceName = instrumentName.get, patientObjectName = objectName.get, _isOptional = true, description = "use thermometer on substance"))
-      gSequenceUnordered.append(new GoalPastActionUseObjectOnObject(deviceName = instrumentName.get, patientObjectName = objectName.get, _isOptional = true, keysMustBeCompletedBefore = Array("heatObject"), description = "use thermometer on substance (after it has been heated)"))
-
-      // Have the substance alone in a single container
-      gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = Array(objectName.get), _isOptional = true, description = "have substance alone in a single container"))
-
-      // Activate a heating device
-      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "stove", _isOptional = true, description = "activate heater (stove)"))
-      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "blast furnace", _isOptional = true, description = "activate heater (blast furnace)"))
-      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "oven", _isOptional = true, description = "activate heater (oven)"))
-      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "hot plate", _isOptional = true, description = "activate heater (hot plate)"))
-      // Or, build a fire in the fire pit
-      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("lighter"), _isOptional = true, description = "have lighter in inventory"))
-      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "fire pit", validObjectNames = Array("wood"), _isOptional = true, description = "move wood into fire pit", key = "wood1"))
-      gSequenceUnordered.append(new GoalTemperatureOnFire(objectName = "wood", _isOptional = true, description = "ignite wood", key = "ignite", keysMustBeCompletedBefore = Array("wood1")) )
-
-      // Put the substance on a heating device
-      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "stove", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (stove)"))
-      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "blast furnace", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (blast furnace)"))
-      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "oven", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (oven)"))
-      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "hot plate", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (hot plate)"))
-      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "fire pit", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (fire pit)"))
-
-      // Heat object (when the substance is in focus)
-      gSequenceUnordered.append(new GoalTemperatureIncrease(minTempIncreaseC = 20.0, _isOptional = true, key = "heatObject", keysMustBeCompletedBefore = Array("focusObject"), description = "heat substance by at least 20C"))
-      */
 
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
