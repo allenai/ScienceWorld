@@ -7,6 +7,8 @@ import scienceworld.objects.livingthing.plant.Plant
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
 
+import scala.util.control.Breaks.{break, breakable}
+
 /*
  * Focus on specific classes of objects
  */
@@ -240,6 +242,42 @@ class GoalObjectInContainerByName(containerName:String = "", failureContainers:L
     // If we reach here, the condition was not satisfied
     return GoalReturn.mkSubgoalUnsuccessful()
   }
+
+}
+
+
+class GoalContainerOpen(containerName:String = "", _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
+  this.isOptional = _isOptional
+
+  override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
+    // NOTE: Focus object not required
+
+    // If agent is not in a container, do not continue evaluation
+    if (agent.getContainer().isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
+
+    // Get agent location
+    val agentLocation = agent.getContainer().get
+    val visibleObjects = agentLocation.getContainedObjectsAndPortalsRecursive(includeHidden = false, includePortalConnections = false)
+
+    var found:Boolean = false
+    breakable {
+      for (vObj <- visibleObjects) {
+        if ((vObj.name.toLowerCase == containerName.toLowerCase) || (vObj.getDescriptName().toLowerCase == containerName.toLowerCase)) {
+          if ((vObj.propContainer.isDefined) && (vObj.propContainer.get.isOpen)) {
+            found = true
+            break()
+          }
+        }
+      }
+    }
+
+    // First initialization: Keep track of starting location
+    if (found) {
+      return GoalReturn.mkSubgoalSuccess()
+    }
+
+    // Otherwise
+    return GoalReturn.mkSubgoalUnsuccessful()  }
 
 }
 

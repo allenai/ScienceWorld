@@ -12,9 +12,9 @@ import scienceworld.processes.PlantReproduction
 import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT, PLANT_STAGE_REPRODUCING, PLANT_STAGE_SEED, PLANT_STAGE_SEEDLING}
 import scienceworld.properties.LeadProp
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.{Task, TaskDisable, TaskMaker1, TaskModifier, TaskObject}
+import scienceworld.tasks.{Task, TaskDisable, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalChangeStateOfMatter, GoalFind, GoalFocusOnAnimal, GoalFocusOnLivingThing, GoalFocusOnNonlivingThing, GoalFocusOnPlant, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter, GoalLifeStage, GoalObjectInContainer}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalChangeStateOfMatter, GoalContainerOpen, GoalFind, GoalFocusOnAnimal, GoalFocusOnLivingThing, GoalFocusOnNonlivingThing, GoalFocusOnPlant, GoalInRoomWithObject, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter, GoalLifeStage, GoalLifeStageAnywhere, GoalMoveToLocation, GoalMoveToNewLocation, GoalObjectInContainer, GoalObjectsInSingleContainer, GoalPastActionUseObjectOnObject, GoalSpecificObjectInDirectContainer, GoalTemperatureIncrease, GoalTemperatureOnFire}
 import scienceworld.tasks.specifictasks.TaskChangeOfState.{MODE_BOIL, MODE_CHANGESTATE, MODE_FREEZE, MODE_MELT}
 import scienceworld.tasks.specifictasks.TaskFindLivingNonLiving.{MODE_ANIMAL, MODE_LIVING, MODE_NONLIVING, MODE_PLANT}
 import scienceworld.tasks.specifictasks.TaskGrowPlant.{MODE_GROW_FRUIT, MODE_GROW_PLANT}
@@ -35,25 +35,25 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
   for (location <- locations) {
 
     val seedJarApple = this.mkSeedJar(PlantReproduction.PLANT_APPLE)
-    seeds.append(Array(new TaskObject(seedJarApple.name, Some(seedJarApple), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+    seeds.append(Array(new TaskObject(seedJarApple.name, Some(seedJarApple), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_APPLE), new TaskValueStr("location", location)))
 
     val seedJarAvocado = this.mkSeedJar(PlantReproduction.PLANT_AVOCADO)
-    seeds.append(Array(new TaskObject(seedJarAvocado.name, Some(seedJarAvocado), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+    seeds.append(Array(new TaskObject(seedJarAvocado.name, Some(seedJarAvocado), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_AVOCADO), new TaskValueStr("location", location)))
 
     val seedJarBanana = this.mkSeedJar(PlantReproduction.PLANT_BANANA)
-    seeds.append(Array(new TaskObject(seedJarBanana.name, Some(seedJarBanana), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+    seeds.append(Array(new TaskObject(seedJarBanana.name, Some(seedJarBanana), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_BANANA), new TaskValueStr("location", location)))
 
     val seedJarCherry = this.mkSeedJar(PlantReproduction.PLANT_CHERRY)
-    seeds.append(Array(new TaskObject(seedJarCherry.name, Some(seedJarCherry), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+    seeds.append(Array(new TaskObject(seedJarCherry.name, Some(seedJarCherry), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_CHERRY), new TaskValueStr("location", location)))
 
     val seedJarLemon = this.mkSeedJar(PlantReproduction.PLANT_LEMON)
-    seeds.append(Array(new TaskObject(seedJarLemon.name, Some(seedJarLemon), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+    seeds.append(Array(new TaskObject(seedJarLemon.name, Some(seedJarLemon), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_LEMON), new TaskValueStr("location", location)))
 
     val seedJarOrange = this.mkSeedJar(PlantReproduction.PLANT_ORANGE)
-    seeds.append(Array(new TaskObject(seedJarOrange.name, Some(seedJarOrange), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+    seeds.append(Array(new TaskObject(seedJarOrange.name, Some(seedJarOrange), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_ORANGE), new TaskValueStr("location", location)))
 
     val seedJarPeach = this.mkSeedJar(PlantReproduction.PLANT_PEACH)
-    seeds.append(Array(new TaskObject(seedJarApple.name, Some(seedJarPeach), roomToGenerateIn = location, Array.empty[String], generateNear = 0)))
+    seeds.append(Array(new TaskObject(seedJarApple.name, Some(seedJarPeach), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_PEACH), new TaskValueStr("location", location)))
 
   }
 
@@ -64,33 +64,43 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
   // Case 1: N flower pots, with soil inside
   val case1tm = new ArrayBuffer[TaskModifier]()
+  val containerNames1 = new ArrayBuffer[String]
   for (i <- 0 until numContainers) {
     val container = new FlowerPot()
     container.name = "flower pot " + (i+1)
     container.addObject( new Soil() )
     case1tm.append( new TaskObject(container.name, Some(container), roomToGenerateIn = "green house", Array.empty[String], generateNear = 0))
+    containerNames1.append(container.name)
   }
+  case1tm.append( new TaskValueStr("containerNames", containerNames1.mkString(",")))
   plantContainers.append( case1tm.toArray )
+
 
   // Case 2: N flower pots, no soil inside (but, soil nearby)
   val case2tm = new ArrayBuffer[TaskModifier]()
+  val containerNames2 = new ArrayBuffer[String]
   for (i <- 0 until numContainers) {
     val container = new FlowerPot()
     container.name = "flower pot " + (i+1)
     case2tm.append( new TaskObject(container.name, Some(container), roomToGenerateIn = "green house", Array.empty[String], generateNear = 0))
+    containerNames2.append(container.name)
 
     val soil = new Soil()
     case2tm.append( new TaskObject(soil.name, Some(soil), roomToGenerateIn = "green house", Array.empty[String], generateNear = 0))
   }
+  case2tm.append( new TaskValueStr("containerNames", containerNames2.mkString(",")))
   plantContainers.append( case2tm.toArray )
 
   // Case 3: N flower pots, no soil nearby
   val case3tm = new ArrayBuffer[TaskModifier]()
+  val containerNames3 = new ArrayBuffer[String]
   for (i <- 0 until numContainers) {
     val container = new FlowerPot()
     container.name = "flower pot " + (i+1)
     case3tm.append( new TaskObject(container.name, Some(container), roomToGenerateIn = "green house", Array.empty[String], generateNear = 0))
+    containerNames3.append(container.name)
   }
+  case3tm.append( new TaskValueStr("containerNames", containerNames3.mkString(",")))
   plantContainers.append( case3tm.toArray )
 
 
@@ -144,23 +154,15 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     // Step 1: Find seed type
 
     // The first modifier will be the seed jar.
-    val seedJarMod = modifiers(0)
-    var seedType = ""
-    var seedLocation = ""
-    seedJarMod match {
-      case s:TaskObject => {
-        seedType = this.getSeedType(s.exampleInstance.get)
-        seedLocation = s.roomToGenerateIn
-      }
-      case _ => {
-        throw new RuntimeException("ERROR: Unknown task modifier found, where seed jar modifier was expected." + seedJarMod.toString)
-      }
-    }
-
+    val seedType = this.getTaskValueStr(modifiers, "seedType").get
+    val seedLocation = this.getTaskValueStr(modifiers, "location").get
+    val containerNames = this.getTaskValueStr(modifiers, "containerNames").get.split(",")
 
 
     var subTask = ""
     val gSequence = new ArrayBuffer[Goal]
+    val gSequenceUnordered = new ArrayBuffer[Goal]
+
     var description:String = "<empty>"
     if (mode == MODE_GROW_PLANT) {
       gSequence.append( new GoalLifeStage(lifeFormType = seedType, lifeStageName = PLANT_STAGE_SEED) )
@@ -172,16 +174,100 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
     } else if (mode == MODE_GROW_FRUIT) {
       // TODO: Currently requires all other apples/fruits to be erased from the environment?  (and possibly all other fruiting trees?)
-      gSequence.append( new GoalFind(objectName = seedType) )     // e.g. "seedtype" will be "apple"
+      gSequence.append( new GoalFind(objectName = seedType, description = "focus on the grown fruit") )     // e.g. "seedtype" will be "apple"
 
       description = "Your task is to grow a " + seedType + ". This will require growing several plants, and them being crosspollinated to produce fruit.  Seeds can be found in the " + seedLocation + ". To complete the task, focus on the " + seedType + "."
+
+      // Seed Jar
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = "seed jar", _isOptional = true, description = "be in same location as seed jar"))
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("seed jar"), _isOptional = true, key = "haveSeedJar", description = "have seed jar in inventory"))
+
+      // Shovel/Soil
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("shovel"), _isOptional = true, description = "have shovel in inventory"))
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("soil"), _isOptional = true, description = "have soil in inventory"))
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = "soil", _isOptional = true, description = "be in same location as soil"))
+
+      // Moving to helpful locations
+      gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
+      gSequenceUnordered.append(new GoalMoveToLocation("green house", _isOptional = true, key = "move1", description = "move to the green house") )
+      gSequenceUnordered.append(new GoalMoveToLocation("green house", _isOptional = true, key = "move2", keysMustBeCompletedBefore = Array("haveSeedJar"), description = "move to the green house (after having seed jar)") )
+
+      // Have soil in flower pots
+      var cIdx:Int = 1
+      for (containerName <- containerNames) {
+        gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName, validObjectNames = Array("soil"), _isOptional = true, description = "have soil in flower pot (" + cIdx + ")"))
+        cIdx += 1
+      }
+
+      // Have water in flower pots
+      var wIdx:Int = 1
+      for (containerName <- containerNames) {
+        gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName, validObjectNames = Array("water"), _isOptional = true, description = "have water in flower pot (" + wIdx + ")"))
+        wIdx += 1
+      }
+
+      // Have seeds in flower pots
+      var sIdx:Int = 1
+      for (containerName <- containerNames) {
+        gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName, validObjectNames = Array(seedType + " seed"), _isOptional = true, description = "have seed in flower pot (" + sIdx + ")"))
+        sIdx += 1
+      }
+
+      // Have plants grow through life stages
+      for (numToFind <- 1 to 2) {
+        gSequenceUnordered.append(new GoalLifeStageAnywhere(lifeFormType = seedType, lifeStageName = PLANT_STAGE_SEED, minNumToFind = numToFind, description = "have at least " + numToFind + " plants as seeds"))
+        gSequenceUnordered.append(new GoalLifeStageAnywhere(lifeFormType = seedType, lifeStageName = PLANT_STAGE_SEEDLING, minNumToFind = numToFind, description = "have at least " + numToFind + " plants as seedlings"))
+        gSequenceUnordered.append(new GoalLifeStageAnywhere(lifeFormType = seedType, lifeStageName = PLANT_STAGE_ADULT_PLANT, minNumToFind = numToFind, description = "have at least " + numToFind + " plants as adult plants"))
+        gSequenceUnordered.append(new GoalLifeStageAnywhere(lifeFormType = seedType, lifeStageName = PLANT_STAGE_REPRODUCING, minNumToFind = numToFind, key = "atLeast" + numToFind + "Reproducing", description = "have at least " + numToFind + " plants as reproducing plants"))
+      }
+
+      // Have pollinators in the same room as plants
+      gSequenceUnordered.append(new GoalContainerOpen(containerName = "bee hive", _isOptional = true, description = "bee hive open (after reprod. life stage)"))
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = "adult bee", _isOptional = true, keysMustBeCompletedBefore = Array("atLeast2Reproducing"), description = "be in same location as pollinator (after reprod. life stage)"))
+
+      // Have a fruit grow on the plant (i.e., be in the same location as that fruit, on the tree)
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = seedType, _isOptional = true, description = "be in same location as fruit"))
+
+
+      /*
+      // Pick up substance (potentially useful)
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array(objectName.get), _isOptional = true, description = "have task object in inventory"))
+
+      // Use thermometer on substance
+      gSequenceUnordered.append(new GoalPastActionUseObjectOnObject(deviceName = instrumentName.get, patientObjectName = objectName.get, _isOptional = true, description = "use thermometer on substance"))
+      gSequenceUnordered.append(new GoalPastActionUseObjectOnObject(deviceName = instrumentName.get, patientObjectName = objectName.get, _isOptional = true, keysMustBeCompletedBefore = Array("heatObject"), description = "use thermometer on substance (after it has been heated)"))
+
+      // Have the substance alone in a single container
+      gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = Array(objectName.get), _isOptional = true, description = "have substance alone in a single container"))
+
+      // Activate a heating device
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "stove", _isOptional = true, description = "activate heater (stove)"))
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "blast furnace", _isOptional = true, description = "activate heater (blast furnace)"))
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "oven", _isOptional = true, description = "activate heater (oven)"))
+      gSequenceUnordered.append(new GoalActivateDeviceWithName(deviceName = "hot plate", _isOptional = true, description = "activate heater (hot plate)"))
+      // Or, build a fire in the fire pit
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("lighter"), _isOptional = true, description = "have lighter in inventory"))
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "fire pit", validObjectNames = Array("wood"), _isOptional = true, description = "move wood into fire pit", key = "wood1"))
+      gSequenceUnordered.append(new GoalTemperatureOnFire(objectName = "wood", _isOptional = true, description = "ignite wood", key = "ignite", keysMustBeCompletedBefore = Array("wood1")) )
+
+      // Put the substance on a heating device
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "stove", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (stove)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "blast furnace", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (blast furnace)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "oven", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (oven)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "hot plate", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (hot plate)"))
+      gSequenceUnordered.append(new GoalObjectInContainer(containerName = "fire pit", _isOptional = true, keysMustBeCompletedBefore = Array("focusObject"), description = "have substance on heater (fire pit)"))
+
+      // Heat object (when the substance is in focus)
+      gSequenceUnordered.append(new GoalTemperatureIncrease(minTempIncreaseC = 20.0, _isOptional = true, key = "heatObject", keysMustBeCompletedBefore = Array("focusObject"), description = "heat substance by at least 20C"))
+      */
+
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
     }
 
     val taskLabel = taskName + "-variation" + combinationNum
     //val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName + " in the " + answerBoxLocation + "."
-    val goalSequence = new GoalSequence(gSequence.toArray)
+    val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
     val task = new Task(taskName, description, goalSequence)
 

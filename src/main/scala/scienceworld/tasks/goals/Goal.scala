@@ -302,7 +302,7 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
   def getProgressString():String = {
     val os = new StringBuilder()
 
-    os.append("Completed keys: " + this.completedKeys.mkString(", "))
+    os.append("Completed keys: " + this.completedKeys.mkString(", ") + "\n")
     os.append("-" * 100 + "\n")
     os.append("Sequential Subgoals:\n")
     os.append("-" * 100 + "\n")
