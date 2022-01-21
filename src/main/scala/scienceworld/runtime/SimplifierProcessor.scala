@@ -83,6 +83,13 @@ class SimplificationNoElectricalActions extends Simplification(label = SIMPLIFIC
 
 }
 
+/*
+ * Watering
+ */
+class SimplificationSelfWateringFlowerPots extends Simplification(label = SIMPLIFICATION_SELF_WATERING_FLOWER_POTS, description = "Flower pots are self-watering.") {
+
+}
+
 
 
 /*
@@ -199,6 +206,8 @@ object SimplifierProcessor {
 
     out.append( new SimplificationTeleportAction() )
     out.append( new SimplificationNoElectricalActions() )
+
+    out.append( new SimplificationSelfWateringFlowerPots() )
 
     return out.toArray
   }
