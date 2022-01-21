@@ -175,14 +175,6 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = "seed jar", _isOptional = true, description = "be in same location as seed jar"))
       gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("seed jar"), _isOptional = true, key = "haveSeedJar", description = "have seed jar in inventory"))
 
-      /*
-      // Should have soil in them
-      // Shovel/Soil
-      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("shovel"), _isOptional = true, description = "have shovel in inventory"))
-      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("soil"), _isOptional = true, description = "have soil in inventory"))
-      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = "soil", _isOptional = true, description = "be in same location as soil"))
-       */
-
       // Moving to helpful locations
       gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
       gSequenceUnordered.append(new GoalMoveToLocation("green house", _isOptional = true, key = "move1", description = "move to the green house") )
@@ -221,7 +213,7 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
       gSequenceUnordered.append(new GoalContainerOpen(containerName = "bee hive", _isOptional = true, keysMustBeCompletedBefore = Array("atLeast2Reproducing"), description = "bee hive open (after reprod. life stage)"))
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = "adult bee", _isOptional = true, keysMustBeCompletedBefore = Array("atLeast2Reproducing"), description = "be in same location as pollinator (after reprod. life stage)"))
 
-      // Have a fruit grow on the plant (i.e., be in the same location as that fruit, on the tree)
+      // Have a seed grow on the plant (i.e., be in the same location as that seed, on the tree)
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = seedType, _isOptional = true, keysMustBeCompletedBefore = Array("atLeast2Reproducing"), description = "be in same location as grown seed"))
 
 

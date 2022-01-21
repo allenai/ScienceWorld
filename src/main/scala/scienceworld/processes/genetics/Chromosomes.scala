@@ -172,7 +172,7 @@ object GeneticReproduction {
       val traitGP1b = traitsP1.get._2
 
       // Get genotype from Parent 2
-      val traitsP2 = cpairParent1.getGenotype(traitName)
+      val traitsP2 = cpairParent2.getGenotype(traitName)
       if (traitsP2.isEmpty) throw new RuntimeException("ERROR: GeneticReproduction.mateGenesPunnetSquare(): Genes for trait not found (" + traitName + ")")
       val traitGP2a = traitsP2.get._1
       val traitGP2b = traitsP2.get._2

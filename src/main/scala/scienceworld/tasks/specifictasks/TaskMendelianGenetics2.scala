@@ -8,8 +8,10 @@ import scienceworld.processes.genetics.{Chromosomes, GeneticTrait, GeneticTraitP
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.GoalFind
+import scienceworld.tasks.goals.specificgoals.{GoalContainerOpen, GoalFind, GoalInRoomWithObject, GoalLifeStageAnywhere, GoalMoveToLocation, GoalMoveToNewLocation, GoalSpecificObjectInDirectContainer}
 import TaskMendelialGenetics2._
+import scienceworld.processes.PlantReproduction
+import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT, PLANT_STAGE_REPRODUCING, PLANT_STAGE_SEED, PLANT_STAGE_SEEDLING}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
@@ -39,23 +41,28 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
       var traits:Chromosomes = null
       var traitNames:Array[String] = null
       var plantName:String = ""
+      var seedType:String = ""
 
       if (plantIdx == 0) {
         traits = new Chromosomes(GeneticTraitUnknownPlantA.mkRandomTraits()) // Make a random instance of the plant, just to get the genetic trait names
         traitNames = traits.getTraitNames()
         plantName = new RandomGeneticsPlantsA().name + " plant"
+        seedType = new RandomGeneticsPlantsA().propLife.get.lifeformType
       } else if (plantIdx == 1) {
         traits = new Chromosomes(GeneticTraitUnknownPlantB.mkRandomTraits()) // Make a random instance of the plant, just to get the genetic trait names
         traitNames = traits.getTraitNames()
         plantName = new RandomGeneticsPlantsB().name + " plant"
+        seedType = new RandomGeneticsPlantsB().propLife.get.lifeformType
       } else if (plantIdx == 2) {
         traits = new Chromosomes(GeneticTraitUnknownPlantC.mkRandomTraits()) // Make a random instance of the plant, just to get the genetic trait names
         traitNames = traits.getTraitNames()
         plantName = new RandomGeneticsPlantsC().name + " plant"
+        seedType = new RandomGeneticsPlantsC().propLife.get.lifeformType
       } else if (plantIdx == 3) {
         traits = new Chromosomes(GeneticTraitUnknownPlantD.mkRandomTraits()) // Make a random instance of the plant, just to get the genetic trait names
         traitNames = traits.getTraitNames()
         plantName = new RandomGeneticsPlantsD().name + " plant"
+        seedType = new RandomGeneticsPlantsD().propLife.get.lifeformType
       } else {
         throw new RuntimeException("ERROR: Unknown plantIdx (" + plantIdx + ")")
       }
@@ -76,7 +83,8 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
             new TaskValueStr(key = "domOrRec", value = domOrRec),
             new TaskValueStr(key = "traitName", value = traitName),
             new TaskValueStr(key = "traitValue", value = specificTraitValue),
-            new TaskValueStr(key = "plantName", value = plantName)
+            new TaskValueStr(key = "plantName", value = plantName),
+            new TaskValueStr(key = "seedType", value = seedType)
           ))
 
         }
@@ -93,9 +101,13 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
     for (i <- 0 until 5) {      // 5 different variations of pot names
       val out = new ArrayBuffer[TaskModifier]()
       val pots = TaskMendelialGenetics2.mkFlowerPots(numPots = 6)
+      val potNames = new ArrayBuffer[String]
       for (pot <- pots) {
         out.append(new TaskObject(pot.name, Some(pot), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = false))
+        potNames.append(pot.name)
       }
+      out.append( new TaskValueStr("flowerPotNames", potNames.mkString(",")) )
+
       flowerpots.append( out.toArray )
     }
 
@@ -182,18 +194,67 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
     val answerBoxRec = this.getTaskValueStr(modifiers, "answerBoxRec")
     if (answerBoxRec.isEmpty) throw new RuntimeException("ERROR: Failed to find answer box (recessive).")
 
+    val flowerPotNames = this.getTaskValueStr(modifiers, "flowerPotNames").get.split(",")
+    val seedType = this.getTaskValueStr(modifiers, "seedType").get
 
     val gSequence = new ArrayBuffer[Goal]
+    val gSequenceUnordered = new ArrayBuffer[Goal]
     var description:String = "<empty>"
     if (mode == MODE_MENDEL_UNKNOWN) {
 
       if (domOrRec.get == GeneticTrait.DOMINANT) {
         // Dominant
-        gSequence.append(new GoalFind(objectName = answerBoxDom.get, failIfWrong = true, _defocusOnSuccess = true))
+        gSequence.append(new GoalFind(objectName = answerBoxDom.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on the correct answer box"))
       } else {
         // Recessive
-        gSequence.append(new GoalFind(objectName = answerBoxRec.get, failIfWrong = true, _defocusOnSuccess = true))
+        gSequence.append(new GoalFind(objectName = answerBoxRec.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on the correct answer box"))
       }
+
+      // Seed Jar
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = "seed jar", _isOptional = true, description = "be in same location as seed jar"))
+      gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName = "inventory", validObjectNames = Array("seed jar"), _isOptional = true, key = "haveSeedJar", description = "have seed jar in inventory"))
+
+      // Moving to helpful locations
+      gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
+      gSequenceUnordered.append(new GoalMoveToLocation("green house", _isOptional = true, key = "move1", description = "move to the green house") )
+      gSequenceUnordered.append(new GoalMoveToLocation("green house", _isOptional = true, key = "move2", keysMustBeCompletedBefore = Array("haveSeedJar"), description = "move to the green house (after having seed jar)") )
+
+      // Have soil in flower pots
+      var cIdx:Int = 1
+      for (containerName <- flowerPotNames) {
+        gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName, validObjectNames = Array("soil"), _isOptional = true, description = "have soil in flower pot (" + cIdx + ")"))
+        cIdx += 1
+      }
+
+      // Have water in flower pots
+      var wIdx:Int = 1
+      for (containerName <- flowerPotNames) {
+        gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName, validObjectNames = Array("water"), _isOptional = true, description = "have water in flower pot (" + wIdx + ")"))
+        wIdx += 1
+      }
+
+      // Have seeds in flower pots
+      var sIdx:Int = 1
+      for (containerName <- flowerPotNames) {
+        gSequenceUnordered.append(new GoalSpecificObjectInDirectContainer(containerName, validObjectNames = Array(seedType + " seed"), _isOptional = true, description = "have seed in flower pot (" + sIdx + ")"))
+        sIdx += 1
+      }
+
+      // Have plants grow through life stages
+      for (numToFind <- 1 to 6) {
+        gSequenceUnordered.append(new GoalLifeStageAnywhere(lifeFormType = seedType, lifeStageName = PLANT_STAGE_SEED, minNumToFind = numToFind, description = "have at least " + numToFind + " plants as seeds"))
+        gSequenceUnordered.append(new GoalLifeStageAnywhere(lifeFormType = seedType, lifeStageName = PLANT_STAGE_SEEDLING, minNumToFind = numToFind, description = "have at least " + numToFind + " plants as seedlings"))
+        gSequenceUnordered.append(new GoalLifeStageAnywhere(lifeFormType = seedType, lifeStageName = PLANT_STAGE_ADULT_PLANT, minNumToFind = numToFind, description = "have at least " + numToFind + " plants as adult plants"))
+        gSequenceUnordered.append(new GoalLifeStageAnywhere(lifeFormType = seedType, lifeStageName = PLANT_STAGE_REPRODUCING, minNumToFind = numToFind, key = "atLeast" + numToFind + "Reproducing", description = "have at least " + numToFind + " plants as reproducing plants"))
+      }
+
+      // Have pollinators in the same room as plants
+      gSequenceUnordered.append(new GoalContainerOpen(containerName = "bee hive", _isOptional = true, keysMustBeCompletedBefore = Array("atLeast2Reproducing"), description = "bee hive open (after reprod. life stage)"))
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = "adult bee", _isOptional = true, keysMustBeCompletedBefore = Array("atLeast2Reproducing"), description = "be in same location as pollinator (after reprod. life stage)"))
+
+      // Have a seed grow on the plant (i.e., be in the same location as that seed, on the tree)
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = seedType, _isOptional = true, keysMustBeCompletedBefore = Array("atLeast2Reproducing"), description = "be in same location as grown seed"))
+
 
       description = "Your task is to determine whether " + traitValue.get + " " + traitName.get + " is a dominant or recessive trait in the " + plantName.get + ". "
       description += "If the trait is dominant, focus on the " + answerBoxDom.get + ". "
@@ -205,7 +266,7 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
 
     val taskLabel = taskName + "-variation" + combinationNum
     //val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName + " in the " + answerBoxLocation + "."
-    val goalSequence = new GoalSequence(gSequence.toArray)
+    val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
     val task = new Task(taskName, description, goalSequence)
 
@@ -313,5 +374,26 @@ object TaskMendelialGenetics2 {
     return shuffled.slice(0, numPots)
   }
 
+
+  def main(args:Array[String]): Unit = {
+    val traitName = "seed color"
+
+    // Double-dominant
+    val dom = GeneticTraitUnknownPlantA.mkRandomChromosomePairExcept(traitName, GeneticTrait.DOMINANT, GeneticTrait.DOMINANT)
+    val plantDom = new RandomGeneticsPlantsA(_chromosomePairs = Some(dom))
+
+    // Double-recessive
+    val rec = GeneticTraitUnknownPlantA.mkRandomChromosomePairExcept(traitName, GeneticTrait.RECESSIVE, GeneticTrait.RECESSIVE)
+    val plantRec = new RandomGeneticsPlantsA(_chromosomePairs = Some(rec))
+
+
+    val parent1Chromosomes = plantDom.propChromosomePairs
+    //val parent2Chromosomes = parentPlant.propChromosomePairs
+    val parent2Chromosomes = plantRec.propChromosomePairs
+
+    val fruit = PlantReproduction.createFruit(plantDom.getPlantType(), parent1Chromosomes, parent2Chromosomes)
+
+
+  }
 
 }
