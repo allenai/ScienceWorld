@@ -230,6 +230,10 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
       gSequence.append(new GoalFind(objectName = unknownSubstanceName.get, failIfWrong = true))
       gSequence.append(new GoalObjectInContainerByName(containerName = correctContainerName, failureContainers = List(incorrectContainerName))) // Then, make sure it's in the correct answer container
 
+      // TODO: Subgoals (copy above)
+      // TODO: Break apart into 2 tasks so the combinations are unique
+      // TODO: Add more example substances for the named task
+
       // Description
       description = "Your task is to determine if " + unknownSubstanceName.get + " is electrically conductive. "
       description += "First, focus on the " + unknownSubstanceName.get + ". "
