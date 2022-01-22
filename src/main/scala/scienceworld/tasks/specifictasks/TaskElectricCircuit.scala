@@ -155,9 +155,11 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
       gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = partToPower.get, _isOptional = true, description = "be in same location as part to power"))
 
+      // Connect the component to a wire on either side
       gSequenceUnordered.append(new GoalObjectConnectedToWire(partToPower.get, terminal1 = true, terminal2 = false, anode = true, cathode = false, description = "Connect the task object's (terminal1/anode) to a wire"))
       gSequenceUnordered.append(new GoalObjectConnectedToWire(partToPower.get, terminal1 = false, terminal2 = true, anode = false, cathode = true, description = "Connect the task object's (terminal2/cathode) to a wire"))
 
+      // Connect a wire between at least one side of the component, and one side of a power source (e.g. battery)
       gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyPowerSource(partToPower.get, description = "Task object is at least partially connected to power source through wire"))
 
 
@@ -177,10 +179,20 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
         powerSourceToUse = nonrenewablePowerSource
       }
 
-      gSequence.append(new GoalFind(objectName = partToPower.get, failIfWrong = true))
-      gSequence.append(new GoalActivateDevice(deviceName = partToPower.get))
-      gSequence.append(new GoalElectricallyConnected(connectedPartName = powerSourceToUse.get, failIfWrong = true))
+      gSequence.append(new GoalFind(objectName = partToPower.get, failIfWrong = true, description = "focus on task object"))
+      gSequence.append(new GoalActivateDevice(deviceName = partToPower.get, description = "power task object"))
+      gSequence.append(new GoalElectricallyConnected(connectedPartName = powerSourceToUse.get, failIfWrong = true, description = "use correct power source"))
 
+      // Unordered
+      gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = partToPower.get, _isOptional = true, description = "be in same location as part to power"))
+
+      // Connect the component to a wire on either side
+      gSequenceUnordered.append(new GoalObjectConnectedToWire(partToPower.get, terminal1 = true, terminal2 = false, anode = true, cathode = false, description = "Connect the task object's (terminal1/anode) to a wire"))
+      gSequenceUnordered.append(new GoalObjectConnectedToWire(partToPower.get, terminal1 = false, terminal2 = true, anode = false, cathode = true, description = "Connect the task object's (terminal2/cathode) to a wire"))
+
+      // Connect a wire between at least one side of the component, and one side of the correct power source (e.g. solar panel)
+      gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyPowerSource(partToPower.get, powerSourceName = powerSourceToUse.get, description = "Task object is at least partially connected to power source through wire"))
 
 
       // TODO: Add goal condition that checks that the appropriate power source was used

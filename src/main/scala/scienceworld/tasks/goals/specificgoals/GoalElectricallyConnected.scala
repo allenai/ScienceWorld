@@ -161,7 +161,7 @@ class GoalObjectConnectedToWire(objectName:String, val terminal1:Boolean = true,
 
 
 // Returns true if there is at least one object with 'objectName' that is connected to a Wire through whichever terminals are specified as true (terminal1, terminal2, anode, cathode)
-class GoalWireConnectsObjectAndAnyPowerSource(objectName:String, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
+class GoalWireConnectsObjectAndAnyPowerSource(objectName:String, powerSourceName:String = "", _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -195,7 +195,9 @@ class GoalWireConnectsObjectAndAnyPowerSource(objectName:String, _isOptional:Boo
                     // Check for a connection to a power source
                     pObj match {
                       case ps: Generator => {
-                        foundPowerSource = true
+                        if ((powerSourceName == "") || (ps.name.toLowerCase == powerSourceName.toLowerCase) || (ps.getDescriptName().toLowerCase == powerSourceName.toLowerCase)) {
+                          foundPowerSource = true
+                        }
                       }
                       case _ => {} // do nothing
                     }
@@ -217,7 +219,9 @@ class GoalWireConnectsObjectAndAnyPowerSource(objectName:String, _isOptional:Boo
                     // Check for a connection to a power source
                     pObj match {
                       case ps: Generator => {
-                        foundPowerSource = true
+                        if ((powerSourceName == "") || (ps.name.toLowerCase == powerSourceName.toLowerCase) || (ps.getDescriptName().toLowerCase == powerSourceName.toLowerCase)) {
+                          foundPowerSource = true
+                        }
                       }
                       case _ => {} // do nothing
                     }
