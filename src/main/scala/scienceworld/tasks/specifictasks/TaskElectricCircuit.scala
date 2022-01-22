@@ -8,7 +8,7 @@ import scienceworld.processes.PlantReproduction
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalElectricallyConnected, GoalFind, GoalInRoomWithObject, GoalLifeStage, GoalMoveToNewLocation, GoalObjectConnectedToWire}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalElectricallyConnected, GoalFind, GoalInRoomWithObject, GoalLifeStage, GoalMoveToNewLocation, GoalObjectConnectedToWire, GoalWireConnectsObjectAndAnyPowerSource}
 import scienceworld.tasks.specifictasks.TaskElectricCircuit.{MODE_POWER_COMPONENT, MODE_POWER_COMPONENT_RENEWABLE}
 
 import scala.collection.mutable.ArrayBuffer
@@ -157,6 +157,9 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
 
       gSequenceUnordered.append(new GoalObjectConnectedToWire(partToPower.get, terminal1 = true, terminal2 = false, anode = true, cathode = false, description = "Connect the task object's (terminal1/anode) to a wire"))
       gSequenceUnordered.append(new GoalObjectConnectedToWire(partToPower.get, terminal1 = false, terminal2 = true, anode = false, cathode = true, description = "Connect the task object's (terminal2/cathode) to a wire"))
+
+      gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyPowerSource(partToPower.get, description = "Task object is at least partially connected to power source through wire"))
+
 
       description = "Your task is to turn on the " + partToPower.get + ". First, focus on the " + partToPower.get + ". Then, create an electrical circuit that powers it on. "
 
