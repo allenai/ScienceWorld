@@ -58,9 +58,10 @@ object EntryPoint {
 
     //val taskName = taskMaker.getTaskList()(5)
     //val taskName = taskMaker.getTaskList()(13)
-    val taskName = taskMaker.getTaskList()(29)
+    val taskName = taskMaker.getTaskList()(7)
 
-    val simplificationStr = "teleportAction,noElectricalAction,openDoors,selfWateringFlowerPots"
+    //val simplificationStr = "teleportAction,noElectricalAction,openDoors,selfWateringFlowerPots"
+    val simplificationStr = "teleportAction,openDoors,selfWateringFlowerPots"   // with Electrical actions
     //val simplificationStr = ""
 
     // Setup task
@@ -114,7 +115,7 @@ object EntryPoint {
         // DEBUG
         //val referents = agentInterface.inputParser.getAllReferents(agentInterface.getAgentVisibleObjects()._2)
 
-        val referents = agentInterface.inputParser.getAllUniqueReferents(agentInterface.getAgentVisibleObjects()._2, includeHidden = false).map(_._1)
+        val referents = agentInterface.inputParser.getAllUniqueReferents(agentInterface.getAgentVisibleObjects()._2, includeHidden = true).map(_._1)
         println("Possible referents: " + referents.mkString(", "))
 
         val validActions = agentInterface.getValidActionObjectCombinations().sorted.toList

@@ -9,7 +9,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import EnvObject._
 import scienceworld.objects.electricalcomponent.ElectricalComponent.ROLE_VOLTAGE_USER
-import scienceworld.objects.electricalcomponent.Terminal
+import scienceworld.objects.electricalcomponent.{PolarizedElectricalComponent, Terminal}
 import scienceworld.processes.genetics.ChromosomePair
 
 import scala.reflect.ClassTag
@@ -175,6 +175,21 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     for (cObj <- this.getContainedObjects()) {
       if (!cObj.isHidden() || (includeHidden == true)) {   // If object is not hidden
         out.add(cObj)           // Add it
+
+        //## Add an object's electrical terminals, if applicable
+        cObj match {
+          case polObj:PolarizedElectricalComponent => {
+            out.add(polObj.anode)
+            out.add(polObj.cathode)
+          }
+          case _:EnvObject => {
+            if (includeHidden) {
+              if (cObj.terminal1.isDefined) out.add(cObj.terminal1.get)
+              if (cObj.terminal2.isDefined) out.add(cObj.terminal2.get)
+            }
+          }
+        }
+
         if ((cObj.propContainer.isDefined) && (cObj.propContainer.get.isOpen)) {      // If the object is an open container, add it's contents
           out ++= cObj.getContainedAccessibleObjects()
         }

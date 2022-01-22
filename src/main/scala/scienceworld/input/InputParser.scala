@@ -173,6 +173,8 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
 
     val matchesOut = mutable.Map[String, Array[InputMatch]]()
 
+    println("parse().allVisibleObjs: " + allVisibleObjs.map(_.toStringMinimal()).mkString(", "))
+
     for (actionRequestDef <- actionRequestDefs) {
       //println ("ActionRequestDef: " + actionRequestDef.name)
 

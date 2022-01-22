@@ -8,7 +8,7 @@ import scienceworld.processes.PlantReproduction
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalElectricallyConnected, GoalFind, GoalLifeStage}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalElectricallyConnected, GoalFind, GoalInRoomWithObject, GoalLifeStage, GoalMoveToNewLocation, GoalObjectConnectedToWire}
 import scienceworld.tasks.specifictasks.TaskElectricCircuit.{MODE_POWER_COMPONENT, MODE_POWER_COMPONENT_RENEWABLE}
 
 import scala.collection.mutable.ArrayBuffer
@@ -145,10 +145,19 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
 
     var subTask = ""
     val gSequence = new ArrayBuffer[Goal]
+    val gSequenceUnordered = new ArrayBuffer[Goal]
     var description:String = "<empty>"
     if (mode == MODE_POWER_COMPONENT) {
-      gSequence.append(new GoalFind(objectName = partToPower.get, failIfWrong = true))
-      gSequence.append(new GoalActivateDevice(deviceName = partToPower.get))
+      gSequence.append(new GoalFind(objectName = partToPower.get, failIfWrong = true, description = "focus on task object"))
+      gSequence.append(new GoalActivateDevice(deviceName = partToPower.get, description = "power task object"))
+
+      // Unordered
+      gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = partToPower.get, _isOptional = true, description = "be in same location as part to power"))
+
+      gSequenceUnordered.append(new GoalObjectConnectedToWire(partToPower.get, terminal1 = true, terminal2 = false, anode = true, cathode = false, description = "Connect the task object's (terminal1/anode) to a wire"))
+      gSequenceUnordered.append(new GoalObjectConnectedToWire(partToPower.get, terminal1 = false, terminal2 = true, anode = false, cathode = true, description = "Connect the task object's (terminal2/cathode) to a wire"))
+
       description = "Your task is to turn on the " + partToPower.get + ". First, focus on the " + partToPower.get + ". Then, create an electrical circuit that powers it on. "
 
     } else if (mode == MODE_POWER_COMPONENT_RENEWABLE) {
@@ -169,7 +178,9 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
       gSequence.append(new GoalActivateDevice(deviceName = partToPower.get))
       gSequence.append(new GoalElectricallyConnected(connectedPartName = powerSourceToUse.get, failIfWrong = true))
 
-      // TODO: Add goal condition that checks that the appropraite power source was used
+
+
+      // TODO: Add goal condition that checks that the appropriate power source was used
       description = "Your task is to turn on the " + partToPower.get + " by powering it using a " + powerSourceDescription + " power source. First, focus on the " + partToPower.get + ". Then, create an electrical circuit that powers it on. "
 
     } else {
@@ -178,7 +189,7 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
 
     val taskLabel = taskName + "-variation" + combinationNum
     //val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName + " in the " + answerBoxLocation + "."
-    val goalSequence = new GoalSequence(gSequence.toArray)
+    val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
     val task = new Task(taskName, description, goalSequence)
 
