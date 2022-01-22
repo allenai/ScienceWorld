@@ -188,11 +188,11 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = partToPower.get, _isOptional = true, description = "be in same location as part to power"))
 
       // Connect the component to a wire on either side
-      gSequenceUnordered.append(new GoalObjectConnectedToWire(partToPower.get, terminal1 = true, terminal2 = false, anode = true, cathode = false, description = "Connect the task object's (terminal1/anode) to a wire"))
-      gSequenceUnordered.append(new GoalObjectConnectedToWire(partToPower.get, terminal1 = false, terminal2 = true, anode = false, cathode = true, description = "Connect the task object's (terminal2/cathode) to a wire"))
+      gSequenceUnordered.append(new GoalObjectConnectedToWire(partToPower.get, terminal1 = true, terminal2 = false, anode = true, cathode = false, description = "connect the task object's (terminal1/anode) to a wire"))
+      gSequenceUnordered.append(new GoalObjectConnectedToWire(partToPower.get, terminal1 = false, terminal2 = true, anode = false, cathode = true, description = "connect the task object's (terminal2/cathode) to a wire"))
 
       // Connect a wire between at least one side of the component, and one side of the correct power source (e.g. solar panel)
-      gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyPowerSource(partToPower.get, powerSourceName = powerSourceToUse.get, description = "Task object is at least partially connected to power source through wire"))
+      gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyPowerSource(partToPower.get, powerSourceName = powerSourceToUse.get, description = "task object is at least partially connected to power source through wire"))
 
 
       // TODO: Add goal condition that checks that the appropriate power source was used

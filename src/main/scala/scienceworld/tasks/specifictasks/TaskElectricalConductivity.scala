@@ -8,7 +8,7 @@ import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalCond
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueBool, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalElectricallyConnected, GoalFind, GoalObjectInContainer, GoalObjectInContainerByName}
+import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalElectricallyConnected, GoalFind, GoalInRoomWithObject, GoalMoveToNewLocation, GoalObjectConnectedToWire, GoalObjectInContainer, GoalObjectInContainerByName, GoalWireConnectsObjectAndAnyLightBulb, GoalWireConnectsObjectAndAnyPowerSource, GoalWireConnectsPowerSourceAndAnyLightBulb}
 import scienceworld.tasks.specifictasks.TaskElectricalConductivity.{MODE_TEST_CONDUCTIVITY, MODE_TEST_CONDUCTIVITY_UNKNOWN}
 
 import scala.collection.mutable.ArrayBuffer
@@ -56,7 +56,7 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
       new TaskValueBool(key = "isConductive", value = salt.propMaterial.get.electricallyConductive)
     ))
 
-    // Substance 1: Water
+    // Substance 2: Water
     val water = new Water()
     substanceToTest.append(Array(
       //new TaskObject(salt.name, Some(salt), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
@@ -64,7 +64,7 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
       new TaskValueBool(key = "isConductive", value = water.propMaterial.get.electricallyConductive)
     ))
 
-    // Substance 1: Plastic fork
+    // Substance 3: Plastic fork
     val plasticfork = new ForkPlastic()
     substanceToTest.append(Array(
       new TaskObject(plasticfork.name, Some(plasticfork), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
@@ -72,13 +72,16 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
       new TaskValueBool(key = "isConductive", value = plasticfork.propMaterial.get.electricallyConductive)
     ))
 
-    // Substance 1: Plastic fork
+    // Substance 4: Metal fork
     val metalfork = new ForkMetal()
     substanceToTest.append(Array(
       new TaskObject(metalfork.name, Some(metalfork), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
       new TaskValueStr(key = "substance", value = metalfork.name),
       new TaskValueBool(key = "isConductive", value = metalfork.propMaterial.get.electricallyConductive)
     ))
+
+    // Substance 5: TODO
+
   }
 
   val unknownSubstances = new ArrayBuffer[ Array[TaskModifier] ]()
@@ -168,6 +171,7 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
 
     var subTask = ""
     val gSequence = new ArrayBuffer[Goal]
+    val gSequenceUnordered = new ArrayBuffer[Goal]()
     var description:String = "<empty>"
     if (mode == MODE_TEST_CONDUCTIVITY) {
       // Figure out the correct answer container based on the object's conductivity
@@ -184,8 +188,23 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
       }
 
       // Goal sequence
-      gSequence.append(new GoalFind(objectName = specificSubstanceName.get, failIfWrong = true))
-      gSequence.append(new GoalObjectInContainerByName(containerName = correctContainerName, failureContainers = List(incorrectContainerName))) // Then, make sure it's in the correct answer container
+      gSequence.append(new GoalFind(objectName = specificSubstanceName.get, failIfWrong = true, description = "focus on task object"))
+      gSequence.append(new GoalObjectInContainerByName(containerName = correctContainerName, failureContainers = List(incorrectContainerName), description = "put object in correct container")) // Then, make sure it's in the correct answer container
+
+
+      // Unordered
+      gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = specificSubstanceName.get, _isOptional = true, description = "be in same location as part to power"))
+
+      // Connect the component to a wire on either side
+      gSequenceUnordered.append(new GoalObjectConnectedToWire(specificSubstanceName.get, terminal1 = true, terminal2 = false, anode = true, cathode = false, description = "connect the task object's (terminal1/anode) to a wire"))
+      gSequenceUnordered.append(new GoalObjectConnectedToWire(specificSubstanceName.get, terminal1 = false, terminal2 = true, anode = false, cathode = true, description = "connect the task object's (terminal2/cathode) to a wire"))
+
+      // Connect a wire between at least one side of the component, and one side of the correct power source (e.g. solar panel)
+      gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyPowerSource(specificSubstanceName.get, "", description = "task object is at least partially connected to power source through wire"))
+      gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyLightBulb(specificSubstanceName.get, "", description = "task object is at least partially connected to a light bulb through wire"))
+      gSequenceUnordered.append(new GoalWireConnectsPowerSourceAndAnyLightBulb(description = "light bulb is at least partially connected to a power source"))
+
 
       // Description
       description = "Your task is to determine if " + specificSubstanceName.get + " is electrically conductive. "
@@ -222,7 +241,7 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
     }
 
     val taskLabel = taskName + "-variation" + combinationNum
-    val goalSequence = new GoalSequence(gSequence.toArray)
+    val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
     val task = new Task(taskName, description, goalSequence)
 
