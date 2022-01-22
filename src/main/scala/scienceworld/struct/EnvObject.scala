@@ -9,7 +9,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import EnvObject._
 import scienceworld.objects.electricalcomponent.ElectricalComponent.ROLE_VOLTAGE_USER
-import scienceworld.objects.electricalcomponent.{PolarizedElectricalComponent, Terminal}
+import scienceworld.objects.electricalcomponent.{PolarizedElectricalComponent, Terminal, UnpolarizedElectricalComponent}
 import scienceworld.processes.genetics.ChromosomePair
 
 import scala.reflect.ClassTag
@@ -181,6 +181,10 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
           case polObj:PolarizedElectricalComponent => {
             out.add(polObj.anode)
             out.add(polObj.cathode)
+          }
+          case unpolObj:UnpolarizedElectricalComponent => {
+            if (unpolObj.terminal1.isDefined) out.add(unpolObj.terminal1.get)
+            if (unpolObj.terminal2.isDefined) out.add(unpolObj.terminal2.get)
           }
           case _:EnvObject => {
             if (includeHidden) {

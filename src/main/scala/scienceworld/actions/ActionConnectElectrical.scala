@@ -40,7 +40,7 @@ class ActionConnectElectrical(action:ActionRequestDef, assignments:Map[String, E
     terminalA.propElectricalConnection.get.addConnection(terminalB)
     terminalB.propElectricalConnection.get.addConnection(terminalA)
     val terminalAObj:String = terminalA.asInstanceOf[Terminal].parentObject.name
-    val terminalBObj:String = terminalA.asInstanceOf[Terminal].parentObject.name
+    val terminalBObj:String = terminalB.asInstanceOf[Terminal].parentObject.name
 
     return (terminalA.name + " on " + terminalAObj + " is now connected to " + terminalB.name + " on " + terminalBObj, true)
   }

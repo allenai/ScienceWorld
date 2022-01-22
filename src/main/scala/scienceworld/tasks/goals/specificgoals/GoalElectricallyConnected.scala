@@ -1,7 +1,7 @@
 package scienceworld.tasks.goals.specificgoals
 
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.electricalcomponent.{PolarizedElectricalComponent, Wire}
+import scienceworld.objects.electricalcomponent.{PolarizedElectricalComponent, Terminal, Wire}
 import scienceworld.processes.ElectricalConductivity
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{Goal, GoalReturn, GoalSequence}
@@ -68,29 +68,35 @@ class GoalObjectConnectedToWire(objectName:String, val terminal1:Boolean = true,
                 val connections = polObj.anode.propElectricalConnection.get.getConnections()
                 for (cObj <- connections) {
                   cObj match {
-                    case _:Wire => {
-                      found = true
-                      break()
+                    case term:Terminal => {
+                      term.parentObject match {
+                        case _:Wire => {
+                          found = true
+                          break()
+                        }
+                        case _ => { } // do nothing
+                      }
                     }
-                    case _ => {
-                      // do nothing
-                    }
+                    case _ => { } // do nothing
                   }
                 }
               }
 
               // Check that the Cathode is connected to a wire
               if (cathode) {
-                val connections = polObj.anode.propElectricalConnection.get.getConnections()
+                val connections = polObj.cathode.propElectricalConnection.get.getConnections()
                 for (cObj <- connections) {
                   cObj match {
-                    case _:Wire => {
-                      found = true
-                      break()
+                    case term:Terminal => {
+                      term.parentObject match {
+                        case _:Wire => {
+                          found = true
+                          break()
+                        }
+                        case _ => { } // do nothing
+                      }
                     }
-                    case _ => {
-                      // do nothing
-                    }
+                    case _ => { } // do nothing
                   }
                 }
               }
@@ -102,13 +108,16 @@ class GoalObjectConnectedToWire(objectName:String, val terminal1:Boolean = true,
                 val connections = unpolObj.terminal1.get.propElectricalConnection.get.getConnections()
                 for (cObj <- connections) {
                   cObj match {
-                    case _:Wire => {
-                      found = true
-                      break()
+                    case term:Terminal => {
+                      term.parentObject match {
+                        case _:Wire => {
+                          found = true
+                          break()
+                        }
+                        case _ => { } // do nothing
+                      }
                     }
-                    case _ => {
-                      // do nothing
-                    }
+                    case _ => { } // do nothing
                   }
                 }
               }
@@ -118,13 +127,16 @@ class GoalObjectConnectedToWire(objectName:String, val terminal1:Boolean = true,
                 val connections = unpolObj.terminal2.get.propElectricalConnection.get.getConnections()
                 for (cObj <- connections) {
                   cObj match {
-                    case _:Wire => {
-                      found = true
-                      break()
+                    case term:Terminal => {
+                      term.parentObject match {
+                        case _:Wire => {
+                          found = true
+                          break()
+                        }
+                        case _ => { } // do nothing
+                      }
                     }
-                    case _ => {
-                      // do nothing
-                    }
+                    case _ => { } // do nothing
                   }
                 }
               }
