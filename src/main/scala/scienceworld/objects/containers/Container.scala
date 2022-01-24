@@ -177,8 +177,29 @@ class FlowerPot extends Container {
     Set("pot", "flower pot", this.name, this.getDescriptName())
   }
 
+}
+
+// Explicit self-watering flower pot, that's self watering regardless of whether the simplification is enabled or not
+class SelfWateringFlowerPot extends Container {
+  this.name = "self watering flower pot"
+  this.propContainer = Some(new IsOpenUnclosableContainer())
+  this.propMaterial = Some(new CeramicProp())
+
+  override def tick(): Boolean = {
+    // DEBUG: Add water if there is none
+    if (this.getContainedObjectsOfType[Water]().size == 0) {
+      this.addObject(new Water())
+    }
+
+    super.tick()
+  }
+
+  override def getReferents(): Set[String] = {
+    Set("pot", "flower pot", this.name, this.getDescriptName())
+  }
 
 }
+
 
 
 /*

@@ -1,9 +1,13 @@
 package scienceworld.objects.livingthing.plant
 
-import scienceworld.processes.lifestage.PlantLifeStages
+import scienceworld.objects.livingthing.animals.{Animal, Butterfly}
+import scienceworld.processes.lifestage.{ButterflyLifeStage, PlantLifeStages}
 import scienceworld.properties.{Edible, LifePropertiesApple, LifePropertiesAvocado, LifePropertiesBanana, LifePropertiesCherry, LifePropertiesLemon, LifePropertiesOrange, LifePropertiesPeach}
+import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject.{MODE_CURSORY_DETAIL, MODE_DETAILED}
 import util.StringHelpers
+
+import scala.collection.mutable.ArrayBuffer
 
 /*
  * Generic Fruiting Tree
@@ -117,33 +121,135 @@ class AppleTree extends FruitingTree {
 
 }
 
+object AppleTree {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = PlantLifeStages.mkPlantLifeCycle(new AppleTree())          //##
+    for (lifestage <- lifecycle.stages) {
+      val plant = new AppleTree()                                         //##
+      plant.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(plant)
+    }
+    out.toArray
+  }
+}
+
+
 class AvocadoTree extends FruitingTree {
   propLife = Some(new LifePropertiesAvocado())
 
 }
+
+object AvocadoTree {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = PlantLifeStages.mkPlantLifeCycle(new AppleTree())          //##
+    for (lifestage <- lifecycle.stages) {
+      val plant = new AvocadoTree()                                         //##
+      plant.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(plant)
+    }
+    out.toArray
+  }
+}
+
 
 class BananaTree extends FruitingTree {
   propLife = Some(new LifePropertiesBanana())
 
 }
 
+object BananaTree {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = PlantLifeStages.mkPlantLifeCycle(new BananaTree())          //##
+    for (lifestage <- lifecycle.stages) {
+      val plant = new BananaTree()                                         //##
+      plant.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(plant)
+    }
+    out.toArray
+  }
+}
+
+
 class CherryTree extends FruitingTree {
   propLife = Some(new LifePropertiesCherry())
 
 }
+
+object CherryTree {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = PlantLifeStages.mkPlantLifeCycle(new CherryTree())          //##
+    for (lifestage <- lifecycle.stages) {
+      val plant = new CherryTree()                                         //##
+      plant.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(plant)
+    }
+    out.toArray
+  }
+}
+
 
 class LemonTree extends FruitingTree {
   propLife = Some(new LifePropertiesLemon())
 
 }
 
+object LemonTree {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = PlantLifeStages.mkPlantLifeCycle(new LemonTree())          //##
+    for (lifestage <- lifecycle.stages) {
+      val plant = new LemonTree()                                         //##
+      plant.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(plant)
+    }
+    out.toArray
+  }
+}
+
+
 class OrangeTree extends FruitingTree {
   propLife = Some(new LifePropertiesOrange())
 
 }
 
+object OrangeTree {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = PlantLifeStages.mkPlantLifeCycle(new OrangeTree())          //##
+    for (lifestage <- lifecycle.stages) {
+      val plant = new OrangeTree()                                         //##
+      plant.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(plant)
+    }
+    out.toArray
+  }
+}
+
+
 class PeachTree extends FruitingTree {
   propLife = Some(new LifePropertiesPeach())
 }
 
-
+object PeachTree {
+  // Make instances of this animal at each life stage
+  def mkExamplesAtLifeStages():Array[EnvObject] = {
+    val out = new ArrayBuffer[EnvObject]()
+    val lifecycle = PlantLifeStages.mkPlantLifeCycle(new PeachTree())          //##
+    for (lifestage <- lifecycle.stages) {
+      val plant = new PeachTree()                                         //##
+      plant.lifecycle.get.changeStage(lifestage.stageName)
+      out.append(plant)
+    }
+    out.toArray
+  }
+}

@@ -74,6 +74,9 @@ class GoalFindLivingThingStage(livingThingType:String = "", lifeStage:String = "
     // Check for a focus object
     if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
 
+    println("GoalFindLivingThingStage()")
+    println(" -> " + obj.get.propLife.get.lifeformType)
+    println(" --> " + livingThingType)
     // Case: The focus is on a living thing of the correct species type
     if ((obj.get.propLife.isDefined) && (obj.get.propLife.get.lifeformType == livingThingType.toLowerCase)) {
 
@@ -83,6 +86,7 @@ class GoalFindLivingThingStage(livingThingType:String = "", lifeStage:String = "
           // Check that the object has a Life Cycle defined
           if (x.lifecycle.isDefined) {
             // Check that the life cycle stage is the one we're looking for
+            println("### (" + x.lifecycle.get.getCurStageName() + " / " + lifeStage + ")")
             if (x.lifecycle.get.getCurStageName() == lifeStage) {
               this.satisfiedWithObject = obj
               return GoalReturn.mkSubgoalSuccess()
