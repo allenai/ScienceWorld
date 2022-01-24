@@ -35,6 +35,10 @@ class LifePropertiesApple extends LifePropertiesPlant {
   this.lifeformType = PlantReproduction.PLANT_APPLE
 }
 
+class LifePropertiesApricot extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_APRICOT
+}
+
 class LifePropertiesAvocado extends LifePropertiesPlant {
   this.lifeformType = PlantReproduction.PLANT_AVOCADO
 }
@@ -47,6 +51,10 @@ class LifePropertiesCherry extends LifePropertiesPlant {
   this.lifeformType = PlantReproduction.PLANT_CHERRY
 }
 
+class LifePropertiesGrapefruit extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_GRAPEFRUIT
+}
+
 class LifePropertiesLemon extends LifePropertiesPlant {
   this.lifeformType = PlantReproduction.PLANT_LEMON
 }
@@ -57,6 +65,10 @@ class LifePropertiesOrange extends LifePropertiesPlant {
 
 class LifePropertiesPeach extends LifePropertiesPlant {
   this.lifeformType = PlantReproduction.PLANT_PEACH
+}
+
+class LifePropertiesPear extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_PEAR
 }
 
 

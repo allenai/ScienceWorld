@@ -5,7 +5,7 @@ import scienceworld.objects.containers.SelfWateringFlowerPot
 import scienceworld.objects.containers.furniture.Cupboard
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.livingthing.animals.{Ant, Beaver, BlueJay, BrownBear, Butterfly, Chameleon, Chipmunk, Crocodile, Dove, Dragonfly, Elephant, Frog, GiantTortoise, Hedgehog, Moth, Mouse, Parrot, Rabbit, Toad, Turtle, Wolf}
-import scienceworld.objects.livingthing.plant.{AppleTree, AvocadoTree, BananaTree, CherryTree, LemonTree, OrangeTree, PeachTree, Soil}
+import scienceworld.objects.livingthing.plant.{AppleTree, ApricotTree, AvocadoTree, BananaTree, CherryTree, GrapefruitTree, LemonTree, OrangeTree, PeachTree, PearTree, Soil}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
@@ -28,12 +28,15 @@ class TaskIdentifyLifeStages2(val mode:String = MODE_LIFESTAGES) extends TaskPar
 
   for (location <- locations) {
     plantsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new AppleTree(), livingThingsToAdd = AppleTree.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 0))
+    plantsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new ApricotTree(), livingThingsToAdd = ApricotTree.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 6))
     plantsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new AvocadoTree(), livingThingsToAdd = AvocadoTree.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 1))
     plantsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new BananaTree(), livingThingsToAdd = BananaTree.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 2))
     plantsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new CherryTree(), livingThingsToAdd = CherryTree.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 3))
+    plantsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new GrapefruitTree(), livingThingsToAdd = GrapefruitTree.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 6))
     plantsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new LemonTree(), livingThingsToAdd = LemonTree.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 4))
     plantsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new OrangeTree(), livingThingsToAdd = OrangeTree.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 5))
     plantsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new PeachTree(), livingThingsToAdd = PeachTree.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 6))
+    plantsAndStages.append( TaskIdentifyLifeStages2.mkTaskVariation(livingThing = new PearTree(), livingThingsToAdd = PearTree.mkExamplesAtLifeStages(), location = location) ++ TaskIdentifyLifeStages2.mkDistractorAnimals(location, numDistractors, 6))
   }
 
   // Combinations
@@ -99,11 +102,11 @@ class TaskIdentifyLifeStages2(val mode:String = MODE_LIFESTAGES) extends TaskPar
     var description:String = "<empty>"
     if (mode == MODE_LIFESTAGES) {
 
-      gSequence.append(new GoalFindLivingThingStage(livingThingType = livingThingName.get, lifeStage = stage1.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on animal in life stage 1"))
-      if (stage2.isDefined) gSequence.append(new GoalFindLivingThingStage(livingThingType = livingThingName.get, lifeStage = stage2.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on animal in life stage 2"))
-      if (stage3.isDefined) gSequence.append(new GoalFindLivingThingStage(livingThingType = livingThingName.get, lifeStage = stage3.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on animal in life stage 3"))
-      if (stage4.isDefined) gSequence.append(new GoalFindLivingThingStage(livingThingType = livingThingName.get, lifeStage = stage4.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on animal in life stage 4"))
-      if (stage5.isDefined) gSequence.append(new GoalFindLivingThingStage(livingThingType = livingThingName.get, lifeStage = stage5.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on animal in life stage 5"))
+      gSequence.append(new GoalFindLivingThingStage(livingThingType = livingThingName.get, lifeStage = stage1.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on plant in life stage 1"))
+      if (stage2.isDefined) gSequence.append(new GoalFindLivingThingStage(livingThingType = livingThingName.get, lifeStage = stage2.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on plant in life stage 2"))
+      if (stage3.isDefined) gSequence.append(new GoalFindLivingThingStage(livingThingType = livingThingName.get, lifeStage = stage3.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on plant in life stage 3"))
+      if (stage4.isDefined) gSequence.append(new GoalFindLivingThingStage(livingThingType = livingThingName.get, lifeStage = stage4.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on plant in life stage 4"))
+      if (stage5.isDefined) gSequence.append(new GoalFindLivingThingStage(livingThingType = livingThingName.get, lifeStage = stage5.get, failIfWrong = true, _defocusOnSuccess = true, description = "focus on plant in life stage 5"))
 
       // Unordered
       gSequenceUnordered.append( new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = livingThingName.get, description = "Move to a new location (unless starting in task location)") )            // Move to any new location

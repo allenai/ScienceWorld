@@ -1,7 +1,7 @@
 package scienceworld.processes
 
-import scienceworld.objects.livingthing.plant.{AppleTree, AvocadoTree, BananaTree, CherryTree, LemonTree, OrangeTree, PeaPlant, PeachTree, RandomGeneticsPlantsA, RandomGeneticsPlantsB, RandomGeneticsPlantsC, RandomGeneticsPlantsD}
-import scienceworld.objects.substance.food.{Apple, Avocado, Banana, Cherry, Lemon, Orange, Peach}
+import scienceworld.objects.livingthing.plant.{AppleTree, ApricotTree, AvocadoTree, BananaTree, CherryTree, GrapefruitTree, LemonTree, OrangeTree, PeaPlant, PeachTree, PearTree, RandomGeneticsPlantsA, RandomGeneticsPlantsB, RandomGeneticsPlantsC, RandomGeneticsPlantsD}
+import scienceworld.objects.substance.food.{Apple, Apricot, Avocado, Banana, Cherry, Grapefruit, Lemon, Orange, Peach, Pear}
 import scienceworld.processes.genetics.{ChromosomePair, GeneticReproduction}
 import scienceworld.struct.EnvObject
 
@@ -12,12 +12,15 @@ class PlantReproduction {
 object PlantReproduction {
   // Plant names
   val PLANT_APPLE       = "apple"
-  val PLANT_ORANGE      = "orange"
-  val PLANT_PEACH       = "peach"
-  val PLANT_LEMON       = "lemon"
-  val PLANT_CHERRY      = "cherry"
+  val PLANT_APRICOT     = "apricot"
   val PLANT_AVOCADO     = "advocado"
   val PLANT_BANANA      = "banana"
+  val PLANT_CHERRY      = "cherry"
+  val PLANT_GRAPEFRUIT  = "grapefruit"
+  val PLANT_LEMON       = "lemon"
+  val PLANT_ORANGE      = "orange"
+  val PLANT_PEACH       = "peach"
+  val PLANT_PEAR        = "pear"
 
   val PLANT_PEA         = "pea"
 
@@ -57,6 +60,11 @@ object PlantReproduction {
       case PLANT_ORANGE   => { return Some(new Orange())  }
       case PLANT_PEACH    => { return Some(new Peach())   }
 
+      case PLANT_APRICOT  => { return Some(new Apricot()) }
+      case PLANT_GRAPEFRUIT  => { return Some(new Grapefruit()) }
+      case PLANT_PEAR     => { return Some(new Pear()) }
+
+
       case PLANT_PEA      => { return Some(new PeaPlant(matedChromosomes))   }
 
       case PLANT_RANDOMGENETICS_A      => { return Some(new RandomGeneticsPlantsA(matedChromosomes))   }
@@ -82,6 +90,10 @@ object PlantReproduction {
       case PLANT_LEMON    => { return Some(new LemonTree())   }
       case PLANT_ORANGE   => { return Some(new OrangeTree())  }
       case PLANT_PEACH    => { return Some(new PeachTree())   }
+
+      case PLANT_APRICOT    => { return Some(new ApricotTree())   }
+      case PLANT_GRAPEFRUIT    => { return Some(new GrapefruitTree())   }
+      case PLANT_PEAR     => { return Some(new PearTree())   }
 
       case PLANT_PEA      => { return Some(new PeaPlant())    }
 
