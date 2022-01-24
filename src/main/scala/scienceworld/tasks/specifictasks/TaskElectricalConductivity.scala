@@ -170,10 +170,10 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
 
   // Combinations
   val combinations = for {
+    n <- substanceToTest
     i <- powerSource
     j <- partToPower
     k <- answerBoxes
-    n <- substanceToTest
   } yield List(i, j, k, n)
 
   println("Number of combinations: " + combinations.length)

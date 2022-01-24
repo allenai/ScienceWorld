@@ -77,9 +77,9 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
 
   // Combinations
   val combinations = for {
+    m <- unknownSubstances
     i <- powerSource
     j <- partToPower
-    m <- unknownSubstances
     n <- answerBoxes
   } yield List(i, j, m, n)
 

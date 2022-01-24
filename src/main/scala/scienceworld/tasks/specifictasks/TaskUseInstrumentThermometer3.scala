@@ -86,8 +86,8 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
   // Combinations
   val combinations = for {
     h <- instrument
-    i <- temperaturePoints
     j <- objectToTest
+    i <- temperaturePoints
     k <- answerBoxes
   } yield List(h, i, j, k)
 

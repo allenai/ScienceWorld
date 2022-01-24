@@ -113,8 +113,8 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
   // Combinations
   val combinations = for {
     h <- instrument
-    i <- temperaturePoints
     j <- objectToTest
+    i <- temperaturePoints
     k <- answerBoxes
   } yield List(h, i, j, k)
 
