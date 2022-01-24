@@ -227,10 +227,22 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
       }
 
       // Goal sequence
-      gSequence.append(new GoalFind(objectName = unknownSubstanceName.get, failIfWrong = true))
-      gSequence.append(new GoalObjectInContainerByName(containerName = correctContainerName, failureContainers = List(incorrectContainerName))) // Then, make sure it's in the correct answer container
+      gSequence.append(new GoalFind(objectName = unknownSubstanceName.get, failIfWrong = true, description = "focus on task object"))
+      gSequence.append(new GoalObjectInContainerByName(containerName = correctContainerName, failureContainers = List(incorrectContainerName), description = "put object in correct container")) // Then, make sure it's in the correct answer container
 
-      // TODO: Subgoals (copy above)
+      // Unordered
+      gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = specificSubstanceName.get, _isOptional = true, description = "be in same location as part to power"))
+
+      // Connect the component to a wire on either side
+      gSequenceUnordered.append(new GoalObjectConnectedToWire(unknownSubstanceName.get, terminal1 = true, terminal2 = false, anode = true, cathode = false, description = "connect the task object's (terminal1/anode) to a wire"))
+      gSequenceUnordered.append(new GoalObjectConnectedToWire(unknownSubstanceName.get, terminal1 = false, terminal2 = true, anode = false, cathode = true, description = "connect the task object's (terminal2/cathode) to a wire"))
+
+      // Connect a wire between at least one side of the component, and one side of the correct power source (e.g. solar panel)
+      gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyPowerSource(unknownSubstanceName.get, "", description = "task object is at least partially connected to power source through wire"))
+      gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyLightBulb(unknownSubstanceName.get, "", description = "task object is at least partially connected to a light bulb through wire"))
+      gSequenceUnordered.append(new GoalWireConnectsPowerSourceAndAnyLightBulb(description = "light bulb is at least partially connected to a power source"))
+      
       // TODO: Break apart into 2 tasks so the combinations are unique
       // TODO: Add more example substances for the named task
 
