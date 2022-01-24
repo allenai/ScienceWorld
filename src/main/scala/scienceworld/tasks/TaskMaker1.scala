@@ -2,7 +2,7 @@ package scienceworld.tasks
 
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.specifictasks.{TaskChangeOfState, TaskChemistryMix, TaskChemistryMixPaint, TaskElectricCircuit, TaskElectricalConductivity, TaskFindLivingNonLiving, TaskGrowPlant, TaskIdentifyLifeStages1, TaskIdentifyLifeStages2, TaskInclinedPlane1, TaskInclinedPlane2, TaskInclinedPlane3, TaskLifeSpan, TaskMendelialGenetics2, TaskMendelianGenetics1, TaskParametric, TaskUseInstrumentThermometer, TaskUseInstrumentThermometer2, TaskUseInstrumentThermometer3}
+import scienceworld.tasks.specifictasks.{TaskChangeOfState, TaskChemistryMix, TaskChemistryMixPaint, TaskElectricCircuit, TaskElectricalConductivity, TaskElectricalConductivity2, TaskFindLivingNonLiving, TaskGrowPlant, TaskIdentifyLifeStages1, TaskIdentifyLifeStages2, TaskInclinedPlane1, TaskInclinedPlane2, TaskInclinedPlane3, TaskLifeSpan, TaskMendelialGenetics2, TaskMendelianGenetics1, TaskParametric, TaskUseInstrumentThermometer, TaskUseInstrumentThermometer2, TaskUseInstrumentThermometer3}
 
 import scala.collection.mutable
 
@@ -67,6 +67,7 @@ class TaskMaker1 {
     TaskChangeOfState.registerTasks(this)
     TaskElectricCircuit.registerTasks(this)
     TaskElectricalConductivity.registerTasks(this)
+    TaskElectricalConductivity2.registerTasks(this)
     TaskFindLivingNonLiving.registerTasks(this)
     TaskGrowPlant.registerTasks(this)
     TaskChemistryMix.registerTasks(this)

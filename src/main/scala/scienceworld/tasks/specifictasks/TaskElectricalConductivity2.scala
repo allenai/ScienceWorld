@@ -1,20 +1,19 @@
 package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.electricalcomponent.{Battery, ElectricBuzzer, ElectricMotor, GasGenerator, LightBulb, NuclearGenerator, SolarPanel, WindGenerator}
+import scienceworld.objects.electricalcomponent.{Battery, ElectricBuzzer, ElectricMotor, LightBulb}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic}
 import scienceworld.objects.substance.{SodiumChloride, Water}
 import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalConductivity}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueBool, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalElectricallyConnected, GoalFind, GoalInRoomWithObject, GoalMoveToNewLocation, GoalObjectConnectedToWire, GoalObjectInContainer, GoalObjectInContainerByName, GoalWireConnectsObjectAndAnyLightBulb, GoalWireConnectsObjectAndAnyPowerSource, GoalWireConnectsPowerSourceAndAnyLightBulb}
-import scienceworld.tasks.specifictasks.TaskElectricalConductivity.{MODE_TEST_CONDUCTIVITY}
+import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalInRoomWithObject, GoalMoveToNewLocation, GoalObjectConnectedToWire, GoalObjectInContainerByName, GoalWireConnectsObjectAndAnyLightBulb, GoalWireConnectsObjectAndAnyPowerSource, GoalWireConnectsPowerSourceAndAnyLightBulb}
+import scienceworld.tasks.specifictasks.TaskElectricalConductivity2.{MODE_TEST_CONDUCTIVITY_UNKNOWN}
 
 import scala.collection.mutable.ArrayBuffer
 
-
-class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) extends TaskParametric {
+class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNOWN) extends TaskParametric {
   val taskName = "task-2a-" + mode.replaceAll(" ", "-")
 
   val locations = Array("workshop")
@@ -173,11 +172,12 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
     val gSequence = new ArrayBuffer[Goal]
     val gSequenceUnordered = new ArrayBuffer[Goal]()
     var description:String = "<empty>"
-    if (mode == MODE_TEST_CONDUCTIVITY) {
+
+    if (mode == MODE_TEST_CONDUCTIVITY_UNKNOWN) {
       // Figure out the correct answer container based on the object's conductivity
       var correctContainerName: String = ""
       var incorrectContainerName: String = ""
-      if (specificSubstanceConductive.get == true) {
+      if (unknownSubstanceConductive.get == true) {
         // Object is conductive
         correctContainerName = boxNameConductive.get
         incorrectContainerName = boxNameNonconductive.get
@@ -188,27 +188,29 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
       }
 
       // Goal sequence
-      gSequence.append(new GoalFind(objectName = specificSubstanceName.get, failIfWrong = true, description = "focus on task object"))
+      gSequence.append(new GoalFind(objectName = unknownSubstanceName.get, failIfWrong = true, description = "focus on task object"))
       gSequence.append(new GoalObjectInContainerByName(containerName = correctContainerName, failureContainers = List(incorrectContainerName), description = "put object in correct container")) // Then, make sure it's in the correct answer container
-
 
       // Unordered
       gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = specificSubstanceName.get, _isOptional = true, description = "be in same location as part to power"))
 
       // Connect the component to a wire on either side
-      gSequenceUnordered.append(new GoalObjectConnectedToWire(specificSubstanceName.get, terminal1 = true, terminal2 = false, anode = true, cathode = false, description = "connect the task object's (terminal1/anode) to a wire"))
-      gSequenceUnordered.append(new GoalObjectConnectedToWire(specificSubstanceName.get, terminal1 = false, terminal2 = true, anode = false, cathode = true, description = "connect the task object's (terminal2/cathode) to a wire"))
+      gSequenceUnordered.append(new GoalObjectConnectedToWire(unknownSubstanceName.get, terminal1 = true, terminal2 = false, anode = true, cathode = false, description = "connect the task object's (terminal1/anode) to a wire"))
+      gSequenceUnordered.append(new GoalObjectConnectedToWire(unknownSubstanceName.get, terminal1 = false, terminal2 = true, anode = false, cathode = true, description = "connect the task object's (terminal2/cathode) to a wire"))
 
       // Connect a wire between at least one side of the component, and one side of the correct power source (e.g. solar panel)
-      gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyPowerSource(specificSubstanceName.get, "", description = "task object is at least partially connected to power source through wire"))
-      gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyLightBulb(specificSubstanceName.get, "", description = "task object is at least partially connected to a light bulb through wire"))
+      gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyPowerSource(unknownSubstanceName.get, "", description = "task object is at least partially connected to power source through wire"))
+      gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyLightBulb(unknownSubstanceName.get, "", description = "task object is at least partially connected to a light bulb through wire"))
       gSequenceUnordered.append(new GoalWireConnectsPowerSourceAndAnyLightBulb(description = "light bulb is at least partially connected to a power source through wire"))
+      
+      // TODO: Add more example substances for the named task
+      // TODO: Add distractors?
 
 
       // Description
-      description = "Your task is to determine if " + specificSubstanceName.get + " is electrically conductive. "
-      description += "First, focus on the " + specificSubstanceName.get + ". "
+      description = "Your task is to determine if " + unknownSubstanceName.get + " is electrically conductive. "
+      description += "First, focus on the " + unknownSubstanceName.get + ". "
       description += "If it is electrically conductive, place it in the " + boxNameConductive.get + ". "
       description += "If it is electrically nonconductive, place it in the " + boxNameNonconductive.get + ". "
 
@@ -232,11 +234,11 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
 }
 
 
-object TaskElectricalConductivity {
-  val MODE_TEST_CONDUCTIVITY            = "test conductivity"
+object TaskElectricalConductivity2 {
+  val MODE_TEST_CONDUCTIVITY_UNKNOWN    = "test conductivity of unknown substances"
 
   def registerTasks(taskMaker:TaskMaker1): Unit = {
-    taskMaker.addTask( new TaskElectricalConductivity(mode = MODE_TEST_CONDUCTIVITY) )
+    taskMaker.addTask( new TaskElectricalConductivity2(mode = MODE_TEST_CONDUCTIVITY_UNKNOWN) )
   }
 
 }
