@@ -1,15 +1,19 @@
 package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
+import scienceworld.objects.containers.{GlassJar, MetalPot}
+import scienceworld.objects.devices.Shovel
+import scienceworld.objects.document.BookOriginOfSpecies
 import scienceworld.objects.electricalcomponent.{Battery, ElectricBuzzer, ElectricMotor, GasGenerator, LightBulb, NuclearGenerator, SolarPanel, WindGenerator}
-import scienceworld.objects.misc.{ForkMetal, ForkPlastic}
-import scienceworld.objects.substance.{SodiumChloride, Water}
+import scienceworld.objects.misc.{AluminumFoil, ForkMetal, ForkPlastic, PaperClip}
+import scienceworld.objects.substance.food.Apricot
+import scienceworld.objects.substance.{SodiumChloride, Water, WoodBlock}
 import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalConductivity}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueBool, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalElectricallyConnected, GoalFind, GoalInRoomWithObject, GoalMoveToNewLocation, GoalObjectConnectedToWire, GoalObjectInContainer, GoalObjectInContainerByName, GoalWireConnectsObjectAndAnyLightBulb, GoalWireConnectsObjectAndAnyPowerSource, GoalWireConnectsPowerSourceAndAnyLightBulb}
-import scienceworld.tasks.specifictasks.TaskElectricalConductivity.{MODE_TEST_CONDUCTIVITY}
+import scienceworld.tasks.specifictasks.TaskElectricalConductivity.MODE_TEST_CONDUCTIVITY
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -80,7 +84,69 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
       new TaskValueBool(key = "isConductive", value = metalfork.propMaterial.get.electricallyConductive)
     ))
 
-    // Substance 5: TODO
+    // Substance 5: Apricot
+    val apricot = new Apricot()
+    substanceToTest.append(Array(
+      new TaskObject(apricot.name, Some(apricot), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "substance", value = apricot.name),
+      new TaskValueBool(key = "isConductive", value = apricot.propMaterial.get.electricallyConductive)
+    ))
+
+    // Substance 6: Shovel
+    val shovel = new Shovel()
+    substanceToTest.append(Array(
+      new TaskObject(shovel.name, Some(shovel), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "substance", value = shovel.name),
+      new TaskValueBool(key = "isConductive", value = shovel.propMaterial.get.electricallyConductive)
+    ))
+
+    // Substance 7: Glass jar
+    val glassjar = new GlassJar()
+    substanceToTest.append(Array(
+      new TaskObject(glassjar.name, Some(glassjar), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "substance", value = glassjar.name),
+      new TaskValueBool(key = "isConductive", value = glassjar.propMaterial.get.electricallyConductive)
+    ))
+
+    // Substance 8: Metal pot
+    val metalpot = new MetalPot()
+    substanceToTest.append(Array(
+      new TaskObject(metalpot.name, Some(metalpot), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "substance", value = metalpot.name),
+      new TaskValueBool(key = "isConductive", value = metalpot.propMaterial.get.electricallyConductive)
+    ))
+
+    // Substance 9: Drawing
+    val book = new BookOriginOfSpecies()
+    substanceToTest.append(Array(
+      new TaskObject(book.name, Some(book), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "substance", value = book.name),
+      new TaskValueBool(key = "isConductive", value = book.propMaterial.get.electricallyConductive)
+    ))
+
+    // Substance 10: Paper Clip
+    val paperclip = new PaperClip()
+    substanceToTest.append(Array(
+      new TaskObject(paperclip.name, Some(paperclip), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "substance", value = paperclip.name),
+      new TaskValueBool(key = "isConductive", value = paperclip.propMaterial.get.electricallyConductive)
+    ))
+
+    // Substance 11: Wood Block
+    val woodblock = new WoodBlock()
+    substanceToTest.append(Array(
+      new TaskObject(woodblock.name, Some(woodblock), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "substance", value = woodblock.name),
+      new TaskValueBool(key = "isConductive", value = woodblock.propMaterial.get.electricallyConductive)
+    ))
+
+    // Substance 12: Aluminum Foil
+    val aluminumfoil = new AluminumFoil()
+    substanceToTest.append(Array(
+      new TaskObject(aluminumfoil.name, Some(aluminumfoil), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "substance", value = aluminumfoil.name),
+      new TaskValueBool(key = "isConductive", value = aluminumfoil.propMaterial.get.electricallyConductive)
+    ))
 
   }
 
@@ -106,8 +172,8 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
   val combinations = for {
     i <- powerSource
     j <- partToPower
-    k <- substanceToTest
-    n <- answerBoxes
+    k <- answerBoxes
+    n <- substanceToTest
   } yield List(i, j, k, n)
 
   println("Number of combinations: " + combinations.length)

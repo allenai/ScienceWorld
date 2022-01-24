@@ -34,6 +34,7 @@ class Apple extends Food {
 class Apricot extends Food {
   this.name = "apricot"
   this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new PlantMatterProp())   // for conductivity
 
   var color = "orange"
 
