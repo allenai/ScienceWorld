@@ -58,6 +58,38 @@ class Paper extends Document {
 
 }
 
+class Recipe extends Document {
+  this.name = "recipe"
+
+  override def readDocument():String = {
+    val os = new StringBuilder()
+
+    os.append("The recipe reads:\n")
+    os.append(this.contents)
+
+    os.toString()
+  }
+
+  override def getDescription(mode:Int): String = {
+    val os = new StringBuilder
+
+    os.append("A " + this.getDescriptName() + " titled " + this.title)
+
+    os.toString
+  }
+
+}
+
+object Recipe {
+  def mkRecipe(productName:String, thingsToMix:Array[String]):Recipe = {
+    val recipe = new Recipe()
+    recipe.title = "instructions to make " + productName
+    recipe.contents = "To make " + productName + ", you need to mix " + thingsToMix.mkString(", ") + "."
+    return recipe
+  }
+}
+
+
 class Book extends Document {
   this.title = "title"
   var author = "author"

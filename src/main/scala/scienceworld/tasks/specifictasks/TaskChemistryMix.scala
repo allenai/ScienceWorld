@@ -2,8 +2,9 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.{CeramicCup, FlowerPot}
+import scienceworld.objects.document.Recipe
 import scienceworld.objects.livingthing.plant.{Plant, Soil}
-import scienceworld.objects.substance.{Soap, SodiumChloride}
+import scienceworld.objects.substance.{Soap, SodiumChloride, Water}
 import scienceworld.processes.PlantReproduction
 import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT, PLANT_STAGE_REPRODUCING, PLANT_STAGE_SEED, PLANT_STAGE_SEEDLING}
 import scienceworld.struct.EnvObject
@@ -25,21 +26,13 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
   //val locations = Array("green house")
   for (location <- locations) {
 
+    // Salt + water = salt water
     val salt = new SodiumChloride()
-    // Other is water
-    baseChemicals.append( Array(
-      new TaskObject(salt.name, Some(salt), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
-      new TaskValueStr(key = "inputChemicals", value = Array(salt.name, "water").mkString(",")),
-      new TaskValueStr(key = "result", value = "salt water")
-    ))
+    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "salt water", inputObjects = Array(salt, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
 
+    // Soap + water = soapy water
     val soap = new Soap()
-    // Other is water
-    baseChemicals.append( Array(
-      new TaskObject(soap.name, Some(soap), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
-      new TaskValueStr(key = "inputChemicals", value = Array(soap.name, "water").mkString(",")),
-      new TaskValueStr(key = "result", value = "soapy water")
-    ))
+    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "soapy water", inputObjects = Array(soap, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
 
     // TODO: Add more here
 
@@ -64,6 +57,8 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     // Return
     out.toArray
   }
+
+
 
   // Setup a particular modifier combination on the universe
   private def setupCombination(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent):(Boolean, String) = {
@@ -139,6 +134,29 @@ object TaskChemistryMix {
 
   def registerTasks(taskMaker:TaskMaker1): Unit = {
     taskMaker.addTask( new TaskChemistryMix(mode = MODE_CHEMISTRY_MIX) )
+  }
+
+
+  // Create task modifiers for adding the objects, adding a recipe, and including task keys
+  def setupRecipeTask(resultObject:String, inputObjects:Array[EnvObject], generateLocation:String, excludeFromAdding:Array[String] = Array.empty[String]):Array[TaskModifier] = {
+    val out = new ArrayBuffer[TaskModifier]
+
+    // Add objects
+    for (inputObject <- inputObjects) {
+      if (!excludeFromAdding.contains(inputObject.name) ) {
+        out.append(new TaskObject(inputObject.name, Some(inputObject), roomToGenerateIn = generateLocation, Array.empty[String], generateNear = 0))
+      }
+    }
+
+    // Keys
+    out.append( new TaskValueStr(key = "inputChemicals", value = inputObjects.map(_.name).toArray.mkString(",")) )
+    out.append( new TaskValueStr(key = "result", value = resultObject) )
+
+    // Add recipe
+    val recipe = Recipe.mkRecipe(resultObject, thingsToMix = inputObjects.map(_.name))
+    out.append(new TaskObject(recipe.name, Some(recipe), roomToGenerateIn = generateLocation, Array.empty[String], generateNear = 0))
+
+    out.toArray
   }
 
 }
