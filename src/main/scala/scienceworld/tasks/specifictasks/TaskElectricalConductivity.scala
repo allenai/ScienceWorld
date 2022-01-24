@@ -84,18 +84,6 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
 
   }
 
-  val unknownSubstances = new ArrayBuffer[ Array[TaskModifier] ]()
-  for (location <- locations) {
-    for (i <- 0 until 20) {
-      val unknownSubstance = UnknownSubstanceElectricalConductivity.mkRandomSubstanceElectricalConductive()
-      unknownSubstances.append(Array(
-        new TaskObject(unknownSubstance.name, Some(unknownSubstance), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
-        new TaskValueStr(key = "unknownSubstance", value = unknownSubstance.name),
-        new TaskValueBool(key = "unknownIsConductive", value = unknownSubstance.propMaterial.get.electricallyConductive)
-      ))
-    }
-  }
-
   // Variation 4: Answer boxes
   val answerBoxes = new ArrayBuffer[ Array[TaskModifier] ]()
   val answerBoxColors = Array("red", "green", "blue", "orange", "yellow", "purple")
@@ -119,9 +107,8 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
     i <- powerSource
     j <- partToPower
     k <- substanceToTest
-    m <- unknownSubstances
     n <- answerBoxes
-  } yield List(i, j, k, m, n)
+  } yield List(i, j, k, n)
 
   println("Number of combinations: " + combinations.length)
 

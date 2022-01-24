@@ -45,44 +45,6 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
   }
 
   // Variation 3: Substance to test
-  val substanceToTest = new ArrayBuffer[ Array[TaskModifier] ]()
-  for (location <- locations) {
-    // Substance 1: Salt
-    val salt = new SodiumChloride()
-    substanceToTest.append(Array(
-      new TaskObject(salt.name, Some(salt), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
-      new TaskValueStr(key = "substance", value = salt.name),
-      new TaskValueBool(key = "isConductive", value = salt.propMaterial.get.electricallyConductive)
-    ))
-
-    // Substance 2: Water
-    val water = new Water()
-    substanceToTest.append(Array(
-      //new TaskObject(salt.name, Some(salt), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
-      new TaskValueStr(key = "substance", value = water.name),
-      new TaskValueBool(key = "isConductive", value = water.propMaterial.get.electricallyConductive)
-    ))
-
-    // Substance 3: Plastic fork
-    val plasticfork = new ForkPlastic()
-    substanceToTest.append(Array(
-      new TaskObject(plasticfork.name, Some(plasticfork), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
-      new TaskValueStr(key = "substance", value = plasticfork.name),
-      new TaskValueBool(key = "isConductive", value = plasticfork.propMaterial.get.electricallyConductive)
-    ))
-
-    // Substance 4: Metal fork
-    val metalfork = new ForkMetal()
-    substanceToTest.append(Array(
-      new TaskObject(metalfork.name, Some(metalfork), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
-      new TaskValueStr(key = "substance", value = metalfork.name),
-      new TaskValueBool(key = "isConductive", value = metalfork.propMaterial.get.electricallyConductive)
-    ))
-
-    // Substance 5: TODO
-
-  }
-
   val unknownSubstances = new ArrayBuffer[ Array[TaskModifier] ]()
   for (location <- locations) {
     for (i <- 0 until 20) {
@@ -117,10 +79,9 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
   val combinations = for {
     i <- powerSource
     j <- partToPower
-    k <- substanceToTest
     m <- unknownSubstances
     n <- answerBoxes
-  } yield List(i, j, k, m, n)
+  } yield List(i, j, m, n)
 
   println("Number of combinations: " + combinations.length)
 
@@ -193,7 +154,7 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
 
       // Unordered
       gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
-      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = specificSubstanceName.get, _isOptional = true, description = "be in same location as part to power"))
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = unknownSubstanceName.get, _isOptional = true, description = "be in same location as part to power"))
 
       // Connect the component to a wire on either side
       gSequenceUnordered.append(new GoalObjectConnectedToWire(unknownSubstanceName.get, terminal1 = true, terminal2 = false, anode = true, cathode = false, description = "connect the task object's (terminal1/anode) to a wire"))
@@ -203,7 +164,7 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
       gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyPowerSource(unknownSubstanceName.get, "", description = "task object is at least partially connected to power source through wire"))
       gSequenceUnordered.append(new GoalWireConnectsObjectAndAnyLightBulb(unknownSubstanceName.get, "", description = "task object is at least partially connected to a light bulb through wire"))
       gSequenceUnordered.append(new GoalWireConnectsPowerSourceAndAnyLightBulb(description = "light bulb is at least partially connected to a power source through wire"))
-      
+
       // TODO: Add more example substances for the named task
       // TODO: Add distractors?
 
