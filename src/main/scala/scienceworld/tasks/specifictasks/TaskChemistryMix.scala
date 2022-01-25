@@ -2,9 +2,10 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.{CeramicCup, FlowerPot}
-import scienceworld.objects.document.Recipe
+import scienceworld.objects.document.{Paper, Recipe}
 import scienceworld.objects.livingthing.plant.{Plant, Soil}
 import scienceworld.objects.substance.food.{Almond, Cachew, Flour, Peanut}
+import scienceworld.objects.substance.paint.{BluePaint, GreenPaint}
 import scienceworld.objects.substance.{AceticAcid, IronBlock, Soap, SodiumBicarbonate, SodiumChloride, Water}
 import scienceworld.processes.PlantReproduction
 import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT, PLANT_STAGE_REPRODUCING, PLANT_STAGE_SEED, PLANT_STAGE_SEEDLING}
@@ -35,8 +36,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     val soap = new Soap()
     baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "soapy water", inputObjects = Array(soap, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
 
-
-    //TODO: Past this mark still need to be added to the Chemistry Engine
+    // TODO: Past this mark still need to be verified in the chemistry engine
 
     // Flour + water = soapy water
     val flour = new Flour()
@@ -56,6 +56,17 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     // Iron + water = rusty iron
     val ironblock = new IronBlock()
     baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "rusty iron", inputObjects = Array(ironblock, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
+
+    // Paper + blue paint = blue paper  (paint should be found in art room)
+    val paper1 = new Paper()
+    val bluepaint = new BluePaint()
+    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "blue paper", inputObjects = Array(paper1, bluepaint), generateLocation = location, excludeFromAdding = Array(bluepaint.name)) )
+
+    // Paper + blue paint = blue paper  (paint should be found in art room)
+    val paper2 = new Paper()
+    val greenpaint = new GreenPaint()
+    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "green paper", inputObjects = Array(paper2, bluepaint), generateLocation = location, excludeFromAdding = Array(greenpaint.name)) )
+
 
 
     // TODO: Add more here

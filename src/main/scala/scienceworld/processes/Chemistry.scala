@@ -1,5 +1,6 @@
 package scienceworld.processes
 
+import scienceworld.objects.document.{ColoredPaper}
 import scienceworld.objects.substance.food.{Dough, MixedNuts}
 import scienceworld.objects.substance.paint.{BlueVioletPaint, BrownPaint, GreenBluePaint, GreenPaint, OrangePaint, RedOrangePaint, VioletPaint, VioletRedPaint, YellowGreenPaint, YellowOrangePaint}
 import scienceworld.objects.substance.{Rust, SaltWater, SoapyWater, SodiumAcetate}
@@ -90,6 +91,8 @@ object Chemistry {
     val almond = this.getSubstance(container, "almond")
     val cachew = this.getSubstance(container, "cachew")
 
+    val paper = this.getSubstance(container, "paper")
+
 
     // Paints
     // Primary
@@ -162,14 +165,72 @@ object Chemistry {
         return (true, "Iron block and water mix to produce rust.")
       }
 
+      // Sodium acetate
       if ((sodiumbicarbonate.isDefined) && (aceticacid.isDefined)) {
         sodiumbicarbonate.get.delete()
         ironblock.get.delete()
 
         container.addObject( new SodiumAcetate() )
 
-        return (true, "Sodium bicarbonate and acetic acid mix to produce sodium bicarbonate.")
+        return (true, "Sodium bicarbonate and acetic acid mix to produce sodium acetate.")
       }
+
+
+      // Dying paper
+
+      if ((paper.isDefined) && (paintRed.isDefined)) {
+        paper.get.delete()
+        paintRed.get.delete()
+        container.addObject( new ColoredPaper("red") )
+        return (true, "Paper and blue paint mix to produce red paper")
+      }
+
+      if ((paper.isDefined) && (paintGreen.isDefined)) {
+        paper.get.delete()
+        paintGreen.get.delete()
+
+        container.addObject( new ColoredPaper("green") )
+
+        return (true, "Paper and blue paint mix to produce green paper")
+      }
+
+      if ((paper.isDefined) && (paintBlue.isDefined)) {
+        paper.get.delete()
+        paintBlue.get.delete()
+
+        container.addObject( new ColoredPaper("blue") )
+
+        return (true, "Paper and blue paint mix to produce blue paper")
+      }
+
+      if ((paper.isDefined) && (paintOrange.isDefined)) {
+        paper.get.delete()
+        paintOrange.get.delete()
+
+        container.addObject( new ColoredPaper("orange") )
+
+        return (true, "Paper and blue paint mix to produce orange paper")
+      }
+
+      if ((paper.isDefined) && (paintYellow.isDefined)) {
+        paper.get.delete()
+        paintYellow.get.delete()
+
+        container.addObject( new ColoredPaper("yellow") )
+
+        return (true, "Paper and blue paint mix to produce yellow paper")
+      }
+
+      if ((paper.isDefined) && (paintViolet.isDefined)) {
+        paper.get.delete()
+        paintViolet.get.delete()
+
+        container.addObject( new ColoredPaper("voilet") )
+
+        return (true, "Paper and blue paint mix to produce voilet paper")
+      }
+
+
       /*
        * Paints
        */

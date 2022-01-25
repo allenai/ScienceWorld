@@ -7,8 +7,8 @@ import scala.util.Random
 
 class Document extends EnvObject {
   this.name = "document"
-  var title = "document"
-  var contents = "This is a sample document."
+  var title = ""
+  var contents = ""
 
   this.propMaterial = Some(new PaperProp())
   this.propContainer = Some( new IsNotContainer() )
@@ -40,6 +40,7 @@ class Paper extends Document {
   override def readDocument():String = {
     val os = new StringBuilder()
 
+    if (this.contents.length == 0) return "The paper does not have any text on it."
     os.append("The paper reads:\n")
     os.append(this.title + "\n")
     os.append(this.contents)
@@ -50,11 +51,35 @@ class Paper extends Document {
   override def getDescription(mode:Int): String = {
     val os = new StringBuilder
 
-    os.append("A " + this.getDescriptName() + " titled " + this.title)
+    if (this.title.length > 0) {
+      os.append("A " + this.getDescriptName() + " titled " + this.title)
+    } else {
+      os.append("A blank " + this.getDescriptName())
+    }
 
     os.toString
   }
 
+}
+
+class ColoredPaper(colorName:String) extends Document {
+  this.name = colorName + " paper"
+
+  override def readDocument():String = {
+    val os = new StringBuilder()
+
+    os.append("The paper does not have any text on it.")
+
+    os.toString()
+  }
+
+  override def getDescription(mode:Int): String = {
+    val os = new StringBuilder
+
+    os.append("A " + this.getDescriptName())
+
+    os.toString
+  }
 
 }
 
