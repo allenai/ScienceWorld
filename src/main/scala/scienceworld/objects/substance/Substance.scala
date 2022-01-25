@@ -143,3 +143,39 @@ class SoapyWater extends Substance {
   this.name = "soapy water"
   this.propMaterial = Some( new SoapyWaterProp )
 }
+
+
+//##
+class SodiumBicarbonate extends Substance {
+  this.name = "sodium bicarbonate"
+  this.propMaterial = Some( new SodiumBicarbonateProp() )
+}
+
+class AceticAcid extends Substance {
+  this.name = "acetic acid"
+  this.propMaterial = Some( new AceticAcidProp() )
+}
+
+class SodiumAcetate extends Substance {
+  this.name = "sodium acetate"
+  this.propMaterial = Some( new SodiumAcetateProp() )
+}
+
+
+class IronBlock extends Substance {
+  this.name = "iron block"
+  this.propMaterial = Some (new IronProp)
+
+  override def getReferents():Set[String] = {
+    Set("block", this.name, this.getDescriptName())
+  }
+
+  override def getDescription(mode: Int): String = {
+    return "a " + this.getDescriptName()
+  }
+}
+
+class Rust extends Substance {
+  this.name = "rust"
+  this.propMaterial = Some (new RustProp)
+}

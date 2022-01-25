@@ -1,7 +1,8 @@
 package scienceworld.processes
 
+import scienceworld.objects.substance.food.{Dough, MixedNuts}
 import scienceworld.objects.substance.paint.{BlueVioletPaint, BrownPaint, GreenBluePaint, GreenPaint, OrangePaint, RedOrangePaint, VioletPaint, VioletRedPaint, YellowGreenPaint, YellowOrangePaint}
-import scienceworld.objects.substance.{SaltWater, SoapyWater}
+import scienceworld.objects.substance.{Rust, SaltWater, SoapyWater, SodiumAcetate}
 import scienceworld.properties.RedOrangePaintProp
 import scienceworld.struct.EnvObject
 
@@ -78,6 +79,17 @@ object Chemistry {
     val sodium = this.getSubstance(container, "sodium", "solid")
     val sodiumChloride = this.getSubstance(container, substanceName = "sodium chloride", "solid")
     val soap = this.getSubstance(container, "soap")
+    val flour = this.getSubstance(container, "flour")
+
+    val ironblock = this.getSubstance(container, "iron block")
+
+    val sodiumbicarbonate = this.getSubstance(container, "sodium bicarbonate")
+    val aceticacid = this.getSubstance(container, "acetic acid")
+
+    val peanut = this.getSubstance(container, "peanut")
+    val almond = this.getSubstance(container, "almond")
+    val cachew = this.getSubstance(container, "cachew")
+
 
     // Paints
     // Primary
@@ -128,7 +140,36 @@ object Chemistry {
         return (true, "Soap and water mix to produce soapy water.")
       }
 
+      // Dough
+      if ((water.isDefined) && (flour.isDefined)) {
+        water.get.delete()
+        flour.get.delete()
 
+        val dough = new Dough()
+        container.addObject(dough)
+
+        return (true, "Flour and water mix to produce dough.")
+      }
+
+      // Rust
+      if ((water.isDefined) && (flour.isDefined)) {
+        water.get.delete()
+        ironblock.get.delete()
+
+        val rust = new Rust()
+        container.addObject(rust)
+
+        return (true, "Iron block and water mix to produce rust.")
+      }
+
+      if ((sodiumbicarbonate.isDefined) && (aceticacid.isDefined)) {
+        sodiumbicarbonate.get.delete()
+        ironblock.get.delete()
+
+        container.addObject( new SodiumAcetate() )
+
+        return (true, "Sodium bicarbonate and acetic acid mix to produce sodium bicarbonate.")
+      }
       /*
        * Paints
        */
@@ -210,7 +251,14 @@ object Chemistry {
        * Case: 3 SUBSTANCES
        */
 
-      // TODO: Add 3-substance mix combinations
+      if (peanut.isDefined && almond.isDefined && cachew.isDefined) {
+        peanut.get.delete()
+        almond.get.delete()
+        cachew.get.delete()
+
+        container.addObject(new MixedNuts())
+        return (true, "Peanuts, almonds, and cachews mix to produce mixed nuts.")
+      }
 
       /*
        * Paints catch-all

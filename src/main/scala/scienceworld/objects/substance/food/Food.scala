@@ -316,3 +316,115 @@ class IceCream extends Food {
 
 }
 
+
+class Flour extends Food {
+  this.name = "flour"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new FlourProp())
+
+  var color = "white"
+
+  override def getReferents(): Set[String] = {
+    val cannonicalName = this.color + " flour"
+    Set("flour", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+  }
+
+  override def getDescription(mode:Int): String = {
+    val cannonicalName = "flour"
+    return this.getDescriptName(cannonicalName)
+  }
+
+}
+
+class Dough extends Food {
+  this.name = "dough"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new FlourProp())
+
+  var color = "white"
+
+  override def getReferents(): Set[String] = {
+    val cannonicalName = this.color + " dough"
+    Set("dough", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+  }
+
+  override def getDescription(mode:Int): String = {
+    val cannonicalName = "dough"
+    return this.getDescriptName(cannonicalName)
+  }
+
+}
+
+class Peanut extends Food {
+  this.name = "peanut"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new NutProp())
+
+  var color = "brown"
+
+  override def getReferents(): Set[String] = {
+    val cannonicalName = this.color + " peanut"
+    Set("peanut", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+  }
+
+  override def getDescription(mode:Int): String = {
+    val cannonicalName = "peanut"
+    return this.getDescriptName(cannonicalName)
+  }
+
+}
+
+class Cachew extends Food {
+  this.name = "cachew"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new NutProp())
+
+  var color = "cachew"
+
+  override def getReferents(): Set[String] = {
+    val cannonicalName = this.color + " cachew"
+    Set("cachew", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+  }
+
+  override def getDescription(mode:Int): String = {
+    val cannonicalName = "cachew"
+    return this.getDescriptName(cannonicalName)
+  }
+
+}
+
+class Almond extends Food {
+  this.name = "almond"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new NutProp())
+
+  var color = "almond"
+
+  override def getReferents(): Set[String] = {
+    val cannonicalName = this.color + " almond"
+    Set("almond", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+  }
+
+  override def getDescription(mode:Int): String = {
+    val cannonicalName = "almond"
+    return this.getDescriptName(cannonicalName)
+  }
+
+}
+
+class MixedNuts extends Food {
+  this.name = "mixed nuts"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new NutProp())
+
+  var color = "mixed nuts"
+
+  override def getReferents(): Set[String] = {
+    Set("mixed nuts", this.name, this.getDescriptName())
+  }
+
+  override def getDescription(mode:Int): String = {
+    return this.getDescriptName("mixed nuts")
+  }
+
+}

@@ -4,7 +4,8 @@ import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.{CeramicCup, FlowerPot}
 import scienceworld.objects.document.Recipe
 import scienceworld.objects.livingthing.plant.{Plant, Soil}
-import scienceworld.objects.substance.{Soap, SodiumChloride, Water}
+import scienceworld.objects.substance.food.{Almond, Cachew, Flour, Peanut}
+import scienceworld.objects.substance.{AceticAcid, IronBlock, Soap, SodiumBicarbonate, SodiumChloride, Water}
 import scienceworld.processes.PlantReproduction
 import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT, PLANT_STAGE_REPRODUCING, PLANT_STAGE_SEED, PLANT_STAGE_SEEDLING}
 import scienceworld.struct.EnvObject
@@ -33,6 +34,29 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     // Soap + water = soapy water
     val soap = new Soap()
     baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "soapy water", inputObjects = Array(soap, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
+
+
+    //TODO: Past this mark still need to be added to the Chemistry Engine
+
+    // Flour + water = soapy water
+    val flour = new Flour()
+    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "dough", inputObjects = Array(flour, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
+
+    // Mixed nuts
+    val peanut = new Peanut()
+    val almond = new Almond()
+    val cachew = new Cachew()
+    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "mixed nuts", inputObjects = Array(peanut, almond, cachew), generateLocation = location, excludeFromAdding = Array("water")) )
+
+    // Volcano
+    val vinegar = new AceticAcid()
+    val bakingsoda = new SodiumBicarbonate()
+    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "sodium acetate", inputObjects = Array(vinegar, bakingsoda), generateLocation = location, excludeFromAdding = Array("water")) )
+
+    // Iron + water = rusty iron
+    val ironblock = new IronBlock()
+    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "rusty iron", inputObjects = Array(ironblock, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
+
 
     // TODO: Add more here
 

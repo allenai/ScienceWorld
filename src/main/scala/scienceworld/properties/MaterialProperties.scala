@@ -395,6 +395,24 @@ class GlassProp extends MaterialProperties {
 
 }
 
+// Rust
+class RustProp extends MetalProp {
+  substanceName                   = "rust"
+  nameInStateOfMatter             = Map()
+  color                           = "red"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.90
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 100001.0f
+  meltingPoint                    = 100000.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.7
+
+}
 
 /*
  * Plastic
@@ -755,6 +773,60 @@ class IceCreamProp extends MaterialProperties {
 
 }
 
+class FlourProp extends MaterialProperties {
+  substanceName                   = "flour"
+  nameInStateOfMatter             = Map()
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 380.0f
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.5      // 0 is no friction, 1 is complete friction  (GUESS)
+
+}
+
+class DoughProp extends MaterialProperties {
+  substanceName                   = "dough"
+  nameInStateOfMatter             = Map()
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 380.0f
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.5      // 0 is no friction, 1 is complete friction  (GUESS)
+
+}
+
+class NutProp extends MaterialProperties {
+  substanceName                   = "nut"
+  nameInStateOfMatter             = Map()
+  color                           = "brown"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 400.0f      // Guess
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.5      // 0 is no friction, 1 is complete friction  (GUESS)
+
+}
+
 class AshProp extends MaterialProperties {
   substanceName                   = "ash"
   nameInStateOfMatter             = Map()
@@ -797,6 +869,60 @@ class SodiumChlorideProp extends MaterialProperties {
   electricallyConductive          = false
   // Friction
   frictionCoefficient             = 0.73
+
+}
+
+class AceticAcidProp extends MaterialProperties {
+  substanceName                   = "acetic acid"
+  nameInStateOfMatter             = Map("solid" -> "solid acetic acid", "liquid" -> "acetic acid", "gas" -> "gaseous acetic acid")
+  color                           = "clear"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.20
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 119.0f
+  meltingPoint                    = 17.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.1
+
+}
+
+class SodiumBicarbonateProp extends MaterialProperties {
+  substanceName                   = "sodium bicarbonate"
+  nameInStateOfMatter             = Map()
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.20
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 100.0f      // Technically not correct, but this is its decomposition temperature
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.73
+
+}
+
+class SodiumAcetateProp extends MaterialProperties {
+  substanceName                   = "sodium acetate"
+  nameInStateOfMatter             = Map("solid" -> "sodium bicarbonate", "liquid" -> "sodium bicarbonate", "gas" -> "sodium bicarbonate")
+  color                           = "clear"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 881.0f
+  meltingPoint                    = 324.0f
+  combustionPoint                 = 100000.0f      // Technically not correct, but this is its decomposition temperature
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.50
 
 }
 
