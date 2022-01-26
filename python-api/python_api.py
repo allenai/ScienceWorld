@@ -11,29 +11,30 @@ import subprocess
 import time
 import json
 
-# Web interface
-#from pywebio.input import *
-#from pywebio.output import *
 
 class VirtualEnv:
 
     #
     # Constructor
     #
-    def __init__(self, taskName, serverPath, threadNum=0):
+    def __init__(self, taskName, serverPath, envStepLimit, threadNum=0, launchServer=True):
         self.taskName = taskName
 
         # Define the port number
         self.portNum = 25335 + threadNum        
 
         # Launch the server
-        self.launchServer(serverPath)
+        if (launchServer == True):
+            self.launchServer(serverPath)
 
         # Connect to the JVM
         self.gateway = JavaGateway(gateway_parameters=GatewayParameters(auto_field=True, port=self.portNum))
 
         # Load the script
         self.load(self.taskName, 0, "")
+
+        # Set the environment step limit
+        self.envStepLimit = envStepLimit
 
     #
     #   Destructor
@@ -50,24 +51,36 @@ class VirtualEnv:
 
     # Launches the PY4J server
     def launchServer(self, serverPath):
+        print("Launching ScienceWorld Server (Port " + str(self.portNum) + ")")
         # /home/ruoyao/Documents/projects/virtualenv-scala2/python-api/virtualenv-scala-assembly-1.0.jar            
         cmd = "nohup java -cp " + serverPath + " scienceworld.runtime.pythonapi.PythonInterface " + str(self.portNum) + " >/dev/null 2>&1 &"
         #"nohup usr/local/bin/otherscript.pl {0} >/dev/null 2>&1 &", shell=True
+        
         subprocess.Popen(cmd, shell=True)
-        time.sleep(1)
+        time.sleep(5)
 
     # Ask the simulator to load an environment from a script
     def load(self, taskName, variationIdx, simplificationStr):
         # TODO: Error handling
-        self.scriptFilename = taskName
+        self.scriptFilename = taskName        
 
-        print("Load: " + self.scriptFilename + " (variation: " + str(variationIdx) + ")")
+        print("Load: " + self.scriptFilename + " (variation: " + str(variationIdx) + ")" + " (simplifications: " + simplificationStr + ")")
         self.gateway.load(self.scriptFilename, variationIdx, simplificationStr)
 
 
     # Ask the simulator to reset an environment back to it's initial state
     def reset(self):
         self.gateway.reset()
+        # Make first move
+        observation, score, isCompleted, info = self.step("look around")
+
+        # Return a tuple that looks like the Jericho signiture for reset
+        return observation, info
+
+    # Ask the simulator to reset an environment back to it's initial state
+    def resetWithVariation(self, variationIdx, simplificationStr):
+        self.load(self.scriptFilename, variationIdx, simplificationStr)
+
         # Make first move
         observation, score, isCompleted, info = self.step("look around")
 
@@ -121,7 +134,6 @@ class VirtualEnv:
         jsonStr = self.gateway.getPossibleObjectReferentTypesLUTJSON()
         data = json.loads(jsonStr)
         return data       
-
 
     # Get a list of *valid* agent-object combinations
     def getValidActionObjectCombinations(self):
@@ -199,33 +211,52 @@ class VirtualEnv:
         return self.gateway.getRandomVariationDev()    
 
     def getRandomVariationTest(self):
-        return self.gateway.getRandomVariationTest()    
+        return self.gateway.getRandomVariationTest()  
 
 
     # Step
     def step(self, inputStr:str):
         #observation, score, isCompleted = self.gateway.step(inputStr)
         observation = self.gateway.step(inputStr)
-        score = self.gateway.getScore()
+        score = int(round(100 * self.gateway.getScore()))        # Convert from 0-1 to 0-100
         isCompleted = self.gateway.getCompleted()
         numMoves = self.getNumMoves()
 
-        return observation, score, isCompleted, {'moves': numMoves, 'score': score}
+        # If the number of moves exceeds the environment step limit, then set isCompleted to be true
+        if (numMoves > self.envStepLimit):
+            isCompleted = True
+
+        #print("> " + str(inputStr))
+        #print("score: " + str(score))
+        #print("moves: " + str(numMoves))
+
+        # Mirror of Jericho API        
+        infos = {'moves': numMoves, 
+                 'score': score, 
+                 'look': self.look(), 
+                 'inv': self.inventory(), 
+                 'taskDesc': self.taskdescription(),
+                 'valid': self.getValidActionObjectCombinations() }
+                 #'valid': ['wait1']}
+
+        #print("API MODIFIED TO ONLY HAVE LOOK ACTION FOR BUG TESTING!!!!!!!!")
+
+        #print("infos:")
+        #print(infos)
+
+        return observation, score, isCompleted, infos
 
 
     # Special actions that are "free" (consume zero time)
-    def look(self):
-        inputStr = "look around"        
-        observation = self.gateway.step(inputStr)
+    def look(self):        
+        observation = self.gateway.freeActionLook()
         return observation
 
-    def inventory(self):
-        inputStr = "inventory"
-        observation = self.gateway.step(inputStr)
+    def inventory(self):        
+        observation = self.gateway.freeActionInventory()
         return observation
 
-    def taskdescription(self):
-        inputStr = "task"
-        observation = self.gateway.step(inputStr)
+    def taskdescription(self):        
+        observation = self.gateway.freeActionTaskDesc()
         return observation
 

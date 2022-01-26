@@ -24,6 +24,15 @@ object UniqueTypeID {
     return this.add(key)
   }
 
+  // Get the type string for a given ID
+  def getTypeStr(id:Long):String = {
+    for (key <- lut.keySet) {
+      if (lut(key) == id) return key
+    }
+    // If we reach here, key was not found
+    return ""
+  }
+
   // Add an element to the look-up-table
   def add(name:String): Long = {
     lut(name) = this.nextID

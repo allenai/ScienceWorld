@@ -195,6 +195,11 @@ class PythonInterface() {
     agentInterface.get.getPossibleObjectReferentLUTJSON()
   }
 
+  def getPossibleObjectReferentTypesLUTJSON():String = {
+    if (!agentInterface.isDefined) return ERROR_MESSAGE_UNINITIALIZED
+    agentInterface.get.getPossibleObjectReferentTypesLUTJSON()
+  }
+
   def getValidActionObjectCombinations():java.util.List[String] = {
     if (!agentInterface.isDefined) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
     agentInterface.get.getValidActionObjectCombinations().toList.asJava

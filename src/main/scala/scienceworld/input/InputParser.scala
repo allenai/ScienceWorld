@@ -7,6 +7,7 @@ import scienceworld.actions.Action
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
+import util.UniqueTypeID
 
 import scala.Console.out
 import scala.collection.mutable
@@ -104,7 +105,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     val elems = new ArrayBuffer[String]
     for (typeid <- lut.keySet) {
       val os = new StringBuilder()
-      os.append("\"" + typeid + "\": [")
+      os.append("\"" + typeid + "\": {")
 
       val values = lut(typeid)
       val innerElems = new ArrayBuffer[String]
@@ -113,8 +114,9 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
         val referent = value._2
         innerElems.append("\"" + uuid + "\":\"" + referent + "\"")
       }
+      innerElems.append( "\"desc\":\"" + UniqueTypeID.getTypeStr(typeid) + "\"")
       os.append( innerElems.mkString(", "))
-      os.append("]")
+      os.append("}")
 
       elems.append( os.toString() )
     }

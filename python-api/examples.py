@@ -139,13 +139,15 @@ def randomModel(jarPath:str):
 def userConsole(jarPath:str):
     exitCommands = ["quit", "exit"]
 
+    simplificationStr = ""
+
     # Initialize environment
-    env = VirtualEnv("", jarPath, threadNum = 0)
+    env = VirtualEnv("", jarPath, envStepLimit = 100, threadNum = 0)
     taskNames = env.getTaskNames()
     taskName = taskNames[0]        # Just get first task    
     maxVariations = env.getMaxVariations(taskName)
     randVariationIdx = random.randrange(0, maxVariations)           # Pick a random variation
-    env.load(taskName, randVariationIdx)
+    env.load(taskName, randVariationIdx, simplificationStr)
 
     initialObs, initialDict = env.reset()
     
@@ -171,7 +173,10 @@ def userConsole(jarPath:str):
     print("\n")
     print("Valid action-object combinations (with templates): " + str(env.getValidActionObjectCombinationsWithTemplates() ))
     print("\n")
-    
+
+    typeLUT = env.getPossibleObjectReferentTypesLUT()
+    print("typeLUT: " + str(typeLUT))
+
     print("Task Name: " + taskName)
     print("Task Variation: " + str(randVariationIdx) + " / " + str(maxVariations))
     print("Task Description: " + str(env.getTaskDescription()) )    
@@ -215,7 +220,7 @@ def main():
     #speedTest(jarPath)
 
     # Run a model that chooses random actions until successfully reaching the goal
-    randomModel(jarPath)
+    #randomModel(jarPath)
 
     print("Exiting.")
 
