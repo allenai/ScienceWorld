@@ -186,7 +186,7 @@ object Chemistry {
       }
 
       // Rust
-      if ((water.isDefined) && (flour.isDefined)) {
+      if ((water.isDefined) && (ironblock.isDefined)) {
         water.get.delete()
         ironblock.get.delete()
 
@@ -199,7 +199,7 @@ object Chemistry {
       // Sodium acetate
       if ((sodiumbicarbonate.isDefined) && (aceticacid.isDefined)) {
         sodiumbicarbonate.get.delete()
-        ironblock.get.delete()
+        aceticacid.get.delete()
 
         container.addObject( new SodiumAcetate() )
 

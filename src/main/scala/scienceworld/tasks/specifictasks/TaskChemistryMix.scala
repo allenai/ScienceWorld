@@ -94,7 +94,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
 
     // Iron + water = rusty iron
     val ironblock = new IronBlock()
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "rusty iron", inputObjects = Array(ironblock, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
+    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "rust", inputObjects = Array(ironblock, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
 
     // Paper + green paint = green paper  (paint should be found in art room)
     val paper2 = new Paper()
