@@ -164,9 +164,9 @@ class GoalObjectsInSingleContainer(objectNames:Array[String], _isOptional:Boolea
     breakable {
       for (obj <- visibleObjects) {
         val contents = obj.getContainedObjects(includeHidden = false)
-        println("Obj: " + obj.name + "\t contents: " + contents.map(_.name).mkString(", "))
+        //println("Obj: " + obj.name + "\t contents: " + contents.map(_.name).mkString(", "))
         if (contents.size == objectNames.size) {
-          println("\tChecking")
+          //println("\tChecking")
           var success:Boolean = true
           // Check contents
           for (cObj <- contents) {
@@ -178,7 +178,7 @@ class GoalObjectsInSingleContainer(objectNames:Array[String], _isOptional:Boolea
             }
           }
 
-          println("\tSuccess:" + success)
+          //println("\tSuccess:" + success)
           if (success) {
             found = true
             break()

@@ -205,7 +205,6 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
                 optionalUnorderedSubgoalsCompleted(i) = true
                 if (subgoal.key.length > 0) this.completedKeys.add(subgoal.key)
                 numCompletedThisCycle += 1
-                println("\t\tTrue")
                 break
               }
             }
@@ -237,8 +236,8 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
           // Do not process this subgoal if it's prerequisites haven't been met
           if (this.areSubgoalPrerequisitesCompleted(curSubgoal.get.keysMustBeCompletedBefore)) {
             for (obj <- objMonitor.getMonitoredObjects()) {
-              println("Checking obj (" + obj.toStringMinimal() + ") against subgoal " + curSubgoalIdx)
-              println("## " + curSubgoal.get.getClass)
+              //println("Checking obj (" + obj.toStringMinimal() + ") against subgoal " + curSubgoalIdx)
+              //println("## " + curSubgoal.get.getClass)
 
               val isFirstGoal = if (this.getNumCompletedSubgoals() == 0) true else false
 
@@ -255,12 +254,12 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
             //println("Subgoal prerequisites not met")
           }
 
-          println("## No success or failure")
+          //println("## No success or failure")
 
           // If we reach here, the subgoal hasn't been satisfied, and the task hasn't failed -- check if the subgoal is optional
           if (curSubgoal.get.isOptional) {
-            println("curSubgoal: " + curSubgoal)
-            println("curSubgoalIdx: " + curSubgoalIdx)
+            //println("curSubgoal: " + curSubgoal)
+            //println("curSubgoalIdx: " + curSubgoalIdx)
             curSubgoal = getSubgoalAtIdx(subgoalIdx + 1)
             if (curSubgoal.isEmpty) break()   // This condition should only happen if there are no more subgoals left (e.g. at end, or isComplete=True)
             subgoalIdx += 1
@@ -271,22 +270,22 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
         }
       }
 
-      print("##>> out of break")
+      //print("##>> out of break")
 
       if (goalReturn.taskFailure) {
-        println ("Task failure.")
+        //println ("Task failure.")
         this.setFailed()
       }
 
       if (goalReturn.subgoalSuccess) {
         // Current goal condition is satisfied -- test next goal condition until we find one that we don't satisfy, or complete the list.
-        println("Subgoal satisfied.")
+        //println("Subgoal satisfied.")
         //curSubgoalIdx += 1
         this.curSubgoalIdx = subgoalIdx + 1
         if (curSubgoal.get.key.length > 0) this.completedKeys.add(curSubgoal.get.key)
       } else {
         // Current goal condition not satisfied -- return
-        println("Subgoal not satisfied.")
+        //println("Subgoal not satisfied.")
         return
       }
 

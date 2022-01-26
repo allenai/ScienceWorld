@@ -16,7 +16,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks._
 
-class AgentInterface(universe:EnvObject, agent:Agent, task:Task, simplificationStr:String = "") {
+class AgentInterface(universe:EnvObject, agent:Agent, task:Task, var simplificationStr:String = "") {
 
   val objMonitor = new ObjMonitor()
   // Store whether the environment is in an unexpected error state
@@ -31,6 +31,15 @@ class AgentInterface(universe:EnvObject, agent:Agent, task:Task, simplificationS
 
   // Store a copy of the task description in the agent, for easy access through the action space
   agent.setTaskDescription(this.getTaskDescription())
+
+  // Simplifications -- Interpret 'easy' to mean a specific set of settings
+  if (simplificationStr == "easy") {
+    if (task.taskName.toLowerCase.contains("power-component") || task.taskName.toLowerCase.contains("conductivity")) {
+      simplificationStr = "teleportAction,openDoors,selfWateringFlowerPots"
+    } else {
+      simplificationStr = "teleportAction,noElectricalAction,openDoors,selfWateringFlowerPots"
+    }
+  }
 
   // Run any simplifications that need to be run at initialization
   val (simplifierSuccess, simplifierErrStr) = SimplifierProcessor.parseSimplificationStr(simplificationStr)
