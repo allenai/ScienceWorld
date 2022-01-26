@@ -25,65 +25,66 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
   // Variation 1: Which seeds to grow
   val baseChemicals = new ArrayBuffer[ Array[TaskModifier] ]()
   val locations = Array("kitchen", "workshop")
-  //val locations = Array("green house")
-  for (location <- locations) {
 
+  // Train
+  for (location <- locations) {
     // Salt + water = salt water
     val salt = new SodiumChloride()
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "salt water", inputObjects = Array(salt, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "salt water", inputObjects = Array(salt, new Water()), generateLocation = location, excludeFromAdding = Array("water")))
 
     // Soap + water = soapy water
     val soap = new Soap()
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "soapy water", inputObjects = Array(soap, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "soapy water", inputObjects = Array(soap, new Water()), generateLocation = location, excludeFromAdding = Array("water")))
 
     // Mixed nuts
     val peanut = new Peanut()
     val almond = new Almond()
     val cachew = new Cachew()
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "mixed nuts", inputObjects = Array(peanut, almond, cachew), generateLocation = location, excludeFromAdding = Array("water")) )
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "mixed nuts", inputObjects = Array(peanut, almond, cachew), generateLocation = location, excludeFromAdding = Array("water")))
 
     // Volcano
     val vinegar = new AceticAcid()
     val bakingsoda = new SodiumBicarbonate()
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "sodium acetate", inputObjects = Array(vinegar, bakingsoda), generateLocation = location, excludeFromAdding = Array("water")) )
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "sodium acetate", inputObjects = Array(vinegar, bakingsoda), generateLocation = location, excludeFromAdding = Array("water")))
 
     // banana + bread = banana sandwhich
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "banana sandwhich", inputObjects = Array(new Banana(), new Bread()), generateLocation = location) )
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "banana sandwhich", inputObjects = Array(new Banana(), new Bread()), generateLocation = location))
 
     // Paper + blue paint = blue paper  (paint should be found in art room)
     val paper1 = new Paper()
     val bluepaint = new BluePaint()
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "blue paper", inputObjects = Array(paper1, bluepaint), generateLocation = location, excludeFromAdding = Array(bluepaint.name)) )
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "blue paper", inputObjects = Array(paper1, bluepaint), generateLocation = location, excludeFromAdding = Array(bluepaint.name)))
 
     // peanut + bread = peanut butter sandwhich
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "peanut butter sandwhich", inputObjects = Array(new Peanut(), new Bread()), generateLocation = location) )
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "peanut butter sandwhich", inputObjects = Array(new Peanut(), new Bread()), generateLocation = location))
 
     // peanut + jam + bread = peanut butter with jam sandwhich
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "peanut butter with jam sandwhich", inputObjects = Array(new Peanut(), new Jam(), new Bread()), generateLocation = location) )
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "peanut butter with jam sandwhich", inputObjects = Array(new Peanut(), new Jam(), new Bread()), generateLocation = location))
+  }
 
-
-    // Dev
-
+  // Dev
+  for (location <- locations) {
     // chocolate + marshmallow = smores
     val chocolate = new Chocolate()
     val marshmallow = new Marshmallow()
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "smores", inputObjects = Array(chocolate, marshmallow), generateLocation = location) )
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "smores", inputObjects = Array(chocolate, marshmallow), generateLocation = location))
 
     // Flour + water = dough
     val flour = new Flour()
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "dough", inputObjects = Array(flour, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "dough", inputObjects = Array(flour, new Water()), generateLocation = location, excludeFromAdding = Array("water")))
 
     // Apple + Orange + Banana
     val apple = new Apple()
     val orange = new Orange()
     val banana = new Banana()
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "fruit salad", inputObjects = Array(apple, orange, banana), generateLocation = location) )
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "fruit salad", inputObjects = Array(apple, orange, banana), generateLocation = location))
 
     // jam + bread = peanut butter with jam sandwhich
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "jam sandwhich", inputObjects = Array(new Peanut(), new Bread()), generateLocation = location) )
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "jam sandwhich", inputObjects = Array(new Peanut(), new Bread()), generateLocation = location))
+  }
 
-    // Test
-
+  // Test
+  for (location <- locations) {
     // sugar + water = sugar water
     val sugar = new Sugar()
     baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "sugar water", inputObjects = Array(sugar, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
@@ -98,9 +99,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     // Paper + green paint = green paper  (paint should be found in art room)
     val paper2 = new Paper()
     val greenpaint = new GreenPaint()
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "green paper", inputObjects = Array(paper2, bluepaint), generateLocation = location, excludeFromAdding = Array(greenpaint.name)) )
-
-
+    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "green paper", inputObjects = Array(paper2, greenpaint), generateLocation = location, excludeFromAdding = Array(greenpaint.name)) )
   }
 
 
@@ -153,6 +152,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     val resultChemical = this.getTaskValueStr(modifiers, key = "result")
     if (resultChemical.isEmpty) throw new RuntimeException("ERROR: Failed to find resultant chemical in task setup.")
     val inputChemicals = this.getTaskValueStr(modifiers, key = "inputChemicals").get.split(",")
+    val location = this.getTaskValueStr(modifiers, key = "location")
 
     var subTask = ""
     val gSequence = new ArrayBuffer[Goal]
@@ -165,10 +165,12 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
         gSequenceUnordered.append(new GoalInRoomWithObject(objectName = inputChemical, _isOptional = true, description = "be in same location as " + inputChemical))
       }
       gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = inputChemicals, _isOptional = true, description = "have all ingredients alone in a single container"))
-      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = resultChemical.get, _isOptional = true, description = "be in same location as " + resultChemical))
+      gSequenceUnordered.append(new GoalInRoomWithObject(objectName = resultChemical.get, _isOptional = true, description = "be in same location as " + resultChemical.get))
 
 
-      description = "Your task is to use chemistry to create the substance '" + resultChemical.get + "'. When you are done, focus on the " + resultChemical.get + "."
+      description = "Your task is to use chemistry to create the substance '" + resultChemical.get + "'. "
+      description += "A recipe and some of the ingredients might be found near the " + location.get + ". "
+      description += "When you are done, focus on the " + resultChemical.get + "."
 
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
@@ -216,6 +218,7 @@ object TaskChemistryMix {
     // Keys
     out.append( new TaskValueStr(key = "inputChemicals", value = inputObjects.map(_.name).toArray.mkString(",")) )
     out.append( new TaskValueStr(key = "result", value = resultObject) )
+    out.append( new TaskValueStr(key = "location", value = generateLocation) )
 
     // Add recipe
     val recipe = Recipe.mkRecipe(resultObject, thingsToMix = inputObjects.map(_.name))
