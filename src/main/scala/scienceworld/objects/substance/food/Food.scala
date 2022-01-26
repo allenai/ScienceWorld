@@ -418,7 +418,7 @@ class Sandwhich(sandwhichType:String) extends Food {
 
   override def getReferents(): Set[String] = {
     val cannonicalName = this.sandwhichType + " sandwhich"
-    Set("bread", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+    Set("sandwhich", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
   }
 
   override def getDescription(mode:Int): String = {

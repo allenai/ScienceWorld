@@ -12,7 +12,7 @@ import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
-import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalInRoomWithObject, GoalLifeStage, GoalObjectsInSingleContainer}
+import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalInRoomWithObject, GoalLifeStage, GoalMoveToNewLocation, GoalObjectsInSingleContainer, GoalPastActionExamineObject, GoalPastActionReadObject}
 import scienceworld.tasks.specifictasks.TaskChemistryMix.MODE_CHEMISTRY_MIX
 import scienceworld.tasks.specifictasks.TaskFindLivingNonLiving.MODE_LIVING
 
@@ -161,11 +161,15 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     var description:String = "<empty>"
     if (mode == MODE_CHEMISTRY_MIX) {
       gSequence.append( new GoalFind(objectName = resultChemical.get, failIfWrong = true, description = "focus on result chemical (" + resultChemical.get + ")") )
+
+      gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
+
       for (inputChemical <- inputChemicals) {
         gSequenceUnordered.append(new GoalInRoomWithObject(objectName = inputChemical, _isOptional = true, description = "be in same location as " + inputChemical))
       }
       gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = inputChemicals, _isOptional = true, description = "have all ingredients alone in a single container"))
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = resultChemical.get, _isOptional = true, description = "be in same location as " + resultChemical.get))
+      gSequenceUnordered.append(new GoalPastActionReadObject(documentName = "recipe", _isOptional = true, description = "read recipe"))
 
 
       description = "Your task is to use chemistry to create the substance '" + resultChemical.get + "'. "

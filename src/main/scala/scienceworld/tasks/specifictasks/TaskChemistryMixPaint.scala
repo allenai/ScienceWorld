@@ -157,11 +157,15 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
 
       gSequence.append(new GoalFind(objectName = secondaryColor.get, failIfWrong = true, description = "focus on the mixing result (" + secondaryColor.get + ")"))
 
+      gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
+
       for (inputChemical <- inputColorsSecondary) {
         gSequenceUnordered.append(new GoalInRoomWithObject(objectName = inputChemical, _isOptional = true, description = "be in same location as " + inputChemical))
       }
       gSequenceUnordered.append(new GoalObjectsInSingleContainer(objectNames = inputColorsSecondary, _isOptional = true, description = "have all ingredients alone in a single container"))
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = secondaryColor.get, _isOptional = true, description = "be in same location as " + secondaryColor.get))
+
+
 
       description = "Your task is to use chemistry to create " + secondaryColor.get + ". When you are done, focus on the " + secondaryColor.get + "."
 
