@@ -114,6 +114,10 @@ class AgentInterface(universe:EnvObject, agent:Agent, task:Task, simplificationS
     return uuid2referentLUT
   }
 
+  def getPossibleObjectReferentTypesLUTJSON():String = {
+    return inputParser.getAllUniqueReferentsWithTypeLUTJSON(this.getAgentVisibleObjects()._2, includeHidden = false)
+  }
+
   def getPossibleObjectReferentLUTJSON():String = {
     val uuid2referentLUT = this.getPossibleObjectReferentLUT()
 

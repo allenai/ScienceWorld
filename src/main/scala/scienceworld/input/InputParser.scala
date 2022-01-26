@@ -73,6 +73,58 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     return out.toMap
   }
 
+  def getAllUniqueReferentsWithTypeLUT(objTreeRoot:EnvObject, includeHidden:Boolean, recursive:Boolean = false):Map[Long, ArrayBuffer[(Long, String)]] = {
+    //val out = mutable.Map[Long, String]()
+    val out = mutable.Map[Long, ArrayBuffer[(Long, String)]]()
+
+    val tuples = this.getAllUniqueReferents(objTreeRoot, includeHidden, recursive)
+
+    for (tuple <- tuples) {
+      val referent = tuple._1
+      val obj = tuple._2
+      val uuid = obj.uuid
+      val typeid = obj.typeID
+
+      // Add
+      if (!out.contains(typeid)) {
+        out(typeid) = new ArrayBuffer[(Long, String)]
+      }
+
+      // Add content
+      out(typeid).append( (uuid, referent) )
+    }
+
+    return out.toMap
+  }
+
+  def getAllUniqueReferentsWithTypeLUTJSON(objTreeRoot:EnvObject, includeHidden:Boolean, recursive:Boolean = false):String = {
+    val lut = this.getAllUniqueReferentsWithTypeLUT(objTreeRoot, includeHidden, recursive)
+
+
+    val elems = new ArrayBuffer[String]
+    for (typeid <- lut.keySet) {
+      val os = new StringBuilder()
+      os.append("\"" + typeid + "\": [")
+
+      val values = lut(typeid)
+      val innerElems = new ArrayBuffer[String]
+      for (value <- values) {
+        val uuid = value._1
+        val referent = value._2
+        innerElems.append("\"" + uuid + "\":\"" + referent + "\"")
+      }
+      os.append( innerElems.mkString(", "))
+      os.append("]")
+
+      elems.append( os.toString() )
+    }
+
+    val outStr = "{" + elems.mkString(", ") + "}"
+
+    // Return
+    return outStr
+  }
+
   // Unique referents, but with presupplied list
   // Get a list of all referents
   def getAllUniqueReferentsObjList(allObjs:Array[EnvObject], perspectiveContainer:EnvObject, includeHidden:Boolean, recursive:Boolean=false):Array[(String, EnvObject)] = {

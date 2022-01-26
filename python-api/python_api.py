@@ -116,6 +116,13 @@ class VirtualEnv:
         data = json.loads(jsonStr)
         return data       
 
+    # As above, but dictionary is referenced by object type ID
+    def getPossibleObjectReferentTypesLUT(self):
+        jsonStr = self.gateway.getPossibleObjectReferentTypesLUTJSON()
+        data = json.loads(jsonStr)
+        return data       
+
+
     # Get a list of *valid* agent-object combinations
     def getValidActionObjectCombinations(self):
         return self.gateway.getValidActionObjectCombinations()
