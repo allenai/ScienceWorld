@@ -1,9 +1,9 @@
 package scienceworld.processes
 
-import scienceworld.objects.document.{ColoredPaper}
-import scienceworld.objects.substance.food.{Dough, MixedNuts}
+import scienceworld.objects.document.ColoredPaper
+import scienceworld.objects.substance.food.{Dough, FruitSalad, MixedNuts, Sandwhich, Smores}
 import scienceworld.objects.substance.paint.{BlueVioletPaint, BrownPaint, GreenBluePaint, GreenPaint, OrangePaint, RedOrangePaint, VioletPaint, VioletRedPaint, YellowGreenPaint, YellowOrangePaint}
-import scienceworld.objects.substance.{Rust, SaltWater, SoapyWater, SodiumAcetate}
+import scienceworld.objects.substance.{Rust, SaltWater, SoapyWater, SodiumAcetate, SugarWater}
 import scienceworld.properties.RedOrangePaintProp
 import scienceworld.struct.EnvObject
 
@@ -81,6 +81,9 @@ object Chemistry {
     val sodiumChloride = this.getSubstance(container, substanceName = "sodium chloride", "solid")
     val soap = this.getSubstance(container, "soap")
     val flour = this.getSubstance(container, "flour")
+    val sugar = this.getSubstance(container, "sugar")
+    val chocolate = this.getSubstance(container, "chocolate")
+    val marshmallow = this.getSubstance(container, "marshmallow")
 
     val ironblock = this.getSubstance(container, "iron block")
 
@@ -90,6 +93,13 @@ object Chemistry {
     val peanut = this.getSubstance(container, "peanut")
     val almond = this.getSubstance(container, "almond")
     val cachew = this.getSubstance(container, "cachew")
+
+    val apple = this.getSubstance(container, "apple")
+    val orange = this.getSubstance(container, "orange")
+    val banana = this.getSubstance(container, "banana")
+
+    val jam = this.getSubstance(container, "jam")
+    val bread = this.getSubstance(container, "bread")
 
     val paper = this.getSubstance(container, "paper")
 
@@ -143,6 +153,17 @@ object Chemistry {
         return (true, "Soap and water mix to produce soapy water.")
       }
 
+      // Sugar water
+      if ((water.isDefined) && (sugar.isDefined)) {
+        water.get.delete()
+        sugar.get.delete()
+
+        val sugarWater = new SugarWater()
+        container.addObject(sugarWater)
+
+        return (true, "Sugar and water mix to produce sugar water.")
+      }
+
       // Dough
       if ((water.isDefined) && (flour.isDefined)) {
         water.get.delete()
@@ -152,6 +173,16 @@ object Chemistry {
         container.addObject(dough)
 
         return (true, "Flour and water mix to produce dough.")
+      }
+
+      // Smores
+      if ((chocolate.isDefined) && (marshmallow.isDefined)) {
+        chocolate.get.delete()
+        marshmallow.get.delete()
+
+        container.addObject(new Smores())
+
+        return (true, "Chocolate and marshmallow mix to produce smores.")
       }
 
       // Rust
@@ -176,13 +207,37 @@ object Chemistry {
       }
 
 
+      // 2-ingredient sandwhiches
+      if (bread.isDefined && peanut.isDefined) {
+        bread.get.delete()
+        peanut.get.delete()
+        container.addObject(new Sandwhich("peanut butter"))
+        return (true, "Bread and peanuts mix to produce a peanut butter sandwhich.")
+      }
+
+      if (bread.isDefined && jam.isDefined) {
+        bread.get.delete()
+        jam.get.delete()
+        container.addObject(new Sandwhich("jam"))
+        return (true, "Bread and peanuts mix to produce a jam sandwhich.")
+      }
+
+      if (bread.isDefined && banana.isDefined) {
+        bread.get.delete()
+        banana.get.delete()
+        container.addObject(new Sandwhich("banana"))
+        return (true, "Bread and peanuts mix to produce a banana sandwhich.")
+      }
+
+
+
       // Dying paper
 
       if ((paper.isDefined) && (paintRed.isDefined)) {
         paper.get.delete()
         paintRed.get.delete()
         container.addObject( new ColoredPaper("red") )
-        return (true, "Paper and blue paint mix to produce red paper")
+        return (true, "Paper and blue paint mix to produce red paper.")
       }
 
       if ((paper.isDefined) && (paintGreen.isDefined)) {
@@ -191,7 +246,7 @@ object Chemistry {
 
         container.addObject( new ColoredPaper("green") )
 
-        return (true, "Paper and blue paint mix to produce green paper")
+        return (true, "Paper and blue paint mix to produce green paper.")
       }
 
       if ((paper.isDefined) && (paintBlue.isDefined)) {
@@ -200,7 +255,7 @@ object Chemistry {
 
         container.addObject( new ColoredPaper("blue") )
 
-        return (true, "Paper and blue paint mix to produce blue paper")
+        return (true, "Paper and blue paint mix to produce blue paper.")
       }
 
       if ((paper.isDefined) && (paintOrange.isDefined)) {
@@ -209,7 +264,7 @@ object Chemistry {
 
         container.addObject( new ColoredPaper("orange") )
 
-        return (true, "Paper and blue paint mix to produce orange paper")
+        return (true, "Paper and blue paint mix to produce orange paper.")
       }
 
       if ((paper.isDefined) && (paintYellow.isDefined)) {
@@ -218,7 +273,7 @@ object Chemistry {
 
         container.addObject( new ColoredPaper("yellow") )
 
-        return (true, "Paper and blue paint mix to produce yellow paper")
+        return (true, "Paper and blue paint mix to produce yellow paper.")
       }
 
       if ((paper.isDefined) && (paintViolet.isDefined)) {
@@ -227,7 +282,7 @@ object Chemistry {
 
         container.addObject( new ColoredPaper("voilet") )
 
-        return (true, "Paper and blue paint mix to produce voilet paper")
+        return (true, "Paper and blue paint mix to produce voilet paper.")
       }
 
 
@@ -312,6 +367,7 @@ object Chemistry {
        * Case: 3 SUBSTANCES
        */
 
+      // Mixed nuts
       if (peanut.isDefined && almond.isDefined && cachew.isDefined) {
         peanut.get.delete()
         almond.get.delete()
@@ -320,6 +376,34 @@ object Chemistry {
         container.addObject(new MixedNuts())
         return (true, "Peanuts, almonds, and cachews mix to produce mixed nuts.")
       }
+
+      // Fruit salad
+      if (apple.isDefined && orange.isDefined && banana.isDefined) {
+        apple.get.delete()
+        orange.get.delete()
+        banana.get.delete()
+
+        container.addObject(new FruitSalad())
+        return (true, "Apples, oranges, and bananas mix to produce fruit salad.")
+      }
+
+      // 3-ingredient sandwhiches
+      if (bread.isDefined && peanut.isDefined && jam.isDefined) {
+        bread.get.delete()
+        peanut.get.delete()
+        jam.get.delete()
+        container.addObject(new Sandwhich("peanut butter with jam"))
+        return (true, "Bread and peanuts and jam mix to produce a peanut butter with jam sandwhich.")
+      }
+
+      if (bread.isDefined && peanut.isDefined && banana.isDefined) {
+        bread.get.delete()
+        peanut.get.delete()
+        banana.get.delete()
+        container.addObject(new Sandwhich("peanut butter with banana"))
+        return (true, "Bread and peanuts and jam mix to produce a peanut butter with banana sandwhich.")
+      }
+
 
       /*
        * Paints catch-all

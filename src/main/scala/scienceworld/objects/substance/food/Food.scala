@@ -301,6 +301,21 @@ class Marshmallow extends Food {
 
 }
 
+class Smores extends Food {
+  this.name = "smores"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new MarshmallowProp())
+
+  override def getReferents(): Set[String] = {
+    Set("smores", this.name, this.getDescriptName())
+  }
+
+  override def getDescription(mode:Int): String = {
+    return this.getDescriptName()
+  }
+
+}
+
 class IceCream extends Food {
   this.name = "ice cream"
   this.propEdibility = Some(new Edible())
@@ -355,16 +370,72 @@ class Dough extends Food {
 
 }
 
+class Bread extends Food {
+  this.name = "bread"
+
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new FlourProp())
+
+  var color = "white"
+
+  override def getReferents(): Set[String] = {
+    val cannonicalName = this.color + " bread"
+    Set("bread", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+  }
+
+  override def getDescription(mode:Int): String = {
+    val cannonicalName = "bread"
+    return this.getDescriptName(cannonicalName)
+  }
+
+}
+
+class Jam extends Food {
+  this.name = "jam"
+
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new JamProp())
+
+  var color = "red"
+
+  override def getReferents(): Set[String] = {
+    val cannonicalName = this.color + " jam"
+    Set("jam", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+  }
+
+  override def getDescription(mode:Int): String = {
+    val cannonicalName = this.color + " jam"
+    return this.getDescriptName(cannonicalName)
+  }
+
+}
+
+class Sandwhich(sandwhichType:String) extends Food {
+  this.name = sandwhichType + " sandwhich"
+
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new FlourProp())
+
+  override def getReferents(): Set[String] = {
+    val cannonicalName = this.sandwhichType + " sandwhich"
+    Set("bread", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+  }
+
+  override def getDescription(mode:Int): String = {
+    val cannonicalName = this.sandwhichType + " sandwhich"
+    return this.getDescriptName(cannonicalName)
+  }
+
+}
+
+
 class Peanut extends Food {
   this.name = "peanut"
   this.propEdibility = Some(new Edible())
   this.propMaterial = Some(new NutProp())
 
-  var color = "brown"
-
   override def getReferents(): Set[String] = {
-    val cannonicalName = this.color + " peanut"
-    Set("peanut", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+    Set("peanut", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
@@ -379,11 +450,8 @@ class Cachew extends Food {
   this.propEdibility = Some(new Edible())
   this.propMaterial = Some(new NutProp())
 
-  var color = "cachew"
-
   override def getReferents(): Set[String] = {
-    val cannonicalName = this.color + " cachew"
-    Set("cachew", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+    Set("cachew", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
@@ -398,11 +466,8 @@ class Almond extends Food {
   this.propEdibility = Some(new Edible())
   this.propMaterial = Some(new NutProp())
 
-  var color = "almond"
-
   override def getReferents(): Set[String] = {
-    val cannonicalName = this.color + " almond"
-    Set("almond", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+    Set("almond", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
@@ -417,14 +482,27 @@ class MixedNuts extends Food {
   this.propEdibility = Some(new Edible())
   this.propMaterial = Some(new NutProp())
 
-  var color = "mixed nuts"
-
   override def getReferents(): Set[String] = {
     Set("mixed nuts", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
     return this.getDescriptName("mixed nuts")
+  }
+
+}
+
+class FruitSalad extends Food {
+  this.name = "fruit salad"
+  this.propEdibility = Some(new Edible())
+  this.propMaterial = Some(new PlantMatterProp())
+
+  override def getReferents(): Set[String] = {
+    Set("fruit salad", this.name, this.getDescriptName())
+  }
+
+  override def getDescription(mode:Int): String = {
+    return this.getDescriptName("fruit salad")
   }
 
 }

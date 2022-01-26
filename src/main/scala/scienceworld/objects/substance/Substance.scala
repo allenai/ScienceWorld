@@ -179,3 +179,13 @@ class Rust extends Substance {
   this.name = "rust"
   this.propMaterial = Some (new RustProp)
 }
+
+class Sugar extends Substance {
+  this.name = "sugar"
+  this.propMaterial = Some (new SugarProp)
+}
+
+class SugarWater extends Substance {
+  this.name = "sugar water"
+  this.propMaterial = Some (new SugarProp)
+}

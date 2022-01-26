@@ -719,6 +719,24 @@ class ChocolateProp extends MaterialProperties {
 
 }
 
+// Rust
+class SugarProp extends MaterialProperties {
+  substanceName                   = "sugar"
+  nameInStateOfMatter             = Map()
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.5f
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 100000.0f
+  meltingPoint                    = 186.0f      // Sucrose
+  combustionPoint                 = 350.0f      // Sucrose
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.70      // 0 is no friction, 1 is complete friction (GUESS)
+}
+
 class MarshmallowProp extends MaterialProperties {
   substanceName                   = "marshmallow"
   nameInStateOfMatter             = Map("solid" -> "marshmallow", "liquid" -> "liquid marshmallow", "gas" -> "gaseous marshmallow")
@@ -784,6 +802,24 @@ class FlourProp extends MaterialProperties {
   boilingPoint                    = 10001.0f
   meltingPoint                    = 10000.0f
   combustionPoint                 = 380.0f
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.5      // 0 is no friction, 1 is complete friction  (GUESS)
+
+}
+
+class JamProp extends MaterialProperties {
+  substanceName                   = "jam"
+  nameInStateOfMatter             = Map()     // TODO: Add different states?
+  color                           = "red"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.50
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 10001.0f
+  meltingPoint                    = 10000.0f
+  combustionPoint                 = 400.0f
   // Electrical
   electricallyConductive          = false
   // Friction
@@ -962,6 +998,23 @@ class SoapyWaterProp extends MaterialProperties {
 
 }
 
+class SugarWaterProp extends MaterialProperties {
+  substanceName                   = "sugar water"
+  nameInStateOfMatter             = Map("solid" -> "solid sugar water", "liquid" -> "sugar water", "gas" -> "gaseous sugar water")
+  color                           = "white"
+  // Thermal
+  temperatureC                    = 10.0f
+  thermalConductivity             = 0.20
+  stateOfMatter                   = "solid"
+  boilingPoint                    = 112.0f
+  meltingPoint                    = -3.0f
+  combustionPoint                 = 100000.0f
+  // Electrical
+  electricallyConductive          = false
+  // Friction
+  frictionCoefficient             = 0.06
+
+}
 
 class BrickProp extends MaterialProperties {
   substanceName                   = "brick"
