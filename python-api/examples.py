@@ -181,6 +181,10 @@ def userConsole(jarPath:str):
     print("Task Variation: " + str(randVariationIdx) + " / " + str(maxVariations))
     print("Task Description: " + str(env.getTaskDescription()) )    
 
+    print("")
+    print("Variations (train): " + str(env.getVariationsTrain() ))
+    print("type: " + str(type(env.getVariationsTrain())) )
+    print("")
 
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands):

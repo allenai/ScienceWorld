@@ -103,6 +103,7 @@ class PythonInterface() {
    */
 
   // Split into train/dev/test sets (using a 50%/25%/25% split).
+  // TODO: Make private, so access can only be from functions below?
   def getSets():(List[Int], List[Int], List[Int]) = {
     val maxVariations = this.getTaskMaxVariations(taskName = this.taskStr)
     // Special cases with small numbers of variations

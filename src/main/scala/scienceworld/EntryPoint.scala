@@ -2,6 +2,7 @@ package scienceworld
 
 import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.environments.EnvironmentMaker
+import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove}
 import scienceworld.objects.location.{Location, Room, Universe}
@@ -128,6 +129,10 @@ object EntryPoint {
         println("Goal sequence progress: \n" + agentInterface.getGoalProgressStr() )
 
         println("Referents: " + agentInterface.getAllObjectIdsTypesReferentsLUTJSON() )
+
+        println("Locations: " + PathFinder.buildLocationGraph(universe) )
+
+        println("Pathfinder test: " + PathFinder.getLocationSequence(universe, startLocation = "living room", endLocation = "foundry")._2.mkString(", "))
 
         //println("Possible actions:\n\t" + actionHandler.getActionExamplesPlainText().mkString("\n\t"))
         //println("Possible Combinations:\n\t" + agentInterface.getPossibleActionObjectCombinations().mkString("\n\t") )
