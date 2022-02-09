@@ -127,19 +127,19 @@ class PythonInterface() {
     return (train, dev, test)
   }
 
-  def getVariationsTrain():List[Int] = {
+  def getVariationsTrain():java.util.List[Int] = {
     val (train, dev, test) = this.getSets()
-    return train
+    return train.asJava
   }
 
-  def getVariationsDev():List[Int] = {
+  def getVariationsDev():java.util.List[Int] = {
     val (train, dev, test) = this.getSets()
-    return train
+    return dev.asJava
   }
 
-  def getVariationsTest():List[Int] = {
+  def getVariationsTest():java.util.List[Int] = {
     val (train, dev, test) = this.getSets()
-    return train
+    return test.asJava
   }
 
   def getRandomVariationTrain():Int = {
