@@ -179,7 +179,7 @@ class PythonInterface() {
     return SimplifierProcessor.getPossibleSimplifications()
   }
 
-  
+
   /*
    * Gold action sequence
    */
