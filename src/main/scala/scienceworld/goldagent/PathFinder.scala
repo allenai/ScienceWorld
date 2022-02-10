@@ -1,5 +1,7 @@
 package scienceworld.goldagent
 
+import language.model.ActionRequestDef
+import scienceworld.actions.{Action, ActionMoveThroughDoor, ActionOpenDoor}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.location.{Location, Universe}
 import scienceworld.struct.EnvObject
@@ -8,29 +10,69 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 
-// Find a path from one location to another location
+/*
+ * Tools for generating gold trajectories/action sequences.
+ */
+
+
 object PathFinder {
 
 
 
-  def findPathSequence(universe:EnvObject, agent:Agent, goalLocationName:String): Unit = {
+  def createActionSequence(universe:EnvObject, agent:Agent, startLocation:String, endLocation:String): Array[(Action, String)] = {
+    val actionSequence = new ArrayBuffer[(Action, String)]
 
-    // Get current agent location
-    val agentLocation = agent.getContainer().get
-
-    // Check for end condition
-    if (sanitize(agentLocation.name) == sanitize(goalLocationName)) {
-      // Done
-    } else {
-      // Make next move
+    val (success, pathLocations) = this.getLocationSequence(universe, startLocation, endLocation)
+    if (!success) {
+      // Fail gracefully
+      return Array.empty[(Action, String)]
     }
 
 
+    for (i <- 0 until pathLocations.length-1) {
+      val locationName = pathLocations(i)
+      val nextLocationName = pathLocations(i+1)
+
+      // Get the location object
+      val location = this.getEnvObject(queryName = locationName, universe)
+      if (location.isEmpty) {
+        // Fail gracefully
+        return Array.empty[(Action, String)]
+      }
+
+      // Find the appropraite portal
+      val portals = location.get.getPortals()
+      for (portal <- portals) {
+        if (portal.doesConnectTo(nextLocationName)) {
+          // This is the portal that connects to the next location.
+
+          // Get portal referent
+          val portalReferents = portal.getReferents(location.get).toList.sortBy(- _.length)
+          val portalReferent = portalReferents(0)   // Take the longest referent (least likely to be ambiguous)
+
+          // Do we need to open it?
+          // TODO: Add check?
+          val actionOpenDoor = new ActionOpenDoor(ActionRequestDef.mkBlank(), assignments = Map("agent" -> agent, "door" -> portal))
+          actionSequence.append( (actionOpenDoor, "open " + portalReferent) )
+
+          // Now we need to go through it
+          val actionMoveLocation = new ActionMoveThroughDoor(ActionRequestDef.mkBlank(), assignments = Map("agent" -> agent, "doorOrLocation" -> portal))
+          actionSequence.append( (actionMoveLocation, "go to " + nextLocationName) )
+        }
+
+      }
+
+    }
+
+
+    // Return
+    return actionSequence.toArray
 
   }
 
 
-  // Find a valid path from one location to another
+  // Find a valid path (sequence of locations) from a starting location to an end location.
+  // Returns (success, array(location names) )
   def getLocationSequence(universe:EnvObject, startLocation:String, endLocation:String, maxSteps:Int = 10):(Boolean, Array[String]) = {
     val validTransitions = this.buildLocationGraph(universe)
 
@@ -106,6 +148,42 @@ object PathFinder {
 
     return validTransitions.toMap
   }
+
+
+
+
+  /*
+   * Helpers
+   */
+
+  // Find an object in the universe by name
+  def getEnvObject(queryName:String, universe:EnvObject):Option[EnvObject] = {
+    val allObjects = universe.getContainedObjectsAndPortalsRecursive(true)
+    for (obj <- allObjects) {
+      if ((sanitize(obj.name) == sanitize(queryName)) || (sanitize(obj.getDescriptName()) == sanitize(queryName))) {
+        return Some(obj)
+      }
+    }
+
+    // Default return
+    None
+  }
+
+  // Find all objects with a given name in the universe
+  def getAllEnvObject(queryName:String, universe:EnvObject):Array[EnvObject] = {
+    val allObjects = universe.getContainedObjectsAndPortalsRecursive(true)
+    val out = new ArrayBuffer[EnvObject]
+
+    for (obj <- allObjects) {
+      if ((sanitize(obj.name) == sanitize(queryName)) || (sanitize(obj.getDescriptName()) == sanitize(queryName))) {
+        out.append(obj)
+      }
+    }
+
+    // Default return
+    out.toArray
+  }
+
 
   // Sanitize strings for comparison
   private def sanitize(name:String):String = {

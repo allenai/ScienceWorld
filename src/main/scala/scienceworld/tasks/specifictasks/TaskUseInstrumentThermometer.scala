@@ -201,7 +201,7 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
     val taskLabel = taskName + "-variation" + combinationNum
     val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
-    val task = new Task(taskName, description, goalSequence)
+    val task = new Task(taskName, description, goalSequence, taskModifiers = modifiers)
 
     // Return
     return task

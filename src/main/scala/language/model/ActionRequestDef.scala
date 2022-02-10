@@ -32,6 +32,13 @@ case class ActionRequestDef(val name:String, val paramSigList:ParamSigList, val 
 
 }
 
+object ActionRequestDef {
+  def mkBlank():ActionRequestDef = {
+    return new ActionRequestDef(name = "", paramSigList = new ParamSigList(parameters = List.empty[ParamSig]), triggers = List.empty[ActionTrigger], uniqueActionID = -1, isOracleAction = false)
+  }
+}
+
+
 case class ActionTrigger(val pattern:List[ActionExpr]) extends Positional {
 
   def mkHumanReadableExample():String = {

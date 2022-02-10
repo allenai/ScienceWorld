@@ -151,7 +151,7 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
     //val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName + " in the " + answerBoxLocation + "."
     val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
-    val task = new Task(taskName, description, goalSequence)
+    val task = new Task(taskName, description, goalSequence, taskModifiers = modifiers)
 
     // Return
     return task

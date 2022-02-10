@@ -76,6 +76,14 @@ class Portal (val _isOpen:Boolean, val connectsFrom:EnvObject, val connectsTo:En
     return Set(connectsFrom, connectsTo)
   }
 
+  // Check if it connects to a given location with a given name
+  def doesConnectTo(locationName:String):Boolean = {
+    for (connectionPoint <- this.getConnectionPoints()) {
+      if (connectionPoint.name.trim.toLowerCase == locationName.trim.toLowerCase) return true
+    }
+    // Default return
+    return false
+  }
 
   /*
    * Rerefents/description (from perspective of one side of the portal)

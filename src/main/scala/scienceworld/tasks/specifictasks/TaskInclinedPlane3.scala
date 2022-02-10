@@ -171,7 +171,7 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
     //val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName + " in the " + answerBoxLocation + "."
     val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
-    val task = new Task(taskName, description, goalSequence)
+    val task = new Task(taskName, description, goalSequence, taskModifiers = modifiers)
 
     // Return
     return task
