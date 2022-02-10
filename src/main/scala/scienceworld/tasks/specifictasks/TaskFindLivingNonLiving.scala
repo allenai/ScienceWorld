@@ -2,6 +2,7 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.actions.Action
 import scienceworld.environments.ContainerMaker
+import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.FlowerPot
 import scienceworld.objects.devices.Stove
@@ -155,7 +156,22 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
   def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
     // TODO: Unimplemented
-    return (false, Array.empty[Action], Array.empty[String])
+    val answerBoxName = this.getTaskValueStr(modifiers, "answerBox").get
+    val answerBoxLocation = this.getTaskValueStr(modifiers, "location").get
+
+    // Action sequence
+    val actionSeq = new ArrayBuffer[Action]
+    val actionSeqStr = new ArrayBuffer[String]
+
+
+    // Step 1: Move from starting location to answer box location
+    val startLocation = agent.getContainer().get.name
+    val endLocation = "kitchen"
+    val (actions, strs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = answerBoxLocation)
+
+
+    // Return
+    return (true, actionSeq.toArray, actionSeqStr.toArray)
   }
 
 }

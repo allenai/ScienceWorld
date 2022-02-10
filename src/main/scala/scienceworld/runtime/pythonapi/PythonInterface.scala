@@ -30,6 +30,8 @@ class PythonInterface() {
   var taskVariationIdx:Int = 0           // Task variation seed
   var simplificationStr:String = ""      // CSV delimited string of simplifications to perform to the environment
 
+  var goldActionsStr = Array.empty[String]    // Sequence of gold actions for this task
+
   var score:Double = 0.0
   var isComplete:Boolean = false
 
@@ -37,6 +39,8 @@ class PythonInterface() {
   var errorStr:String = ""
 
   val taskMaker = new TaskMaker1()
+
+
 
   /*
    * Load/reset/shutdown server
@@ -57,7 +61,7 @@ class PythonInterface() {
 
     //## Currently, get a random task instead of using the environment string
     // Set up task
-    val (task_, taskErrStr) = taskMaker.doTaskSetup(taskStr, this.taskVariationIdx, universe, agent_)
+    val (task_, goldActionsStr_, taskErrStr) = taskMaker.doTaskSetup(taskStr, this.taskVariationIdx, universe, agent_)
     var task:Option[Task] = None
     if (task_.isDefined) {
       task = task_
@@ -70,9 +74,11 @@ class PythonInterface() {
       this.errorUnknownEnvironment = false
       agent = Some(agent_)
       agentInterface = Some(new AgentInterface(universe, agent.get, task.get, simplificationStr))
+      goldActionsStr = goldActionsStr_
     } else {
       this.errorUnknownEnvironment = true
       agentInterface = None
+      goldActionsStr = Array.empty[String]
     }
 
   }
@@ -172,6 +178,15 @@ class PythonInterface() {
   def getPossibleSimplifications():String = {
     return SimplifierProcessor.getPossibleSimplifications()
   }
+
+  
+  /*
+   * Gold action sequence
+   */
+  def getGoldActionSequence():java.util.List[String] = {
+    return this.goldActionsStr.toList.asJava
+  }
+
 
   /*
    * Get object/action space

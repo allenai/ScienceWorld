@@ -19,13 +19,13 @@ object PathFinder {
 
 
 
-  def createActionSequence(universe:EnvObject, agent:Agent, startLocation:String, endLocation:String): Array[(Action, String)] = {
+  def createActionSequence(universe:EnvObject, agent:Agent, startLocation:String, endLocation:String): (Array[Action], Array[String]) = {
     val actionSequence = new ArrayBuffer[(Action, String)]
 
     val (success, pathLocations) = this.getLocationSequence(universe, startLocation, endLocation)
     if (!success) {
       // Fail gracefully
-      return Array.empty[(Action, String)]
+      return (Array.empty[Action], Array.empty[String])
     }
 
 
@@ -37,7 +37,7 @@ object PathFinder {
       val location = this.getEnvObject(queryName = locationName, universe)
       if (location.isEmpty) {
         // Fail gracefully
-        return Array.empty[(Action, String)]
+        return (Array.empty[Action], Array.empty[String])
       }
 
       // Find the appropraite portal
@@ -64,10 +64,16 @@ object PathFinder {
 
     }
 
+    // Convert to parallel arrays
+    val actions = new ArrayBuffer[Action]
+    val strs = new ArrayBuffer[String]
+    for (i <- 0 until actionSequence.length) {
+      actions.append( actionSequence(i)._1 )
+      strs.append( actionSequence(i)._2 )
+    }
 
     // Return
-    return actionSequence.toArray
-
+    return (actions.toArray, strs.toArray)
   }
 
 
