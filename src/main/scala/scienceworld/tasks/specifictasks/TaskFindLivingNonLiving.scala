@@ -1,5 +1,6 @@
 package scienceworld.tasks.specifictasks
 
+import scienceworld.actions.Action
 import scienceworld.environments.ContainerMaker
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.FlowerPot
@@ -149,6 +150,12 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
   def setupGoals(combinationNum:Int): Task = {
     this.setupGoals( this.getCombination(combinationNum), combinationNum )
+  }
+
+
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+    // TODO: Unimplemented
+    return (false, Array.empty[Action], Array.empty[String])
   }
 
 }

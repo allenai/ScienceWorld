@@ -1,5 +1,6 @@
 package scienceworld.tasks.specifictasks
 
+import scienceworld.actions.Action
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.SelfWateringFlowerPot
 import scienceworld.objects.containers.furniture.Cupboard
@@ -138,6 +139,10 @@ class TaskIdentifyLifeStages2(val mode:String = MODE_LIFESTAGES) extends TaskPar
   }
 
 
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+    // TODO: Unimplemented
+    return (false, Array.empty[Action], Array.empty[String])
+  }
 
 
 }

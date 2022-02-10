@@ -1,5 +1,6 @@
 package scienceworld.tasks.specifictasks
 
+import scienceworld.actions.Action
 import scienceworld.environments.ContainerMaker
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.Stove
@@ -238,7 +239,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     val description = "Your task is to " + subTask + " " + substanceName + ". First, focus on the substance. Then, take actions that will cause it to change its state of matter. "
     val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
-    val task = new Task(taskName, description, goalSequence)
+    val task = new Task(taskName, description, goalSequence, taskModifiers = modifiers)
 
     // Return
     return task
@@ -246,6 +247,12 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
   def setupGoals(combinationNum:Int): Task = {
     this.setupGoals( this.getCombination(combinationNum), combinationNum )
+  }
+
+
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+    // TODO: Unimplemented
+    return (false, Array.empty[Action], Array.empty[String])
   }
 
 }

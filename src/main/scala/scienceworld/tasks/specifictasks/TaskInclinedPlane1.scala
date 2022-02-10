@@ -13,6 +13,7 @@ import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalD
 import scala.util.control.Breaks._
 import scala.collection.mutable.ArrayBuffer
 import TaskInclinedPlane1._
+import scienceworld.actions.Action
 import scienceworld.objects.devices.StopWatch
 import scienceworld.objects.substance.{Brick, SteelBlock, WoodBlock}
 
@@ -186,6 +187,10 @@ class TaskInclinedPlane1(val mode:String = MODE_FRICTION_NAMED) extends TaskPara
   }
 
 
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+    // TODO: Unimplemented
+    return (false, Array.empty[Action], Array.empty[String])
+  }
 
 
 }

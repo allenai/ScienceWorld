@@ -1,5 +1,6 @@
 package scienceworld.tasks.specifictasks
 
+import scienceworld.actions.Action
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.{GlassJar, MetalPot}
 import scienceworld.objects.devices.Shovel
@@ -280,6 +281,12 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
 
   def setupGoals(combinationNum:Int): Task = {
     this.setupGoals( this.getCombination(combinationNum), combinationNum )
+  }
+
+
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+    // TODO: Unimplemented
+    return (false, Array.empty[Action], Array.empty[String])
   }
 
 }

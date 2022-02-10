@@ -1,5 +1,6 @@
 package scienceworld.tasks.specifictasks
 
+import scienceworld.actions.Action
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.WoodCup
 import scienceworld.objects.containers.furniture.Cupboard
@@ -213,6 +214,10 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
   }
 
 
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+    // TODO: Unimplemented
+    return (false, Array.empty[Action], Array.empty[String])
+  }
 
 
 }

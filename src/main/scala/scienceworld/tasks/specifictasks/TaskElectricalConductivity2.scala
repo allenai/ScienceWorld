@@ -1,5 +1,6 @@
 package scienceworld.tasks.specifictasks
 
+import scienceworld.actions.Action
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.electricalcomponent.{Battery, ElectricBuzzer, ElectricMotor, LightBulb}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic}
@@ -9,7 +10,7 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueBool, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalInRoomWithObject, GoalMoveToNewLocation, GoalObjectConnectedToWire, GoalObjectInContainerByName, GoalWireConnectsObjectAndAnyLightBulb, GoalWireConnectsObjectAndAnyPowerSource, GoalWireConnectsPowerSourceAndAnyLightBulb}
-import scienceworld.tasks.specifictasks.TaskElectricalConductivity2.{MODE_TEST_CONDUCTIVITY_UNKNOWN}
+import scienceworld.tasks.specifictasks.TaskElectricalConductivity2.MODE_TEST_CONDUCTIVITY_UNKNOWN
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -190,6 +191,12 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
 
   def setupGoals(combinationNum:Int): Task = {
     this.setupGoals( this.getCombination(combinationNum), combinationNum )
+  }
+
+
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+    // TODO: Unimplemented
+    return (false, Array.empty[Action], Array.empty[String])
   }
 
 }

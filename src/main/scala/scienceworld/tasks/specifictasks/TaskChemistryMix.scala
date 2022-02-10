@@ -1,5 +1,6 @@
 package scienceworld.tasks.specifictasks
 
+import scienceworld.actions.Action
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.{CeramicCup, FlowerPot}
 import scienceworld.objects.document.{Paper, Recipe}
@@ -195,6 +196,10 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
   }
 
 
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+    // TODO: Unimplemented
+    return (false, Array.empty[Action], Array.empty[String])
+  }
 
 
 }

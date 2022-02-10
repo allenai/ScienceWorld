@@ -10,6 +10,7 @@ import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValue
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalContainerByTemperature, GoalFind, GoalInRoomWithObject, GoalMoveToLocation, GoalMoveToNewLocation, GoalObjectInContainerByName, GoalObjectsInSingleContainer, GoalPastActionUseObjectOnObject, GoalSpecificObjectInDirectContainer}
 import TaskUseInstrumentThermometer._
+import scienceworld.actions.Action
 import scienceworld.objects.containers.WoodCup
 import scienceworld.objects.devices.Thermometer
 
@@ -209,6 +210,12 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
 
   def setupGoals(combinationNum:Int): Task = {
     this.setupGoals( this.getCombination(combinationNum), combinationNum )
+  }
+
+
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+    // TODO: Unimplemented
+    return (false, Array.empty[Action], Array.empty[String])
   }
 
 }

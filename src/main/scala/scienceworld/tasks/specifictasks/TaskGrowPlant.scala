@@ -2,6 +2,7 @@ package scienceworld.tasks.specifictasks
 
 //TODO: Only part-way implemented
 
+import scienceworld.actions.Action
 import scienceworld.environments.ContainerMaker
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.{CeramicCup, FlowerPot}
@@ -280,6 +281,12 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
   def setupGoals(combinationNum:Int): Task = {
     this.setupGoals( this.getCombination(combinationNum), combinationNum )
+  }
+
+
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+    // TODO: Unimplemented
+    return (false, Array.empty[Action], Array.empty[String])
   }
 
   /*

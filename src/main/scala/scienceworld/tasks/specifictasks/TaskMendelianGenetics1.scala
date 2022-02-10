@@ -9,6 +9,7 @@ import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValue
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalContainerOpen, GoalFind, GoalFindInclinedPlaneNamed, GoalInRoomWithObject, GoalLifeStageAnywhere, GoalMoveToLocation, GoalMoveToNewLocation, GoalSpecificObjectInDirectContainer}
 import TaskMendelianGenetics1._
+import scienceworld.actions.Action
 import scienceworld.objects.containers.{CeramicCup, FlowerPot}
 import scienceworld.objects.livingthing.plant.{PeaPlant, Soil}
 import scienceworld.objects.taskitems.AnswerBox
@@ -240,6 +241,10 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
   }
 
 
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+    // TODO: Unimplemented
+    return (false, Array.empty[Action], Array.empty[String])
+  }
 
 
 }
