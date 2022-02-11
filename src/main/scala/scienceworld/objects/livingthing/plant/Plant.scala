@@ -56,7 +56,7 @@ class Plant extends LivingThing {
 
   override def tick():Boolean = {
     // Life cycle tick
-    println ("### TICK!")
+    //## println ("### TICK!")
     lifecycle.get.tick()
 
 
@@ -180,14 +180,14 @@ class Flower(parentPlant:Plant) extends EnvObject {
     // Step 1A: check to see if the pollen is this plant's pollen, or a different plant's pollen
     if (pollen.parentPlant.uuid == this.parentPlant.uuid) {
       // The pollen comes from this plant -- do not pollinate
-      println ("#### POLLEN COMES FROM SAME PLANT")
+      //## println ("#### POLLEN COMES FROM SAME PLANT")
       return false
     }
 
     // Step 1B: Check to see that the pollen comes from the correct plant type
     if (pollen.getPlantType() != parentPlant.getPlantType()) {
       // The pollen comes from a different plant (e.g. apple vs orange) -- do not pollinate
-      println ("#### POLLEN COMES FROM DIFFERENT TYPE OF PLANT")
+      //## println ("#### POLLEN COMES FROM DIFFERENT TYPE OF PLANT")
       return false
     }
 
@@ -196,7 +196,7 @@ class Flower(parentPlant:Plant) extends EnvObject {
     // Step 2: Consume pollen
     pollen.delete()
 
-    println ("####* POLLENATION SUCCESSFUL")
+    //## println ("####* POLLENATION SUCCESSFUL")
 
     // Step 3: Get the flower -> fruit conversion going
     this.propPollination.get.pollinationStep = 1

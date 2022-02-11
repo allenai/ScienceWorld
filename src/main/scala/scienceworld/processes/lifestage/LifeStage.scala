@@ -52,7 +52,7 @@ class LifeCycle(lifeCycleName:String = "life cycle of the X organism") {
    * Tick
    */
   def tick(): Unit = {
-    println ("lifeCycle: tick! " + this.getCurStage().stageName)
+    //## println ("lifeCycle: tick! " + this.getCurStage().stageName)
 
     this.getCurStage().tick()
   }

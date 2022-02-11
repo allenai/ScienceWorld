@@ -18,13 +18,13 @@ class WanderingAnimal extends Animal {
    */
 
   def moveToNewLocation(): Boolean = {
-    println ("### MOVE TO NEW LOCATION")
+    // println ("### MOVE TO NEW LOCATION")
     // Step 1: Find a list of possible locations that are connected
     if (this.getContainer().isEmpty) return false
     val currentLocation = this.getContainer().get
 
     val passablePortals = currentLocation.getPortals().filter(_.isCurrentlyPassable()).toArray
-    println ("### Passable Portals: " + passablePortals.map(_.name).mkString(", "))
+    // println ("### Passable Portals: " + passablePortals.map(_.name).mkString(", "))
 
     if (passablePortals.size == 0) {
       // There do not appear to be any portals here. Check if we're currently in an open container.  If we are, then exit out of the container?
@@ -34,13 +34,13 @@ class WanderingAnimal extends Animal {
 
       if ((currentLocation.propContainer.isDefined) && (currentLocation.propContainer.get.isOpen)) {
         val parentContainer = currentLocation.getContainerRecursiveOfType[Location]()         // Make sure the container is a 'Location'
-        println ("### Possible parent container: " + parentContainer)
+        // println ("### Possible parent container: " + parentContainer)
         if (parentContainer.isEmpty) return false
         // Move to parent container
-        println ("### " + this.name + " MOVING TO PARENT CONTAINER: " + parentContainer.get.name)
+        // println ("### " + this.name + " MOVING TO PARENT CONTAINER: " + parentContainer.get.name)
         parentContainer.get.addObject( this )
       }
-      println ("out")
+      // println ("out")
 
       // No portals, and not in an open container
       return false
@@ -51,7 +51,7 @@ class WanderingAnimal extends Animal {
     val moveLocation = passablePortals(randIdx).getConnectsTo(perspectiveContainer = currentLocation)
 
     // Step 2B: Move to that random location
-    println ("### " + this.name + " MOVING TO PARENT CONTAINER: " + moveLocation.get.name)
+    // println ("### " + this.name + " MOVING TO PARENT CONTAINER: " + moveLocation.get.name)
     moveLocation.get.addObject( this )
 
     // Return true
@@ -104,15 +104,15 @@ class Bee extends WanderingAnimal {
 
   // Move the bee into a flower, if one is in the same container
   def moveIntoFlower():Boolean = {
-    println ("### MOVE INTO FLOWER")
+    // println ("### MOVE INTO FLOWER")
     // Step 1: Find a list of possible locations that are connected
     if (this.getContainer().isEmpty) return false
     val currentLocation = this.getContainer().get
 
     // Check if there are any flowers
     val flowers = currentLocation.getContainedAccessibleObjectsOfType[Flower]().toArray
-    println ("flowers: " + flowers.mkString(", "))
-    println ("accessible objects: " + currentLocation.getContainedAccessibleObjects().map(_.name).mkString(", ") )
+    // println ("flowers: " + flowers.mkString(", "))
+    // println ("accessible objects: " + currentLocation.getContainedAccessibleObjects().map(_.name).mkString(", ") )
 
     if (flowers.size == 0) return false
 
@@ -129,7 +129,7 @@ class Bee extends WanderingAnimal {
 
   // If the bee is in the same container as pollen, and doesn't already have maxPollen, then collect that pollen
   def collectPollen(): Boolean = {
-    println ("### COLLECT POLLEN")
+    // println ("### COLLECT POLLEN")
 
     // Step 1: Find a list of possible locations that are connected
     if (this.getContainer().isEmpty) return false
@@ -169,7 +169,7 @@ class Bee extends WanderingAnimal {
     // Do not continue if this tick was already processed (i.e. if the bee was in a different location this iteration)
     if (this.wasTickProcessed()) return false
 
-    println ("### " + this.name + ": TICK")
+    // println ("### " + this.name + ": TICK")
 
     // Do actions
     if (this.isInFlower()) {
