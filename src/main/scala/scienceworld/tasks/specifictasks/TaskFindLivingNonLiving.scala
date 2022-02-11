@@ -156,6 +156,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
   def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
     // TODO: Unimplemented
+    println("###! RUNNING ")
     val answerBoxName = this.getTaskValueStr(modifiers, "answerBox").get
     val answerBoxLocation = this.getTaskValueStr(modifiers, "location").get
 
@@ -166,9 +167,48 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
     // Step 1: Move from starting location to answer box location
     val startLocation = agent.getContainer().get.name
-    val endLocation = "kitchen"
     val (actions, strs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = answerBoxLocation)
+    // Add segment to path
+    actionSeq.insertAll(actionSeq.length, actions)
+    actionSeqStr.insertAll(actionSeqStr.length, strs)
 
+    // Step 2: Pick a random object
+    val curLoc1 = PathFinder.getEnvObject(queryName = answerBoxLocation, universe)    // Get a pointer to the whole room the answer box is in
+    val objsInRoom = curLoc1.get.getContainedObjects(includeHidden = false)
+
+    var objToMove:Option[EnvObject] = None
+    breakable {
+      for (obj <- objsInRoom) {
+        if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable == true)) {
+          objToMove = Some(obj)
+          break()
+        }
+      }
+    }
+
+    // If we didn't find a movable object, we're in trouble -- quit
+    if (objToMove.isEmpty) {
+      return (false, actionSeq.toArray, actionSeqStr.toArray)
+    }
+
+    // Step 3: Focus on that random object
+    val (actionFocus, actionFocusStr) = PathFinder.actionFocusOnObject(objToMove.get, agent)
+    // Add segment to path
+    actionSeq.append(actionFocus)
+    actionSeqStr.append(actionFocusStr)
+
+    // Step 4: Find answer box reference
+    // TODO: Should just check for this object from base location
+    val answerBox = PathFinder.getEnvObject(queryName = answerBoxName, universe)
+
+    // Step 5: Move object to answer box
+    val (actionMoveObj, actionMoveObjStr) = PathFinder.actionMoveObject(objToMove.get, answerBox.get, agent)
+    actionSeq.append(actionMoveObj)
+    actionSeqStr.append(actionMoveObjStr)
+
+
+
+    println ("ActionSeqStr: " + actionSeqStr.mkString(", "))
 
     // Return
     return (true, actionSeq.toArray, actionSeqStr.toArray)

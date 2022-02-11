@@ -26,6 +26,16 @@ object ExampleRandomAgent {
     // Get a task name
     val taskNames = interface.getTaskNames().asScala.toList
 
+
+    println ("TASK LIST: ")
+    val taskList = interface.taskMaker.getTaskList()
+    for (i <- 0 until taskList.length) {
+      val taskName = taskList(i)
+      val numVariations = interface.taskMaker.getMaxVariations(taskName)
+      println( i.formatted("%5s") + ": \t" + taskName.formatted("%60s") + "  (" + numVariations + " variations)")
+    }
+
+
     val taskScores = new ArrayBuffer[ Array[Double] ]()
     for (taskIdx <- 0 until taskNames.length) {
       breakable {

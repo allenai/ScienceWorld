@@ -1,10 +1,11 @@
 package scienceworld.goldagent
 
 import language.model.ActionRequestDef
-import scienceworld.actions.{Action, ActionMoveThroughDoor, ActionOpenDoor}
+import scienceworld.actions.{Action, ActionFocus, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.location.{Location, Universe}
 import scienceworld.struct.EnvObject
+import scienceworld.tasks.goals.ObjMonitor
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -25,9 +26,11 @@ object PathFinder {
     val (success, pathLocations) = this.getLocationSequence(universe, startLocation, endLocation)
     if (!success) {
       // Fail gracefully
+      //println ("Error: could not get location sequence")
       return (Array.empty[Action], Array.empty[String])
     }
 
+    //println ("PathLocations: " + pathLocations.mkString(", "))
 
     for (i <- 0 until pathLocations.length-1) {
       val locationName = pathLocations(i)
@@ -37,6 +40,7 @@ object PathFinder {
       val location = this.getEnvObject(queryName = locationName, universe)
       if (location.isEmpty) {
         // Fail gracefully
+        //println ("Error: location is empty")
         return (Array.empty[Action], Array.empty[String])
       }
 
@@ -63,6 +67,7 @@ object PathFinder {
       }
 
     }
+
 
     // Convert to parallel arrays
     val actions = new ArrayBuffer[Action]
@@ -156,6 +161,30 @@ object PathFinder {
   }
 
 
+
+  /*
+   * Action helpers
+   */
+
+  // Generate an action to focus on an object
+  def actionFocusOnObject(obj:EnvObject, agent:Agent): (Action, String) = {
+    val actionFocus = new ActionFocus(ActionRequestDef.mkBlank(), assignments = Map("agent" -> agent, "obj" -> obj), objMonitor = new ObjMonitor())   //## new objMonitor
+    val actionStr = "focus on " + this.getObjReferent(obj)
+    return (actionFocus, actionStr)
+  }
+
+  def actionMoveObject(obj:EnvObject, destination:EnvObject, agent:Agent): (Action, String) = {
+    val actionMove = new ActionMoveObject(ActionRequestDef.mkBlank(), assignments = Map("agent" -> agent, "obj" -> obj, "moveTo" -> destination))
+    val actionStr = "move " + this.getObjReferent(obj) + " to " + this.getObjReferent(destination)
+    return (actionMove, actionStr)
+  }
+
+  // Get a likely OK referent name for an object
+  def getObjReferent(obj:EnvObject): String = {
+    val referents = obj.getReferents().toList.sortBy(- _.length)
+    val referent = referents(0)   // Take the longest referent (least likely to be ambiguous)
+    return referent
+  }
 
 
   /*
