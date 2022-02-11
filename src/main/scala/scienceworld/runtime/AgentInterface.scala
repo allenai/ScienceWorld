@@ -114,7 +114,7 @@ class AgentInterface(universe:EnvObject, agent:Agent, task:Task, var simplificat
 
 
   def getPossibleObjects(): Array[String] = {
-    val referents = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2, includeHidden = false).map(_._1)
+    val referents = InputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2, includeHidden = false).map(_._1)
     return referents
   }
 
@@ -289,7 +289,7 @@ class AgentInterface(universe:EnvObject, agent:Agent, task:Task, var simplificat
     val outTemplates = new ArrayBuffer[TemplateAction]
     val outObjectIdxLUT = mutable.Map[Int, String]()
 
-    val objects = inputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2, includeHidden = false)
+    val objects = InputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2, includeHidden = false)
 
     // Special case: Check for parser being in ambiguity resolution state
     if (this.inputParser.isInAmbiguousState()) {

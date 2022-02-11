@@ -29,40 +29,11 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     out.toArray.map(_.toLowerCase).sorted
   }
 
-  // Get a list of all referents
-  def getAllUniqueReferents(objTreeRoot:EnvObject, includeHidden:Boolean, recursive:Boolean=false):Array[(String, EnvObject)] = {
-    // Step 1: Collect a list of all referents for each object
-    val objReferents = new ArrayBuffer[Array[String]]()
-    var allObjs = Array.empty[EnvObject]
-    if (recursive) {
-      // PJ NOTE: Technically, InputParser.collectAccessibleObjects() should likely be modified to do this -- with a recursive option
-      allObjs = objTreeRoot.getContainedObjectsAndPortalsRecursive(includeHidden, includePortalConnections = true).toArray    // Also include portal destinations in the list of returned objects
-    } else {
-      allObjs = InputParser.collectAccessibleObjects(objTreeRoot, includeHidden).toArray
-    }
-
-    for (obj <- allObjs) {
-      objReferents.append( obj.getReferentsWithContainers(perspectiveContainer = objTreeRoot).toArray.sorted )
-    }
-
-    // Step 2: Choose unique referents (find their indices)
-    val indices = this.chooseUniqueReferents(objReferents.toArray)
-
-    // Step 2A: Populate an array of the unique referents (as strings)
-    val out = new ArrayBuffer[(String, EnvObject)]()
-    for (i <- 0 until allObjs.length) {
-      val referent = objReferents(i)(indices(i))
-      out.append( (referent.toLowerCase(), allObjs(i)) )
-    }
-
-    // Return
-    out.toArray.sortBy(_._1)
-  }
 
   def getAllUniqueReferentsLUT(objTreeRoot:EnvObject, includeHidden:Boolean, recursive:Boolean = false):Map[Long, String] = {
     val out = mutable.Map[Long, String]()
 
-    val tuples = this.getAllUniqueReferents(objTreeRoot, includeHidden, recursive)
+    val tuples = InputParser.getAllUniqueReferents(objTreeRoot, includeHidden, recursive)
     for (tuple <- tuples) {
       val referent = tuple._1
       val obj = tuple._2
@@ -78,7 +49,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     //val out = mutable.Map[Long, String]()
     val out = mutable.Map[Long, ArrayBuffer[(Long, String)]]()
 
-    val tuples = this.getAllUniqueReferents(objTreeRoot, includeHidden, recursive)
+    val tuples = InputParser.getAllUniqueReferents(objTreeRoot, includeHidden, recursive)
 
     for (tuple <- tuples) {
       val referent = tuple._1
@@ -138,7 +109,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     }
 
     // Step 2: Choose unique referents (find their indices)
-    val indices = this.chooseUniqueReferents(objReferents.toArray)
+    val indices = InputParser.chooseUniqueReferents(objReferents.toArray)
 
     // Step 2A: Populate an array of the unique referents (as strings)
     val out = new ArrayBuffer[(String, EnvObject)]()
@@ -167,53 +138,6 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   }
 
 
-  private def chooseUniqueReferents(objReferents:Array[Array[String]]): Array[Int] = {
-    // Array of referent indicies
-    val indices = Array.fill[Int](objReferents.length)(0)
-    var numAttempts:Int = 0
-    val MAX_ATTEMPTS = 20
-
-    while (numAttempts < MAX_ATTEMPTS) {
-      // Get a frequency counter of chosen referents
-      val frequency = new mutable.HashMap[String, Int]()
-      for (i <- 0 until objReferents.length) {
-        val referent = objReferents(i)(indices(i))
-        if (frequency.contains(referent)) {
-          frequency(referent) = frequency(referent) + 1
-        } else {
-          frequency(referent) = 1
-        }
-      }
-
-      // Check to see if they're unique
-      var numDuplicates: Int = 0
-      for (i <- 0 until objReferents.length) {
-        val referent = objReferents(i)(indices(i))
-        if (frequency(referent) > 1) {
-          // If there's a duplicate, then increment the array for both elements
-          if (numAttempts < 10) {
-            // For the first 10 attempts, just increment the index, which should go to further specifications of the object names (e.g. 'cat', 'cat in the box')
-            indices(i) = (indices(i) + 1) % objReferents(i).length
-          } else {
-            // For subsequent attempts, pick random referent IDs
-            indices(i) = Random.nextInt( objReferents(i).length )
-          }
-          numDuplicates += 1
-        }
-      }
-
-      // If no duplicates, exit
-      if (numDuplicates == 0) {
-        return indices
-      }
-
-      numAttempts += 1
-    }
-
-    // If we reach here, then there was an error creating unique referents.  Just pick the ones we have so far.
-    println ("WARNING: Unable to create unique referents. ")
-    return indices
-  }
 
   // Main entry point
   // Perspective container: The container where the agent is located
@@ -598,6 +522,85 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
 
 object InputParser {
   val stopWords = Array("a", "an", "the")
+
+  // Get a list of all referents
+  def getAllUniqueReferents(objTreeRoot:EnvObject, includeHidden:Boolean, recursive:Boolean=false):Array[(String, EnvObject)] = {
+    // Step 1: Collect a list of all referents for each object
+    val objReferents = new ArrayBuffer[Array[String]]()
+    var allObjs = Array.empty[EnvObject]
+    if (recursive) {
+      // PJ NOTE: Technically, InputParser.collectAccessibleObjects() should likely be modified to do this -- with a recursive option
+      allObjs = objTreeRoot.getContainedObjectsAndPortalsRecursive(includeHidden, includePortalConnections = true).toArray    // Also include portal destinations in the list of returned objects
+    } else {
+      allObjs = InputParser.collectAccessibleObjects(objTreeRoot, includeHidden).toArray
+    }
+
+    for (obj <- allObjs) {
+      objReferents.append( obj.getReferentsWithContainers(perspectiveContainer = objTreeRoot).toArray.sorted )
+    }
+
+    // Step 2: Choose unique referents (find their indices)
+    val indices = this.chooseUniqueReferents(objReferents.toArray)
+
+    // Step 2A: Populate an array of the unique referents (as strings)
+    val out = new ArrayBuffer[(String, EnvObject)]()
+    for (i <- 0 until allObjs.length) {
+      val referent = objReferents(i)(indices(i))
+      out.append( (referent.toLowerCase(), allObjs(i)) )
+    }
+
+    // Return
+    out.toArray.sortBy(_._1)
+  }
+
+  private def chooseUniqueReferents(objReferents:Array[Array[String]]): Array[Int] = {
+    // Array of referent indicies
+    val indices = Array.fill[Int](objReferents.length)(0)
+    var numAttempts:Int = 0
+    val MAX_ATTEMPTS = 20
+
+    while (numAttempts < MAX_ATTEMPTS) {
+      // Get a frequency counter of chosen referents
+      val frequency = new mutable.HashMap[String, Int]()
+      for (i <- 0 until objReferents.length) {
+        val referent = objReferents(i)(indices(i))
+        if (frequency.contains(referent)) {
+          frequency(referent) = frequency(referent) + 1
+        } else {
+          frequency(referent) = 1
+        }
+      }
+
+      // Check to see if they're unique
+      var numDuplicates: Int = 0
+      for (i <- 0 until objReferents.length) {
+        val referent = objReferents(i)(indices(i))
+        if (frequency(referent) > 1) {
+          // If there's a duplicate, then increment the array for both elements
+          if (numAttempts < 10) {
+            // For the first 10 attempts, just increment the index, which should go to further specifications of the object names (e.g. 'cat', 'cat in the box')
+            indices(i) = (indices(i) + 1) % objReferents(i).length
+          } else {
+            // For subsequent attempts, pick random referent IDs
+            indices(i) = Random.nextInt( objReferents(i).length )
+          }
+          numDuplicates += 1
+        }
+      }
+
+      // If no duplicates, exit
+      if (numDuplicates == 0) {
+        return indices
+      }
+
+      numAttempts += 1
+    }
+
+    // If we reach here, then there was an error creating unique referents.  Just pick the ones we have so far.
+    println ("WARNING: Unable to create unique referents. ")
+    return indices
+  }
+
 
   // DEBUG: Get a list of all possible valid referents, for debugging
   def getPossibleReferents(objTreeRoot:EnvObject, perspectiveContainer:EnvObject):Array[String] = {

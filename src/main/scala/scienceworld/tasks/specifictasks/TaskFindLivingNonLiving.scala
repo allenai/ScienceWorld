@@ -188,13 +188,15 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
         if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable == true)) {
           // Thing should not be answer box
           if (!obj.isInstanceOf[AnswerBox]) {
+            if ((obj.propMaterial.isDefined) && (obj.propMaterial.get.stateOfMatter == "solid")) {
 
-            // Thing should be non-living
-            if (obj.propLife.isEmpty) {
-              objToMove = Some(obj)
-              break()
+              // Thing should be non-living
+              if (obj.propLife.isEmpty) {
+                objToMove = Some(obj)
+                break()
+              }
+
             }
-
           }
         }
       }
@@ -206,7 +208,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     }
 
     // Step 3: Focus on that random object
-    val (actionFocus, actionFocusStr) = PathFinder.actionFocusOnObject(objToMove.get, agent)
+    val (actionFocus, actionFocusStr) = PathFinder.actionFocusOnObject(objToMove.get, agent, locationPerspective = curLoc1.get)
     // Add segment to path
     actionSeq.append(actionFocus)
     actionSeqStr.append(actionFocusStr)
@@ -217,7 +219,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
 
     // Step 5: Move object to answer box
-    val (actionMoveObj, actionMoveObjStr) = PathFinder.actionMoveObject(objToMove.get, answerBox.get, agent)
+    val (actionMoveObj, actionMoveObjStr) = PathFinder.actionMoveObject(objToMove.get, answerBox.get, agent, locationPerspective = curLoc1.get)
     actionSeq.append(actionMoveObj)
     actionSeqStr.append(actionMoveObjStr)
 

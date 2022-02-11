@@ -8,7 +8,7 @@ import scala.util.control.Breaks._
 import scala.util.Random
 
 
-object ExampleRandomAgent {
+object ExampleGoldAgent {
 
 
   def main(args:Array[String]) = {

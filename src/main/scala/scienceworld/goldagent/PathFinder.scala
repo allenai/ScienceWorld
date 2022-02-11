@@ -2,6 +2,7 @@ package scienceworld.goldagent
 
 import language.model.ActionRequestDef
 import scienceworld.actions.{Action, ActionFocus, ActionLookAround, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor}
+import scienceworld.input.InputParser
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.location.{Location, Universe}
 import scienceworld.struct.EnvObject
@@ -167,15 +168,27 @@ object PathFinder {
    */
 
   // Generate an action to focus on an object
-  def actionFocusOnObject(obj:EnvObject, agent:Agent): (Action, String) = {
+  def actionFocusOnObject(obj:EnvObject, agent:Agent, locationPerspective:EnvObject): (Action, String) = {
     val actionFocus = new ActionFocus(ActionRequestDef.mkBlank(), assignments = Map("agent" -> agent, "obj" -> obj), objMonitor = new ObjMonitor())   //## new objMonitor
-    val actionStr = "focus on " + this.getObjReferent(obj)
+    //val actionStr = "focus on " + this.getObjReferent(obj)
+    val referentObj = this.getObjUniqueReferent(obj, locationPerspective)
+    if (referentObj.isEmpty) return (actionFocus, "ERROR FINDING UNIQUE REFERENT FOR (" + obj.name + ")")
+
+    val actionStr = "focus on " + referentObj.get
     return (actionFocus, actionStr)
   }
 
-  def actionMoveObject(obj:EnvObject, destination:EnvObject, agent:Agent): (Action, String) = {
+  def actionMoveObject(obj:EnvObject, destination:EnvObject, agent:Agent, locationPerspective:EnvObject): (Action, String) = {
     val actionMove = new ActionMoveObject(ActionRequestDef.mkBlank(), assignments = Map("agent" -> agent, "obj" -> obj, "moveTo" -> destination))
-    val actionStr = "move " + this.getObjReferent(obj) + " to " + this.getObjReferent(destination)
+    // val actionStr = "move " + this.getObjReferent(obj) + " to " + this.getObjReferent(destination)
+
+    val referentObj = this.getObjUniqueReferent(obj, locationPerspective)
+    if (referentObj.isEmpty) return (actionMove, "ERROR FINDING UNIQUE REFERENT FOR (" + obj.name + ")")
+
+    val referentDest = this.getObjUniqueReferent(destination, locationPerspective)
+    if (referentDest.isEmpty) return (actionMove, "ERROR FINDING UNIQUE REFERENT FOR (" + destination.name + ")")
+
+    val actionStr = "move " + referentObj.get + " to " + referentDest.get
     return (actionMove, actionStr)
   }
 
@@ -193,6 +206,20 @@ object PathFinder {
     return referent
   }
 
+  def getObjUniqueReferent(obj:EnvObject, agentLocation:EnvObject):Option[String] = {
+    // Collect all unique referents for all objects in this location
+    val uniqueReferents = InputParser.getAllUniqueReferents(agentLocation, includeHidden = true, recursive = true)
+
+    // Go through the returned list, look for the object of interest and return its unique referent from this perspective
+    for (tuple <- uniqueReferents) {
+      val referent = tuple._1
+      val referentObj = tuple._2
+      if (referentObj == obj) return Some(referent)
+    }
+
+    // If we reach here, the object was not found
+    return None
+  }
 
   /*
    * Helpers
