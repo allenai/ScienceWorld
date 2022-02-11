@@ -26,7 +26,7 @@ object StateOfMatter {
     }
 
     if ((curStateOfMatter != inferredStateOfMatter) || (forceNameUpdate)) {
-      println ("Changing object (" + obj.name + ") from state of matter (" + curStateOfMatter + ") to state (" + inferredStateOfMatter + ")")
+      //## println ("Changing object (" + obj.name + ") from state of matter (" + curStateOfMatter + ") to state (" + inferredStateOfMatter + ")")
       obj.propMaterial.get.stateOfMatter = inferredStateOfMatter
 
       // Change object name, if relevant, based on new state (e.g. liquid water ("water") changing to solid water ("ice"))

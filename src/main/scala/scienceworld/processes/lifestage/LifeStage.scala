@@ -35,7 +35,7 @@ class LifeCycle(lifeCycleName:String = "life cycle of the X organism") {
   def changeStage(stageName:String, failGracefully:Boolean = false): Unit = {
     for (i <- 0 until stages.length) {
       if (stages(i).stageName == stageName) {
-        println("* Living Thing is changing life cycle stage from (" + getCurStage().stageName + ") to (" + stageName + ")")      // Debug statement
+        //## println("* Living Thing is changing life cycle stage from (" + getCurStage().stageName + ") to (" + stageName + ")")      // Debug statement
         this.curStage = i
         return
       }

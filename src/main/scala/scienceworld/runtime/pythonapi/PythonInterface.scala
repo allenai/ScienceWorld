@@ -38,7 +38,7 @@ class PythonInterface() {
   var errorUnknownEnvironment:Boolean = false
   var errorStr:String = ""
 
-  val taskMaker = new TaskMaker1()
+  var taskMaker = new TaskMaker1()
 
 
 
@@ -55,6 +55,12 @@ class PythonInterface() {
 
     // Reset UUID counter
     UniqueIdentifier.reset()
+
+    //## TEST: Reset Task Maker (and thus recreate all possible task objects)
+    val timeBefore = System.currentTimeMillis()
+    taskMaker = new TaskMaker1()
+    val deltaTime = System.currentTimeMillis() - timeBefore
+    println("Delta time: " + deltaTime)
 
     // Make environment and agent
     val (universe, agent_) = EnvironmentMaker.mkKitchenEnvironment()

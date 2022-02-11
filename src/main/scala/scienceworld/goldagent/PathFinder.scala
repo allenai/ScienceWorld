@@ -1,7 +1,7 @@
 package scienceworld.goldagent
 
 import language.model.ActionRequestDef
-import scienceworld.actions.{Action, ActionFocus, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor}
+import scienceworld.actions.{Action, ActionFocus, ActionLookAround, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.location.{Location, Universe}
 import scienceworld.struct.EnvObject
@@ -178,6 +178,13 @@ object PathFinder {
     val actionStr = "move " + this.getObjReferent(obj) + " to " + this.getObjReferent(destination)
     return (actionMove, actionStr)
   }
+
+  def actionLookAround(agent:Agent):(Action, String) = {
+    val actionLookAround = new ActionLookAround(ActionRequestDef.mkBlank(), assignments = Map("agent" -> agent))
+    val actionStr = "look around"
+    return (actionLookAround, actionStr)
+  }
+
 
   // Get a likely OK referent name for an object
   def getObjReferent(obj:EnvObject): String = {

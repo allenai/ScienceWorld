@@ -172,6 +172,12 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     actionSeq.insertAll(actionSeq.length, actions)
     actionSeqStr.insertAll(actionSeqStr.length, strs)
 
+
+    // Step 1A: Look around
+    val (actionLook, actionLookStr) = PathFinder.actionLookAround(agent)
+    actionSeq.append(actionLook)
+    actionSeqStr.append(actionLookStr)
+
     // Step 2: Pick a random object
     val curLoc1 = PathFinder.getEnvObject(queryName = answerBoxLocation, universe)    // Get a pointer to the whole room the answer box is in
     val objsInRoom = curLoc1.get.getContainedObjects(includeHidden = false)
@@ -180,8 +186,16 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     breakable {
       for (obj <- objsInRoom) {
         if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable == true)) {
-          objToMove = Some(obj)
-          break()
+          // Thing should not be answer box
+          if (!obj.isInstanceOf[AnswerBox]) {
+
+            // Thing should be non-living
+            if (obj.propLife.isEmpty) {
+              objToMove = Some(obj)
+              break()
+            }
+
+          }
         }
       }
     }
@@ -200,6 +214,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     // Step 4: Find answer box reference
     // TODO: Should just check for this object from base location
     val answerBox = PathFinder.getEnvObject(queryName = answerBoxName, universe)
+
 
     // Step 5: Move object to answer box
     val (actionMoveObj, actionMoveObjStr) = PathFinder.actionMoveObject(objToMove.get, answerBox.get, agent)
