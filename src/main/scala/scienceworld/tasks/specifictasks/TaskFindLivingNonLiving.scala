@@ -6,8 +6,8 @@ import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.FlowerPot
 import scienceworld.objects.devices.Stove
-import scienceworld.objects.livingthing.animals.{Beaver, BlueJay, BrownBear, Butterfly, Crocodile, Dove, Elephant, Frog, GiantTortoise, Moth, Parrot, Toad, Turtle, Wolf}
-import scienceworld.objects.livingthing.plant.{AppleTree, AvocadoTree, BananaTree, CherryTree, LemonTree, OrangeTree, PeaPlant, PeachTree, Soil}
+import scienceworld.objects.livingthing.animals.{Animal, Beaver, BlueJay, BrownBear, Butterfly, Crocodile, Dove, Elephant, Frog, GiantTortoise, Moth, Parrot, Toad, Turtle, Wolf}
+import scienceworld.objects.livingthing.plant.{AppleTree, AvocadoTree, BananaTree, CherryTree, LemonTree, OrangeTree, PeaPlant, PeachTree, Plant, Soil}
 import scienceworld.objects.taskitems.AnswerBox
 import scienceworld.processes.lifestage.PlantLifeStages
 import scienceworld.properties.LeadProp
@@ -159,9 +159,9 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     } else if (mode == MODE_NONLIVING) {
       return mkGoldActionSequenceNonLiving(modifiers, universe, agent)
     } else if (mode == MODE_PLANT) {
-      return mkGoldActionSequenceNonLiving(modifiers, universe, agent)
+      return mkGoldActionSequenceLiving(modifiers, universe, agent)
     } else if (mode == MODE_ANIMAL) {
-      return mkGoldActionSequenceNonLiving(modifiers, universe, agent)
+      return mkGoldActionSequenceLiving(modifiers, universe, agent)
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
     }
@@ -200,7 +200,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
     var objToMove:Option[EnvObject] = None
     breakable {
-      for (obj <- objsInRoom) {
+      for (obj <- Random.shuffle(objsInRoom.toList)) {
         if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable == true)) {
           // Thing should not be answer box
           if (!obj.isInstanceOf[AnswerBox]) {
@@ -252,11 +252,19 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     val actionSeq = new ArrayBuffer[Action]
     val actionSeqStr = new ArrayBuffer[String]
 
-    val animalLocation = "outside"
+    var livingThingLocation = "outside"
+    if (mode == MODE_LIVING) {
+      val shuffledLocations = Random.shuffle(List("outside", "green house"))
+      livingThingLocation = shuffledLocations(0)
+    } else if (mode == MODE_ANIMAL) {
+      livingThingLocation = "outside"         // Animals are outside
+    } else if (mode == MODE_PLANT) {
+      livingThingLocation = "green house"     // Plants are in the green house
+    }
 
     // Step 1: Move from starting location to a place likely to have animals
     val startLocation = agent.getContainer().get.name
-    val (actions, strs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = animalLocation)
+    val (actions, strs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = livingThingLocation)
     // Add segment to path
     actionSeq.insertAll(actionSeq.length, actions)
     actionSeqStr.insertAll(actionSeqStr.length, strs)
@@ -268,18 +276,56 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     actionSeqStr.append(actionLookStr)
 
     // Step 2: Pick a random object
-    val curLoc1 = PathFinder.getEnvObject(queryName = animalLocation, universe)    // Get a pointer to the whole room
+    val curLoc1 = PathFinder.getEnvObject(queryName = livingThingLocation, universe)    // Get a pointer to the whole room
     val objsInRoom = curLoc1.get.getContainedObjectsRecursiveAccessible(includeHidden = false)
 
+    var objToFocus:Option[EnvObject] = None
     var objToMove:Option[EnvObject] = None
     breakable {
-      for (obj <- objsInRoom) {
+      for (obj <- Random.shuffle(objsInRoom.toList)) {
         if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable == true)) {
-          // Thing should be non-living
+
           if (obj.propLife.isDefined) {
-            objToMove = Some(obj)
-            break()
+            if (mode == MODE_LIVING) {
+              if (obj.propLife.isDefined) {
+                objToFocus = Some(obj)
+
+                if (obj.isInstanceOf[Plant]) {
+                  // For plants, pick up their containers (e.g. flower pots), or they'll die
+                  if (obj.getContainer().get.isInstanceOf[FlowerPot]) {
+                    objToMove = obj.getContainer()
+                  } else {
+                    // Back-off to picking up the actual plant, if needed
+                    objToMove = Some(obj)
+                  }
+                } else {
+                  // For animals, they can just be directly picked up
+                  objToMove = Some(obj)
+                }
+                break()
+              }
+            } else if (mode == MODE_ANIMAL) {
+              if (obj.isInstanceOf[Animal]) {
+                objToFocus = Some(obj)
+                objToMove = Some(obj)
+                break()
+              }
+            } else if (mode == MODE_PLANT) {
+              if (obj.isInstanceOf[Plant]) {
+                objToFocus = Some(obj)
+
+                // For plants, pick up their containers (e.g. flower pots), or they'll die
+                if (obj.getContainer().get.isInstanceOf[FlowerPot]) {
+                  objToMove = obj.getContainer()
+                } else {
+                  // Back-off to picking up the actual plant, if needed
+                  objToMove = Some(obj)
+                }
+                break()
+              }
+            }
           }
+
         }
       }
     }
@@ -290,7 +336,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     }
 
     // Step 3: Focus on that random object
-    val (actionFocus, actionFocusStr) = PathFinder.actionFocusOnObject(objToMove.get, agent, locationPerspective = curLoc1.get)
+    val (actionFocus, actionFocusStr) = PathFinder.actionFocusOnObject(objToFocus.get, agent, locationPerspective = curLoc1.get)
     // Add segment to path
     actionSeq.append(actionFocus)
     actionSeqStr.append(actionFocusStr)
@@ -303,7 +349,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
 
     // Step 5: Move from current location to answer box location
-    val (actions1, strs1) = PathFinder.createActionSequence(universe, agent, startLocation = animalLocation, endLocation = answerBoxLocation)
+    val (actions1, strs1) = PathFinder.createActionSequence(universe, agent, startLocation = livingThingLocation, endLocation = answerBoxLocation)
     // Add segment to path
     actionSeq.insertAll(actionSeq.length, actions1)
     actionSeqStr.insertAll(actionSeqStr.length, strs1)
@@ -363,7 +409,11 @@ object TaskFindLivingNonLiving {
     val allPlants = List(new AppleTree(), new AvocadoTree(), new BananaTree(), new CherryTree(), new LemonTree(), new OrangeTree(), new PeachTree(), new PeaPlant())
 
     val allPlantsInPots = new ArrayBuffer[EnvObject]
-    for (plant <- allPlants) {
+
+    val flowerPotIndices = Random.shuffle(List(1, 2, 3, 4, 5, 6, 7, 8, 9))
+    for (i <- 0 until allPlants.size) {
+      val plant = allPlants(i)
+
       val flowerpot = new FlowerPot()
 
       // Try to change the plant into an adult plant
@@ -378,10 +428,19 @@ object TaskFindLivingNonLiving {
     // Shuffle
     val shuffled = rand.shuffle(allPlantsInPots)
 
+    // Add a random selection of plants
     val out = new ArrayBuffer[TaskModifier]
     for (i <- 0 until numPlants) {
       val plantInPot = shuffled(i)
+      plantInPot.name = "flower pot " + flowerPotIndices(i)
       out.append( new TaskObject(plantInPot.name, Some(plantInPot), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true) )
+    }
+
+    // Randomly add a few empty distractor flower pots, too
+    for (i <- numPlants until numPlants + 2) {
+      val flowerPot = new FlowerPot
+      flowerPot.name = "flower pot " + flowerPotIndices(i)
+      out.append( new TaskObject(flowerPot.name, Some(flowerPot), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true) )
     }
 
     out.toArray
