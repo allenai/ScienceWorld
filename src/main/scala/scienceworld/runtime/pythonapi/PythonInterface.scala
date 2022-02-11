@@ -1,14 +1,15 @@
 package scienceworld.runtime.pythonapi
 
-import py4j.GatewayServer
 import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.environments.EnvironmentMaker
+import scienceworld.goldagent.RunHistory
 import scienceworld.input.{ActionDefinitions, InputParser}
 import scienceworld.objects.agent.Agent
 import scienceworld.runtime.AgentInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1}
 import util.{UniqueIdentifier, UniqueTypeID}
+import py4j.GatewayServer
 
 import collection.JavaConverters._
 import scala.util.Random
@@ -41,6 +42,7 @@ class PythonInterface() {
 
   var taskMaker = new TaskMaker1()
 
+  var currentHistory = new RunHistory("", -1, -1)
 
 
   /*
@@ -56,7 +58,6 @@ class PythonInterface() {
 
     // Reset UUID counter
     UniqueIdentifier.reset()
-
 
     //## TEST: Reset Task Maker (and thus recreate all possible task objects)
     val timeBefore = System.currentTimeMillis()
@@ -85,10 +86,16 @@ class PythonInterface() {
       agent = Some(agent_)
       agentInterface = Some(new AgentInterface(universe, agent.get, task.get, simplificationStr))
       goldActionsStr = goldActionsStr_
+
+      // Reset run history
+      val taskIdx = this.getTaskNames().indexOf(taskStr)
+      currentHistory = new RunHistory(taskStr, taskIdx, variationIdx)
+
     } else {
       this.errorUnknownEnvironment = true
       agentInterface = None
       goldActionsStr = Array.empty[String]
+      currentHistory = new RunHistory("", -1, -1)
     }
 
   }
