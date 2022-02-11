@@ -14,7 +14,7 @@ object ExampleGoldAgent {
   def main(args:Array[String]) = {
     val interface = new PythonInterface()
 
-    val specificTasks = Array(13)           // Do specific tasks
+    val specificTasks = Array(12)           // Do specific tasks
     //val specificTasks = Array.empty[Int]      // Do all
 
     val simplificationStr = "easy"
@@ -130,6 +130,14 @@ object ExampleGoldAgent {
         }
         taskScores.append(episodeScores.toArray)
 
+
+        // Show error histories
+        println ("ERROR HISTORIES:")
+        for (history <- errorHistories) {
+          println(history.toString())
+        }
+
+        // Show summary statistics
         println("")
         println("---------------------------------")
         println("Scores:")
@@ -146,12 +154,6 @@ object ExampleGoldAgent {
 
         println("---------------------------------")
       }
-    }
-
-
-    println ("ERROR HISTORIES:")
-    for (history <- errorHistories) {
-      println(history.toString())
     }
 
     println ("Completed...")

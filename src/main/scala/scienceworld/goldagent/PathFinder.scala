@@ -178,6 +178,7 @@ object PathFinder {
     return (actionFocus, actionStr)
   }
 
+  // Move an object from one location to another location
   def actionMoveObject(obj:EnvObject, destination:EnvObject, agent:Agent, locationPerspective:EnvObject): (Action, String) = {
     val actionMove = new ActionMoveObject(ActionRequestDef.mkBlank(), assignments = Map("agent" -> agent, "obj" -> obj, "moveTo" -> destination))
     // val actionStr = "move " + this.getObjReferent(obj) + " to " + this.getObjReferent(destination)
@@ -191,6 +192,37 @@ object PathFinder {
     val actionStr = "move " + referentObj.get + " to " + referentDest.get
     return (actionMove, actionStr)
   }
+
+  // Move objects KNOWN TO BE IN THE INVENTORY to a new destination
+  def actionMoveObjectFromInventory(obj:EnvObject, destination:EnvObject, agent:Agent, locationPerspective:EnvObject): (Action, String) = {
+    val actionMove = new ActionMoveObject(ActionRequestDef.mkBlank(), assignments = Map("agent" -> agent, "obj" -> obj, "moveTo" -> destination))
+    // val actionStr = "move " + this.getObjReferent(obj) + " to " + this.getObjReferent(destination)
+
+    val referentObj = this.getObjReferent(obj) + " in inventory"
+
+    val referentDest = this.getObjUniqueReferent(destination, locationPerspective)
+    if (referentDest.isEmpty) return (actionMove, "ERROR FINDING UNIQUE REFERENT FOR (" + destination.name + ")")
+
+    val actionStr = "move " + referentObj + " to " + referentDest.get
+    return (actionMove, actionStr)
+  }
+
+  // Pick up an object and place it in the inventory
+  def actionPickUpObject(obj:EnvObject, agent:Agent, locationPerspective:EnvObject): (Action, String) = {
+    val inventory = this.getEnvObject(queryName = "inventory", agent).get
+
+    val actionMove = new ActionMoveObject(ActionRequestDef.mkBlank(), assignments = Map("agent" -> agent, "obj" -> obj, "moveTo" -> inventory))
+    // val actionStr = "move " + this.getObjReferent(obj) + " to " + this.getObjReferent(destination)
+
+    val referentObj = this.getObjUniqueReferent(obj, locationPerspective)
+    if (referentObj.isEmpty) return (actionMove, "ERROR FINDING UNIQUE REFERENT FOR (" + obj.name + ")")
+
+    val referentDest = "inventory"
+
+    val actionStr = "pick up " + referentObj.get
+    return (actionMove, actionStr)
+  }
+
 
   def actionLookAround(agent:Agent):(Action, String) = {
     val actionLookAround = new ActionLookAround(ActionRequestDef.mkBlank(), assignments = Map("agent" -> agent))
