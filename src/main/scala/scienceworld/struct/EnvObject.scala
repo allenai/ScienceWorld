@@ -165,6 +165,23 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     out.toSet
   }
 
+  // Get a list of objects easily accessible from this level (i.e. contained in this object, OR in an open container contained in this object)
+  def getContainedObjectsRecursiveAccessible(includeHidden:Boolean = false):Set[EnvObject] = {
+    var out = mutable.Set[EnvObject]()
+    // Add objects contained in this object
+    out ++= this.getContainedObjects(includeHidden)
+    // Recurse
+    for (obj <- this.getContainedObjects(includeHidden)) {
+      // Only recurse into open containers
+      if ((obj.propContainer.isDefined) && (obj.propContainer.get.isOpen)) {
+        out ++= obj.getContainedObjectsRecursiveAccessible(includeHidden)
+      }
+    }
+
+    // Return
+    out.toSet
+  }
+
   def getContainedObjectsNotHidden():Set[EnvObject] = {
     this.containedObjects.filter(_.isHidden() == false).toSet
   }

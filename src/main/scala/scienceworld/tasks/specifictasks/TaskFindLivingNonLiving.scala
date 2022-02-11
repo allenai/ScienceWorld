@@ -180,7 +180,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
     // Step 2: Pick a random object
     val curLoc1 = PathFinder.getEnvObject(queryName = answerBoxLocation, universe)    // Get a pointer to the whole room the answer box is in
-    val objsInRoom = curLoc1.get.getContainedObjects(includeHidden = false)
+    val objsInRoom = curLoc1.get.getContainedObjectsRecursiveAccessible(includeHidden = false)
 
     var objToMove:Option[EnvObject] = None
     breakable {
