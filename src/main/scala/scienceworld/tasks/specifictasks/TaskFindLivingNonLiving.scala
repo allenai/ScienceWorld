@@ -11,6 +11,7 @@ import scienceworld.objects.livingthing.plant.{AppleTree, AvocadoTree, BananaTre
 import scienceworld.objects.taskitems.AnswerBox
 import scienceworld.processes.lifestage.PlantLifeStages
 import scienceworld.properties.LeadProp
+import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskDisable, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
@@ -153,15 +154,15 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     this.setupGoals( this.getCombination(combinationNum), combinationNum )
   }
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
     if (mode == MODE_LIVING) {
-      return mkGoldActionSequenceLiving(modifiers, universe, agent)
+      return mkGoldActionSequenceLiving(modifiers, runner)
     } else if (mode == MODE_NONLIVING) {
-      return mkGoldActionSequenceNonLiving(modifiers, universe, agent)
+      return mkGoldActionSequenceNonLiving(modifiers, runner)
     } else if (mode == MODE_PLANT) {
-      return mkGoldActionSequenceLiving(modifiers, universe, agent)
+      return mkGoldActionSequenceLiving(modifiers, runner)
     } else if (mode == MODE_ANIMAL) {
-      return mkGoldActionSequenceLiving(modifiers, universe, agent)
+      return mkGoldActionSequenceLiving(modifiers, runner)
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
     }
@@ -171,10 +172,13 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
   /*
    * Gold action sequences
    */
-  def mkGoldActionSequenceNonLiving(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequenceNonLiving(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
     // TODO: Unimplemented
     val answerBoxName = this.getTaskValueStr(modifiers, "answerBox").get
     val answerBoxLocation = this.getTaskValueStr(modifiers, "location").get
+
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
 
     // Action sequence
     val actionSeq = new ArrayBuffer[Action]
@@ -243,10 +247,14 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
   }
 
 
-  def mkGoldActionSequenceLiving(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequenceLiving(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
     // TODO: Unimplemented
     val answerBoxName = this.getTaskValueStr(modifiers, "answerBox").get
     val answerBoxLocation = this.getTaskValueStr(modifiers, "location").get
+
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
 
     // Action sequence
     val actionSeq = new ArrayBuffer[Action]

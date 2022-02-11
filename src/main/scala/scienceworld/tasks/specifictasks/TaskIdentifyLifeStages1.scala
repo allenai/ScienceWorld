@@ -4,6 +4,7 @@ import scienceworld.actions.Action
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.livingthing.animals.{Ant, Beaver, BlueJay, BrownBear, Butterfly, Chameleon, Chipmunk, Crocodile, Dove, Dragonfly, Elephant, Frog, GiantTortoise, Hedgehog, Moth, Mouse, Parrot, Rabbit, Toad, Turtle, Wolf}
+import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
@@ -142,7 +143,7 @@ class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskPar
   }
 
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
     // TODO: Unimplemented
     return (false, Array.empty[Action], Array.empty[String])
   }

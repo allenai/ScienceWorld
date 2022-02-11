@@ -13,6 +13,7 @@ import TaskMendelialGenetics2._
 import scienceworld.actions.Action
 import scienceworld.processes.PlantReproduction
 import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT, PLANT_STAGE_REPRODUCING, PLANT_STAGE_SEED, PLANT_STAGE_SEEDLING}
+import scienceworld.runtime.pythonapi.PythonInterface
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
@@ -280,7 +281,7 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
   }
 
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
     // TODO: Unimplemented
     return (false, Array.empty[Action], Array.empty[String])
   }

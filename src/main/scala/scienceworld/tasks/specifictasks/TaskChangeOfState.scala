@@ -6,6 +6,7 @@ import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.Stove
 import scienceworld.objects.substance.food.{AppleJuice, Chocolate, IceCream, Marshmallow, OrangeJuice}
 import scienceworld.objects.substance.{Caesium, Gallium, Ice, Lead, Mercury, Soap, Tin}
+import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskDisable, TaskMaker1, TaskModifier, TaskObject}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
@@ -250,7 +251,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
   }
 
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
     // TODO: Unimplemented
     return (false, Array.empty[Action], Array.empty[String])
   }

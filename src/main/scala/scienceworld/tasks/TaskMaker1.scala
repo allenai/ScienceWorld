@@ -1,6 +1,7 @@
 package scienceworld.tasks
 
 import scienceworld.objects.agent.Agent
+import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.specifictasks.{TaskChangeOfState, TaskChemistryMix, TaskChemistryMixPaint, TaskElectricCircuit, TaskElectricalConductivity, TaskElectricalConductivity2, TaskFindLivingNonLiving, TaskGrowPlant, TaskIdentifyLifeStages1, TaskIdentifyLifeStages2, TaskInclinedPlane1, TaskInclinedPlane2, TaskInclinedPlane3, TaskLifeSpan, TaskMendelialGenetics2, TaskMendelianGenetics1, TaskParametric, TaskUseInstrumentThermometer, TaskUseInstrumentThermometer2, TaskUseInstrumentThermometer3}
 
@@ -56,12 +57,30 @@ class TaskMaker1 {
     val task = tp.get.setupGoals(variationIdx)
 
     // Then, get gold action sequence
-    val (goldSuccess, goldActions, goldActionStr) = tp.get.mkGoldActionSequence(modifiers = task.taskModifiers, universe, agent)
+    //val (goldSuccess, goldActions, goldActionStr) = tp.get.mkGoldActionSequence(modifiers = task.taskModifiers, universe, agent)
     // TODO: Enable once debugging is completed
     //## if (!goldSuccess) return (None, Array.empty[String], "ERROR: Could not generate gold action sequence.")
 
     // Return
-    (Some(task), goldActionStr, "")
+    (Some(task), Array.empty[String], "")
+  }
+
+
+  def createGoldActions(taskName:String, variationIdx:Int, runner:PythonInterface): (Array[String], String) = {
+    val tp = this.getTask(taskName)
+    if (tp.isEmpty) return (Array.empty[String], "ERROR: Unknown task (" + taskName + ").")
+
+    // Get task
+    val task = tp.get.setupGoals(variationIdx)
+
+    // Create gold action sequence
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    val (goldSuccess, goldActions, goldActionStr) = tp.get.mkGoldActionSequence(modifiers = task.taskModifiers, runner)
+
+    // Return
+    return (goldActionStr, "")
   }
 
   /*

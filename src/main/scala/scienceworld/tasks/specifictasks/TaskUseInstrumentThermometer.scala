@@ -13,6 +13,7 @@ import TaskUseInstrumentThermometer._
 import scienceworld.actions.Action
 import scienceworld.objects.containers.WoodCup
 import scienceworld.objects.devices.Thermometer
+import scienceworld.runtime.pythonapi.PythonInterface
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
@@ -213,7 +214,7 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
   }
 
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
     // TODO: Unimplemented
     return (false, Array.empty[Action], Array.empty[String])
   }

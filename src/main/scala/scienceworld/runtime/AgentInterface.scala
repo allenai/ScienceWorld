@@ -16,7 +16,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks._
 
-class AgentInterface(universe:EnvObject, agent:Agent, task:Task, var simplificationStr:String = "") {
+class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var simplificationStr:String = "") {
 
   val objMonitor = new ObjMonitor()
   // Store whether the environment is in an unexpected error state

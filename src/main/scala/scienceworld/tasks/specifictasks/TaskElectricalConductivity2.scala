@@ -6,6 +6,7 @@ import scienceworld.objects.electricalcomponent.{Battery, ElectricBuzzer, Electr
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic}
 import scienceworld.objects.substance.{SodiumChloride, Water}
 import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalConductivity}
+import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueBool, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
@@ -194,7 +195,7 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
   }
 
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
     // TODO: Unimplemented
     return (false, Array.empty[Action], Array.empty[String])
   }

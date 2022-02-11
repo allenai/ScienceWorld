@@ -10,6 +10,7 @@ import scienceworld.objects.misc.{AluminumFoil, ForkMetal, ForkPlastic, PaperCli
 import scienceworld.objects.substance.food.Apricot
 import scienceworld.objects.substance.{SodiumChloride, Water, WoodBlock}
 import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalConductivity}
+import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueBool, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
@@ -284,7 +285,7 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
   }
 
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
     // TODO: Unimplemented
     return (false, Array.empty[Action], Array.empty[String])
   }

@@ -2,6 +2,7 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.actions.Action
 import scienceworld.objects.agent.Agent
+import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskModifier, TaskValueBool, TaskValueDouble, TaskValueStr}
 
@@ -16,7 +17,7 @@ trait TaskParametric {
 
   def setupGoals(combinationNum:Int): Task
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String])
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String])
 
   /*
    * Helpers

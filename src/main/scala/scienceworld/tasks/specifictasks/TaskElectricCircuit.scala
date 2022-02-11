@@ -6,6 +6,7 @@ import scienceworld.objects.containers.{CeramicCup, FlowerPot}
 import scienceworld.objects.electricalcomponent.{Battery, ElectricBuzzer, ElectricMotor, GasGenerator, LightBulb, NuclearGenerator, SolarPanel, WindGenerator}
 import scienceworld.objects.livingthing.plant.{Plant, Soil}
 import scienceworld.processes.PlantReproduction
+import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
@@ -218,7 +219,7 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
   }
 
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
     // TODO: Unimplemented
     return (false, Array.empty[Action], Array.empty[String])
   }
