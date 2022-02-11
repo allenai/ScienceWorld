@@ -153,8 +153,22 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     this.setupGoals( this.getCombination(combinationNum), combinationNum )
   }
 
-
   def mkGoldActionSequence(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
+    if (mode == MODE_LIVING) {
+      return mkGoldActionSequenceNonLiving(modifiers, universe, agent)
+    } else if (mode == MODE_NONLIVING) {
+      return mkGoldActionSequenceNonLiving(modifiers, universe, agent)
+    } else if (mode == MODE_PLANT) {
+      return mkGoldActionSequenceNonLiving(modifiers, universe, agent)
+    } else if (mode == MODE_ANIMAL) {
+      return mkGoldActionSequenceNonLiving(modifiers, universe, agent)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+
+  }
+
+  def mkGoldActionSequenceNonLiving(modifiers:Array[TaskModifier], universe:EnvObject, agent:Agent): (Boolean, Array[Action], Array[String]) = {
     // TODO: Unimplemented
     println("###! RUNNING ")
     val answerBoxName = this.getTaskValueStr(modifiers, "answerBox").get
