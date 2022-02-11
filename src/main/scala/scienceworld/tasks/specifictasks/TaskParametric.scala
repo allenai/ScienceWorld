@@ -5,6 +5,7 @@ import scienceworld.objects.agent.Agent
 import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskModifier, TaskValueBool, TaskValueDouble, TaskValueStr}
+import collection.JavaConverters._
 
 trait TaskParametric {
   val taskName:String
@@ -66,4 +67,23 @@ trait TaskParametric {
     return None
   }
 
+
+  /*
+   * Helper functions (runner for gold action sequences)
+   */
+
+  // Run a series of actions in the environment (typically for creating a gold path)
+  def runActionSequence(actionSequence:Array[String], runner:PythonInterface): Unit = {
+    for (actionStr <- actionSequence) {
+      this.runAction(actionStr, runner)
+    }
+  }
+
+  def runAction(actionStr:String, runner:PythonInterface): Unit = {
+    val observation = runner.step(actionStr)
+  }
+
+  def getActionHistory(runner:PythonInterface):Array[String] = {
+    return runner.getActionHistory().asScala.toArray
+  }
 }

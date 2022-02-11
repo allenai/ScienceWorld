@@ -45,24 +45,19 @@ class TaskMaker1 {
   /*
    * Setup
    */
-  def doTaskSetup(taskName:String, variationIdx:Int, universe:EnvObject, agent:Agent):(Option[Task], Array[String], String) = {
+  def doTaskSetup(taskName:String, variationIdx:Int, universe:EnvObject, agent:Agent):(Option[Task], String) = {
     val tp = this.getTask(taskName)
-    if (tp.isEmpty) return (None, Array.empty[String], "ERROR: Unknown task (" + taskName + ").")
+    if (tp.isEmpty) return (None, "ERROR: Unknown task (" + taskName + ").")
 
     // First, setup environment
     val (success, errStr) = tp.get.setupCombination(variationIdx, universe, agent)
-    if (!success) return (None, Array.empty[String], errStr)
+    if (!success) return (None, errStr)
 
     // Then, get task
     val task = tp.get.setupGoals(variationIdx)
 
-    // Then, get gold action sequence
-    //val (goldSuccess, goldActions, goldActionStr) = tp.get.mkGoldActionSequence(modifiers = task.taskModifiers, universe, agent)
-    // TODO: Enable once debugging is completed
-    //## if (!goldSuccess) return (None, Array.empty[String], "ERROR: Could not generate gold action sequence.")
-
     // Return
-    (Some(task), Array.empty[String], "")
+    (Some(task), "")
   }
 
 

@@ -187,16 +187,19 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
     // Step 1: Move from starting location to answer box location
     val startLocation = agent.getContainer().get.name
-    val (actions, strs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = answerBoxLocation)
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = answerBoxLocation)
     // Add segment to path
-    actionSeq.insertAll(actionSeq.length, actions)
-    actionSeqStr.insertAll(actionSeqStr.length, strs)
+    //actionSeq.insertAll(actionSeq.length, actions)
+    //actionSeqStr.insertAll(actionSeqStr.length, strs)
+    runActionSequence(actionStrs, runner)
+
 
 
     // Step 1A: Look around
     val (actionLook, actionLookStr) = PathFinder.actionLookAround(agent)
-    actionSeq.append(actionLook)
-    actionSeqStr.append(actionLookStr)
+    //actionSeq.append(actionLook)
+    //actionSeqStr.append(actionLookStr)
+    runAction(actionLookStr, runner)
 
     // Step 2: Pick a random object
     val curLoc1 = PathFinder.getEnvObject(queryName = answerBoxLocation, universe)    // Get a pointer to the whole room the answer box is in
@@ -230,8 +233,9 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     // Step 3: Focus on that random object
     val (actionFocus, actionFocusStr) = PathFinder.actionFocusOnObject(objToMove.get, agent, locationPerspective = curLoc1.get)
     // Add segment to path
-    actionSeq.append(actionFocus)
-    actionSeqStr.append(actionFocusStr)
+    //actionSeq.append(actionFocus)
+    //actionSeqStr.append(actionFocusStr)
+    runAction(actionFocusStr, runner)
 
     // Step 4: Find answer box reference
     // TODO: Should just check for this object from base location
@@ -239,11 +243,13 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
     // Step 5: Move object to answer box
     val (actionMoveObj, actionMoveObjStr) = PathFinder.actionMoveObject(objToMove.get, answerBox.get, agent, locationPerspective = curLoc1.get)
-    actionSeq.append(actionMoveObj)
-    actionSeqStr.append(actionMoveObjStr)
+    //actionSeq.append(actionMoveObj)
+    //actionSeqStr.append(actionMoveObjStr)
+    runAction(actionMoveObjStr, runner)
+
 
     // Return
-    return (true, actionSeq.toArray, actionSeqStr.toArray)
+    return (true, actionSeq.toArray, getActionHistory(runner))
   }
 
 

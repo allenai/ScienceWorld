@@ -49,6 +49,26 @@ class PythonInterface() {
    * Load/reset/shutdown server
    */
   def load(taskStr:String, variationIdx:Int, simplificationStr:String): Unit = {
+    // First, reset environment to new specifications
+    doLoad(taskStr, variationIdx, simplificationStr)
+
+    // Then, compute gold path
+    val (goldPath, success) = taskMaker.createGoldActions(taskStr, variationIdx, this)
+    // TODO: Check for failure in generating gold path
+
+    // Then, reset environment again
+    doLoad(taskStr, variationIdx, simplificationStr)
+
+    // Then, store gold path
+    this.goldActionsStr = goldPath
+  }
+
+  def reset() = {
+    this.load(this.taskStr, this.taskVariationIdx, this.simplificationStr)
+  }
+
+
+  private def doLoad(taskStr:String, variationIdx:Int, simplificationStr:String): Unit = {
     this.taskStr = taskStr
     this.taskVariationIdx = variationIdx
     this.simplificationStr = simplificationStr
@@ -72,7 +92,7 @@ class PythonInterface() {
 
     //## Currently, get a random task instead of using the environment string
     // Set up task
-    val (task_, goldActionsStr_, taskErrStr) = taskMaker.doTaskSetup(taskStr, this.taskVariationIdx, universe, agent_)
+    val (task_, taskErrStr) = taskMaker.doTaskSetup(taskStr, this.taskVariationIdx, universe, agent_)
     var task:Option[Task] = None
     if (task_.isDefined) {
       task = task_
@@ -81,11 +101,13 @@ class PythonInterface() {
       errorStr += "ERROR: Task (" + this.taskStr + "): " + taskErrStr
     }
 
+    // Populated separately
+    goldActionsStr = Array.empty[String]
+
     if (task.isDefined) {
       this.errorUnknownEnvironment = false
       agent = Some(agent_)
       agentInterface = Some(new AgentInterface(universe, agent.get, task.get, simplificationStr))
-      goldActionsStr = goldActionsStr_
 
       // Reset run history
       val taskIdx = this.getTaskNames().indexOf(taskStr)
@@ -94,15 +116,11 @@ class PythonInterface() {
     } else {
       this.errorUnknownEnvironment = true
       agentInterface = None
-      goldActionsStr = Array.empty[String]
       currentHistory = new RunHistory("", -1, -1)
     }
 
   }
 
-  def reset() = {
-    this.load(this.taskStr, this.taskVariationIdx, this.simplificationStr)
-  }
 
   def shutdown(): Unit = {
     sys.exit(0)
@@ -204,6 +222,14 @@ class PythonInterface() {
     return this.goldActionsStr.toList.asJava
   }
 
+  /*
+   * History
+   */
+  def getActionHistory():java.util.List[String] = {
+    return this.currentHistory.historyActions.toList.asJava
+  }
+
+  // TODO: Add function to return complete history as JSON
 
   /*
    * Get object/action space
@@ -309,6 +335,9 @@ class PythonInterface() {
     val (description, score_, isCompleted_) = agentInterface.get.step(userInputString)
     this.score = score_
     this.isComplete = isCompleted_
+
+    // Store in history
+    currentHistory.addStep(userInputString, (description, score_, isCompleted_))
 
     println("Description: ")
     println(description)
