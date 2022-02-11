@@ -385,7 +385,7 @@ object RoomMaker {
 
     //## DEBUG
     // Answer box
-    room.addObject( new AnswerBox("blue") )
+    //room.addObject( new AnswerBox("blue") )
 
 
     // Return

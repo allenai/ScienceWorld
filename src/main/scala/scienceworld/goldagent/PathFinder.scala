@@ -215,6 +215,8 @@ object PathFinder {
       val referent = tuple._1
       val referentObj = tuple._2
       if (referentObj == obj) return Some(referent)
+
+      //println("referent: " + referent + "\t referentObj: " + referentObj.toStringMinimal() + " \t obj: " + obj.toStringMinimal())
     }
 
     // If we reach here, the object was not found

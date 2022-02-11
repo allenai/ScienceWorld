@@ -22,6 +22,9 @@ object ExampleGoldAgent {
     val errors = new ArrayBuffer[String]
     var numVariationsTested:Int = 0
 
+    val errorHistories = new ArrayBuffer[RunHistory]
+
+
     // Create environment
     // Get a task name
     val taskNames = interface.getTaskNames().asScala.toList
@@ -56,6 +59,8 @@ object ExampleGoldAgent {
         val episodeScores = new ArrayBuffer[Double]
         val maxTaskVariations = interface.getTaskMaxVariations(taskName)
 
+
+
         // For each variation
         for (variationIdx <- 0 until maxTaskVariations) {
           println("---------------------------")
@@ -72,6 +77,9 @@ object ExampleGoldAgent {
           // Get the gold action sequence
           val goldActionSeq = interface.getGoldActionSequence().asScala.toArray
 
+          // Create a history object to store this run
+          val history = new RunHistory(taskName, taskIdx, variationIdx)
+
           var curScore: Double = 0.0
           for (actionIdx <- 0 until goldActionSeq.length) {
 
@@ -85,6 +93,9 @@ object ExampleGoldAgent {
             curScore = observation._2
             println("Observation: ")
             println(observation)
+
+            // Store in history
+            history.addStep(userInput, observation)
 
             // Check for error state:
             if (agentInterface.get.isInErrorState()) {
@@ -111,6 +122,8 @@ object ExampleGoldAgent {
             println(errStr)
             errors.append(errStr)
             println ("Gold sequence: " + goldActionSeq.mkString(", "))
+
+            errorHistories.append(history)
           }
           episodeScores.append(curScore)
           numVariationsTested += 1
@@ -136,6 +149,10 @@ object ExampleGoldAgent {
     }
 
 
+    println ("ERROR HISTORIES:")
+    for (history <- errorHistories) {
+      println(history.toString())
+    }
 
     println ("Completed...")
 
@@ -172,3 +189,38 @@ object ExampleGoldAgent {
 
 }
 
+
+// Storage class for histories
+class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int) {
+  val historyActions = new ArrayBuffer[String]
+  val historyObservations = new ArrayBuffer[(String, Double, Boolean)]
+
+  def length:Int = this.historyActions.length
+
+  def addStep(action:String, observation:(String, Double, Boolean)): Unit = {
+    historyActions.append(action)
+    historyObservations.append(observation)
+  }
+
+  override def toString():String = {
+    val os = new StringBuilder
+
+    os.append("\n------------------------------------------------------------------------\n\n")
+    os.append("Task: " + taskName + "\n")
+    os.append("TaskIdx: " + taskIdx + "\n")
+    os.append("VariationIdx: " + variationIdx + "\n")
+    os.append("\n")
+
+    for (i <- 0 until this.length) {
+      os.append(">>> " + historyActions(i) + "\n")
+      os.append(historyObservations(i)._1 + "\n")
+      os.append("\n")
+    }
+
+    os.append("Action history: " + historyActions.mkString(", ") + "\n")
+    os.append("\n------------------------------------------------------------------------\n\n")
+
+    os.toString()
+  }
+
+}
