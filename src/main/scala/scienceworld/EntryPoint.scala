@@ -128,6 +128,11 @@ object EntryPoint {
         //println("Locations: " + PathFinder.buildLocationGraph(universe) )
 
         //println("Pathfinder test: " + PathFinder.getLocationSequence(universe, startLocation = "living room", endLocation = "foundry")._2.mkString(", "))
+        println("Pathfinder test: ")
+        val path = PathFinder.createActionSequenceSearchPattern(universe = interface.agentInterface.get.universe, agent = interface.agentInterface.get.agent, startLocation = interface.agentInterface.get.agent.getContainer().get.name)
+        for (elem <- path) {
+          println("\t" + elem.mkString(", "))
+        }
 
         //println("Possible actions:\n\t" + actionHandler.getActionExamplesPlainText().mkString("\n\t"))
         //println("Possible Combinations:\n\t" + agentInterface.getPossibleActionObjectCombinations().mkString("\n\t") )

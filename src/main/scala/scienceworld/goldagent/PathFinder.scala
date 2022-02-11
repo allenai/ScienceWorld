@@ -10,6 +10,7 @@ import scienceworld.tasks.goals.ObjMonitor
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import scala.reflect.ClassTag
 
 
 /*
@@ -83,6 +84,68 @@ object PathFinder {
   }
 
 
+  // Create an action sequence for an exhaustive search pattern, that travels to all locations
+  def createActionSequenceSearchPattern(universe:EnvObject, agent:Agent, startLocation:String): (Array[Array[String]]) = {
+    val actionSequenceSegments = new ArrayBuffer[Array[String]]
+
+    val (success, pathLocations) = this.getSearchPathSequenceAllLocations(universe, startLocation)
+    if (!success) {
+      // Fail gracefully
+      //println ("Error: could not get location sequence")
+      return (Array.empty[Array[String]])
+    }
+
+    //println ("PathLocations: " + pathLocations.mkString(", "))
+
+    for (i <- 0 until pathLocations.length-1) {
+      val locationName = pathLocations(i)
+      val nextLocationName = pathLocations(i+1)
+
+      // Get the location object
+      val location = this.getEnvObject(queryName = locationName, universe)
+      if (location.isEmpty) {
+        // Fail gracefully
+        //println ("Error: location is empty")
+        return (Array.empty[Array[String]])
+      }
+
+      val segmentActions = new ArrayBuffer[String]
+
+      // Find the appropraite portal
+      val portals = location.get.getPortals()
+      for (portal <- portals) {
+        if (portal.doesConnectTo(nextLocationName)) {
+          // This is the portal that connects to the next location.
+
+          // Get portal referent
+          val portalReferents = portal.getReferents(location.get).toList.sortBy(- _.length)
+          val portalReferent = portalReferents(0)   // Take the longest referent (least likely to be ambiguous)
+
+          // Do we need to open it?
+          // TODO: Add check?
+          val actionOpenDoor = new ActionOpenDoor(ActionRequestDef.mkBlank(), assignments = Map("agent" -> agent, "door" -> portal))
+          //actionSequence.append( (actionOpenDoor, "open " + portalReferent) )
+          segmentActions.append("open " + portalReferent)
+
+          // Now we need to go through it
+          val actionMoveLocation = new ActionMoveThroughDoor(ActionRequestDef.mkBlank(), assignments = Map("agent" -> agent, "doorOrLocation" -> portal))
+          //actionSequence.append( (actionMoveLocation, "go to " + nextLocationName) )
+          segmentActions.append("go to " + nextLocationName)
+
+        }
+
+      }
+
+      actionSequenceSegments.append( segmentActions.toArray )
+
+    }
+
+    // Return
+    return (actionSequenceSegments.toArray)
+  }
+
+
+
   // Find a valid path (sequence of locations) from a starting location to an end location.
   // Returns (success, array(location names) )
   def getLocationSequence(universe:EnvObject, startLocation:String, endLocation:String, maxSteps:Int = 10):(Boolean, Array[String]) = {
@@ -102,6 +165,37 @@ object PathFinder {
       // Check for a successful path from start to finish
       for (path <- curExhaustivePaths) {
         if (sanitize(path.last) == sanitize(endLocation)) {
+          // Found a valid path
+          return (true, path)
+        }
+      }
+
+      curSteps += 1
+    }
+
+    // If we reach here, then we timed out -- no successful path was found
+    return (false, Array.empty[String])
+  }
+
+
+  // Make a search path from the current location that covers ALL locations
+  def getSearchPathSequenceAllLocations(universe:EnvObject, startLocation:String, maxSteps:Int = 20):(Boolean, Array[String]) = {
+    val validTransitions = this.buildLocationGraph(universe)
+    val allLocationNames = validTransitions.keySet
+
+
+    // Start: Populate with single path with single step (current start location)
+    var curExhaustivePaths = Array( Array(startLocation) )
+
+    var curSteps:Int = 0
+    while (curSteps < maxSteps) {
+      // Add to each path
+      curExhaustivePaths = mkExhaustivePathsOneStepLonger(curExhaustivePaths, validTransitions)
+
+      // Check for a successful path that includes all locations
+      for (path <- curExhaustivePaths) {
+        val pathLocations = path.toSet
+        if (pathLocations.size == allLocationNames.size) {
           // Found a valid path
           return (true, path)
         }
@@ -289,10 +383,11 @@ object PathFinder {
     out.toArray
   }
 
-
   // Sanitize strings for comparison
   private def sanitize(name:String):String = {
     return name.trim().toLowerCase
   }
+
+
 
 }
