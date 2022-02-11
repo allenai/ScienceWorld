@@ -293,9 +293,9 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
   }
 
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     // TODO: Unimplemented
-    return (false, Array.empty[Action], Array.empty[String])
+    return (false, Array.empty[String])
   }
 
 }

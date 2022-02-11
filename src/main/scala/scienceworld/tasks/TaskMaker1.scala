@@ -72,7 +72,7 @@ class TaskMaker1 {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
-    val (goldSuccess, goldActions, goldActionStr) = tp.get.mkGoldActionSequence(modifiers = task.taskModifiers, runner)
+    val (goldSuccess, goldActionStr) = tp.get.mkGoldActionSequence(modifiers = task.taskModifiers, runner)
 
     // Return
     return (goldActionStr, "")

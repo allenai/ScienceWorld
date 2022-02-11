@@ -154,7 +154,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     this.setupGoals( this.getCombination(combinationNum), combinationNum )
   }
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     if (mode == MODE_LIVING) {
       return mkGoldActionSequenceLiving(modifiers, runner)
     } else if (mode == MODE_NONLIVING) {
@@ -172,7 +172,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
   /*
    * Gold action sequences
    */
-  def mkGoldActionSequenceNonLiving(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequenceNonLiving(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     // TODO: Unimplemented
     val answerBoxName = this.getTaskValueStr(modifiers, "answerBox").get
     val answerBoxLocation = this.getTaskValueStr(modifiers, "location").get
@@ -180,25 +180,14 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
-    // Action sequence
-    val actionSeq = new ArrayBuffer[Action]
-    val actionSeqStr = new ArrayBuffer[String]
-
 
     // Step 1: Move from starting location to answer box location
     val startLocation = agent.getContainer().get.name
     val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = answerBoxLocation)
-    // Add segment to path
-    //actionSeq.insertAll(actionSeq.length, actions)
-    //actionSeqStr.insertAll(actionSeqStr.length, strs)
     runActionSequence(actionStrs, runner)
-
-
 
     // Step 1A: Look around
     val (actionLook, actionLookStr) = PathFinder.actionLookAround(agent)
-    //actionSeq.append(actionLook)
-    //actionSeqStr.append(actionLookStr)
     runAction(actionLookStr, runner)
 
     // Step 2: Pick a random object
@@ -227,14 +216,12 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
     // If we didn't find a movable object, we're in trouble -- quit
     if (objToMove.isEmpty) {
-      return (false, actionSeq.toArray, actionSeqStr.toArray)
+      return (false, getActionHistory(runner))
     }
 
     // Step 3: Focus on that random object
     val (actionFocus, actionFocusStr) = PathFinder.actionFocusOnObject(objToMove.get, agent, locationPerspective = curLoc1.get)
     // Add segment to path
-    //actionSeq.append(actionFocus)
-    //actionSeqStr.append(actionFocusStr)
     runAction(actionFocusStr, runner)
 
     // Step 4: Find answer box reference
@@ -243,17 +230,15 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
     // Step 5: Move object to answer box
     val (actionMoveObj, actionMoveObjStr) = PathFinder.actionMoveObject(objToMove.get, answerBox.get, agent, locationPerspective = curLoc1.get)
-    //actionSeq.append(actionMoveObj)
-    //actionSeqStr.append(actionMoveObjStr)
     runAction(actionMoveObjStr, runner)
 
 
     // Return
-    return (true, actionSeq.toArray, getActionHistory(runner))
+    return (true, getActionHistory(runner))
   }
 
 
-  def mkGoldActionSequenceLiving(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequenceLiving(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     // TODO: Unimplemented
     val answerBoxName = this.getTaskValueStr(modifiers, "answerBox").get
     val answerBoxLocation = this.getTaskValueStr(modifiers, "location").get
@@ -261,10 +246,6 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
-
-    // Action sequence
-    val actionSeq = new ArrayBuffer[Action]
-    val actionSeqStr = new ArrayBuffer[String]
 
     var livingThingLocation = "outside"
     if (mode == MODE_LIVING) {
@@ -278,20 +259,16 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
     // Step 1: Move from starting location to a place likely to have animals
     val startLocation = agent.getContainer().get.name
-    val (actions, strs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = livingThingLocation)
-    // Add segment to path
-    actionSeq.insertAll(actionSeq.length, actions)
-    actionSeqStr.insertAll(actionSeqStr.length, strs)
-
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = livingThingLocation)
+    runActionSequence(actionStrs, runner)
 
     // Step 1A: Look around
     val (actionLook, actionLookStr) = PathFinder.actionLookAround(agent)
-    actionSeq.append(actionLook)
-    actionSeqStr.append(actionLookStr)
+    runAction(actionLookStr, runner)
 
     // Step 2: Pick a random object
-    val curLoc1 = PathFinder.getEnvObject(queryName = livingThingLocation, universe)    // Get a pointer to the whole room
-    val objsInRoom = curLoc1.get.getContainedObjectsRecursiveAccessible(includeHidden = false)
+    val curLoc1 = getCurrentAgentLocation(runner)
+    val objsInRoom = curLoc1.getContainedObjectsRecursiveAccessible(includeHidden = false)
 
     var objToFocus:Option[EnvObject] = None
     var objToMove:Option[EnvObject] = None
@@ -346,42 +323,32 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
     // If we didn't find a movable object, we're in trouble -- quit
     if (objToMove.isEmpty) {
-      return (false, actionSeq.toArray, actionSeqStr.toArray)
+      return (false, getActionHistory(runner))
     }
 
     // Step 3: Focus on that random object
-    val (actionFocus, actionFocusStr) = PathFinder.actionFocusOnObject(objToFocus.get, agent, locationPerspective = curLoc1.get)
-    // Add segment to path
-    actionSeq.append(actionFocus)
-    actionSeqStr.append(actionFocusStr)
+    val (actionFocus, actionFocusStr) = PathFinder.actionFocusOnObject(objToFocus.get, agent, locationPerspective = curLoc1)
+    runAction(actionFocusStr, runner)
 
     // Step 4: Pick it up / place it in the inventory
-    val (actionPickUp, actionPickUpStr) = PathFinder.actionPickUpObject(objToMove.get, agent, locationPerspective = curLoc1.get)
-    // Add segment to path
-    actionSeq.append(actionPickUp)
-    actionSeqStr.append(actionPickUpStr)
-
+    val (actionPickUp, actionPickUpStr) = PathFinder.actionPickUpObject(objToMove.get, agent, locationPerspective = curLoc1)
+    runAction(actionPickUpStr, runner)
 
     // Step 5: Move from current location to answer box location
-    val (actions1, strs1) = PathFinder.createActionSequence(universe, agent, startLocation = livingThingLocation, endLocation = answerBoxLocation)
-    // Add segment to path
-    actionSeq.insertAll(actionSeq.length, actions1)
-    actionSeqStr.insertAll(actionSeqStr.length, strs1)
-
+    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = livingThingLocation, endLocation = answerBoxLocation)
+    runActionSequence(actionStrs1, runner)
 
     // Step 6: Find answer box reference
     // TODO: Should just check for this object from base location
 
-
     // Step 7: Move object to answer box
-    val curLoc2 = PathFinder.getEnvObject(queryName = answerBoxLocation, universe)    // Get a pointer to the current location (where the answer box is)
+    val curLoc2 = PathFinder.getEnvObject(queryName = answerBoxLocation, universe)    // Get a pointer to the answer box location (should also be current location)
     val answerBox = PathFinder.getEnvObject(queryName = answerBoxName, curLoc2.get)   // Get a pointer to the answer box
     val (actionMoveObj, actionMoveObjStr) = PathFinder.actionMoveObjectFromInventory(objToMove.get, answerBox.get, agent, locationPerspective = curLoc2.get)
-    actionSeq.append(actionMoveObj)
-    actionSeqStr.append(actionMoveObjStr)
+    runAction(actionMoveObjStr, runner)
 
     // Return
-    return (true, actionSeq.toArray, actionSeqStr.toArray)
+    return (true, getActionHistory(runner))
   }
 
 }

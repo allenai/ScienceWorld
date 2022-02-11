@@ -242,9 +242,9 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
   }
 
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[Action], Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     // TODO: Unimplemented
-    return (false, Array.empty[Action], Array.empty[String])
+    return (false, Array.empty[String])
   }
 
 
