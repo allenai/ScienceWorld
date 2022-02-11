@@ -57,7 +57,8 @@ class TaskMaker1 {
 
     // Then, get gold action sequence
     val (goldSuccess, goldActions, goldActionStr) = tp.get.mkGoldActionSequence(modifiers = task.taskModifiers, universe, agent)
-    if (!goldSuccess) return (None, Array.empty[String], "ERROR: Could not generate gold action sequence.")
+    // TODO: Enable once debugging is completed
+    //## if (!goldSuccess) return (None, Array.empty[String], "ERROR: Could not generate gold action sequence.")
 
     // Return
     (Some(task), goldActionStr, "")

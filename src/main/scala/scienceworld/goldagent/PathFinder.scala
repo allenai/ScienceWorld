@@ -137,8 +137,8 @@ object PathFinder {
     val allObjects = universe.getContainedObjectsAndPortalsRecursive(true)
     val allLocations = allObjects.filter(_.isInstanceOf[Location]).toArray
 
-    println ("Number of locations: " + allLocations.length)
-    println ("Locations: " + allLocations.map(_.name).mkString(", "))
+    //println ("Number of locations: " + allLocations.length)
+    //println ("Locations: " + allLocations.map(_.name).mkString(", "))
 
     for (location <- allLocations) {
       val transitions = new ArrayBuffer[String]
@@ -154,9 +154,11 @@ object PathFinder {
       validTransitions(location.name) = transitions.toArray
     }
 
+    /*
     for (key <- validTransitions.keySet) {
       println ("\t" + key.formatted("%20s") + "\t" + validTransitions(key).mkString(", "))
     }
+     */
 
     return validTransitions.toMap
   }

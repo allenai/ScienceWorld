@@ -11,6 +11,7 @@ import scienceworld.input.{ActionDefinitions, ActionHandler, InputParser}
 import scienceworld.objects.substance.food.Apple
 import scienceworld.properties.BlackPaintProp
 import scienceworld.runtime.AgentInterface
+import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.tasks.{Task, TaskMaker1}
 import scienceworld.tasks.goals.ObjMonitor
 import scienceworld.tasks.specifictasks.TaskChangeOfState
@@ -19,6 +20,8 @@ import scienceworld.tasks.specifictasks.TaskChangeOfState.MODE_MELT
 import scala.collection.mutable.ArrayBuffer
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks.{break, breakable}
+
+import collection.JavaConverters._
 
 class EntryPoint {
 
@@ -34,6 +37,8 @@ object EntryPoint {
   def main(args:Array[String]) = {
     println("Initializing... ")
 
+    val interface = new PythonInterface()
+
     val (universe, agent) = EnvironmentMaker.mkKitchenEnvironment()
     //val (universe, agent) = EnvironmentMaker.mkElectricalEnvironment()
 
@@ -41,12 +46,12 @@ object EntryPoint {
 
 
     val startTime = System.currentTimeMillis()
-    val taskMaker = new TaskMaker1()
+
     println ("TASK LIST: ")
-    val taskList = taskMaker.getTaskList()
-    for (i <- 0 until taskList.length) {
+    val taskList = interface.getTaskNames().asScala
+    for (i <- 0 until taskList.size) {
       val taskName = taskList(i)
-      val numVariations = taskMaker.getMaxVariations(taskName)
+      val numVariations = interface.getTaskMaxVariations(taskName)
       println( i.formatted("%5s") + ": \t" + taskName.formatted("%60s") + "  (" + numVariations + " variations)")
     }
 
@@ -59,7 +64,7 @@ object EntryPoint {
 
     //val taskName = taskMaker.getTaskList()(5)
     //val taskName = taskMaker.getTaskList()(13)
-    val taskName = taskMaker.getTaskList()(17)
+    val taskName = interface.getTaskNames().asScala(17)
 
     //val simplificationStr = "teleportAction,noElectricalAction,openDoors,selfWateringFlowerPots"
     //val simplificationStr = "teleportAction,openDoors,selfWateringFlowerPots"   // with Electrical actions
@@ -67,23 +72,10 @@ object EntryPoint {
 
     //val simplificationStr = ""
 
-    // Setup task
-    val (task_, goldActionsStr, taskErrStr) = taskMaker.doTaskSetup(taskName, 3, universe, agent)
-    var task:Option[Task] = None
-    if (task_.isDefined) {
-      task = task_
-    } else {
-      task = Some( Task.mkUnaccomplishableTask() )
-    }
+    // Load task
+    interface.load(taskName, variationIdx = 2, simplificationStr)
 
-    // Setup agent interface
-    val agentInterface = new AgentInterface(universe, agent, task.get, simplificationStr)
-    // If there were any errors setting up the task, then note this.
-    if (taskErrStr.length > 0) {
-      agentInterface.setErrorState(taskErrStr)
-    }
-
-    println ("Task: " + agentInterface.getTaskDescription() )
+    println ("Task: " + interface.agentInterface.get.getTaskDescription() )
 
     // Simplifications
     println ("Possible simplifications: " + SimplifierProcessor.getPossibleSimplifications())
@@ -94,7 +86,7 @@ object EntryPoint {
     breakable {
       var userInputString:String = "look around"
       while (true) {
-        curIter = agentInterface.getCurIterations()
+        curIter = interface.getNumMoves()
         println("")
         println("---------------------------------------")
         println(" Iteration " + curIter)
@@ -102,7 +94,11 @@ object EntryPoint {
         println("")
 
         // Process step in environment
-        val (description, score, isCompleted) = agentInterface.step(userInputString)
+        //val (description, score, isCompleted) = agentInterface.step(userInputString)
+        val description = interface.step(userInputString)
+        val score = interface.getScore()
+        val isCompleted = interface.isComplete
+
         println("")
         println("Description: ")
         println(description)
@@ -118,21 +114,21 @@ object EntryPoint {
         // DEBUG
         //val referents = agentInterface.inputParser.getAllReferents(agentInterface.getAgentVisibleObjects()._2)
 
-        val referents = InputParser.getAllUniqueReferents(agentInterface.getAgentVisibleObjects()._2, includeHidden = true).map(_._1)
+        val referents = InputParser.getAllUniqueReferents(interface.agentInterface.get.getAgentVisibleObjects()._2, includeHidden = true).map(_._1)
         println("Possible referents: " + referents.mkString(", "))
 
-        val validActions = agentInterface.getValidActionObjectCombinations().sorted.toList
+        val validActions = interface.agentInterface.get.getValidActionObjectCombinations().sorted.toList
         println("Possible actions: " + validActions.mkString(", "))
-        println("Possible actions: " + agentInterface.getPossibleActionsWithIDsJSON() )
-        println("Valid actions: " + agentInterface.getValidActionObjectCombinationsJSON() )
+        println("Possible actions: " + interface.agentInterface.get.getPossibleActionsWithIDsJSON() )
+        println("Valid actions: " + interface.agentInterface.get.getValidActionObjectCombinationsJSON() )
 
-        println("Goal sequence progress: \n" + agentInterface.getGoalProgressStr() )
+        println("Goal sequence progress: \n" + interface.agentInterface.get.getGoalProgressStr() )
 
-        println("Referents: " + agentInterface.getAllObjectIdsTypesReferentsLUTJSON() )
+        println("Referents: " + interface.agentInterface.get.getAllObjectIdsTypesReferentsLUTJSON() )
 
-        println("Locations: " + PathFinder.buildLocationGraph(universe) )
+        //println("Locations: " + PathFinder.buildLocationGraph(universe) )
 
-        println("Pathfinder test: " + PathFinder.getLocationSequence(universe, startLocation = "living room", endLocation = "foundry")._2.mkString(", "))
+        //println("Pathfinder test: " + PathFinder.getLocationSequence(universe, startLocation = "living room", endLocation = "foundry")._2.mkString(", "))
 
         //println("Possible actions:\n\t" + actionHandler.getActionExamplesPlainText().mkString("\n\t"))
         //println("Possible Combinations:\n\t" + agentInterface.getPossibleActionObjectCombinations().mkString("\n\t") )
@@ -146,22 +142,22 @@ object EntryPoint {
         // Get (and process) next user action
         var validInput:Boolean = false
         while (!validInput) {
-          userInputString = agentInterface.getUserInput()
+          userInputString = interface.agentInterface.get.getUserInput()
 
           if (userInputString == "debug") {
             //agentInterface.printDebugDisplay()
           } else if (userInputString == "help") {
-            println("Possible Actions: \n" + agentInterface.getPossibleActions().mkString("\n"))
+            println("Possible Actions: \n" + interface.agentInterface.get.getPossibleActions().mkString("\n"))
           } else if (userInputString == "validactions") {
             // Collect all objects visible to the agent
-            val visibleObjTreeRoot = agentInterface.getAgentVisibleObjects()._2
+            val visibleObjTreeRoot = interface.agentInterface.get.getAgentVisibleObjects()._2
             val agentInventory = agent.getInventoryContainer()
             val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList ++ InputParser.collectObjects(agentInventory, includeHidden = false).toList
             // Collect UUID -> Unique Referent LUT
-            val uuid2referentLUT = agentInterface.inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=false)
+            val uuid2referentLUT = interface.agentInterface.get.inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=false)
 
             // Generate all possible valid actions
-            val validActions = agentInterface.getValidActionObjectCombinations() // ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
+            val validActions = interface.agentInterface.get.getValidActionObjectCombinations() // ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
 
             println("Valid actions (length = " + validActions.length + ")")
             for (i <- 0 until validActions.length) {
