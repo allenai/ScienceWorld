@@ -19,7 +19,9 @@ class EnvironmentMaker {
 object EnvironmentMaker {
 
 
-  def mkKitchenEnvironment(): (EnvObject, Agent) = {
+  def mkKitchenEnvironment(seed:Long): (EnvObject, Agent) = {
+    Random.setSeed(seed)
+
     // Universe (object tree root)
     val universe = new Universe()
 
@@ -30,11 +32,11 @@ object EnvironmentMaker {
     // House
     BuildingMaker.mkRandomHouse(universe, sewer)
 
-
     // Agent
     val agent = new Agent()
+
     // Place in a random location
-    val locations = universe.getContainedObjectsOfType[Location]().toArray
+    val locations = universe.getContainedObjectsOfType[Location]().toArray.sortBy(_.name)
     val randomLocation = locations( Random.nextInt(locations.length) )
 
     // Normal: Random location

@@ -39,10 +39,9 @@ object EntryPoint {
 
     val interface = new PythonInterface()
 
-    val (universe, agent) = EnvironmentMaker.mkKitchenEnvironment()
+    //val (universe, agent) = EnvironmentMaker.mkKitchenEnvironment()
     //val (universe, agent) = EnvironmentMaker.mkElectricalEnvironment()
-
-    println(universe.getDescription())
+    //println(universe.getDescription())
 
 
     val startTime = System.currentTimeMillis()
@@ -151,7 +150,7 @@ object EntryPoint {
           } else if (userInputString == "validactions") {
             // Collect all objects visible to the agent
             val visibleObjTreeRoot = interface.agentInterface.get.getAgentVisibleObjects()._2
-            val agentInventory = agent.getInventoryContainer()
+            val agentInventory = interface.agentInterface.get.agent.getInventoryContainer()
             val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList ++ InputParser.collectObjects(agentInventory, includeHidden = false).toList
             // Collect UUID -> Unique Referent LUT
             val uuid2referentLUT = interface.agentInterface.get.inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=false)

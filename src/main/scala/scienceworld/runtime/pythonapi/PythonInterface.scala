@@ -80,17 +80,13 @@ class PythonInterface() {
     UniqueIdentifier.reset()
 
     //## TEST: Reset Task Maker (and thus recreate all possible task objects)
-    val timeBefore = System.currentTimeMillis()
     Random.setSeed(variationIdx)
     taskMaker = new TaskMaker1()
-    val deltaTime = System.currentTimeMillis() - timeBefore
-    println("Delta time: " + deltaTime)
 
     // Make environment and agent
     Random.setSeed(variationIdx)
-    val (universe, agent_) = EnvironmentMaker.mkKitchenEnvironment()
+    val (universe, agent_) = EnvironmentMaker.mkKitchenEnvironment(seed = variationIdx)
 
-    //## Currently, get a random task instead of using the environment string
     // Set up task
     val (task_, taskErrStr) = taskMaker.doTaskSetup(taskStr, this.taskVariationIdx, universe, agent_)
     var task:Option[Task] = None
