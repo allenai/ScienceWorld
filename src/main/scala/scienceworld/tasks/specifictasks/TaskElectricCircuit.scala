@@ -11,7 +11,7 @@ import scienceworld.objects.taskitems.AnswerBox
 import scienceworld.processes.PlantReproduction
 import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
+import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueInt, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalElectricallyConnected, GoalFind, GoalInRoomWithObject, GoalLifeStage, GoalMoveToNewLocation, GoalObjectConnectedToWire, GoalWireConnectsObjectAndAnyPowerSource}
 import scienceworld.tasks.specifictasks.TaskElectricCircuit.{MODE_POWER_COMPONENT, MODE_POWER_COMPONENT_RENEWABLE}
@@ -213,7 +213,8 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
     //val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName + " in the " + answerBoxLocation + "."
     val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
-    val task = new Task(taskName, description, goalSequence, taskModifiers = modifiers)
+    val newModifiers = modifiers ++ Array[TaskModifier](new TaskValueInt(key = "variationIdx", value = combinationNum))
+    val task = new Task(taskName, description, goalSequence, taskModifiers = newModifiers)
 
     // Return
     return task
@@ -231,7 +232,7 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
     if (mode == MODE_POWER_COMPONENT) {
       return mkGoldActionSequencePowerComponent(modifiers, runner)
     } else if (mode == MODE_POWER_COMPONENT_RENEWABLE) {
-      return mkGoldActionSequencePowerComponent(modifiers, runner)
+      return mkGoldActionSequencePowerComponentRenewable(modifiers, runner)
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
     }
@@ -247,22 +248,6 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
 
     // Task variables
     val partToPower = this.getTaskValueStr(modifiers, key = "componentToPower")
-
-    /*
-    val renewablePowerSource = this.getTaskValueStr(modifiers, key = "renewableSource")
-    val nonrenewablePowerSource = this.getTaskValueStr(modifiers, key = "nonrenewableSource")
-    var powerSourceToUse:Option[String] = None
-    var powerSourceDescription = ""
-    if (combinationNum % 2 == 0) {
-      powerSourceDescription = "renewable"
-      powerSourceToUse = renewablePowerSource
-    } else {
-      powerSourceDescription = "nonrenewable"
-      powerSourceToUse = nonrenewablePowerSource
-    }
-     */
-
-
 
     // Step 1: Move from starting location to workshop
     val partLocation = "workshop"
@@ -335,51 +320,195 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
     return (true, getActionHistory(runner))
   }
 
-/*
-  def mkGoldActionSequencePowerComponent(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    val answerBoxName = this.getTaskValueStr(modifiers, "answerBox").get
-    val answerBoxLocation = this.getTaskValueStr(modifiers, "location").get
 
+  def mkGoldActionSequencePowerComponentRenewable(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
+    // Task variables
+    val partToPower = this.getTaskValueStr(modifiers, key = "componentToPower")
+    val renewablePowerSource = this.getTaskValueStr(modifiers, key = "renewableSource")
+    val nonrenewablePowerSource = this.getTaskValueStr(modifiers, key = "nonrenewableSource")
+    val combinationNum = this.getTaskValueInt(modifiers, key = "variationIdx").get
+    var powerSourceToUse:Option[String] = None
+    var powerSourceDescription = ""
 
-    var livingThingLocation = "outside"
-    if (mode == MODE_LIVING) {
-      val shuffledLocations = Random.shuffle(List("outside", "green house"))
-      livingThingLocation = shuffledLocations(0)
-    } else if (mode == MODE_ANIMAL) {
-      livingThingLocation = "outside"         // Animals are outside
-    } else if (mode == MODE_PLANT) {
-      livingThingLocation = "green house"     // Plants are in the green house
+    // Hacky -- uses the variation number to determine whether the task will be choosing the renewable or non-renewable power source
+    if (combinationNum % 2 == 0) {
+      powerSourceDescription = "renewable"
+      powerSourceToUse = renewablePowerSource
+    } else {
+      powerSourceDescription = "nonrenewable"
+      powerSourceToUse = nonrenewablePowerSource
     }
 
-    // Step 1: Move from starting location to a place likely to have animals
+
+    // Step 1: Move from starting location to workshop
+    val partLocation = "workshop"
     val startLocation = agent.getContainer().get.name
-    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = livingThingLocation)
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = partLocation)
     runActionSequence(actionStrs, runner)
 
     // Step 1A: Look around
     val (actionLook, actionLookStr) = PathFinder.actionLookAround(agent)
     runAction(actionLookStr, runner)
 
-    // Step 2: Pick a random object
-    val curLoc1 = getCurrentAgentLocation(runner)
-    val objsInRoom = curLoc1.getContainedObjectsRecursiveAccessible(includeHidden = false)
+    // Step 1B: Look at part to power (TODO)
 
-    var objToFocus:Option[EnvObject] = None
-    var objToMove:Option[EnvObject] = None
-    breakable {
-      for (obj <- Random.shuffle(objsInRoom.toList)) {
-        if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable == true)) {
 
-          if (obj.propLife.isDefined) {
-            if (mode == MODE_LIVING) {
-              if (obj.propLife.isDefined) {
-                objToFocus = Some(obj)
+    // Step 2: Get references to parts
+    val curLoc1 = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe)    // Get a pointer to the whole room the answer box is in
+    val objsInRoom = curLoc1.get.getContainedObjectsRecursiveAccessible(includeHidden = false)
 
+    // Part to power
+    val component = PathFinder.getAllEnvObject(partToPower.get, curLoc1.get)(0)
+
+    // Parts to use to power
+    val powerSource = PathFinder.getAllEnvObject(queryName = powerSourceToUse.get, curLoc1.get)(0)   //##
+    val wires = Random.shuffle( curLoc1.get.getContainedAccessibleObjectsOfType[Wire](includeHidden = false).toList )
+    if (wires.size < 2) {
+      // Fail
+      return (false, getActionHistory(runner))
+    }
+
+    val wire1 = wires(0)
+    val wire2 = wires(1)
+
+    // Focus on part
+    runAction("focus on " + PathFinder.getObjUniqueReferent(component, getCurrentAgentLocation(runner)).get, runner)
+
+    // If renewable, the power source needs to be outside for wind/solar
+    if (powerSourceDescription == "renewable") {
+      // Pick up all parts
+      runAction("pick up " + PathFinder.getObjUniqueReferent(component, getCurrentAgentLocation(runner)).get, runner)
+      runAction("pick up " + PathFinder.getObjUniqueReferent(powerSource, getCurrentAgentLocation(runner)).get, runner)
+      runAction("pick up " + PathFinder.getObjUniqueReferent(wire1, getCurrentAgentLocation(runner)).get, runner)
+      runAction("pick up " + PathFinder.getObjUniqueReferent(wire2, getCurrentAgentLocation(runner)).get, runner)
+
+      // Go outside
+      val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = agent.getContainer().get.name, endLocation = "outside")
+      runActionSequence(actionStrs1, runner)
+
+      // Drop all parts
+      runAction("drop " + PathFinder.getObjUniqueReferent(component, getCurrentAgentLocation(runner)).get, runner)
+      runAction("drop " + PathFinder.getObjUniqueReferent(powerSource, getCurrentAgentLocation(runner)).get, runner)
+      runAction("drop " + PathFinder.getObjUniqueReferent(wire1, getCurrentAgentLocation(runner)).get, runner)
+      runAction("drop " + PathFinder.getObjUniqueReferent(wire2, getCurrentAgentLocation(runner)).get, runner)
+    }
+
+    // Look around
+    runAction("look around", runner)
+
+    // Do actions
+    // Connect battery to wires
+    val powerSourceRef = powerSource.name //PathFinder.getObjUniqueReferent(powerSource, getCurrentAgentLocation(runner)).get   //## TODO: Not clear why the referent ('generator') is not resolving here.
+    runAction("connect " + powerSourceRef + " anode to " + PathFinder.getObjUniqueReferent(wire1, getCurrentAgentLocation(runner)).get + " terminal 1", runner)
+    runAction("connect " + powerSourceRef + " cathode to " + PathFinder.getObjUniqueReferent(wire2, getCurrentAgentLocation(runner)).get + " terminal 1", runner)
+
+    // Connect wires to component
+    var anodeReferent:String = ""
+    var cathodeReferent:String = ""
+    component match {
+      case p:PolarizedElectricalComponent => {
+        anodeReferent = PathFinder.getObjUniqueReferent(p.anode, getCurrentAgentLocation(runner)).get
+        cathodeReferent = PathFinder.getObjUniqueReferent(p.cathode, getCurrentAgentLocation(runner)).get
+      }
+      case u:UnpolarizedElectricalComponent => {
+        anodeReferent = PathFinder.getObjUniqueReferent(u.terminal1.get, getCurrentAgentLocation(runner)).get
+        cathodeReferent = PathFinder.getObjUniqueReferent(u.terminal2.get, getCurrentAgentLocation(runner)).get
+      }
+      case _ => {
+        // This should never happen?
+      }
+    }
+    runAction("connect " + PathFinder.getObjUniqueReferent(wire1, getCurrentAgentLocation(runner)).get + " terminal 2 to " + cathodeReferent, runner)   // to device cathode
+    runAction("connect " + PathFinder.getObjUniqueReferent(wire2, getCurrentAgentLocation(runner)).get + " terminal 2 to " + anodeReferent, runner)   // to device anode
+
+    // If power source is non-renewable, we need to turn it on
+    if (powerSourceDescription == "nonrenewable") {
+      runAction("activate " + powerSourceRef, runner)
+    }
+
+    // Wait one moment, for the power to cycle
+    runAction("wait1", runner)
+    runAction("wait1", runner)
+
+    // Look around
+    runAction(actionLookStr, runner)
+
+
+    // Return
+    return (true, getActionHistory(runner))
+  }
+
+  /*
+    def mkGoldActionSequencePowerComponent(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+      // TODO: Unimplemented
+      val answerBoxName = this.getTaskValueStr(modifiers, "answerBox").get
+      val answerBoxLocation = this.getTaskValueStr(modifiers, "location").get
+
+      val universe = runner.agentInterface.get.universe
+      val agent = runner.agentInterface.get.agent
+
+
+      var livingThingLocation = "outside"
+      if (mode == MODE_LIVING) {
+        val shuffledLocations = Random.shuffle(List("outside", "green house"))
+        livingThingLocation = shuffledLocations(0)
+      } else if (mode == MODE_ANIMAL) {
+        livingThingLocation = "outside"         // Animals are outside
+      } else if (mode == MODE_PLANT) {
+        livingThingLocation = "green house"     // Plants are in the green house
+      }
+
+      // Step 1: Move from starting location to a place likely to have animals
+      val startLocation = agent.getContainer().get.name
+      val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = livingThingLocation)
+      runActionSequence(actionStrs, runner)
+
+      // Step 1A: Look around
+      val (actionLook, actionLookStr) = PathFinder.actionLookAround(agent)
+      runAction(actionLookStr, runner)
+
+      // Step 2: Pick a random object
+      val curLoc1 = getCurrentAgentLocation(runner)
+      val objsInRoom = curLoc1.getContainedObjectsRecursiveAccessible(includeHidden = false)
+
+      var objToFocus:Option[EnvObject] = None
+      var objToMove:Option[EnvObject] = None
+      breakable {
+        for (obj <- Random.shuffle(objsInRoom.toList)) {
+          if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable == true)) {
+
+            if (obj.propLife.isDefined) {
+              if (mode == MODE_LIVING) {
+                if (obj.propLife.isDefined) {
+                  objToFocus = Some(obj)
+
+                  if (obj.isInstanceOf[Plant]) {
+                    // For plants, pick up their containers (e.g. flower pots), or they'll die
+                    if (obj.getContainer().get.isInstanceOf[FlowerPot]) {
+                      objToMove = obj.getContainer()
+                    } else {
+                      // Back-off to picking up the actual plant, if needed
+                      objToMove = Some(obj)
+                    }
+                  } else {
+                    // For animals, they can just be directly picked up
+                    objToMove = Some(obj)
+                  }
+                  break()
+                }
+              } else if (mode == MODE_ANIMAL) {
+                if (obj.isInstanceOf[Animal]) {
+                  objToFocus = Some(obj)
+                  objToMove = Some(obj)
+                  break()
+                }
+              } else if (mode == MODE_PLANT) {
                 if (obj.isInstanceOf[Plant]) {
+                  objToFocus = Some(obj)
+
                   // For plants, pick up their containers (e.g. flower pots), or they'll die
                   if (obj.getContainer().get.isInstanceOf[FlowerPot]) {
                     objToMove = obj.getContainer()
@@ -387,69 +516,46 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
                     // Back-off to picking up the actual plant, if needed
                     objToMove = Some(obj)
                   }
-                } else {
-                  // For animals, they can just be directly picked up
-                  objToMove = Some(obj)
+                  break()
                 }
-                break()
-              }
-            } else if (mode == MODE_ANIMAL) {
-              if (obj.isInstanceOf[Animal]) {
-                objToFocus = Some(obj)
-                objToMove = Some(obj)
-                break()
-              }
-            } else if (mode == MODE_PLANT) {
-              if (obj.isInstanceOf[Plant]) {
-                objToFocus = Some(obj)
-
-                // For plants, pick up their containers (e.g. flower pots), or they'll die
-                if (obj.getContainer().get.isInstanceOf[FlowerPot]) {
-                  objToMove = obj.getContainer()
-                } else {
-                  // Back-off to picking up the actual plant, if needed
-                  objToMove = Some(obj)
-                }
-                break()
               }
             }
-          }
 
+          }
         }
       }
+
+      // If we didn't find a movable object, we're in trouble -- quit
+      if (objToMove.isEmpty) {
+        return (false, getActionHistory(runner))
+      }
+
+      // Step 3: Focus on that random object
+      val (actionFocus, actionFocusStr) = PathFinder.actionFocusOnObject(objToFocus.get, agent, locationPerspective = curLoc1)
+      runAction(actionFocusStr, runner)
+
+      // Step 4: Pick it up / place it in the inventory
+      val (actionPickUp, actionPickUpStr) = PathFinder.actionPickUpObject(objToMove.get, agent, locationPerspective = curLoc1)
+      runAction(actionPickUpStr, runner)
+
+      // Step 5: Move from current location to answer box location
+      val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = livingThingLocation, endLocation = answerBoxLocation)
+      runActionSequence(actionStrs1, runner)
+
+      // Step 6: Find answer box reference
+      // TODO: Should just check for this object from base location
+
+      // Step 7: Move object to answer box
+      val curLoc2 = PathFinder.getEnvObject(queryName = answerBoxLocation, universe)    // Get a pointer to the answer box location (should also be current location)
+      val answerBox = PathFinder.getEnvObject(queryName = answerBoxName, curLoc2.get)   // Get a pointer to the answer box
+      val (actionMoveObj, actionMoveObjStr) = PathFinder.actionMoveObjectFromInventory(objToMove.get, answerBox.get, agent, locationPerspective = curLoc2.get)
+      runAction(actionMoveObjStr, runner)
+
+      // Return
+      return (true, getActionHistory(runner))
     }
 
-    // If we didn't find a movable object, we're in trouble -- quit
-    if (objToMove.isEmpty) {
-      return (false, getActionHistory(runner))
-    }
-
-    // Step 3: Focus on that random object
-    val (actionFocus, actionFocusStr) = PathFinder.actionFocusOnObject(objToFocus.get, agent, locationPerspective = curLoc1)
-    runAction(actionFocusStr, runner)
-
-    // Step 4: Pick it up / place it in the inventory
-    val (actionPickUp, actionPickUpStr) = PathFinder.actionPickUpObject(objToMove.get, agent, locationPerspective = curLoc1)
-    runAction(actionPickUpStr, runner)
-
-    // Step 5: Move from current location to answer box location
-    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = livingThingLocation, endLocation = answerBoxLocation)
-    runActionSequence(actionStrs1, runner)
-
-    // Step 6: Find answer box reference
-    // TODO: Should just check for this object from base location
-
-    // Step 7: Move object to answer box
-    val curLoc2 = PathFinder.getEnvObject(queryName = answerBoxLocation, universe)    // Get a pointer to the answer box location (should also be current location)
-    val answerBox = PathFinder.getEnvObject(queryName = answerBoxName, curLoc2.get)   // Get a pointer to the answer box
-    val (actionMoveObj, actionMoveObjStr) = PathFinder.actionMoveObjectFromInventory(objToMove.get, answerBox.get, agent, locationPerspective = curLoc2.get)
-    runAction(actionMoveObjStr, runner)
-
-    // Return
-    return (true, getActionHistory(runner))
-  }
-
- */
+   */
 
 }
 

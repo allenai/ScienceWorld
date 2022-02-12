@@ -189,3 +189,10 @@ class TaskValueDouble(val key:String, val value:Double) extends TaskModifier {
     true
   }
 }
+
+class TaskValueInt(val key:String, val value:Int) extends TaskModifier {
+  override def runModifier(universe: EnvObject, agent: Agent): Boolean = {
+    // Nothing to do -- this modifier just stores a key/value pair for task setup (e.g. conveying a correct answer for a goal)
+    true
+  }
+}

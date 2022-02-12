@@ -4,7 +4,8 @@ import scienceworld.actions.Action
 import scienceworld.objects.agent.Agent
 import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.{Task, TaskModifier, TaskValueBool, TaskValueDouble, TaskValueStr}
+import scienceworld.tasks.{Task, TaskModifier, TaskValueBool, TaskValueDouble, TaskValueInt, TaskValueStr}
+
 import collection.JavaConverters._
 
 trait TaskParametric {
@@ -67,6 +68,19 @@ trait TaskParametric {
     return None
   }
 
+  def getTaskValueInt(modifiers:Array[TaskModifier], key:String):Option[Int] = {
+    // TODO
+    for (mod <- modifiers) {
+      mod match {
+        case m:TaskValueInt => {
+          if (m.key == key) return Some(m.value)
+        }
+        case _ => { }
+      }
+    }
+    // If we reach here, the key wasn't found
+    return None
+  }
 
   /*
    * Helper functions (runner for gold action sequences)
