@@ -15,7 +15,7 @@ object ExampleGoldAgent {
     val interface = new PythonInterface()
 
     //val specificTasks = Array(11,12,13,14)           // Do specific tasks
-    val specificTasks = Array(8)           // Do specific tasks
+    val specificTasks = Array(7,8,11,12,13,14)           // Do specific tasks
     //val specificTasks = Array.empty[Int]      // Do all
 
     val simplificationStr = "easy"
