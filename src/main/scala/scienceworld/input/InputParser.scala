@@ -109,12 +109,12 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     }
 
     // Step 2: Choose unique referents (find their indices)
-    val indices = InputParser.chooseUniqueReferents(objReferents.toArray)
+    val uniqueReferents = InputParser.chooseUniqueReferents(objReferents.toArray)
 
     // Step 2A: Populate an array of the unique referents (as strings)
     val out = new ArrayBuffer[(String, EnvObject)]()
     for (i <- 0 until allObjs.length) {
-      val referent = objReferents(i)(indices(i))
+      val referent = uniqueReferents(i)
       out.append( (referent.toLowerCase(), allObjs(i)) )
     }
 
@@ -540,20 +540,62 @@ object InputParser {
     }
 
     // Step 2: Choose unique referents (find their indices)
-    val indices = this.chooseUniqueReferents(objReferents.toArray)
+    val uniqueReferents = this.chooseUniqueReferents(objReferents.toArray)
 
     // Step 2A: Populate an array of the unique referents (as strings)
     val out = new ArrayBuffer[(String, EnvObject)]()
     for (i <- 0 until allObjs.length) {
-      val referent = objReferents(i)(indices(i))
+      val referent = uniqueReferents(i)
       out.append( (referent.toLowerCase(), allObjs(i)) )
+      //println(referent.toLowerCase.formatted("%30s") + "\t" + allObjs(i).toStringMinimal())
     }
 
     // Return
     out.toArray.sortBy(_._1)
   }
 
-  private def chooseUniqueReferents(objReferents:Array[Array[String]]): Array[Int] = {
+  private def filterDuplicateReferents(objReferents:Array[Array[String]]):Array[Array[String]] = {
+    // First, make frequency counter of referents
+    val freq = mutable.Map[String, Int]().withDefaultValue(0)
+    for (objRefs <- objReferents) {
+      for (ref <- objRefs) {
+        freq(ref.toLowerCase()) = freq(ref.toLowerCase()) + 1
+      }
+    }
+
+    // Find all referents that have a count greater than 1 (i.e., duplicates)
+    val uniqueReferents = freq.filter(_._2 <= 1)
+
+    // Now, make a new list that removes the duplicates
+    val out = new ArrayBuffer[Array[String]]
+    for (objRefs <- objReferents) {
+      val refsOut = ArrayBuffer[String]()
+      for (ref <- objRefs) {
+        if (uniqueReferents.contains(ref.toLowerCase)) {
+          //println("Adding " + ref)
+          refsOut.append(ref)
+        } else {
+          //println("Filtering " + ref)
+        }
+      }
+
+      // Store
+      if (refsOut.length > 0) {
+        out.append(refsOut.toArray)
+      } else {
+        // We've removed all the referents -- i.e., they're all duplicates.  We'll have to keep the original list, and use the ambiguity resolution mechanism in the parser.
+        out.append(objRefs)
+      }
+    }
+
+    // Return
+    out.toArray
+  }
+
+  private def chooseUniqueReferents(objReferents1:Array[Array[String]]): Array[String] = {
+    // Prefilter out any duplicates
+    val objReferents = this.filterDuplicateReferents(objReferents1)
+
     // Array of referent indicies
     val indices = Array.fill[Int](objReferents.length)(0)
     var numAttempts:Int = 0
@@ -589,16 +631,20 @@ object InputParser {
       }
 
       // If no duplicates, exit
-      if (numDuplicates == 0) {
-        return indices
-      }
+      //if (numDuplicates == 0) {
+        //return indices
+      //}
 
       numAttempts += 1
     }
 
     // If we reach here, then there was an error creating unique referents.  Just pick the ones we have so far.
-    println ("WARNING: Unable to create unique referents. ")
-    return indices
+    //println ("WARNING: Unable to create unique referents. ")
+    val out = new ArrayBuffer[String]
+    for (i <- 0 until indices.length) {
+      out.append(objReferents(i)(indices(i)))
+    }
+    return out.toArray
   }
 
 
