@@ -86,7 +86,7 @@ object ExampleGoldAgent {
           val goldActionSeq = interface.getGoldActionSequence().asScala.toArray
 
           // Create a history object to store this run
-          val history = new RunHistory(taskName, taskIdx, variationIdx)
+          val history = new RunHistory(taskName, taskIdx, variationIdx, taskDescription = agentInterface.get.getTaskDescription())
 
           // Run a free initial 'look' action, and add it to the history?
           val initialObs = agentInterface.get.step("look around")
@@ -226,7 +226,7 @@ object ExampleGoldAgent {
 
       if (variations.length > 0) {
         for (variation <- variations) {
-          elems.append("\t{\"variationIdx\": " + variation.variationIdx + ", \"path\": \n" + variation.toJSONArray(2) + "}")
+          elems.append("\t{\"variationIdx\": " + variation.variationIdx + ", \"taskDescription\":\"" + RunHistory.sanitizeJSON(variation.taskDescription) + "\", \"path\": \n" + variation.toJSONArray(2) + "}")
         }
 
         val jsonOut = new StringBuilder()
@@ -255,7 +255,7 @@ object ExampleGoldAgent {
 
 
 // Storage class for histories
-class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int) {
+class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val taskDescription:String = "") {
   val historyActions = new ArrayBuffer[String]
   val historyObservations = new ArrayBuffer[(String, Double, Boolean)]
 
@@ -271,16 +271,6 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int) {
    * String methods
    */
 
-  def sanitizeJSON(in:String):String = {
-    var out = in.replace("\"", "\\\"")
-    out = out.replace("\\", "\\\\")
-    out = out.replace("\n", "\\n")
-    out = out.replace("\r", "\\r")
-    out = out.replace("\t", "\\t")
-
-    return out
-  }
-
   // Convert the history to JSON
   def toJSONArray(indentLevel:Int = 0):String = {
 
@@ -293,8 +283,8 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int) {
 
       val json = new StringBuilder
       json.append("{")
-      json.append("\"action\":\"" + sanitizeJSON(action) + "\", ")
-      json.append("\"observation\":\"" + sanitizeJSON(obs) + "\", ")
+      json.append("\"action\":\"" + RunHistory.sanitizeJSON(action) + "\", ")
+      json.append("\"observation\":\"" + RunHistory.sanitizeJSON(obs) + "\", ")
       json.append("\"score\":\"" + score + "\", ")
       json.append("\"isCompleted\":\"" + isCompleted + "\"")
       json.append("}")
@@ -327,6 +317,20 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int) {
     os.append("\n------------------------------------------------------------------------\n\n")
 
     os.toString()
+  }
+
+}
+
+object RunHistory {
+
+  def sanitizeJSON(in:String):String = {
+    var out = in.replace("\"", "\\\"")
+    out = out.replace("\\", "\\\\")
+    out = out.replace("\n", "\\n")
+    out = out.replace("\r", "\\r")
+    out = out.replace("\t", "\\t")
+
+    return out
   }
 
 }

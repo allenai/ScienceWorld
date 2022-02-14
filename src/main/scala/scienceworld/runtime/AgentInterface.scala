@@ -378,7 +378,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
   }
 
   def getTaskDescription():String = {
-    return this.task.description
+    return this.task.description.trim()
   }
 
   def getCurIterations():Int = {
@@ -512,9 +512,14 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
 
     // Parse user input
     val (success, statusStr) = this.processUserInput(userInputStr, universe)
+
+    /*
+    // Uncomment to include the user input parse success/failure in the string (e.g. "successfully parsed action (look around)")
     if (statusStr.length > 0) {
       userOutStr.append("Input: " + statusStr + "\n\n")
     }
+     */
+
     if (!success) {
       // If input was not successfully matched to an action, then do not continue/do a tick/etc:
       val score = task.goalSequence.score()
