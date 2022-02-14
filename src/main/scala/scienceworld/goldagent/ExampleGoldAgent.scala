@@ -69,8 +69,8 @@ object ExampleGoldAgent {
 
 
         // For each variation
-        //for (variationIdx <- 0 until maxTaskVariations) {
-        for (variationIdx <- 0 until math.min(10, maxTaskVariations)) {
+        for (variationIdx <- 0 until maxTaskVariations) {
+        //for (variationIdx <- 0 until math.min(10, maxTaskVariations)) {
           println("---------------------------")
           println("   Task " + taskIdx + "   " + taskName)
           println("   Variation: " + variationIdx + " / " + maxTaskVariations)
