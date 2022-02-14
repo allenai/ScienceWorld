@@ -1,4 +1,6 @@
 package scienceworld.goldagent
+import java.io.PrintWriter
+
 import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.runtime.pythonapi.PythonInterface
 
@@ -18,6 +20,8 @@ object ExampleGoldAgent {
     val specificTasks = Array(7,8,11,12,13,14)           // Do specific tasks
     //val specificTasks = Array.empty[Int]      // Do all
 
+    val exportFilename = "goldsequences-" + specificTasks.mkString("-") + ".json"
+
     val simplificationStr = "easy"
 
     val errors = new ArrayBuffer[String]
@@ -25,6 +29,8 @@ object ExampleGoldAgent {
 
     val errorHistories = new ArrayBuffer[RunHistory]
 
+    // Array storing all action sequences
+    val goldActionSequences = new ArrayBuffer[RunHistory]
 
     // Create environment
     // Get a task name
@@ -63,7 +69,8 @@ object ExampleGoldAgent {
 
 
         // For each variation
-        for (variationIdx <- 0 until maxTaskVariations) {
+        //for (variationIdx <- 0 until maxTaskVariations) {
+        for (variationIdx <- 0 until math.min(10, maxTaskVariations)) {
           println("---------------------------")
           println("   Task " + taskIdx + "   " + taskName)
           println("   Variation: " + variationIdx + " / " + maxTaskVariations)
@@ -128,6 +135,9 @@ object ExampleGoldAgent {
           }
           episodeScores.append(curScore)
           numVariationsTested += 1
+
+          // Store action sequence
+          goldActionSequences.append(history)
         }
         taskScores.append(episodeScores.toArray)
 
@@ -156,6 +166,10 @@ object ExampleGoldAgent {
         println("---------------------------------")
       }
     }
+    println ("Exporting gold action sequences...")
+
+    this.exportGoldActionSequencesJSON(goldActionSequences, exportFilename)
+
 
     println ("Completed...")
 
@@ -190,6 +204,49 @@ object ExampleGoldAgent {
     return os.toString()
   }
 
+
+  // Export gold action sequences to JSON file
+  def exportGoldActionSequencesJSON(goldActionSequences:ArrayBuffer[RunHistory], filenameOut:String): Unit = {
+    println ("Exporting gold action sequences... (" + filenameOut + ")")
+    // Open file
+    val pw = new PrintWriter(filenameOut)
+
+    // Get a list of task indices
+    val taskIdxs = goldActionSequences.map(_.taskIdx).toSet.toArray.sorted
+
+    val taskJson = new ArrayBuffer[String]
+    for (taskIdx <- taskIdxs) {
+      val elems = new ArrayBuffer[String]
+      val variations = goldActionSequences.filter(_.taskIdx == taskIdx).sortBy(_.variationIdx)
+      println(" * Task " + taskIdx + " (variations: " + variations.length)
+
+      if (variations.length > 0) {
+        for (variation <- variations) {
+          elems.append("\t{\"variationIdx\": " + variation.variationIdx + ", \"path\": \n" + variation.toJSONArray(2) + "}")
+        }
+
+        val jsonOut = new StringBuilder()
+        jsonOut.append("\"" + taskIdx + "\": {")
+        jsonOut.append("\"taskIdx\": " + taskIdx + ", ")
+        jsonOut.append("\"taskName\": \"" + variations(0).taskName + "\", ")
+        jsonOut.append("\"goldActionSequences\": [\n")
+        jsonOut.append(elems.mkString(", \n"))
+        jsonOut.append("]} ")
+
+        taskJson.append(jsonOut.toString())
+      }
+
+    }
+
+    // Export to file
+    pw.print("{" + taskJson.mkString(", \n") + "}")
+    pw.flush()
+
+    // Close file
+    pw.close()
+
+  }
+
 }
 
 
@@ -204,6 +261,48 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int) {
     historyActions.append(action)
     historyObservations.append(observation)
   }
+
+
+  /*
+   * String methods
+   */
+
+  def sanitizeJSON(in:String):String = {
+    var out = in.replace("\"", "\\\"")
+    out = out.replace("\\", "\\\\")
+    out = out.replace("\n", "\\n")
+    out = out.replace("\r", "\\r")
+    out = out.replace("\t", "\\t")
+
+    return out
+  }
+
+  // Convert the history to JSON
+  def toJSONArray(indentLevel:Int = 0):String = {
+
+    val points = new ArrayBuffer[String]
+    for (i <- 0 until this.length) {
+      val action = historyActions(i)
+      val obs = historyObservations(i)._1
+      val score = historyObservations(i)._2
+      val isCompleted = historyObservations(i)._3
+
+      val json = new StringBuilder
+      json.append("{")
+      json.append("\"action\":\"" + sanitizeJSON(action) + "\", ")
+      json.append("\"observation\":\"" + sanitizeJSON(obs) + "\", ")
+      json.append("\"score\":\"" + score + "\", ")
+      json.append("\"isCompleted\":\"" + isCompleted + "\"")
+      json.append("}")
+
+      points.append( json.toString())
+    }
+
+    val jsonOut = ("\t" * indentLevel) + "[" + points.mkString(",\n" + ("\t" * indentLevel)) + "]"
+
+    return jsonOut
+  }
+
 
   override def toString():String = {
     val os = new StringBuilder
