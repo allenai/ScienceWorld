@@ -88,6 +88,10 @@ object ExampleGoldAgent {
           // Create a history object to store this run
           val history = new RunHistory(taskName, taskIdx, variationIdx)
 
+          // Run a free initial 'look' action, and add it to the history?
+          val initialObs = agentInterface.get.step("look around")
+          history.addStep("look around", initialObs)
+
           var curScore: Double = 0.0
           for (actionIdx <- 0 until goldActionSeq.length) {
 
