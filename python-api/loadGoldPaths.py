@@ -23,6 +23,7 @@ for taskIdx in data.keys():
     for goldSequence in goldSequences:
         variationIdx = goldSequence['variationIdx']
         taskDescription = goldSequence['taskDescription']
+        fold = goldSequence['fold']
         path = goldSequence['path']
 
         print("\n\n-----------------------------------------------------------\n")

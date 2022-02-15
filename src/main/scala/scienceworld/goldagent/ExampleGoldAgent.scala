@@ -17,8 +17,8 @@ object ExampleGoldAgent {
     val interface = new PythonInterface()
 
     //val specificTasks = Array(11,12,13,14)           // Do specific tasks
-    //val specificTasks = Array(7,8,11,12,13,14)           // Do specific tasks
-    val specificTasks = Array(9)           // Do specific tasks
+    val specificTasks = Array(7,8,11,12,13,14)           // Do specific tasks
+    //val specificTasks = Array(9)           // Do specific tasks
     //val specificTasks = Array.empty[Int]      // Do all
 
     val exportFilename = "goldsequences-" + specificTasks.mkString("-") + ".json"
@@ -234,7 +234,7 @@ object ExampleGoldAgent {
 
       if (variations.length > 0) {
         for (variation <- variations) {
-          elems.append("\t{\"variationIdx\": " + variation.variationIdx + ", \"fold\":\"" + variation.foldDesc + ", \"taskDescription\":\"" + RunHistory.sanitizeJSON(variation.taskDescription) + "\", \"path\": \n" + variation.toJSONArray(2) + "}")
+          elems.append("\t{\"variationIdx\": " + variation.variationIdx + ", \"fold\":\"" + variation.foldDesc + "\", \"taskDescription\":\"" + RunHistory.sanitizeJSON(variation.taskDescription) + "\", \"path\": \n" + variation.toJSONArray(2) + "}")
         }
 
         val jsonOut = new StringBuilder()
