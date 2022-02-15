@@ -4,7 +4,7 @@ import java.io.PrintWriter
 import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.runtime.pythonapi.PythonInterface
 
-import scala.collection.JavaConverters.collectionAsScalaIterableConverter
+import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks._
 import scala.util.Random
@@ -89,7 +89,10 @@ object ExampleGoldAgent {
           val goldActionSeq = interface.getGoldActionSequence().asScala.toArray
 
           // Create a history object to store this run
-          val history = new RunHistory(taskName, taskIdx, variationIdx, taskDescription = agentInterface.get.getTaskDescription())
+          var foldDesc = "train"
+          if (interface.getVariationsDev().asScala.toArray.contains(variationIdx)) foldDesc = "dev"
+          if (interface.getVariationsTest().asScala.toArray.contains(variationIdx)) foldDesc = "test"
+          val history = new RunHistory(taskName, taskIdx, variationIdx, taskDescription = agentInterface.get.getTaskDescription(), foldDesc = foldDesc)
 
           // Run a free initial 'look' action, and add it to the history?
           val initialObs = agentInterface.get.step("look around")
@@ -231,7 +234,7 @@ object ExampleGoldAgent {
 
       if (variations.length > 0) {
         for (variation <- variations) {
-          elems.append("\t{\"variationIdx\": " + variation.variationIdx + ", \"taskDescription\":\"" + RunHistory.sanitizeJSON(variation.taskDescription) + "\", \"path\": \n" + variation.toJSONArray(2) + "}")
+          elems.append("\t{\"variationIdx\": " + variation.variationIdx + ", \"fold\":\"" + variation.foldDesc + ", \"taskDescription\":\"" + RunHistory.sanitizeJSON(variation.taskDescription) + "\", \"path\": \n" + variation.toJSONArray(2) + "}")
         }
 
         val jsonOut = new StringBuilder()
@@ -260,7 +263,7 @@ object ExampleGoldAgent {
 
 
 // Storage class for histories
-class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val taskDescription:String = "") {
+class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val taskDescription:String = "", val foldDesc:String = "") {
   val historyActions = new ArrayBuffer[String]
   val historyObservations = new ArrayBuffer[(String, Double, Boolean)]
 
