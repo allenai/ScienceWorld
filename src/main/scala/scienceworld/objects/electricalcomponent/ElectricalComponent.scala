@@ -186,11 +186,11 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
 
   // Check to see if this terminal (ultimately) connects to ground
   def connectsToGround(maxSteps:Int = 10):Boolean = {
-    //println(" * connectsToGround(" + this.name + " / " + this.parentObject.name + " / " + maxSteps + "):")
+    println(" * connectsToGround(" + this.name + " / " + this.parentObject.name + " / " + maxSteps + "):")
 
     // For each connectected object
     for (obj <- propElectricalConnection.get.getConnections()) {
-      //println ("\tconnected to object: " + obj.toStringMinimal())
+      println ("\tconnected to object: " + obj.toStringMinimal() + " on " + obj.getContainer().get.name)
       obj match {
         case co:Terminal => {
           val parentObject = co.parentObject
@@ -244,9 +244,26 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
 
             }
 
+            case envobj:EnvObject => {
+              // Step 1: Non-electrical object can't be a generator, so skip this check.
+
+              // Step 2: If the parent object isn't a generator, traverse through the object, IF the two terminals are "connected" (i.e. a light bulb, a switch that's open, etc).
+              val otherTerminal = envobj.getOtherElectricalTerminal(co)
+              if (otherTerminal.isEmpty) {
+                //println("false2")
+                return false
+              }         // Other terminal doesn't exist or is not connected in a switch, return false
+              // Other terminal exists, traverse/recurse
+              if ( otherTerminal.get.connectsToGround(maxSteps-1) == true) {
+                //println("true2")
+                return true
+              }      // If the recursive case returns true, then that pin connects to ground.  If it doesn't, continue on other connections.
+            }
+
             case _ => {
               // Other non-electrical component object
-              print("### CONNECTED TO UNRECOGNIZED ELECTRICAL COMPONENT")
+              println("### CONNECTED TO UNRECOGNIZED ELECTRICAL COMPONENT")
+              println("### Parent Object (1): " + parentObject.toStringMinimal())
             }
           }
 
@@ -255,7 +272,8 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
 
         case _ => {
           // Other object
-          print("### CONNECTED TO UNRECOGNIZED ELECTRICAL COMPONENT")
+          println("### CONNECTED TO UNRECOGNIZED ELECTRICAL COMPONENT")
+          println("### Parent Object (2): " + obj.toStringMinimal())
         }
       }
 

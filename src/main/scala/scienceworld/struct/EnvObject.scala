@@ -499,11 +499,13 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     // Was tick already processed
     if (this.wasTickProcessed()) return false
 
+    /*
     print ("TICK: " + this.toStringMinimal())
     if (this.getContainer().isDefined) {
       print("\t on " + this.getContainer().get.name)
     }
     println("")
+     */
 
     // Combustion: Handle object combustion
     Combustion.combustionTick(this)

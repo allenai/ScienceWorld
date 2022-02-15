@@ -179,7 +179,7 @@ class GoalWireConnectsObjectAndAnyPowerSource(objectName:String, powerSourceName
       for (vObj <- visibleObjects) {
         vObj match {
           case wire:Wire => {
-            println ("Found wire: " + wire.toStringMinimal())
+            // println ("Found wire: " + wire.toStringMinimal())
             var foundObject:Boolean = false
             var foundPowerSource:Boolean = false
 
@@ -272,7 +272,7 @@ class GoalWireConnectsObjectAndAnyLightBulb(objectName:String, lightBulbName:Str
       for (vObj <- visibleObjects) {
         vObj match {
           case wire:Wire => {
-            println ("Found wire: " + wire.toStringMinimal())
+            // println ("Found wire: " + wire.toStringMinimal())
             var foundObject:Boolean = false
             var foundLightBulb:Boolean = false
 
@@ -365,7 +365,7 @@ class GoalWireConnectsPowerSourceAndAnyLightBulb(_isOptional:Boolean = false, de
       for (vObj <- visibleObjects) {
         vObj match {
           case wire:Wire => {
-            println ("Found wire: " + wire.toStringMinimal())
+            // println ("Found wire: " + wire.toStringMinimal())
             var foundPowerSource:Boolean = false
             var foundLightBulb:Boolean = false
 

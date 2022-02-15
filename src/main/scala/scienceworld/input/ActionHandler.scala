@@ -70,7 +70,8 @@ class ActionHandler {
         }
       }
 
-      out.append("(" + action.name + "):\n" + resultDesc)
+      //out.append("(" + action.name + "):\n" + resultDesc)
+      out.append(resultDesc)
     }
 
     // Return
