@@ -245,6 +245,11 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
             }
 
             case envobj:EnvObject => {
+              // Step 0: If the object is made of a non-conductive material, then return
+              if ((envobj.propMaterial.isEmpty) || (!envobj.propMaterial.get.electricallyConductive)) {
+                return false
+              }
+
               // Step 1: Non-electrical object can't be a generator, so skip this check.
 
               // Step 2: If the parent object isn't a generator, traverse through the object, IF the two terminals are "connected" (i.e. a light bulb, a switch that's open, etc).
