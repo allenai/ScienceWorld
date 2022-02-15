@@ -219,27 +219,34 @@ object RoomMaker {
     room.addObject( table )
 
     // Electical
-    val lightbulb1 = new LightBulb()
-    lightbulb1.name = "light bulb 1"
+    val lightColors = Random.shuffle(List("red", "green", "blue", "yellow", "orange", "violet"))
+
+    val lightbulb1 = new LightBulb(lightColors(0))
+    //lightbulb1.name = "light bulb 1"
     table.addObject(lightbulb1)
 
-    val lightbulb2 = new LightBulb()
-    lightbulb2.name = "light bulb 2"
+    val lightbulb2 = new LightBulb(lightColors(1))
+    //lightbulb2.name = "light bulb 2"
     table.addObject(lightbulb2)
 
-    val lightbulb3 = new LightBulb()
-    lightbulb3.name = "light bulb 3"
+    val lightbulb3 = new LightBulb(lightColors(2))
+    //lightbulb3.name = "light bulb 3"
     table.addObject(lightbulb3)
 
 
+    val wireColors = Random.shuffle(List("red", "green", "blue", "yellow", "orange", "black"))
+
     val wire1 = new Wire()
-    wire1.name = "wire 1"
+    wire1.name = wireColors(0) + " wire"
     table.addObject(wire1)
 
     val wire2 = new Wire()
-    wire2.name = "wire 2"
+    wire2.name = wireColors(1) + " wire"
     table.addObject(wire2)
 
+    val wire3 = new Wire()
+    wire3.name = wireColors(2) + " wire"
+    table.addObject(wire3)
 
     val switch = new Switch()
     table.addObject(switch)

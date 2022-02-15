@@ -2,7 +2,7 @@ package scienceworld
 
 import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.environments.EnvironmentMaker
-import scienceworld.goldagent.PathFinder
+import scienceworld.goldagent.{PathFinder, RunHistory}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.devices.{Freezer, Fridge, Sink, Stove}
 import scienceworld.objects.location.{Location, Room, Universe}
@@ -20,7 +20,6 @@ import scienceworld.tasks.specifictasks.TaskChangeOfState.MODE_MELT
 import scala.collection.mutable.ArrayBuffer
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks.{break, breakable}
-
 import collection.JavaConverters._
 
 class EntryPoint {
@@ -63,7 +62,7 @@ object EntryPoint {
 
     //val taskName = taskMaker.getTaskList()(5)
     //val taskName = taskMaker.getTaskList()(13)
-    val taskName = interface.getTaskNames().asScala(17)
+    val taskName = interface.getTaskNames().asScala(9)
 
     //val simplificationStr = "teleportAction,noElectricalAction,openDoors,selfWateringFlowerPots"
     //val simplificationStr = "teleportAction,openDoors,selfWateringFlowerPots"   // with Electrical actions
@@ -72,9 +71,9 @@ object EntryPoint {
     //val simplificationStr = ""
 
     // Load task
-    interface.load(taskName, variationIdx = 2, simplificationStr)
+    interface.load(taskName, variationIdx = 97, simplificationStr)
 
-    println ("Task: " + interface.agentInterface.get.getTaskDescription() )
+    println ("Task: " + interface.getTaskDescription() )
 
     // Simplifications
     println ("Possible simplifications: " + SimplifierProcessor.getPossibleSimplifications())
@@ -128,11 +127,13 @@ object EntryPoint {
         //println("Locations: " + PathFinder.buildLocationGraph(universe) )
 
         //println("Pathfinder test: " + PathFinder.getLocationSequence(universe, startLocation = "living room", endLocation = "foundry")._2.mkString(", "))
+        /*
         println("Pathfinder test: ")
         val path = PathFinder.createActionSequenceSearchPattern(universe = interface.agentInterface.get.universe, agent = interface.agentInterface.get.agent, startLocation = interface.agentInterface.get.agent.getContainer().get.name)
         for (elem <- path) {
           println("\t" + elem.mkString(", "))
         }
+         */
 
         //println("Possible actions:\n\t" + actionHandler.getActionExamplesPlainText().mkString("\n\t"))
         //println("Possible Combinations:\n\t" + agentInterface.getPossibleActionObjectCombinations().mkString("\n\t") )
@@ -158,15 +159,18 @@ object EntryPoint {
             val agentInventory = interface.agentInterface.get.agent.getInventoryContainer()
             val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList ++ InputParser.collectObjects(agentInventory, includeHidden = false).toList
             // Collect UUID -> Unique Referent LUT
-            val uuid2referentLUT = interface.agentInterface.get.inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden=false)
+            val uuid2referentLUT = interface.agentInterface.get.inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden = false)
 
             // Generate all possible valid actions
             val validActions = interface.agentInterface.get.getValidActionObjectCombinations() // ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
 
             println("Valid actions (length = " + validActions.length + ")")
             for (i <- 0 until validActions.length) {
-              println (i + ": \t" + validActions(i).toString())
+              println(i + ": \t" + validActions(i).toString())
             }
+          } else if (userInputString == "history") {
+            println("History:")
+            println(interface.currentHistory.historyActions.mkString("\n"))
           } else {
             validInput = true
           }

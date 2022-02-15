@@ -1,11 +1,12 @@
 package scienceworld.tasks.specifictasks
 
 import scienceworld.actions.Action
+import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.{GlassJar, MetalPot}
 import scienceworld.objects.devices.Shovel
 import scienceworld.objects.document.BookOriginOfSpecies
-import scienceworld.objects.electricalcomponent.{Battery, ElectricBuzzer, ElectricMotor, GasGenerator, LightBulb, NuclearGenerator, SolarPanel, WindGenerator}
+import scienceworld.objects.electricalcomponent.{Battery, ElectricBuzzer, ElectricMotor, GasGenerator, LightBulb, NuclearGenerator, PolarizedElectricalComponent, SolarPanel, UnpolarizedElectricalComponent, WindGenerator, Wire}
 import scienceworld.objects.misc.{AluminumFoil, ForkMetal, ForkPlastic, PaperClip}
 import scienceworld.objects.substance.food.Apricot
 import scienceworld.objects.substance.{SodiumChloride, Water, WoodBlock}
@@ -18,6 +19,7 @@ import scienceworld.tasks.goals.specificgoals.{GoalActivateDevice, GoalElectrica
 import scienceworld.tasks.specifictasks.TaskElectricalConductivity.MODE_TEST_CONDUCTIVITY
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
 
 
 class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) extends TaskParametric {
@@ -41,14 +43,18 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
   for (location <- locations) {
     for (color <- lightColors) {
       val lightbulb = new LightBulb(color)
-      partToPower.append( Array( new TaskObject(lightbulb.name, Some(lightbulb), roomToGenerateIn = location, Array.empty[String], generateNear = 0) ))
+      partToPower.append( Array( new TaskObject(lightbulb.name, Some(lightbulb), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+        new TaskValueStr(key = "partToPower", value = lightbulb.name) ))
     }
     // Additional parts (motor)
     val electricMotor = new ElectricMotor()
-    partToPower.append( Array(new TaskObject(electricMotor.name, Some(electricMotor), roomToGenerateIn = location, Array.empty[String], generateNear = 0) ))
+    partToPower.append( Array(new TaskObject(electricMotor.name, Some(electricMotor), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "partToPower", value = electricMotor.name) ))
+
     // Additional parts (buzzer)
     val electricBuzzer = new ElectricBuzzer()
-    partToPower.append( Array(new TaskObject(electricBuzzer.name, Some(electricBuzzer), roomToGenerateIn = location, Array.empty[String], generateNear = 0) ))
+    partToPower.append( Array(new TaskObject(electricBuzzer.name, Some(electricBuzzer), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "partToPower", value = electricBuzzer.name)))
   }
 
   // Variation 3: Substance to test
@@ -223,7 +229,6 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
     val specificSubstanceName = this.getTaskValueStr(modifiers, "substance")
     val specificSubstanceConductive = this.getTaskValueBool(modifiers, key = "isConductive")
 
-
     var subTask = ""
     val gSequence = new ArrayBuffer[Goal]
     val gSequenceUnordered = new ArrayBuffer[Goal]()
@@ -285,9 +290,260 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
   }
 
 
+  /*
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_TEST_CONDUCTIVITY) {
+      return mkGoldActionSequenceTestComponent(modifiers, runner)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+
+  }
+
+  /*
+   * Gold action sequences
+   */
+  def mkGoldActionSequenceTestComponent(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val boxNameConductive = this.getTaskValueStr(modifiers, "conductive")
+    val boxNameNonconductive = this.getTaskValueStr(modifiers, "nonconductive")
+    val unknownSubstanceName = this.getTaskValueStr(modifiers, "unknownSubstance")
+    val unknownSubstanceConductive = this.getTaskValueBool(modifiers, "unknownIsConductive")
+    val specificSubstanceName = this.getTaskValueStr(modifiers, "substance")
+    val specificSubstanceConductive = this.getTaskValueBool(modifiers, key = "isConductive")
+    val partToPower = this.getTaskValueStr(modifiers, "partToPower")
+
+
+    // Step 1: Move from starting location to workshop
+    val partLocation = "workshop"
+    val startLocation = agent.getContainer().get.name
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = partLocation)
+    runActionSequence(actionStrs, runner)
+
+    // Step 1A: Look around
+    val (actionLook, actionLookStr) = PathFinder.actionLookAround(agent)
+    runAction(actionLookStr, runner)
+
+    // Step 1B: Look at part to power (TODO)
+
+
+
+    // Step 2: Get references to parts
+    val curLoc1 = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe)    // Get a pointer to the whole room the answer box is in
+    val objsInRoom = curLoc1.get.getContainedObjectsRecursiveAccessible(includeHidden = false)
+
+    // Part to power
+    val component = PathFinder.getAllEnvObject(partToPower.get, curLoc1.get)(0)
+
+    // Parts to use to power
+    val battery = curLoc1.get.getContainedAccessibleObjectsOfType[Battery](includeHidden = false)
+    val wires = Random.shuffle( curLoc1.get.getContainedAccessibleObjectsOfType[Wire](includeHidden = false).toList )
+    if (wires.size < 3) {
+      // Fail
+      return (false, getActionHistory(runner))
+    }
+
+    val wire1 = wires(0)
+    val wire2 = wires(1)
+    val wire3 = wires(2)
+
+    // Specific substance to test
+    val substance_ = PathFinder.getAllEnvObject(specificSubstanceName.get, curLoc1.get)
+    var substance:Option[EnvObject] = None
+    if (substance_.length > 0) substance = Some(substance_(0))
+
+    if (substance.isEmpty) {
+      // Fail
+      return (false, getActionHistory(runner))
+    }
+
+    // Focus on part
+    runAction("focus on " + PathFinder.getObjUniqueReferent(substance.get, getCurrentAgentLocation(runner)).get, runner)
+
+    // Do actions
+    // Connect battery to wires
+    runAction("connect battery anode to " + PathFinder.getObjUniqueReferent(wire1, getCurrentAgentLocation(runner)).get + " terminal 1", runner)
+    runAction("connect battery cathode to " + PathFinder.getObjUniqueReferent(wire2, getCurrentAgentLocation(runner)).get + " terminal 1", runner)
+
+    // Connect wires to actuator
+    var anodeReferent:String = ""
+    var cathodeReferent:String = ""
+    component match {
+      case p:PolarizedElectricalComponent => {
+        anodeReferent = PathFinder.getObjUniqueReferent(p.anode, getCurrentAgentLocation(runner)).get
+        cathodeReferent = PathFinder.getObjUniqueReferent(p.cathode, getCurrentAgentLocation(runner)).get
+      }
+      case u:UnpolarizedElectricalComponent => {
+        anodeReferent = PathFinder.getObjUniqueReferent(u.terminal1.get, getCurrentAgentLocation(runner)).get
+        cathodeReferent = PathFinder.getObjUniqueReferent(u.terminal2.get, getCurrentAgentLocation(runner)).get
+      }
+      case _ => {
+        // This should never happen?
+      }
+    }
+    runAction("connect " + PathFinder.getObjUniqueReferent(wire1, getCurrentAgentLocation(runner)).get + " terminal 2 to " + cathodeReferent, runner)   // to device cathode
+    runAction("connect " + PathFinder.getObjUniqueReferent(wire3, getCurrentAgentLocation(runner)).get + " terminal 2 to " + anodeReferent, runner)   // to device anode
+
+    // Connect substance to test
+    runAction("connect " + PathFinder.getObjUniqueReferent(substance.get, getCurrentAgentLocation(runner)).get + " terminal 1 to " + PathFinder.getObjUniqueReferent(wire2, getCurrentAgentLocation(runner)).get + " terminal 2", runner)
+    runAction("connect " + PathFinder.getObjUniqueReferent(substance.get, getCurrentAgentLocation(runner)).get + " terminal 2 to " + PathFinder.getObjUniqueReferent(wire3, getCurrentAgentLocation(runner)).get + " terminal 1", runner)
+
+
+    // Wait one moment, for the power to cycle
+    runAction("wait1", runner)
+    runAction("wait1", runner)
+
+
+    // Step N: Check to see if the actuator is on or not
+
+
+    // Look around
+    runAction("look around", runner)
+
+    var isConductive:Boolean = false
+    if ((component.propDevice.isDefined) && (component.propDevice.get.isActivated == true)) {
+      isConductive = true
+    }
+
+    val boxConductive = PathFinder.getAllEnvObject(boxNameConductive.get, curLoc1.get)(0)
+    val boxNonconductive = PathFinder.getAllEnvObject(boxNameNonconductive.get, curLoc1.get)(0)
+    if (isConductive) {
+      runAction("move " + PathFinder.getObjUniqueReferent(substance.get, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(boxConductive, getCurrentAgentLocation(runner)).get, runner)
+    } else {
+      runAction("move " + PathFinder.getObjUniqueReferent(substance.get, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(boxNonconductive, getCurrentAgentLocation(runner)).get, runner)
+    }
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    // Return
+    return (true, getActionHistory(runner))
+  }
+
+
+  def mkGoldActionSequencePowerComponentRenewable(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val partToPower = this.getTaskValueStr(modifiers, key = "componentToPower")
+    val renewablePowerSource = this.getTaskValueStr(modifiers, key = "renewableSource")
+    val nonrenewablePowerSource = this.getTaskValueStr(modifiers, key = "nonrenewableSource")
+    val combinationNum = this.getTaskValueInt(modifiers, key = "variationIdx").get
+    var powerSourceToUse:Option[String] = None
+    var powerSourceDescription = ""
+
+    // Hacky -- uses the variation number to determine whether the task will be choosing the renewable or non-renewable power source
+    if (combinationNum % 2 == 0) {
+      powerSourceDescription = "renewable"
+      powerSourceToUse = renewablePowerSource
+    } else {
+      powerSourceDescription = "nonrenewable"
+      powerSourceToUse = nonrenewablePowerSource
+    }
+
+
+    // Step 1: Move from starting location to workshop
+    val partLocation = "workshop"
+    val startLocation = agent.getContainer().get.name
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = partLocation)
+    runActionSequence(actionStrs, runner)
+
+    // Step 1A: Look around
+    val (actionLook, actionLookStr) = PathFinder.actionLookAround(agent)
+    runAction(actionLookStr, runner)
+
+    // Step 1B: Look at part to power (TODO)
+
+
+    // Step 2: Get references to parts
+    val curLoc1 = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe)    // Get a pointer to the whole room the answer box is in
+    val objsInRoom = curLoc1.get.getContainedObjectsRecursiveAccessible(includeHidden = false)
+
+    // Part to power
+    val component = PathFinder.getAllEnvObject(partToPower.get, curLoc1.get)(0)
+
+    // Parts to use to power
+    val powerSource = PathFinder.getAllEnvObject(queryName = powerSourceToUse.get, curLoc1.get)(0)   //##
+    val wires = Random.shuffle( curLoc1.get.getContainedAccessibleObjectsOfType[Wire](includeHidden = false).toList )
+    if (wires.size < 2) {
+      // Fail
+      return (false, getActionHistory(runner))
+    }
+
+    val wire1 = wires(0)
+    val wire2 = wires(1)
+
+    // Focus on part
+    runAction("focus on " + PathFinder.getObjUniqueReferent(component, getCurrentAgentLocation(runner)).get, runner)
+
+    // If renewable, the power source needs to be outside for wind/solar
+    if (powerSourceDescription == "renewable") {
+      // Pick up all parts
+      runAction("pick up " + PathFinder.getObjUniqueReferent(component, getCurrentAgentLocation(runner)).get, runner)
+      runAction("pick up " + PathFinder.getObjUniqueReferent(powerSource, getCurrentAgentLocation(runner)).get, runner)
+      runAction("pick up " + PathFinder.getObjUniqueReferent(wire1, getCurrentAgentLocation(runner)).get, runner)
+      runAction("pick up " + PathFinder.getObjUniqueReferent(wire2, getCurrentAgentLocation(runner)).get, runner)
+
+      // Go outside
+      val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = agent.getContainer().get.name, endLocation = "outside")
+      runActionSequence(actionStrs1, runner)
+
+      // Drop all parts
+      runAction("drop " + PathFinder.getObjUniqueReferent(component, getCurrentAgentLocation(runner)).get, runner)
+      runAction("drop " + PathFinder.getObjUniqueReferent(powerSource, getCurrentAgentLocation(runner)).get, runner)
+      runAction("drop " + PathFinder.getObjUniqueReferent(wire1, getCurrentAgentLocation(runner)).get, runner)
+      runAction("drop " + PathFinder.getObjUniqueReferent(wire2, getCurrentAgentLocation(runner)).get, runner)
+    }
+
+    // Look around
+    runAction("look around", runner)
+
+    // Do actions
+    // Connect battery to wires
+    val powerSourceRef = powerSource.name //PathFinder.getObjUniqueReferent(powerSource, getCurrentAgentLocation(runner)).get   //## TODO: Not clear why the referent ('generator') is not resolving here.
+    runAction("connect " + powerSourceRef + " anode to " + PathFinder.getObjUniqueReferent(wire1, getCurrentAgentLocation(runner)).get + " terminal 1", runner)
+    runAction("connect " + powerSourceRef + " cathode to " + PathFinder.getObjUniqueReferent(wire2, getCurrentAgentLocation(runner)).get + " terminal 1", runner)
+
+    // Connect wires to component
+    var anodeReferent:String = ""
+    var cathodeReferent:String = ""
+    component match {
+      case p:PolarizedElectricalComponent => {
+        anodeReferent = PathFinder.getObjUniqueReferent(p.anode, getCurrentAgentLocation(runner)).get
+        cathodeReferent = PathFinder.getObjUniqueReferent(p.cathode, getCurrentAgentLocation(runner)).get
+      }
+      case u:UnpolarizedElectricalComponent => {
+        anodeReferent = PathFinder.getObjUniqueReferent(u.terminal1.get, getCurrentAgentLocation(runner)).get
+        cathodeReferent = PathFinder.getObjUniqueReferent(u.terminal2.get, getCurrentAgentLocation(runner)).get
+      }
+      case _ => {
+        // This should never happen?
+      }
+    }
+    runAction("connect " + PathFinder.getObjUniqueReferent(wire1, getCurrentAgentLocation(runner)).get + " terminal 2 to " + cathodeReferent, runner)   // to device cathode
+    runAction("connect " + PathFinder.getObjUniqueReferent(wire2, getCurrentAgentLocation(runner)).get + " terminal 2 to " + anodeReferent, runner)   // to device anode
+
+    // If power source is non-renewable, we need to turn it on
+    if (powerSourceDescription == "nonrenewable") {
+      runAction("activate " + powerSourceRef, runner)
+    }
+
+    // Wait one moment, for the power to cycle
+    runAction("wait1", runner)
+    runAction("wait1", runner)
+
+    // Look around
+    runAction(actionLookStr, runner)
+
+
+    // Return
+    return (true, getActionHistory(runner))
   }
 
 }

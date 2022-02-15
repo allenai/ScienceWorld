@@ -17,7 +17,8 @@ object ExampleGoldAgent {
     val interface = new PythonInterface()
 
     //val specificTasks = Array(11,12,13,14)           // Do specific tasks
-    val specificTasks = Array(7,8,11,12,13,14)           // Do specific tasks
+    //val specificTasks = Array(7,8,11,12,13,14)           // Do specific tasks
+    val specificTasks = Array(9)           // Do specific tasks
     //val specificTasks = Array.empty[Int]      // Do all
 
     val exportFilename = "goldsequences-" + specificTasks.mkString("-") + ".json"
@@ -70,7 +71,7 @@ object ExampleGoldAgent {
 
         // For each variation
         for (variationIdx <- 0 until maxTaskVariations) {
-        //for (variationIdx <- 0 until math.min(10, maxTaskVariations)) {
+        //for (variationIdx <- 0 until math.min(50, maxTaskVariations)) {
           println("---------------------------")
           println("   Task " + taskIdx + "   " + taskName)
           println("   Variation: " + variationIdx + " / " + maxTaskVariations)
@@ -82,6 +83,8 @@ object ExampleGoldAgent {
           // Get reference to AgentInterface
           val agentInterface = interface.agentInterface
 
+          println("Task Description: " + agentInterface.get.getTaskDescription())
+
           // Get the gold action sequence
           val goldActionSeq = interface.getGoldActionSequence().asScala.toArray
 
@@ -91,6 +94,8 @@ object ExampleGoldAgent {
           // Run a free initial 'look' action, and add it to the history?
           val initialObs = agentInterface.get.step("look around")
           history.addStep("look around", initialObs)
+
+
 
           var curScore: Double = 0.0
           for (actionIdx <- 0 until goldActionSeq.length) {
@@ -305,6 +310,7 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
     os.append("Task: " + taskName + "\n")
     os.append("TaskIdx: " + taskIdx + "\n")
     os.append("VariationIdx: " + variationIdx + "\n")
+    os.append("Task Description: " + taskDescription + "\n")
     os.append("\n")
 
     for (i <- 0 until this.length) {
