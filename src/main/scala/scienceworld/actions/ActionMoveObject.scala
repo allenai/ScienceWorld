@@ -369,7 +369,7 @@ object ActionPourObject {
     val triggerPhrase = new ActionTrigger(List(
       new ActionExprOR(List("pour")),
       new ActionExprIdentifier("obj"),
-      new ActionExprOR(List("in", "into", "on")),
+      new ActionExprOR(List("in", "into", "on", "to")),
       new ActionExprIdentifier("moveTo")
     ))
     val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)

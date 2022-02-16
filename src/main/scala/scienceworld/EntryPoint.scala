@@ -62,7 +62,7 @@ object EntryPoint {
 
     //val taskName = taskMaker.getTaskList()(5)
     //val taskName = taskMaker.getTaskList()(13)
-    val taskName = interface.getTaskNames().asScala(9)
+    val taskName = interface.getTaskNames().asScala(18)
 
     //val simplificationStr = "teleportAction,noElectricalAction,openDoors,selfWateringFlowerPots"
     //val simplificationStr = "teleportAction,openDoors,selfWateringFlowerPots"   // with Electrical actions
@@ -71,7 +71,7 @@ object EntryPoint {
     //val simplificationStr = ""
 
     // Load task
-    interface.load(taskName, variationIdx = 97, simplificationStr)
+    interface.load(taskName, variationIdx = 11, simplificationStr)
 
     println ("Task: " + interface.getTaskDescription() )
 

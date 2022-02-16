@@ -408,7 +408,8 @@ object RoomMaker {
     room.addObject(table)
 
     // Something to mix with
-    table.addObject( new GlassCup() )
+    val mixingContainers = Random.shuffle( List(new GlassCup(), new WoodBowl(), new Jug()) )
+    table.addObject( mixingContainers(0) )
 
     // Paints
     val paints1 = Array(new RedPaint, new BluePaint, new YellowPaint)

@@ -8,11 +8,33 @@ import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 import util.StringHelpers
 
+import scala.collection.mutable
 import scala.util.Random
 
 class Container extends EnvObject {
   this.name = "container"
   this.propContainer = Some(new IsContainer())
+
+  // Make a set of more specific references to this container based on its content (e.g. a jug 'containing blue paint')
+  def mkContentReferences(existingReferents:Set[String]):Set[String] = {
+    val out = mutable.Set[String]()
+
+    for (ref <- existingReferents) {
+      val contents = this.getContainedObjects(includeHidden = false)
+      var newRef = ""
+      if (contents.size == 0) {
+        newRef = ref + " containing nothing"
+      } else {
+        val contentNames = contents.map(_.getDescriptName()).toArray.sorted
+        newRef = ref + " containing " + contentNames.mkString(" and ")
+      }
+      out.add(ref)
+      out.add(newRef)
+    }
+
+    // Return
+    out.toSet
+  }
 
   override def getReferents(): Set[String] = {
     Set("container", this.name, this.getDescriptName())
@@ -40,7 +62,7 @@ class MetalPot extends Container {
   this.propMaterial = Some(new SteelProp())
 
   override def getReferents(): Set[String] = {
-    Set("pot", "metal pot", this.name, this.getDescriptName())
+    this.mkContentReferences( Set("pot", "metal pot", this.name, this.getDescriptName()) )
   }
 
 }
@@ -55,7 +77,7 @@ class GlassCup extends Container {
   this.propMaterial = Some(new GlassProp())
 
   override def getReferents(): Set[String] = {
-    Set("cup", "glass cup", this.name, this.getDescriptName())
+    this.mkContentReferences( Set("cup", "glass cup", this.name, this.getDescriptName()) )
   }
 
 }
@@ -67,7 +89,7 @@ class PlasticCup extends Container {
   this.propMaterial = Some(new PlasticProp())
 
   override def getReferents(): Set[String] = {
-    Set("cup", "plastic cup", this.name, this.getDescriptName())
+    this.mkContentReferences( Set("cup", "plastic cup", this.name, this.getDescriptName()) )
   }
 
 }
@@ -78,7 +100,7 @@ class WoodCup extends Container {
   this.propMaterial = Some(new WoodProp())
 
   override def getReferents(): Set[String] = {
-    Set("cup", "wood cup", this.name, this.getDescriptName())
+    this.mkContentReferences( Set("cup", "wood cup", this.name, this.getDescriptName()) )
   }
 
 }
@@ -89,7 +111,7 @@ class TinCup extends Container {
   this.propMaterial = Some(new TinProp())
 
   override def getReferents(): Set[String] = {
-    Set("cup", "tin cup", this.name, this.getDescriptName())
+    this.mkContentReferences( Set("cup", "tin cup", this.name, this.getDescriptName()) )
   }
 
 
@@ -101,7 +123,7 @@ class PaperCup extends Container {
   this.propMaterial = Some(new PaperProp())
 
   override def getReferents(): Set[String] = {
-    Set("cup", "paper cup", this.name, this.getDescriptName())
+    this.mkContentReferences( Set("cup", "paper cup", this.name, this.getDescriptName()) )
   }
 
 }
@@ -112,7 +134,7 @@ class CeramicCup extends Container {
   this.propMaterial = Some(new CeramicProp())
 
   override def getReferents(): Set[String] = {
-    Set("cup", "ceramic cup", this.name, this.getDescriptName())
+    this.mkContentReferences( Set("cup", "ceramic cup", this.name, this.getDescriptName()) )
   }
 
 }
@@ -123,7 +145,7 @@ class WoodBowl extends Container {
   this.propMaterial = Some(new WoodProp())
 
   override def getReferents(): Set[String] = {
-    Set("bowl", this.propMaterial.get.substanceName + " bowl", this.name, this.getDescriptName())
+    this.mkContentReferences( Set("bowl", this.propMaterial.get.substanceName + " bowl", this.name, this.getDescriptName()) )
   }
 
 }
@@ -134,7 +156,7 @@ class Jug extends Container {
   this.propMaterial = Some(new PlasticProp())
 
   override def getReferents(): Set[String] = {
-    Set("jug", this.name, this.getDescriptName())
+    this.mkContentReferences( Set("jug", this.name, this.getDescriptName()) )
   }
 
 }
@@ -146,7 +168,7 @@ class GlassJar extends Container {
   this.propMaterial = Some(new GlassProp())
 
   override def getReferents(): Set[String] = {
-    Set("jar", "glass jar", this.name, this.getDescriptName())
+    this.mkContentReferences( Set("jar", "glass jar", this.name, this.getDescriptName()) )
   }
 
 }
@@ -174,7 +196,7 @@ class FlowerPot extends Container {
 
 
   override def getReferents(): Set[String] = {
-    Set("pot", "flower pot", this.name, this.getDescriptName())
+    this.mkContentReferences( Set("pot", "flower pot", this.name, this.getDescriptName()) )
   }
 
 }
@@ -195,7 +217,7 @@ class SelfWateringFlowerPot extends Container {
   }
 
   override def getReferents(): Set[String] = {
-    Set("pot", "flower pot", this.name, this.getDescriptName())
+    this.mkContentReferences( Set("pot", "flower pot", this.name, this.getDescriptName()) )
   }
 
 }
@@ -211,7 +233,7 @@ class BookShelf extends Container {
   this.propMaterial = Some(new WoodProp())
 
   override def getReferents(): Set[String] = {
-    Set("shelf", "book shelf", this.name, this.getDescriptName())
+    this.mkContentReferences( Set("shelf", "book shelf", this.name, this.getDescriptName()) )
   }
 
 }

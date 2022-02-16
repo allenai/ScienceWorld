@@ -393,7 +393,7 @@ object PathFinder {
 
   // Find all objects with a given name in the universe
   def getAllAccessibleEnvObject(queryName:String, universe:EnvObject):Array[EnvObject] = {
-    val allObjects = universe.getContainedObjectsAndPortalsRecursive(true, includePortalConnections = false)
+    val allObjects = universe.getContainedAccessibleObjects(true, includePortals = true)
     val out = new ArrayBuffer[EnvObject]
 
     for (obj <- allObjects) {

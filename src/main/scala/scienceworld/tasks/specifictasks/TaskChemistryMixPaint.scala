@@ -1,10 +1,12 @@
 package scienceworld.tasks.specifictasks
 
 import scienceworld.actions.Action
+import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.containers.WoodCup
+import scienceworld.objects.containers.{Container, WoodCup}
 import scienceworld.objects.containers.furniture.Cupboard
-import scienceworld.objects.substance.paint.{BluePaint, RedPaint, YellowPaint}
+import scienceworld.objects.electricalcomponent.{Battery, PolarizedElectricalComponent, UnpolarizedElectricalComponent, Wire}
+import scienceworld.objects.substance.paint.{BluePaint, Paint, RedPaint, YellowPaint}
 import scienceworld.objects.substance.{Soap, SodiumChloride}
 import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
@@ -14,6 +16,8 @@ import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalInRoomWithObject, G
 import scienceworld.tasks.specifictasks.TaskChemistryMixPaint._
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
+import scala.util.control.Breaks.{break, breakable}
 
 
 class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY) extends TaskParametric {
@@ -215,9 +219,124 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
   }
 
 
+  /*
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_CHEMISTRY_MIX_PAINT_SECONDARY) {
+      return mkGoldActionSequenceMixPaint(modifiers, runner)
+    } else if (mode == MODE_CHEMISTRY_MIX_PAINT_TERTIARY) {
+      // TODO
+      return mkGoldActionSequenceMixPaint(modifiers, runner)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+
+  }
+
+  /*
+   * Gold action sequences
+   */
+  def mkGoldActionSequenceMixPaint(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val secondaryColor = this.getTaskValueStr(modifiers, "secondaryColor")
+    if (secondaryColor.isEmpty) throw new RuntimeException("ERROR: Failed to find secondary color in task setup.")
+    val tertiaryColor = this.getTaskValueStr(modifiers, "tertiaryColor")
+    if (tertiaryColor.isEmpty) throw new RuntimeException("ERROR: Failed to find tertiary color in task setup.")
+    val inputColorsSecondary = this.getTaskValueStr(modifiers, "inputChemicalsSecondary").get.split(",")
+    val inputColorsTertiary = this.getTaskValueStr(modifiers, "inputChemicalsTertiary").get.split(",")
+
+    val paintLocation = this.getTaskValueStr(modifiers, "location")
+
+    val mixRequirements = ("violet paint" -> Array("red paint", "blue paint"),
+      "green paint" -> Array("blue paint", "yellow paint"),
+      "orange paint" -> Array("yellow paint", "red paint"),
+      "yellow-orange paint" -> Array("yellow paint", "orange paint"),
+      "red-orange paint" -> Array("red paint", "orange paint"),
+      "violet-red paint" -> Array("red paint", "violet paint"),
+      "blue-violet paint" -> Array("blue paint", "violet paint"),
+      "green-blue paint" -> Array("green paint", "blue paint"),
+      "yellow-green paint" -> Array("green paint", "yellow paint")
+    )
+
+    // Step 1: Find the location with the paints
+    val startLocation1 = agent.getContainer().get.name
+    val actionStrsSearchPattern1 = PathFinder.createActionSequenceSearchPatternPrecomputed(universe, agent, startLocation1)
+
+    // Walk around the environment until we find the location with the paints
+    var substances = Set[EnvObject]()
+    breakable {
+      for (searchPatternStep <- actionStrsSearchPattern1) {
+        // First, check to see if the object is here
+        val curLocSearch = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe) // Get a pointer to the whole room the answer box is in
+        substances = curLocSearch.get.getContainedAccessibleObjectsOfType[Paint]()     // Look for a location that has paints
+
+        if (substances.size >= 3) {
+          // Paint location found -- we can stop traversing the environment
+          break
+        }
+
+        // If not found, move to next location to continue search
+        runActionSequence(searchPatternStep, runner)
+      }
+
+    }
+
+    // Check that we successfully found the paints -- if not, fail
+    if (substances.size == 0) {
+      // Fail
+      return (false, getActionHistory(runner))
+    }
+
+    runAction("look around", runner)
+
+    // Step N: Find an empty container to do the mixing
+    var mixingContainer:Option[EnvObject] = None
+    val possibleContainers = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[Container]()
+    breakable {
+      for (container <- possibleContainers) {
+        // Check that it's empty, and open
+        if ((container.getContainedObjects(includeHidden = false).size == 0) && (container.propContainer.get.isOpen == true)) {
+          mixingContainer = Some(container)
+          break
+        }
+      }
+    }
+
+    if (mixingContainer.isEmpty) {
+      // Fail
+      return (false, getActionHistory(runner))
+    }
+
+    // Step N: Mix secondary colour
+    // Step NA: Move all components into the container
+    for (inputColor <- inputColorsSecondary) {
+      val substance = PathFinder.getAllAccessibleEnvObject(inputColor, getCurrentAgentLocation(runner))(0)
+      //runAction("move " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(mixingContainer.get, getCurrentAgentLocation(runner)).get, runner)
+      val paintContainer = substance.getContainer()
+      runAction("pour " + PathFinder.getObjUniqueReferent(paintContainer.get, getCurrentAgentLocation(runner)).get + " in " + PathFinder.getObjUniqueReferent(mixingContainer.get, getCurrentAgentLocation(runner)).get, runner)
+    }
+
+    // Step NB: Mix
+    runAction("mix " + PathFinder.getObjUniqueReferent(mixingContainer.get, getCurrentAgentLocation(runner)).get, runner)
+
+
+    // Look around
+    runAction("look around", runner)
+
+    // Step N: Focus on substance
+    val mixingResult1 = PathFinder.getAllAccessibleEnvObject(secondaryColor.get, getCurrentAgentLocation(runner))
+    if (mixingResult1.size == 0) return (false, getActionHistory(runner))
+    runAction("focus on " + PathFinder.getObjUniqueReferent(mixingResult1(0), getCurrentAgentLocation(runner)).get, runner)
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    // Return
+    return (true, getActionHistory(runner))
   }
 
 
