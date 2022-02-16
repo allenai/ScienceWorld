@@ -1,11 +1,12 @@
 package scienceworld.tasks.specifictasks
 
 import scienceworld.actions.Action
+import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.containers.WoodCup
+import scienceworld.objects.containers.{Container, WoodCup}
 import scienceworld.objects.containers.furniture.Cupboard
 import scienceworld.objects.livingthing.animals.{Ant, Beaver, BrownBear, Chameleon, Chipmunk, Crocodile, Dragonfly, Elephant, GiantTortoise, Hedgehog, Mouse, Parrot, Rabbit, Toad, Wolf}
-import scienceworld.objects.substance.paint.{BluePaint, RedPaint, YellowPaint}
+import scienceworld.objects.substance.paint.{BluePaint, Paint, RedPaint, YellowPaint}
 import scienceworld.objects.substance.{Soap, SodiumChloride}
 import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
@@ -15,6 +16,7 @@ import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalMoveToLocation, Goa
 import scienceworld.tasks.specifictasks.TaskLifeSpan._
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.control.Breaks.{break, breakable}
 
 
 class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametric {
@@ -102,7 +104,6 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
 
   // Setup a set of subgoals for this task modifier combination.
   private def setupGoals(modifiers:Array[TaskModifier], combinationNum:Int): Task = {
-    // Step 1: Find seed type
     val animalLong = this.getTaskValueStr(modifiers, "long")
     if (animalLong.isEmpty) throw new RuntimeException("ERROR: Failed to find long-lived animal in task setup.")
     val animalMedium = this.getTaskValueStr(modifiers, "medium")
@@ -164,9 +165,63 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
   }
 
 
+  /*
+     * Gold Action Sequences
+     */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_LIFESPAN_LONGEST) {
+      return mkGoldActionSequenceLifeSpan(modifiers, runner)
+    } else if (mode == MODE_LIFESPAN_SHORTEST) {
+      return mkGoldActionSequenceLifeSpan(modifiers, runner)
+    } else if (mode == MODE_LIFESPAN_LONGTHENSHORT) {
+      return mkGoldActionSequenceLifeSpan(modifiers, runner)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+
+  }
+
+  /*
+   * Gold action sequences
+   */
+  def mkGoldActionSequenceLifeSpan(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val animalLong = this.getTaskValueStr(modifiers, "long").get
+    val animalMedium = this.getTaskValueStr(modifiers, "medium").get
+    val animalShort = this.getTaskValueStr(modifiers, "short").get
+    val animalLocation = this.getTaskValueStr(modifiers, "location").get
+
+
+    // Step 1: Move from starting location to task location
+    val startLocation = agent.getContainer().get.name
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = animalLocation)
+    runActionSequence(actionStrs, runner)
+
+    // Step 2: Focus on task-specific animal
+    if (mode == MODE_LIFESPAN_LONGEST) {
+      val animal = PathFinder.getEnvObject(queryName = animalLong, getCurrentAgentLocation(runner)) // Get a pointer to the whole room the answer box is in
+      runAction("focus on " + PathFinder.getObjUniqueReferent(animal.get, getCurrentAgentLocation(runner)).get, runner)
+
+    } else if (mode == MODE_LIFESPAN_SHORTEST) {
+      val animal = PathFinder.getEnvObject(queryName = animalShort, getCurrentAgentLocation(runner)) // Get a pointer to the whole room the answer box is in
+      runAction("focus on " + PathFinder.getObjUniqueReferent(animal.get, getCurrentAgentLocation(runner)).get, runner)
+
+    } else if (mode == MODE_LIFESPAN_LONGTHENSHORT) {
+      val animal1 = PathFinder.getEnvObject(queryName = animalLong, getCurrentAgentLocation(runner)) // Get a pointer to the whole room the answer box is in
+      runAction("focus on " + PathFinder.getObjUniqueReferent(animal1.get, getCurrentAgentLocation(runner)).get, runner)
+
+      val animal2 = PathFinder.getEnvObject(queryName = animalShort, getCurrentAgentLocation(runner)) // Get a pointer to the whole room the answer box is in
+      runAction("focus on " + PathFinder.getObjUniqueReferent(animal2.get, getCurrentAgentLocation(runner)).get, runner)
+    }
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    // Return
+    return (true, getActionHistory(runner))
   }
 
 
