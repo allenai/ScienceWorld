@@ -428,6 +428,7 @@ object RoomMaker {
       woodcup.addObject(paint)
       cupboard.addObject(woodcup)
     }
+    cupboard.name = "large cupboard"
 
 
     // Return

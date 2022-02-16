@@ -3,8 +3,8 @@ package scienceworld.tasks.specifictasks
 import scienceworld.actions.Action
 import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.containers.{Container, WoodCup}
-import scienceworld.objects.containers.furniture.Cupboard
+import scienceworld.objects.containers.{Container, GlassCup, Jug, TinCup, WoodBowl, WoodCup}
+import scienceworld.objects.containers.furniture.{Closet, Cupboard, Desk}
 import scienceworld.objects.electricalcomponent.{Battery, PolarizedElectricalComponent, UnpolarizedElectricalComponent, Wire}
 import scienceworld.objects.substance.paint.{BluePaint, Paint, RedPaint, YellowPaint}
 import scienceworld.objects.substance.{Soap, SodiumChloride}
@@ -26,14 +26,15 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
 
   // Variation 1: Which seeds to grow
   val additionalPaint = new ArrayBuffer[ Array[TaskModifier] ]()
-
+  val mixingContainers = Random.shuffle( List(new GlassCup(), new WoodBowl(), new Jug()) )
   val locations = Array("art studio", "workshop")
+
   //val locations = Array("green house")
   for (location <- locations) {
+    val paints2 = Array(new RedPaint, new BluePaint, new YellowPaint) //, new GreenPaint, new VioletPaint, new OrangePaint)
 
     // Add an extra cupboard full of paint in some location
     val cupboard = new Cupboard()
-    val paints2 = Array(new RedPaint, new BluePaint, new YellowPaint) //, new GreenPaint, new VioletPaint, new OrangePaint)
     for (paint <- paints2) {
       val woodcup = new WoodCup()
       woodcup.addObject(paint)
@@ -45,6 +46,50 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
       new TaskObject(cupboard.name, Some(cupboard), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
       new TaskValueStr(key = "location", value = location)
     ))
+
+    if (location != "art studio") {
+      // Add a mixing container to any locations that aren't the art studio
+      additionalPaint(additionalPaint.size-1) = additionalPaint(additionalPaint.size-1) ++ Array( new TaskObject(mixingContainers(0).name, Some(mixingContainers(0)), roomToGenerateIn = location, Array.empty[String], generateNear = 0 ))
+    }
+
+    // Add an extra closet full of paint in some location
+    val closet = new Closet()
+    for (paint <- paints2) {
+      val glasscup = new GlassCup()
+      glasscup.addObject(paint)
+      closet.addObject(glasscup)
+    }
+    closet.name = "paint closet"
+
+    additionalPaint.append( Array(
+      new TaskObject(closet.name, Some(closet), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "location", value = location)
+    ))
+
+    if (location != "art studio") {
+      // Add a mixing container to any locations that aren't the art studio
+      additionalPaint(additionalPaint.size-1) = additionalPaint(additionalPaint.size-1) ++ Array( new TaskObject(mixingContainers(1).name, Some(mixingContainers(1)), roomToGenerateIn = location, Array.empty[String], generateNear = 0 ))
+    }
+
+
+    // Add an extra cupboard full of paint in some location
+    val desk = new Desk()
+    for (paint <- paints2) {
+      val tincup = new TinCup()
+      tincup.addObject(paint)
+      desk.addObject(tincup)
+    }
+
+    additionalPaint.append( Array(
+      new TaskObject(desk.name, Some(desk), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "location", value = location)
+    ))
+
+    if (location != "art studio") {
+      // Add a mixing container to any locations that aren't the art studio
+      additionalPaint(additionalPaint.size-1) = additionalPaint(additionalPaint.size-1) ++ Array( new TaskObject(mixingContainers(2).name, Some(mixingContainers(2)), roomToGenerateIn = location, Array.empty[String], generateNear = 0 ))
+    }
+
 
   }
 
@@ -348,28 +393,61 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
 
 
     // Step N: Mix tertiary colour
+
+    var attempts = 0
     // Step NA: Move all components into the container
-    for (inputColor <- inputColorsTertiary) {
-      var substance = Array.empty[EnvObject]
-      breakable {
-        for (i <- 0 to 10) {
-          substance = PathFinder.getAllAccessibleEnvObject(inputColor, getCurrentAgentLocation(runner))
-          if (substance.size > 0) break    // Found at least one substance matching the criteria
-          // If we reach here, we didn't find a subtance -- start opening closed containers
-          val success = PathFinder.openRandomClosedContainer(currentLocation = getCurrentAgentLocation(runner), runner)
+    var substance = Array.empty[EnvObject]
+    while (substance.length == 0) {
+      for (inputColor <- inputColorsTertiary) {
+        breakable {
+          var successOpeningContainers:Boolean = true
+          for (i <- 0 to 10) {
+            substance = PathFinder.getAllAccessibleEnvObject(inputColor, getCurrentAgentLocation(runner))
+            if (substance.size > 0) break // Found at least one substance matching the criteria
+            // If we reach here, we didn't find a subtance -- start opening closed containers
+            if (successOpeningContainers) {
+              successOpeningContainers = PathFinder.openRandomClosedContainer(currentLocation = getCurrentAgentLocation(runner), runner)
+            }
+          }
+        }
+
+        // Check for failure
+        if (substance.length == 0) {
+          // For some reason we weren't able to find the substance, even after opening multiple containers.  Let's try moving to a different location and trying once more.
+          attempts += 1
+
+          if (attempts > 1) {
+            // fail
+            return (false, getActionHistory(runner))
+          } else {
+            // Pick up container
+            val containerReferent = PathFinder.getObjUniqueReferent(mixingContainer.get, getCurrentAgentLocation(runner))
+            println("Container referent: " + containerReferent)
+            println(runner.currentHistory.toString())
+            runAction("pick up " + containerReferent.get, runner)
+
+            // Move to another spot
+            val startLocation = agent.getContainer().get.name
+            var endLocation = "art studio"
+            if (startLocation == "art studio") endLocation = "workshop"
+            val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation)
+            runActionSequence(actionStrs, runner)
+
+            // Drop container
+            runAction("drop " + mixingContainer.get.name + " in inventory", runner)
+
+            // Look around
+            runAction("look around", runner)
+          }
+
+        } else {
+          //runAction("move " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(mixingContainer.get, getCurrentAgentLocation(runner)).get, runner)
+          val paintContainer = substance(0).getContainer()
+          runAction("pour " + PathFinder.getObjUniqueReferent(paintContainer.get, getCurrentAgentLocation(runner)).get + " in " + PathFinder.getObjUniqueReferent(mixingContainer.get, getCurrentAgentLocation(runner)).get, runner)
         }
       }
-
-      // Check for failure
-      if (substance.length == 0) {
-        // For some reason we weren't able to find the substance, even after opening multiple containers
-        return (false, getActionHistory(runner))
-      }
-
-      //runAction("move " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(mixingContainer.get, getCurrentAgentLocation(runner)).get, runner)
-      val paintContainer = substance(0).getContainer()
-      runAction("pour " + PathFinder.getObjUniqueReferent(paintContainer.get, getCurrentAgentLocation(runner)).get + " in " + PathFinder.getObjUniqueReferent(mixingContainer.get, getCurrentAgentLocation(runner)).get, runner)
     }
+
 
     // Step NB: Mix
     runAction("mix " + PathFinder.getObjUniqueReferent(mixingContainer.get, getCurrentAgentLocation(runner)).get, runner)
