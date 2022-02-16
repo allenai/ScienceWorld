@@ -166,8 +166,8 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
 
 
   /*
-     * Gold Action Sequences
-     */
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     if (mode == MODE_LIFESPAN_LONGEST) {
       return mkGoldActionSequenceLifeSpan(modifiers, runner)
@@ -223,7 +223,6 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
     // Return
     return (true, getActionHistory(runner))
   }
-
 
 }
 

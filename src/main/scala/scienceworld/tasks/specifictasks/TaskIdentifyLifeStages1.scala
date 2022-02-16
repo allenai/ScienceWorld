@@ -1,6 +1,7 @@
 package scienceworld.tasks.specifictasks
 
 import scienceworld.actions.Action
+import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.livingthing.animals.{Ant, Beaver, BlueJay, BrownBear, Butterfly, Chameleon, Chipmunk, Crocodile, Dove, Dragonfly, Elephant, Frog, GiantTortoise, Hedgehog, Moth, Mouse, Parrot, Rabbit, Toad, Turtle, Wolf}
@@ -13,6 +14,7 @@ import scienceworld.tasks.specifictasks.TaskIdentifyLifeStages1._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
+import scala.util.control.Breaks._
 
 
 class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskParametric {
@@ -143,9 +145,108 @@ class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskPar
   }
 
 
+  /*
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_LIFESTAGES) {
+      return mkGoldActionSequenceLifeStages(modifiers, runner)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+
+  }
+
+  /*
+   * Gold action sequences
+   */
+  def mkGoldActionSequenceLifeStages(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val animalName = this.getTaskValueStr(modifiers, "animal").get
+    val animalLocation = this.getTaskValueStr(modifiers, "location").get
+    val stage1 = this.getTaskValueStr(modifiers, "stage1")
+    val stage2 = this.getTaskValueStr(modifiers, "stage2")
+    val stage3 = this.getTaskValueStr(modifiers, "stage3")
+    val stage4 = this.getTaskValueStr(modifiers, "stage4")
+    val stage5 = this.getTaskValueStr(modifiers, "stage5")
+
+    // Step 1: Move from starting location to task location
+    val startLocation = agent.getContainer().get.name
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = animalLocation)
+    runActionSequence(actionStrs, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+    // Stage 1
+    if (stage1.isDefined) {
+      val success = mkActionSequenceWaitForAnimalInStage(stageName = stage1.get, livingThingName = animalName, runner)
+      if (!success) return (false, getActionHistory(runner))
+    }
+
+    // Stage 2
+    if (stage2.isDefined) {
+      val success = mkActionSequenceWaitForAnimalInStage(stageName = stage2.get, livingThingName = animalName, runner)
+      if (!success) return (false, getActionHistory(runner))
+    }
+
+    // Stage 3
+    if (stage3.isDefined) {
+      val success = mkActionSequenceWaitForAnimalInStage(stageName = stage3.get, livingThingName = animalName, runner)
+      if (!success) return (false, getActionHistory(runner))
+    }
+
+    // Stage 4
+    if (stage4.isDefined) {
+      val success = mkActionSequenceWaitForAnimalInStage(stageName = stage4.get, livingThingName = animalName, runner)
+      if (!success) return (false, getActionHistory(runner))
+    }
+
+    // Stage 5
+    if (stage5.isDefined) {
+      val success = mkActionSequenceWaitForAnimalInStage(stageName = stage5.get, livingThingName = animalName, runner)
+      if (!success) return (false, getActionHistory(runner))
+    }
+
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    // Return
+    return (true, getActionHistory(runner))
+  }
+
+
+  def mkActionSequenceWaitForAnimalInStage(stageName:String, livingThingName:String, runner:PythonInterface, MAX_WAIT_TIME:Int = 20): Boolean = {
+    val livingThings = PathFinder.getAllAccessibleEnvObject(queryName = livingThingName, getCurrentAgentLocation(runner))
+    var found: Option[EnvObject] = None
+    breakable {
+      for (i <- 0 until MAX_WAIT_TIME) {
+        for (livingThing <- livingThings) {
+          livingThing match {
+            case lt: LivingThing => {
+              if (lt.lifecycle.get.getCurStageName() == stageName) {
+                found = Some(lt)
+                break()
+              }
+            }
+          }
+        }
+        // Not found -- wait one step, and check again
+        runAction("wait1", runner)
+      }
+    }
+
+    // Check for failure
+    if (found.isEmpty) return false
+
+    runAction("focus on " + PathFinder.getObjUniqueReferent(found.get, getCurrentAgentLocation(runner)).get, runner)
+
+    // Success
+    return true
   }
 
 
