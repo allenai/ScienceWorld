@@ -20,7 +20,7 @@ object ExampleGoldAgent {
     //val specificTasks = Array(7,8,9,10,11,12,13,14,18,19)           // Do specific tasks
     //val specificTasks = Array(9)           // Do specific tasks
     //val specificTasks = Array(18)           // Do specific tasks
-    val specificTasks = Array(23)           // Do specific tasks
+    val specificTasks = Array(24)           // Do specific tasks
     //val specificTasks = Array.empty[Int]      // Do all
 
     val exportFilename = "goldsequences-" + specificTasks.mkString("-") + ".json"
@@ -322,10 +322,13 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
     for (i <- 0 until this.length) {
       os.append(">>> " + historyActions(i) + "\n")
       os.append(historyObservations(i)._1 + "\n")
+      os.append("Score: " + historyObservations(i)._2 + "\n")
       os.append("\n")
     }
 
     os.append("Action history: " + historyActions.mkString(", ") + "\n")
+    os.append("Final Score: " + historyObservations.last._2 + "\n")
+    os.append("isCompleted: " + historyObservations.last._3 + "\n")
     os.append("\n------------------------------------------------------------------------\n\n")
 
     os.toString()

@@ -5,6 +5,7 @@ import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.livingthing.animals.{Ant, Beaver, BlueJay, BrownBear, Butterfly, Chameleon, Chipmunk, Crocodile, Dove, Dragonfly, Elephant, Frog, GiantTortoise, Hedgehog, Moth, Mouse, Parrot, Rabbit, Toad, Turtle, Wolf}
+import scienceworld.objects.livingthing.plant.Plant
 import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
@@ -183,31 +184,31 @@ class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskPar
 
     // Stage 1
     if (stage1.isDefined) {
-      val success = mkActionSequenceWaitForAnimalInStage(stageName = stage1.get, livingThingName = animalName, runner)
+      val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage1.get, livingThingName = animalName, runner)
       if (!success) return (false, getActionHistory(runner))
     }
 
     // Stage 2
     if (stage2.isDefined) {
-      val success = mkActionSequenceWaitForAnimalInStage(stageName = stage2.get, livingThingName = animalName, runner)
+      val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage2.get, livingThingName = animalName, runner)
       if (!success) return (false, getActionHistory(runner))
     }
 
     // Stage 3
     if (stage3.isDefined) {
-      val success = mkActionSequenceWaitForAnimalInStage(stageName = stage3.get, livingThingName = animalName, runner)
+      val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage3.get, livingThingName = animalName, runner)
       if (!success) return (false, getActionHistory(runner))
     }
 
     // Stage 4
     if (stage4.isDefined) {
-      val success = mkActionSequenceWaitForAnimalInStage(stageName = stage4.get, livingThingName = animalName, runner)
+      val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage4.get, livingThingName = animalName, runner)
       if (!success) return (false, getActionHistory(runner))
     }
 
     // Stage 5
     if (stage5.isDefined) {
-      val success = mkActionSequenceWaitForAnimalInStage(stageName = stage5.get, livingThingName = animalName, runner)
+      val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage5.get, livingThingName = animalName, runner)
       if (!success) return (false, getActionHistory(runner))
     }
 
@@ -217,36 +218,6 @@ class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskPar
 
     // Return
     return (true, getActionHistory(runner))
-  }
-
-
-  def mkActionSequenceWaitForAnimalInStage(stageName:String, livingThingName:String, runner:PythonInterface, MAX_WAIT_TIME:Int = 20): Boolean = {
-    val livingThings = PathFinder.getAllAccessibleEnvObject(queryName = livingThingName, getCurrentAgentLocation(runner))
-    var found: Option[EnvObject] = None
-    breakable {
-      for (i <- 0 until MAX_WAIT_TIME) {
-        for (livingThing <- livingThings) {
-          livingThing match {
-            case lt: LivingThing => {
-              if (lt.lifecycle.get.getCurStageName() == stageName) {
-                found = Some(lt)
-                break()
-              }
-            }
-          }
-        }
-        // Not found -- wait one step, and check again
-        runAction("wait1", runner)
-      }
-    }
-
-    // Check for failure
-    if (found.isEmpty) return false
-
-    runAction("focus on " + PathFinder.getObjUniqueReferent(found.get, getCurrentAgentLocation(runner)).get, runner)
-
-    // Success
-    return true
   }
 
 
@@ -301,5 +272,51 @@ object TaskIdentifyLifeStages1 {
 
     return out
   }
+
+
+  def mkActionSequenceWaitForLivingThingInStage(stageName:String, livingThingName:String, runner:PythonInterface, MAX_WAIT_TIME:Int = 20): Boolean = {
+    val agentLocation = TaskParametric.getCurrentAgentLocation(runner)
+    val livingThings = agentLocation.getContainedAccessibleObjectsOfType[LivingThing](includeHidden = false, includePortals = false).toArray
+    var found: Option[LivingThing] = None
+    breakable {
+      for (i <- 0 until MAX_WAIT_TIME) {
+        for (livingThing <- livingThings) {
+          livingThing match {
+            case lt: LivingThing => {
+              // Check that it's the correct life form type
+              if ((lt.propLife.isDefined) && (lt.propLife.get.lifeformType == livingThingName)) {
+                // Check that it's in the correct life stage
+                if (lt.lifecycle.get.getCurStageName() == stageName) {
+                  found = Some(lt)
+                  break()
+                }
+              }
+            }
+          }
+        }
+        // Not found -- wait one step, and check again
+        TaskParametric.runAction("wait1", runner)
+      }
+    }
+
+    // Check for failure
+    if (found.isEmpty) return false
+
+    //TaskParametric.runAction("focus on " + PathFinder.getObjUniqueReferent(found.get, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+    val container = found.get.getContainer().get
+    if (found.isInstanceOf[Plant]) {
+      val referent = found.get.name + " in the " + stageName + " stage"
+      TaskParametric.runAction("focus on " + referent + " in " + container.name, runner)
+    } else {
+      val referent = stageName + " " + found.get.name
+      TaskParametric.runAction("focus on " + referent + " in " + container.name, runner)
+    }
+
+    TaskParametric.runAction("look around", runner)
+
+    // Success
+    return true
+  }
+
 
 }

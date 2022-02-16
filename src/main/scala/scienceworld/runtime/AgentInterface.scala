@@ -544,6 +544,11 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
           val actionOutStr = actionHandler.runQueuedActions()
           userOutStr.append(actionOutStr)
 
+          // TODO: Also added this check for goal conditions being met BEFORE processing the tick, for cases where the tick can modify the goal state (e.g. trees growing past the desired life stage in one tick)
+          //## NOTE: This might break some other things, so let's keep an eye on it for a bit with the gold agents.
+          // Check whether the goal conditions are met
+          task.goalSequence.tick(objMonitor, agent)
+
           // Run universe tick
           if (willActionsTakeTime) {
             universe.clearTickProcessedRecursive()

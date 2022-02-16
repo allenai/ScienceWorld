@@ -1,6 +1,7 @@
 package scienceworld.tasks.specifictasks
 
 import scienceworld.actions.Action
+import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.SelfWateringFlowerPot
 import scienceworld.objects.containers.furniture.Cupboard
@@ -12,6 +13,7 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalFindLivingThingStage, GoalMoveToLocation, GoalMoveToNewLocation, GoalStayInLocation}
+import scienceworld.tasks.specifictasks.TaskIdentifyLifeStages1.mkActionSequenceWaitForLivingThingInStage
 import scienceworld.tasks.specifictasks.TaskIdentifyLifeStages2._
 
 import scala.collection.mutable.ArrayBuffer
@@ -140,9 +142,78 @@ class TaskIdentifyLifeStages2(val mode:String = MODE_LIFESTAGES) extends TaskPar
   }
 
 
+  /*
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_LIFESTAGES) {
+      return mkGoldActionSequenceLifeStages(modifiers, runner)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+
+  }
+
+  /*
+   * Gold action sequences
+   */
+  def mkGoldActionSequenceLifeStages(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val livingThingName = this.getTaskValueStr(modifiers, "livingThingName").get
+    val livingThingLocation = this.getTaskValueStr(modifiers, "location").get
+    val stage1 = this.getTaskValueStr(modifiers, "stage1")
+    val stage2 = this.getTaskValueStr(modifiers, "stage2")
+    val stage3 = this.getTaskValueStr(modifiers, "stage3")
+    val stage4 = this.getTaskValueStr(modifiers, "stage4")
+    val stage5 = this.getTaskValueStr(modifiers, "stage5")
+
+    // Step 1: Move from starting location to task location
+    val startLocation = agent.getContainer().get.name
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = livingThingLocation)
+    runActionSequence(actionStrs, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+    // Stage 1
+    if (stage1.isDefined) {
+      val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage1.get, livingThingName = livingThingName, runner)
+      if (!success) return (false, getActionHistory(runner))
+    }
+
+    // Stage 2
+    if (stage2.isDefined) {
+      val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage2.get, livingThingName = livingThingName, runner)
+      if (!success) return (false, getActionHistory(runner))
+    }
+
+    // Stage 3
+    if (stage3.isDefined) {
+      val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage3.get, livingThingName = livingThingName, runner)
+      if (!success) return (false, getActionHistory(runner))
+    }
+
+    // Stage 4
+    if (stage4.isDefined) {
+      val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage4.get, livingThingName = livingThingName, runner)
+      if (!success) return (false, getActionHistory(runner))
+    }
+
+    // Stage 5
+    if (stage5.isDefined) {
+      val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage5.get, livingThingName = livingThingName, runner)
+      if (!success) return (false, getActionHistory(runner))
+    }
+
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    // Return
+    return (true, getActionHistory(runner))
   }
 
 
@@ -194,12 +265,19 @@ object TaskIdentifyLifeStages2 {
 
     // Create task modifier
     val out = new ArrayBuffer[TaskModifier]()
-    // Add each animal
+
+    val flowerPotNumbers = Random.shuffle( List(1, 2, 3, 4, 5, 6, 7, 8, 9) )
+
+    // Add each plant
+    var flowerPotIdx:Int = 0
     for (livingThing <- livingThingsToAdd) {
       // Plant must be in a (self watering) flower pot with soil to stay alive
       val flowerpot = new SelfWateringFlowerPot()
       flowerpot.addObject(new Soil())
       flowerpot.addObject(livingThing)
+
+      flowerpot.name = "self watering flower pot " + flowerPotNumbers(flowerPotIdx)
+      flowerPotIdx += 1
 
       out.append( new TaskObject(flowerpot.name, Some(flowerpot), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true) )
     }
