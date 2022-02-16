@@ -226,7 +226,6 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
     if (mode == MODE_CHEMISTRY_MIX_PAINT_SECONDARY) {
       return mkGoldActionSequenceMixPaint(modifiers, runner)
     } else if (mode == MODE_CHEMISTRY_MIX_PAINT_TERTIARY) {
-      // TODO
       return mkGoldActionSequenceMixPaint(modifiers, runner)
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
@@ -334,6 +333,59 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
 
     // Wait one moment
     runAction("wait1", runner)
+
+
+    // Stop point -- check if we only need to mix secondary paint colour
+    if (mode == MODE_CHEMISTRY_MIX_PAINT_SECONDARY) {
+      // Stop here
+      return (true, getActionHistory(runner))
+    }
+
+
+    // Next step -- tertiary paint colour
+
+    // Step N: Open paint cupboard to get access to more paints
+
+
+    // Step N: Mix tertiary colour
+    // Step NA: Move all components into the container
+    for (inputColor <- inputColorsTertiary) {
+      var substance = Array.empty[EnvObject]
+      breakable {
+        for (i <- 0 to 10) {
+          substance = PathFinder.getAllAccessibleEnvObject(inputColor, getCurrentAgentLocation(runner))
+          if (substance.size > 0) break    // Found at least one substance matching the criteria
+          // If we reach here, we didn't find a subtance -- start opening closed containers
+          val success = PathFinder.openRandomClosedContainer(currentLocation = getCurrentAgentLocation(runner), runner)
+        }
+      }
+
+      // Check for failure
+      if (substance.length == 0) {
+        // For some reason we weren't able to find the substance, even after opening multiple containers
+        return (false, getActionHistory(runner))
+      }
+
+      //runAction("move " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(mixingContainer.get, getCurrentAgentLocation(runner)).get, runner)
+      val paintContainer = substance(0).getContainer()
+      runAction("pour " + PathFinder.getObjUniqueReferent(paintContainer.get, getCurrentAgentLocation(runner)).get + " in " + PathFinder.getObjUniqueReferent(mixingContainer.get, getCurrentAgentLocation(runner)).get, runner)
+    }
+
+    // Step NB: Mix
+    runAction("mix " + PathFinder.getObjUniqueReferent(mixingContainer.get, getCurrentAgentLocation(runner)).get, runner)
+
+
+    // Look around
+    runAction("look around", runner)
+
+    // Step N: Focus on substance
+    val mixingResult2 = PathFinder.getAllAccessibleEnvObject(tertiaryColor.get, getCurrentAgentLocation(runner))
+    if (mixingResult2.size == 0) return (false, getActionHistory(runner))
+    runAction("focus on " + PathFinder.getObjUniqueReferent(mixingResult2(0), getCurrentAgentLocation(runner)).get, runner)
+
+    // Wait one moment
+    runAction("wait1", runner)
+
 
     // Return
     return (true, getActionHistory(runner))

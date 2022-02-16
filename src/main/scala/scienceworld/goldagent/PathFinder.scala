@@ -5,12 +5,15 @@ import scienceworld.actions.{Action, ActionFocus, ActionLookAround, ActionMoveOb
 import scienceworld.input.InputParser
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.location.{Location, Universe}
+import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.ObjMonitor
+import scienceworld.tasks.specifictasks.TaskParametric
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.ClassTag
+import scala.util.Random
 
 
 /*
@@ -358,6 +361,25 @@ object PathFinder {
     // If we reach here, the object was not found
     return None
   }
+
+
+  /*
+   * High-level helpers
+   */
+  def openRandomClosedContainer(currentLocation:EnvObject, runner:PythonInterface): Boolean = {
+    val allObjs = currentLocation.getContainedAccessibleObjects(includeHidden = false)
+    for (obj <- Random.shuffle(allObjs.toList)) {
+      if ((obj.propContainer.isDefined) && (obj.propContainer.get.isContainer) && (obj.propContainer.get.isOpen == false) && (obj.propContainer.get.isClosable)) {
+        // Try to open this container
+        TaskParametric.runAction("open " + PathFinder.getObjUniqueReferent(obj, currentLocation).get, runner)
+        return true
+      }
+    }
+
+    // If we reach here, no more containers to open
+    return false
+  }
+
 
   /*
    * Helpers

@@ -94,6 +94,26 @@ trait TaskParametric {
   }
 
   def runAction(actionStr:String, runner:PythonInterface): Unit = {
+    TaskParametric.runAction(actionStr, runner)
+  }
+
+  def getActionHistory(runner:PythonInterface):Array[String] = {
+    TaskParametric.getActionHistory(runner)
+  }
+
+  def getCurrentAgentLocation(runner:PythonInterface):EnvObject = {
+    TaskParametric.getCurrentAgentLocation(runner)
+  }
+
+}
+
+
+object TaskParametric {
+
+  /*
+   * Helper functions (runner for gold action sequences)
+   */
+  def runAction(actionStr:String, runner:PythonInterface): Unit = {
     val observation = runner.step(actionStr)
   }
 
@@ -104,4 +124,5 @@ trait TaskParametric {
   def getCurrentAgentLocation(runner:PythonInterface):EnvObject = {
     return runner.agentInterface.get.agent.getContainer().get
   }
+
 }
