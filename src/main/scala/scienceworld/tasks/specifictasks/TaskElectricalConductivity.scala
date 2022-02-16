@@ -428,7 +428,6 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
     val wire2 = wires(1)
     val wire3 = wires(2)
 
-
     // Do connections
 
     // Connect battery to wires
@@ -490,7 +489,7 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
     return (true, getActionHistory(runner))
   }
 
-
+/*
   def mkGoldActionSequencePowerComponentRenewable(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
@@ -610,6 +609,7 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
     // Return
     return (true, getActionHistory(runner))
   }
+*/
 
 }
 

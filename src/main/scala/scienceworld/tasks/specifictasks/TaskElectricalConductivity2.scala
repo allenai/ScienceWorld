@@ -1,8 +1,9 @@
 package scienceworld.tasks.specifictasks
 
 import scienceworld.actions.Action
+import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.electricalcomponent.{Battery, ElectricBuzzer, ElectricMotor, LightBulb}
+import scienceworld.objects.electricalcomponent.{Battery, ElectricBuzzer, ElectricMotor, LightBulb, PolarizedElectricalComponent, UnpolarizedElectricalComponent, Wire}
 import scienceworld.objects.misc.{ForkMetal, ForkPlastic}
 import scienceworld.objects.substance.{SodiumChloride, Water}
 import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceElectricalConductivity}
@@ -14,11 +15,14 @@ import scienceworld.tasks.goals.specificgoals.{GoalFind, GoalInRoomWithObject, G
 import scienceworld.tasks.specifictasks.TaskElectricalConductivity2.MODE_TEST_CONDUCTIVITY_UNKNOWN
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
+import scala.util.control.Breaks.{break, breakable}
 
 class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNOWN) extends TaskParametric {
   val taskName = "task-2a-" + mode.replaceAll(" ", "-")
 
   val locations = Array("workshop")
+  val substanceLocations = Array("workshop", "kitchen", "living room")
 
   // Variation 1: Battery
   val powerSource = new ArrayBuffer[ Array[TaskModifier] ]()
@@ -36,14 +40,19 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
   for (location <- locations) {
     for (color <- lightColors) {
       val lightbulb = new LightBulb(color)
-      partToPower.append( Array( new TaskObject(lightbulb.name, Some(lightbulb), roomToGenerateIn = location, Array.empty[String], generateNear = 0) ))
+      partToPower.append( Array( new TaskObject(lightbulb.name, Some(lightbulb), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+        new TaskValueStr(key = "partToPower", value = lightbulb.name) ))
+
     }
     // Additional parts (motor)
     val electricMotor = new ElectricMotor()
-    partToPower.append( Array(new TaskObject(electricMotor.name, Some(electricMotor), roomToGenerateIn = location, Array.empty[String], generateNear = 0) ))
+    partToPower.append( Array(new TaskObject(electricMotor.name, Some(electricMotor), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "partToPower", value = electricMotor.name) ))
+
     // Additional parts (buzzer)
     val electricBuzzer = new ElectricBuzzer()
-    partToPower.append( Array(new TaskObject(electricBuzzer.name, Some(electricBuzzer), roomToGenerateIn = location, Array.empty[String], generateNear = 0) ))
+    partToPower.append( Array(new TaskObject(electricBuzzer.name, Some(electricBuzzer), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
+      new TaskValueStr(key = "partToPower", value = electricBuzzer.name) ))
   }
 
   // Variation 3: Substance to test
@@ -54,10 +63,14 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
       unknownSubstances.append(Array(
         new TaskObject(unknownSubstance.name, Some(unknownSubstance), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
         new TaskValueStr(key = "unknownSubstance", value = unknownSubstance.name),
+        new TaskValueStr(key = "substanceLocation", value = location),
         new TaskValueBool(key = "unknownIsConductive", value = unknownSubstance.propMaterial.get.electricallyConductive)
       ))
     }
   }
+  // Make sure the list is sorted by substance instead of location, so that the unseen sets have new substances
+  val unknownSubstancesSorted = unknownSubstances.sortBy(getTaskValueStr(_, key = "unknownSubstance"))
+
 
   // Variation 4: Answer boxes
   val answerBoxes = new ArrayBuffer[ Array[TaskModifier] ]()
@@ -79,7 +92,7 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
 
   // Combinations
   val combinations = for {
-    m <- unknownSubstances
+    m <- unknownSubstancesSorted
     i <- powerSource
     j <- partToPower
     n <- answerBoxes
@@ -128,6 +141,7 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
     val unknownSubstanceName = this.getTaskValueStr(modifiers, "unknownSubstance")
     val unknownSubstanceConductive = this.getTaskValueBool(modifiers, "unknownIsConductive")
     val specificSubstanceName = this.getTaskValueStr(modifiers, "substance")
+    val specificSubstanceLocation = this.getTaskValueStr(modifiers, "substanceLocation")
     val specificSubstanceConductive = this.getTaskValueBool(modifiers, key = "isConductive")
 
 
@@ -173,6 +187,7 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
 
       // Description
       description = "Your task is to determine if " + unknownSubstanceName.get + " is electrically conductive. "
+      description += "The " + unknownSubstanceName.get + " is located around the " + specificSubstanceLocation.get + ". "
       description += "First, focus on the " + unknownSubstanceName.get + ". "
       description += "If it is electrically conductive, place it in the " + boxNameConductive.get + ". "
       description += "If it is electrically nonconductive, place it in the " + boxNameNonconductive.get + ". "
@@ -195,9 +210,186 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
   }
 
 
+  /*
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_TEST_CONDUCTIVITY_UNKNOWN) {
+      return mkGoldActionSequenceTestComponent(modifiers, runner)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+
+  }
+
+  /*
+   * Gold action sequences
+   */
+  def mkGoldActionSequenceTestComponent(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val boxNameConductive = this.getTaskValueStr(modifiers, "conductive")
+    val boxNameNonconductive = this.getTaskValueStr(modifiers, "nonconductive")
+    val unknownSubstanceName = this.getTaskValueStr(modifiers, "unknownSubstance")
+    val unknownSubstanceConductive = this.getTaskValueBool(modifiers, "unknownIsConductive")
+    //val specificSubstanceName = this.getTaskValueStr(modifiers, "substance")
+    val specificSubstanceConductive = this.getTaskValueBool(modifiers, key = "isConductive")
+    val partToPower = this.getTaskValueStr(modifiers, "partToPower")
+
+
+    // Step 1: Find the substance
+    val startLocation1 = agent.getContainer().get.name
+    //val actionStrsSearchPattern1 = PathFinder.createActionSequenceSearchPattern(universe, agent, startLocation1)
+    val actionStrsSearchPattern1 = PathFinder.createActionSequenceSearchPatternPrecomputed(universe, agent, startLocation1)
+
+    var substance:Option[EnvObject] = None
+    var substanceContainer:Option[EnvObject] = None
+
+    // Walk around the environment until we find the thing to test
+    breakable {
+      for (searchPatternStep <- actionStrsSearchPattern1) {
+        // First, check to see if the object is here
+        val curLocSearch = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe) // Get a pointer to the whole room the answer box is in
+        val substance_ = PathFinder.getAllAccessibleEnvObject(unknownSubstanceName.get, curLocSearch.get)
+
+        if (substance_.length > 0) {
+          // Substance likely found -- try to pick it up
+          substance = Some(substance_(0))
+          // If it's not a solid, then pick up it's container
+          if ((substance.get.propMaterial.isDefined) && (substance.get.propMaterial.get.stateOfMatter != "solid")) {
+            // Assume liquid, pick up container
+            // TODO: Check that container is movable.
+            substanceContainer = substance.get.getContainer()
+            runAction("pick up " + PathFinder.getObjUniqueReferent(substance.get, getCurrentAgentLocation(runner)).get, runner)
+
+          } else {
+            // Assume solid, pick up thing
+            substanceContainer = substance // Container is itself, since it's the thing we'll be 'moving' to the workshop to test conductivity
+            runAction("pick up " + PathFinder.getObjUniqueReferent(substanceContainer.get, getCurrentAgentLocation(runner)).get, runner)
+          }
+
+          // If we reach here, we've found and picked up the substance
+          break
+        }
+
+        // If not found, move to next location to continue search
+        runActionSequence(searchPatternStep, runner)
+      }
+    }
+
+    // Check that we successfully found the substance -- if not, fail
+    if (substanceContainer.isEmpty) {
+      // Fail
+      return (false, getActionHistory(runner))
+    }
+
+    // Step 2: Focus on substance
+    runAction("focus on " + PathFinder.getObjUniqueReferent(substance.get, getCurrentAgentLocation(runner)).get, runner)
+
+
+    // Step 3: Move from current location to workshop
+    val partLocation = "workshop"
+    val curLoc = agent.getContainer().get.name
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation = curLoc, endLocation = partLocation)
+    runActionSequence(actionStrs, runner)
+
+    // Step 4: Drop substance
+    val nameOfThingToDrop = PathFinder.getObjUniqueReferent(substanceContainer.get, agent)      //## TODO: Fails on getting container sometimes, for some reason.  (probably not movable, so wasn't picked up in the first place)
+    if (nameOfThingToDrop.isEmpty) {
+      // Fail
+      return (false, getActionHistory(runner))
+    }
+    runAction("drop " + nameOfThingToDrop.get, runner)
+
+    // Step 4A: Look around
+    val (actionLook, actionLookStr) = PathFinder.actionLookAround(agent)
+    runAction(actionLookStr, runner)
+
+
+    // Step 1B: Look at part to power (TODO)
+
+
+
+    // Step 5: Get references to parts
+    val curLoc1 = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe)    // Get a pointer to the whole room the answer box is in
+    val objsInRoom = curLoc1.get.getContainedObjectsRecursiveAccessible(includeHidden = false)
+
+    // Part to power
+    val component = PathFinder.getAllAccessibleEnvObject(partToPower.get, curLoc1.get)(0)
+
+    // Parts to use to power
+    val battery = curLoc1.get.getContainedAccessibleObjectsOfType[Battery](includeHidden = false)
+    val wires = Random.shuffle( curLoc1.get.getContainedAccessibleObjectsOfType[Wire](includeHidden = false).toList )
+    if (wires.size < 3) {
+      // Fail
+      return (false, getActionHistory(runner))
+    }
+
+    val wire1 = wires(0)
+    val wire2 = wires(1)
+    val wire3 = wires(2)
+
+    // Do connections
+
+    // Connect battery to wires
+    runAction("connect battery anode to " + PathFinder.getObjUniqueReferent(wire1, getCurrentAgentLocation(runner)).get + " terminal 1", runner)
+    runAction("connect battery cathode to " + PathFinder.getObjUniqueReferent(wire2, getCurrentAgentLocation(runner)).get + " terminal 1", runner)
+
+    // Connect wires to actuator
+    var anodeReferent:String = ""
+    var cathodeReferent:String = ""
+    component match {
+      case p:PolarizedElectricalComponent => {
+        anodeReferent = PathFinder.getObjUniqueReferent(p.anode, getCurrentAgentLocation(runner)).get
+        cathodeReferent = PathFinder.getObjUniqueReferent(p.cathode, getCurrentAgentLocation(runner)).get
+      }
+      case u:UnpolarizedElectricalComponent => {
+        anodeReferent = PathFinder.getObjUniqueReferent(u.terminal1.get, getCurrentAgentLocation(runner)).get
+        cathodeReferent = PathFinder.getObjUniqueReferent(u.terminal2.get, getCurrentAgentLocation(runner)).get
+      }
+      case _ => {
+        // This should never happen?
+      }
+    }
+    runAction("connect " + PathFinder.getObjUniqueReferent(wire1, getCurrentAgentLocation(runner)).get + " terminal 2 to " + cathodeReferent, runner)   // to device cathode
+    runAction("connect " + PathFinder.getObjUniqueReferent(wire3, getCurrentAgentLocation(runner)).get + " terminal 2 to " + anodeReferent, runner)   // to device anode
+
+    // Connect substance to test
+    runAction("connect " + substance.get.name + " terminal 1 to " + PathFinder.getObjUniqueReferent(wire2, getCurrentAgentLocation(runner)).get + " terminal 2", runner)
+    runAction("connect " + substance.get.name + " terminal 2 to " + PathFinder.getObjUniqueReferent(wire3, getCurrentAgentLocation(runner)).get + " terminal 1", runner)
+
+
+    // Wait one moment, for the power to cycle
+    runAction("wait1", runner)
+    runAction("wait1", runner)
+
+
+    // Step N: Check to see if the actuator is on or not
+
+
+    // Look around
+    runAction("look around", runner)
+
+    var isConductive:Boolean = false
+    if ((component.propDevice.isDefined) && (component.propDevice.get.isActivated == true)) {
+      isConductive = true
+    }
+
+    val boxConductive = PathFinder.getAllAccessibleEnvObject(boxNameConductive.get, curLoc1.get)(0)
+    val boxNonconductive = PathFinder.getAllAccessibleEnvObject(boxNameNonconductive.get, curLoc1.get)(0)
+    if (isConductive) {
+      runAction("move " + substance.get.name + " to " + PathFinder.getObjUniqueReferent(boxConductive, getCurrentAgentLocation(runner)).get, runner)
+    } else {
+      runAction("move " + substance.get.name + " to " + PathFinder.getObjUniqueReferent(boxNonconductive, getCurrentAgentLocation(runner)).get, runner)
+    }
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    // Return
+    return (true, getActionHistory(runner))
   }
 
 }
