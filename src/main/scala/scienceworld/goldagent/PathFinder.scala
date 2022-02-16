@@ -19,7 +19,7 @@ import scala.reflect.ClassTag
 
 
 object PathFinder {
-
+  val precomputedExhaustivePaths = mutable.Map[String, Array[Array[String]]]()  // Key: Start location, value: Path
 
 
   def createActionSequence(universe:EnvObject, agent:Agent, startLocation:String, endLocation:String): (Array[Action], Array[String]) = {
@@ -144,7 +144,15 @@ object PathFinder {
     return (actionSequenceSegments.toArray)
   }
 
+  // Stores previously computed paths, for speed.
+  // Assumes that critical aspects of the environment (e.g. doors being closed) does not change between runs.
+  def createActionSequenceSearchPatternPrecomputed(universe:EnvObject, agent:Agent, startLocation:String): (Array[Array[String]]) = {
+    if (!precomputedExhaustivePaths.contains(startLocation) ) {
+      precomputedExhaustivePaths(startLocation) = createActionSequenceSearchPattern(universe, agent, startLocation)
+    }
 
+    return precomputedExhaustivePaths(startLocation)
+  }
 
   // Find a valid path (sequence of locations) from a starting location to an end location.
   // Returns (success, array(location names) )
@@ -371,6 +379,21 @@ object PathFinder {
   // Find all objects with a given name in the universe
   def getAllEnvObject(queryName:String, universe:EnvObject):Array[EnvObject] = {
     val allObjects = universe.getContainedObjectsAndPortalsRecursive(true)
+    val out = new ArrayBuffer[EnvObject]
+
+    for (obj <- allObjects) {
+      if ((sanitize(obj.name) == sanitize(queryName)) || (sanitize(obj.getDescriptName()) == sanitize(queryName))) {
+        out.append(obj)
+      }
+    }
+
+    // Default return
+    out.toArray
+  }
+
+  // Find all objects with a given name in the universe
+  def getAllAccessibleEnvObject(queryName:String, universe:EnvObject):Array[EnvObject] = {
+    val allObjects = universe.getContainedObjectsAndPortalsRecursive(true, includePortalConnections = false)
     val out = new ArrayBuffer[EnvObject]
 
     for (obj <- allObjects) {

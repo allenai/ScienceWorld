@@ -186,11 +186,11 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
 
   // Check to see if this terminal (ultimately) connects to ground
   def connectsToGround(maxSteps:Int = 10):Boolean = {
-    println(" * connectsToGround(" + this.name + " / " + this.parentObject.name + " / " + maxSteps + "):")
+    //println(" * connectsToGround(" + this.name + " / " + this.parentObject.name + " / " + maxSteps + "):")
 
     // For each connectected object
     for (obj <- propElectricalConnection.get.getConnections()) {
-      println ("\tconnected to object: " + obj.toStringMinimal() + " on " + obj.getContainer().get.name)
+      //println ("\tconnected to object: " + obj.toStringMinimal() + " on " + obj.getContainer().get.name)
       obj match {
         case co:Terminal => {
           val parentObject = co.parentObject
