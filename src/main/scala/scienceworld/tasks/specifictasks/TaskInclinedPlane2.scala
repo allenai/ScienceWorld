@@ -11,7 +11,9 @@ import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalDeactivateDeviceWithName, GoalFindInclinedPlane, GoalMoveToLocation, GoalMoveToNewLocation, GoalPastActionExamineObject, GoalSpecificObjectInDirectContainer}
 import TaskInclinedPlane2._
 import scienceworld.actions.Action
+import scienceworld.goldagent.PathFinder
 import scienceworld.runtime.pythonapi.PythonInterface
+import scienceworld.tasks.specifictasks.TaskInclinedPlane1.actionSequenceMeasureBlockFallTime
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
@@ -183,9 +185,98 @@ class TaskInclinedPlane2(val mode:String = MODE_FRICTION_UNNAMED) extends TaskPa
   }
 
 
+  /*
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_FRICTION_UNNAMED) {
+      return mkGoldActionSequenceLifeStages(modifiers, runner)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+
+  }
+
+  /*
+   * Gold action sequences
+   */
+  def mkGoldActionSequenceLifeStages(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    // Step 1: Find seed type
+    val leastFriction = this.getTaskValueStr(modifiers, "leastFriction").get
+    val mostFriction = this.getTaskValueStr(modifiers, "mostFriction").get
+    val modeMostLeastFriction = this.getTaskValueStr(modifiers, "mode").get
+
+    val planeName1 = this.getTaskValueStr(modifiers, "planeName1").get
+    val planeName2 = this.getTaskValueStr(modifiers, "planeName2").get
+    val planeLocation = this.getTaskValueStr(modifiers, "planeLocation").get
+    val blockName = this.getTaskValueStr(modifiers, "blockName").get
+    val timeDeviceName = this.getTaskValueStr(modifiers, key = "timeDeviceName").get
+
+
+    // Step 1: Move from starting location to task location
+    val startLocation = agent.getContainer().get.name
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = planeLocation)
+    runActionSequence(actionStrs, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+    // Take stop watch
+    val timeTools = PathFinder.getAllAccessibleEnvObject(queryName = timeDeviceName, getCurrentAgentLocation(runner))
+    if (timeTools.length == 0) return (false, getActionHistory(runner))
+    val timeTool = timeTools(0)
+    runAction("pick up " + PathFinder.getObjUniqueReferent(timeTool, getCurrentAgentLocation(runner)).get, runner)
+
+
+    // Get reference to block
+    val blocks = PathFinder.getAllAccessibleEnvObject(queryName = blockName, getCurrentAgentLocation(runner))
+    if (blocks.length == 0) return (false, getActionHistory(runner))
+    val block = blocks(0)
+
+    // Get reference to inclined planes
+    val inclinedPlanes = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[InclinedPlane]().toArray.sortBy(_.name)
+    val inclinedPlane1 = inclinedPlanes(0)
+    val inclinedPlane2 = inclinedPlanes(1)
+
+
+    // Slide block down plane 1
+    val (success1, time1) = actionSequenceMeasureBlockFallTime(block = block, timeTool = timeTool, inclinedPlane = inclinedPlane1, runner)
+    if (!success1) return (false, getActionHistory(runner))
+
+    // Slide block down plane 2
+    val (success2, time2) = actionSequenceMeasureBlockFallTime(block = block, timeTool = timeTool, inclinedPlane = inclinedPlane2, runner)
+    if (!success2) return (false, getActionHistory(runner))
+
+
+    var planeToSelect:Option[EnvObject] = None
+    if (time1 > time2) {
+      // Plane 1 had more friction
+      if (modeMostLeastFriction == "most") {
+        planeToSelect = Some(inclinedPlane1)
+      } else {
+        planeToSelect = Some(inclinedPlane2)
+      }
+    } else {
+      // Plane 2 had more friction
+      if (modeMostLeastFriction == "most") {
+        planeToSelect = Some(inclinedPlane2)
+      } else {
+        planeToSelect = Some(inclinedPlane1)
+      }
+    }
+
+    // Step 2: Focus on substance
+    runAction("focus on " + PathFinder.getObjUniqueReferent(planeToSelect.get, getCurrentAgentLocation(runner)).get, runner)
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    // Return
+    return (true, getActionHistory(runner))
   }
 
 
