@@ -4,10 +4,13 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.actions.Action
 import scienceworld.environments.ContainerMaker
+import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.containers.{CeramicCup, FlowerPot}
+import scienceworld.objects.containers.{CeramicCup, FlowerPot, SelfWateringFlowerPot}
 import scienceworld.objects.devices.Stove
+import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.livingthing.plant.{AppleTree, Plant, Soil}
+import scienceworld.objects.misc.InclinedPlane
 import scienceworld.objects.taskitems.AnswerBox
 import scienceworld.processes.PlantReproduction
 import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT, PLANT_STAGE_REPRODUCING, PLANT_STAGE_SEED, PLANT_STAGE_SEEDLING}
@@ -20,6 +23,7 @@ import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalC
 import scienceworld.tasks.specifictasks.TaskChangeOfState.{MODE_BOIL, MODE_CHANGESTATE, MODE_FREEZE, MODE_MELT}
 import scienceworld.tasks.specifictasks.TaskFindLivingNonLiving.{MODE_ANIMAL, MODE_LIVING, MODE_NONLIVING, MODE_PLANT}
 import scienceworld.tasks.specifictasks.TaskGrowPlant.{MODE_GROW_FRUIT, MODE_GROW_PLANT}
+import scienceworld.tasks.specifictasks.TaskInclinedPlane1.actionSequenceMeasureBlockFallTime
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
@@ -36,25 +40,25 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
   //val locations = Array("green house")
   for (location <- locations) {
 
-    val seedJarApple = this.mkSeedJar(PlantReproduction.PLANT_APPLE)
+    val seedJarApple = TaskGrowPlant.mkSeedJar(PlantReproduction.PLANT_APPLE)
     seeds.append(Array(new TaskObject(seedJarApple.name, Some(seedJarApple), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_APPLE), new TaskValueStr("location", location)))
 
-    val seedJarAvocado = this.mkSeedJar(PlantReproduction.PLANT_AVOCADO)
+    val seedJarAvocado = TaskGrowPlant.mkSeedJar(PlantReproduction.PLANT_AVOCADO)
     seeds.append(Array(new TaskObject(seedJarAvocado.name, Some(seedJarAvocado), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_AVOCADO), new TaskValueStr("location", location)))
 
-    val seedJarBanana = this.mkSeedJar(PlantReproduction.PLANT_BANANA)
+    val seedJarBanana = TaskGrowPlant.mkSeedJar(PlantReproduction.PLANT_BANANA)
     seeds.append(Array(new TaskObject(seedJarBanana.name, Some(seedJarBanana), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_BANANA), new TaskValueStr("location", location)))
 
-    val seedJarCherry = this.mkSeedJar(PlantReproduction.PLANT_CHERRY)
+    val seedJarCherry = TaskGrowPlant.mkSeedJar(PlantReproduction.PLANT_CHERRY)
     seeds.append(Array(new TaskObject(seedJarCherry.name, Some(seedJarCherry), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_CHERRY), new TaskValueStr("location", location)))
 
-    val seedJarLemon = this.mkSeedJar(PlantReproduction.PLANT_LEMON)
+    val seedJarLemon = TaskGrowPlant.mkSeedJar(PlantReproduction.PLANT_LEMON)
     seeds.append(Array(new TaskObject(seedJarLemon.name, Some(seedJarLemon), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_LEMON), new TaskValueStr("location", location)))
 
-    val seedJarOrange = this.mkSeedJar(PlantReproduction.PLANT_ORANGE)
+    val seedJarOrange = TaskGrowPlant.mkSeedJar(PlantReproduction.PLANT_ORANGE)
     seeds.append(Array(new TaskObject(seedJarOrange.name, Some(seedJarOrange), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_ORANGE), new TaskValueStr("location", location)))
 
-    val seedJarPeach = this.mkSeedJar(PlantReproduction.PLANT_PEACH)
+    val seedJarPeach = TaskGrowPlant.mkSeedJar(PlantReproduction.PLANT_PEACH)
     seeds.append(Array(new TaskObject(seedJarApple.name, Some(seedJarPeach), roomToGenerateIn = location, Array.empty[String], generateNear = 0), new TaskValueStr("seedType", PlantReproduction.PLANT_PEACH), new TaskValueStr("location", location)))
 
   }
@@ -285,14 +289,167 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
   }
 
 
+  /*
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_GROW_PLANT) {
+      return mkGoldActionSequenceGrowPlant(modifiers, runner)
+    } else if (mode == MODE_GROW_FRUIT) {
+      return mkGoldActionSequenceGrowPlant(modifiers, runner)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+
+  }
+
+  /*
+   * Gold action sequences
+   */
+  def mkGoldActionSequenceGrowPlant(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val seedType = this.getTaskValueStr(modifiers, "seedType").get
+    val seedLocation = this.getTaskValueStr(modifiers, "location").get
+    val containerNames = this.getTaskValueStr(modifiers, "containerNames").get.split(",")
+
+
+    // Step 1: Move from starting location to task location
+    val startLocation = agent.getContainer().get.name
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = seedLocation)
+    runActionSequence(actionStrs, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+    // Take seed jar
+    val seedJars = PathFinder.getAllAccessibleEnvObject(queryName = "seed jar", getCurrentAgentLocation(runner))
+    if (seedJars.length == 0) return (false, getActionHistory(runner))
+    val seedJar = seedJars(0)
+    runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
+
+    // Go to green house
+    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "green house")
+    runActionSequence(actionStrs1, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+    // Take shovel
+    TaskParametric.runAction("pick up shovel", runner)
+
+    // Go outside
+    val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "outside")
+    runActionSequence(actionStrs2, runner)
+
+    // Use shovel on ground
+    TaskParametric.runAction("use shovel in inventory on ground", runner)
+
+    // Pick up dirt
+    TaskParametric.runAction("pick up soil", runner)
+
+    // Go back to the green house
+    val (actions3, actionStrs3) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "green house")
+    runActionSequence(actionStrs3, runner)
+
+    // Get references to flower pots
+    val flowerpots = Random.shuffle(getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[FlowerPot]() ++ getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[SelfWateringFlowerPot]()).toList
+    val flowerpot = flowerpots(0)
+
+    // Move soil to flower pot
+    TaskParametric.runAction("move soil in inventory to " + PathFinder.getObjUniqueReferent(flowerpot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+
+    // Move seed to flower pot
+    val seedName = seedType + " seed in seed jar"
+    TaskParametric.runAction("move " + seedName + " to " + PathFinder.getObjUniqueReferent(flowerpot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+    TaskParametric.runAction("0", runner)   // Ambiguity resolution
+
+    // Get reference to seed
+    val seed = flowerpot.getContainedAccessibleObjectsOfType[LivingThing]().toList(0)
+
+    // Step N: Focus on seed
+    val seedName1 = seedType + " seed in " + flowerpot.name
+    runAction("focus on " + seedName1, runner)
+
+
+    runAction("wait10", runner)
+    runAction("look around", runner)
+    runAction("wait10", runner)
+    runAction("look around", runner)
+    runAction("wait10", runner)
+    runAction("look around", runner)
+    runAction("wait10", runner)
+    runAction("look around", runner)
+
+    /*
+
+    // Get reference to block
+    val blocks = PathFinder.getAllAccessibleEnvObject(queryName = blockName, getCurrentAgentLocation(runner))
+    if (blocks.length == 0) return (false, getActionHistory(runner))
+    val block = blocks(0)
+
+    // Get reference to inclined planes
+    val inclinedPlanes = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[InclinedPlane]().toArray.sortBy(_.name)
+    val inclinedPlane1 = inclinedPlanes(0)
+    val inclinedPlane2 = inclinedPlanes(1)
+
+
+    // Slide block down plane 1
+    val (success1, time1) = actionSequenceMeasureBlockFallTime(block = block, timeTool = timeTool, inclinedPlane = inclinedPlane1, runner)
+    if (!success1) return (false, getActionHistory(runner))
+
+    // Slide block down plane 2
+    val (success2, time2) = actionSequenceMeasureBlockFallTime(block = block, timeTool = timeTool, inclinedPlane = inclinedPlane2, runner)
+    if (!success2) return (false, getActionHistory(runner))
+
+
+    var planeToSelect:Option[EnvObject] = None
+    if (time1 < time2) {
+      // Plane 1 had more friction
+      if (modeSteepShallow == "steepest") {
+        planeToSelect = Some(inclinedPlane1)
+      } else {
+        planeToSelect = Some(inclinedPlane2)
+      }
+    } else {
+      // Plane 2 had more friction
+      if (modeSteepShallow == "steepest") {
+        planeToSelect = Some(inclinedPlane2)
+      } else {
+        planeToSelect = Some(inclinedPlane1)
+      }
+    }
+
+    // Step 2: Focus on substance
+    runAction("focus on " + PathFinder.getObjUniqueReferent(planeToSelect.get, getCurrentAgentLocation(runner)).get, runner)
+    */
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    // Return
+    return (true, getActionHistory(runner))
   }
 
   /*
    * Helpers
    */
+
+
+
+}
+
+
+object TaskGrowPlant {
+  val MODE_GROW_PLANT       = "grow plant"
+  val MODE_GROW_FRUIT       = "grow fruit"
+
+  def registerTasks(taskMaker:TaskMaker1): Unit = {
+    taskMaker.addTask( new TaskGrowPlant(mode = MODE_GROW_PLANT) )
+    taskMaker.addTask( new TaskGrowPlant(mode = MODE_GROW_FRUIT) )
+  }
 
   // Make a jar containing a number of seeds of the same type
   def mkSeedJar(plantType:String, numSeeds:Int = 5):EnvObject = {
@@ -319,18 +476,6 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     }
     // We should never reach here
     return ""
-  }
-
-}
-
-
-object TaskGrowPlant {
-  val MODE_GROW_PLANT       = "grow plant"
-  val MODE_GROW_FRUIT       = "grow fruit"
-
-  def registerTasks(taskMaker:TaskMaker1): Unit = {
-    taskMaker.addTask( new TaskGrowPlant(mode = MODE_GROW_PLANT) )
-    taskMaker.addTask( new TaskGrowPlant(mode = MODE_GROW_FRUIT) )
   }
 
 }
