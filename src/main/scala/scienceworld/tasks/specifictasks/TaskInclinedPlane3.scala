@@ -11,7 +11,9 @@ import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalDeactivateDeviceWithName, GoalFindInclinedPlane, GoalFindInclinedPlaneNamed, GoalMoveToLocation, GoalMoveToNewLocation, GoalPastActionExamineObject, GoalSpecificObjectInDirectContainer}
 import TaskInclinedPlane3._
 import scienceworld.actions.Action
+import scienceworld.goldagent.PathFinder
 import scienceworld.runtime.pythonapi.PythonInterface
+import scienceworld.tasks.specifictasks.TaskInclinedPlane1.actionSequenceMeasureBlockFallTime
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
@@ -184,9 +186,97 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
   }
 
 
+  /*
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_ANGLE) {
+      return mkGoldActionSequenceLifeStages(modifiers, runner)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+
+  }
+
+  /*
+   * Gold action sequences
+   */
+  def mkGoldActionSequenceLifeStages(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val steepestAngle = this.getTaskValueStr(modifiers, "steepestAngle").get
+    val shallowestAngle = this.getTaskValueStr(modifiers, "shallowestAngle").get
+    val modeSteepShallow = this.getTaskValueStr(modifiers, "mode").get
+
+    val planeName1 = this.getTaskValueStr(modifiers, "planeName1").get
+    val planeName2 = this.getTaskValueStr(modifiers, "planeName2").get
+    val planeLocation = this.getTaskValueStr(modifiers, "planeLocation").get
+    val blockName = this.getTaskValueStr(modifiers, "blockName").get
+    val timeDeviceName = this.getTaskValueStr(modifiers, key = "timeDeviceName").get
+
+
+    // Step 1: Move from starting location to task location
+    val startLocation = agent.getContainer().get.name
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = planeLocation)
+    runActionSequence(actionStrs, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+    // Take stop watch
+    val timeTools = PathFinder.getAllAccessibleEnvObject(queryName = timeDeviceName, getCurrentAgentLocation(runner))
+    if (timeTools.length == 0) return (false, getActionHistory(runner))
+    val timeTool = timeTools(0)
+    runAction("pick up " + PathFinder.getObjUniqueReferent(timeTool, getCurrentAgentLocation(runner)).get, runner)
+
+
+    // Get reference to block
+    val blocks = PathFinder.getAllAccessibleEnvObject(queryName = blockName, getCurrentAgentLocation(runner))
+    if (blocks.length == 0) return (false, getActionHistory(runner))
+    val block = blocks(0)
+
+    // Get reference to inclined planes
+    val inclinedPlanes = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[InclinedPlane]().toArray.sortBy(_.name)
+    val inclinedPlane1 = inclinedPlanes(0)
+    val inclinedPlane2 = inclinedPlanes(1)
+
+
+    // Slide block down plane 1
+    val (success1, time1) = actionSequenceMeasureBlockFallTime(block = block, timeTool = timeTool, inclinedPlane = inclinedPlane1, runner)
+    if (!success1) return (false, getActionHistory(runner))
+
+    // Slide block down plane 2
+    val (success2, time2) = actionSequenceMeasureBlockFallTime(block = block, timeTool = timeTool, inclinedPlane = inclinedPlane2, runner)
+    if (!success2) return (false, getActionHistory(runner))
+
+
+    var planeToSelect:Option[EnvObject] = None
+    if (time1 < time2) {
+      // Plane 1 had more friction
+      if (modeSteepShallow == "steepest") {
+        planeToSelect = Some(inclinedPlane1)
+      } else {
+        planeToSelect = Some(inclinedPlane2)
+      }
+    } else {
+      // Plane 2 had more friction
+      if (modeSteepShallow == "steepest") {
+        planeToSelect = Some(inclinedPlane2)
+      } else {
+        planeToSelect = Some(inclinedPlane1)
+      }
+    }
+
+    // Step 2: Focus on substance
+    runAction("focus on " + PathFinder.getObjUniqueReferent(planeToSelect.get, getCurrentAgentLocation(runner)).get, runner)
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    // Return
+    return (true, getActionHistory(runner))
   }
 
 
@@ -210,7 +300,6 @@ object TaskInclinedPlane3 {
     val out = new ArrayBuffer[EnvObject]
 
     // Metal surfaces
-    out.append( new InclinedPlane(angleDeg = 50.0, additionalName = "A") )
     out.append( new InclinedPlane(angleDeg = 70.0, additionalName = "B") )
     out.append( new InclinedPlane(angleDeg = 80.0, additionalName = "C") )
     out.append( new InclinedPlane(angleDeg = 20.0, additionalName = "D") )
@@ -218,6 +307,7 @@ object TaskInclinedPlane3 {
     out.append( new InclinedPlane(angleDeg = 60.0, additionalName = "F") )
     out.append( new InclinedPlane(angleDeg = 40.0, additionalName = "G") )
     out.append( new InclinedPlane(angleDeg = 30.0, additionalName = "H") )
+    out.append( new InclinedPlane(angleDeg = 50.0, additionalName = "J") )
 
     // Return
     out.toArray
