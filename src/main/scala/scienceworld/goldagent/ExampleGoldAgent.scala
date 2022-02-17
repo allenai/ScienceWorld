@@ -17,10 +17,10 @@ object ExampleGoldAgent {
     val interface = new PythonInterface()
 
     //val specificTasks = Array(11,12,13,14)           // Do specific tasks
-    //val specificTasks = Array(7,8,9,10,11,12,13,14,18,19)           // Do specific tasks
+    //val specificTasks = Array(7,8,9,10,11,12,13,14,18,19,20,21,22,23,24)           // Do specific tasks
     //val specificTasks = Array(9)           // Do specific tasks
     //val specificTasks = Array(18)           // Do specific tasks
-    val specificTasks = Array(24)           // Do specific tasks
+    val specificTasks = Array(26)           // Do specific tasks
     //val specificTasks = Array.empty[Int]      // Do all
 
     val exportFilename = "goldsequences-" + specificTasks.mkString("-") + ".json"
@@ -72,9 +72,8 @@ object ExampleGoldAgent {
 
 
         // For each variation
-        for (variationIdx <- 0 until maxTaskVariations) {
-        //for (variationIdx <- 0 until math.min(50, maxTaskVariations)) {
-        //for (variationIdx <- 375 until maxTaskVariations) { //##TEST
+        //for (variationIdx <- 0 until maxTaskVariations) {
+        for (variationIdx <- 0 until math.min(50, maxTaskVariations)) {
           println("---------------------------")
           println("   Task " + taskIdx + "   " + taskName)
           println("   Variation: " + variationIdx + " / " + maxTaskVariations)
