@@ -338,29 +338,72 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     // Look around
     runAction("look around", runner)
 
-    // Take shovel
-    TaskParametric.runAction("pick up shovel", runner)
-
-    // Go outside
-    val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "outside")
-    runActionSequence(actionStrs2, runner)
-
-    // Use shovel on ground
-    TaskParametric.runAction("use shovel in inventory on ground", runner)
-
-    // Pick up dirt
-    TaskParametric.runAction("pick up soil", runner)
-
-    // Go back to the green house
-    val (actions3, actionStrs3) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "green house")
-    runActionSequence(actionStrs3, runner)
-
-    // Get references to flower pots
+    // Get references to flower pots (and sort them by those with and without soil)
     val flowerpots = Random.shuffle(getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[FlowerPot]() ++ getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[SelfWateringFlowerPot]()).toList
-    val flowerpot = flowerpots(0)
+    val flowerPotsWithSoil = new ArrayBuffer[EnvObject]
+    val flowerPotsWithoutSoil = new ArrayBuffer[EnvObject]
 
-    // Move soil to flower pot
-    TaskParametric.runAction("move soil in inventory to " + PathFinder.getObjUniqueReferent(flowerpot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+    for (pot <- flowerpots) {
+      val soil = pot.getContainedAccessibleObjectsOfType[Soil]()
+      if (soil.size > 0) {
+        flowerPotsWithSoil.append(pot)
+      } else {
+        flowerPotsWithoutSoil.append(pot)
+      }
+    }
+
+
+    // See what the soil situation is like
+    val soilInRoom = getCurrentAgentLocation(runner).getContainedObjectsOfType[Soil]().toArray
+
+    // Case 1: Flower pot already exists with soil inside
+    if (flowerPotsWithSoil.size > 0) {
+      // No need to do more
+    } else {
+      // Add soil to a flower pot
+
+      // Case 2: Soil is accessible in room, just move it into the pot
+      if (soilInRoom.size > 0) {
+        val pot = flowerPotsWithoutSoil(0)
+        // Move soil to flower pot
+        TaskParametric.runAction("move " + PathFinder.getObjUniqueReferent(soilInRoom(0), getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(pot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+        // Move pot reference to list of pots with soil
+        flowerPotsWithoutSoil.remove(0)
+        flowerPotsWithSoil.append(pot)
+      } else {
+        // Case 3: Soil is not in room, have to go dig it up
+        val pot = flowerPotsWithoutSoil(0)
+
+        // Take shovel
+        TaskParametric.runAction("pick up shovel", runner)
+
+        // Go outside
+        val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "outside")
+        runActionSequence(actionStrs2, runner)
+
+        // Use shovel on ground
+        TaskParametric.runAction("use shovel in inventory on ground", runner)
+
+        // Pick up dirt
+        TaskParametric.runAction("pick up soil", runner)
+
+        // Go back to the green house
+        val (actions3, actionStrs3) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "green house")
+        runActionSequence(actionStrs3, runner)
+
+        // Move soil to flower pot
+        TaskParametric.runAction("move soil in inventory to " + PathFinder.getObjUniqueReferent(pot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+
+        // Move pot reference to list of pots with soil
+        flowerPotsWithoutSoil.remove(0)
+        flowerPotsWithSoil.append(pot)
+      }
+
+    }
+
+
+    // Get reference to a valid flower pot we can use
+    val flowerpot = flowerPotsWithSoil(0)
 
     // Move seed to flower pot
     val seedName = seedType + " seed in seed jar"
@@ -379,49 +422,6 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
       runAction("wait1", runner)
       runAction("look around", runner)
     }
-
-    /*
-
-    // Get reference to block
-    val blocks = PathFinder.getAllAccessibleEnvObject(queryName = blockName, getCurrentAgentLocation(runner))
-    if (blocks.length == 0) return (false, getActionHistory(runner))
-    val block = blocks(0)
-
-    // Get reference to inclined planes
-    val inclinedPlanes = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[InclinedPlane]().toArray.sortBy(_.name)
-    val inclinedPlane1 = inclinedPlanes(0)
-    val inclinedPlane2 = inclinedPlanes(1)
-
-
-    // Slide block down plane 1
-    val (success1, time1) = actionSequenceMeasureBlockFallTime(block = block, timeTool = timeTool, inclinedPlane = inclinedPlane1, runner)
-    if (!success1) return (false, getActionHistory(runner))
-
-    // Slide block down plane 2
-    val (success2, time2) = actionSequenceMeasureBlockFallTime(block = block, timeTool = timeTool, inclinedPlane = inclinedPlane2, runner)
-    if (!success2) return (false, getActionHistory(runner))
-
-
-    var planeToSelect:Option[EnvObject] = None
-    if (time1 < time2) {
-      // Plane 1 had more friction
-      if (modeSteepShallow == "steepest") {
-        planeToSelect = Some(inclinedPlane1)
-      } else {
-        planeToSelect = Some(inclinedPlane2)
-      }
-    } else {
-      // Plane 2 had more friction
-      if (modeSteepShallow == "steepest") {
-        planeToSelect = Some(inclinedPlane2)
-      } else {
-        planeToSelect = Some(inclinedPlane1)
-      }
-    }
-
-    // Step 2: Focus on substance
-    runAction("focus on " + PathFinder.getObjUniqueReferent(planeToSelect.get, getCurrentAgentLocation(runner)).get, runner)
-    */
 
     // Wait one moment
     runAction("wait1", runner)
