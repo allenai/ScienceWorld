@@ -328,7 +328,8 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     val seedJars = PathFinder.getAllAccessibleEnvObject(queryName = "seed jar", getCurrentAgentLocation(runner))
     if (seedJars.length == 0) return (false, getActionHistory(runner))
     val seedJar = seedJars(0)
-    runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
+    //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
+    runAction("pick up seed jar", runner)
 
     // Go to green house
     val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "green house")
@@ -374,14 +375,10 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     runAction("focus on " + seedName1, runner)
 
 
-    runAction("wait10", runner)
-    runAction("look around", runner)
-    runAction("wait10", runner)
-    runAction("look around", runner)
-    runAction("wait10", runner)
-    runAction("look around", runner)
-    runAction("wait10", runner)
-    runAction("look around", runner)
+    for (i <- 0 until 20) {
+      runAction("wait1", runner)
+      runAction("look around", runner)
+    }
 
     /*
 
