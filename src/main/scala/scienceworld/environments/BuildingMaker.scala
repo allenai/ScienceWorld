@@ -296,11 +296,6 @@ object RoomMaker {
     val waterJug = new Jug()
     room.addObject(waterJug)
 
-
-    // Shovel
-    val shovel = new Shovel()
-    room.addObject(shovel)
-
 /*
     // debug (plant)
     val plant1 = new OrangeTree()
@@ -536,6 +531,15 @@ object BuildingMaker {
     // Foundry
     val foundry = RoomMaker.mkFoundry(sewer)
     universe.addObject(foundry)
+
+    // Randomly put a shoven in either the green house or outside
+    // Shovel
+    val shovel = new Shovel()
+    if (Random.nextInt(2) == 1) {
+      roomGreenhouse.addObject(shovel)
+    } else {
+      outside.addObject(shovel)
+    }
 
 
     // Doors

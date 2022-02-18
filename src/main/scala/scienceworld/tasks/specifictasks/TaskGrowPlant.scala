@@ -7,7 +7,7 @@ import scienceworld.environments.ContainerMaker
 import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.{CeramicCup, FlowerPot, SelfWateringFlowerPot}
-import scienceworld.objects.devices.Stove
+import scienceworld.objects.devices.{Shovel, Stove}
 import scienceworld.objects.livingthing.LivingThing
 import scienceworld.objects.livingthing.plant.{AppleTree, Plant, Soil}
 import scienceworld.objects.misc.InclinedPlane
@@ -374,12 +374,21 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
         // Case 3: Soil is not in room, have to go dig it up
         val pot = flowerPotsWithoutSoil(0)
 
-        // Take shovel
-        TaskParametric.runAction("pick up shovel", runner)
+        // Take shovel (if it's in this location)
+        var agentHasShovel:Boolean = false
+        if (getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[Shovel]().size > 0) {
+          TaskParametric.runAction("pick up shovel", runner)
+          agentHasShovel = true
+        }
 
         // Go outside
         val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "outside")
         runActionSequence(actionStrs2, runner)
+
+        // Take shovel (if it's in this location)
+        if ((!agentHasShovel) && (getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[Shovel]().size > 0)) {
+          TaskParametric.runAction("pick up shovel", runner)
+        }
 
         // Use shovel on ground
         TaskParametric.runAction("use shovel in inventory on ground", runner)
