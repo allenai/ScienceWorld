@@ -13,7 +13,7 @@ object PlantReproduction {
   // Plant names
   val PLANT_APPLE       = "apple"
   val PLANT_APRICOT     = "apricot"
-  val PLANT_AVOCADO     = "advocado"
+  val PLANT_AVOCADO     = "avocado"
   val PLANT_BANANA      = "banana"
   val PLANT_CHERRY      = "cherry"
   val PLANT_GRAPEFRUIT  = "grapefruit"

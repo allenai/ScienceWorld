@@ -355,12 +355,15 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     }
 
     var attempts:Int = 0
-    while (flowerPotsWithSoil.size < 3) {
+    val NUM_PLANTS_TO_GROW:Int = 3
+    while (flowerPotsWithSoil.size < NUM_PLANTS_TO_GROW) {
       // See what the soil situation is like
       val soilInRoom = getCurrentAgentLocation(runner).getContainedObjectsOfType[Soil]().toArray
 
+      runAction("NOTE: " + flowerPotsWithSoil.size + " pots have soil.", runner)
+
       // Case 1: Flower pot already exists with soil inside
-      if (flowerPotsWithSoil.size > 0) {
+      if (flowerPotsWithSoil.size >= NUM_PLANTS_TO_GROW) {
         // No need to do more
       } else {
         // Add soil to a flower pot
@@ -416,6 +419,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
       // Check for infinite loops in case conditions can't be satisfied
       attempts += 1
       if (attempts > 4) {
+        runAction("ERROR: Ending early -- max attempts exceeded (" + attempts + ")", runner)
         return (false, getActionHistory(runner))
       }
     }
@@ -423,7 +427,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
     // Put seeds in flower pots
     val flowerPotsWithSeeds = new ArrayBuffer[EnvObject]()
-    for (i <- 0 until 3) {
+    for (i <- 0 until NUM_PLANTS_TO_GROW) {
       val flowerpot = flowerPotsWithSoil(0)
 
       // Move seed to flower pot
@@ -446,7 +450,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     var beesReleased:Boolean = false
     var done:Boolean = false
     var cycles:Int = 0
-    while (!done && cycles < 10) {
+    while (!done && cycles < 15) {      // Wait 15 cycles, which should be enough time for the bees to do their thing
       // Water plants regularly
 
       // Turn on sink
