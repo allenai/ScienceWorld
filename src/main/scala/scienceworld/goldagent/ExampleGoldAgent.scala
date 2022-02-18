@@ -72,8 +72,8 @@ object ExampleGoldAgent {
 
 
         // For each variation
-        for (variationIdx <- 0 until maxTaskVariations) {
-        //for (variationIdx <- 0 until math.min(50, maxTaskVariations)) {
+        //for (variationIdx <- 0 until maxTaskVariations) {
+        for (variationIdx <- 0 until math.min(10, maxTaskVariations)) {
           println("---------------------------")
           println("   Task " + taskIdx + "   " + taskName)
           println("   Variation: " + variationIdx + " / " + maxTaskVariations)
@@ -104,7 +104,6 @@ object ExampleGoldAgent {
 
           var curScore: Double = 0.0
           for (actionIdx <- 0 until goldActionSeq.length) {
-
 
             // Get next gold action
             userInput = goldActionSeq(actionIdx)

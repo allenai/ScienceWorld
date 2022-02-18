@@ -504,7 +504,8 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
           for (fruit <- fruits) {
             if (fruit.name.toLowerCase == seedType.toLowerCase) {
               // Found fruit
-              runAction("focus on " + PathFinder.getObjUniqueReferent(fruit, getCurrentAgentLocation(runner)), runner)
+              runAction("focus on " + PathFinder.getObjUniqueReferent(fruit, getCurrentAgentLocation(runner)).get, runner)
+              runAction("0", runner)    // In case it's ambiguous
               done = true
               break()
             }
