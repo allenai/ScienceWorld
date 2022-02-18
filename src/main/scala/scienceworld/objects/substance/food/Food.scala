@@ -13,7 +13,11 @@ class Food extends EnvObject {
  * Fruits
  */
 // TODO: Fruits require appropriate material properties
-class Apple extends Food {
+class Fruit extends Food {
+
+}
+
+class Apple extends Fruit {
   this.name = "apple"
   this.propEdibility = Some(new Edible())
 
@@ -31,7 +35,7 @@ class Apple extends Food {
 
 }
 
-class Apricot extends Food {
+class Apricot extends Fruit {
   this.name = "apricot"
   this.propEdibility = Some(new Edible())
   this.propMaterial = Some(new PlantMatterProp())   // for conductivity
@@ -50,7 +54,7 @@ class Apricot extends Food {
 
 }
 
-class Avocado extends Food {
+class Avocado extends Fruit {
   this.name = "avocado"
   this.propEdibility = Some(new Edible())
 
@@ -66,7 +70,7 @@ class Avocado extends Food {
 
 }
 
-class Banana extends Food {
+class Banana extends Fruit {
   this.name = "banana"
   this.propEdibility = Some(new Edible())
 
@@ -82,7 +86,7 @@ class Banana extends Food {
 
 }
 
-class Cherry extends Food {
+class Cherry extends Fruit {
   this.name = "cherry"
   this.propEdibility = Some(new Edible())
 
@@ -99,7 +103,7 @@ class Cherry extends Food {
 }
 
 
-class Lemon extends Food {
+class Lemon extends Fruit {
   this.name = "lemon"
   this.propEdibility = Some(new Edible())
 
@@ -116,7 +120,7 @@ class Lemon extends Food {
 }
 
 
-class Orange extends Food {
+class Orange extends Fruit {
   this.name = "orange"
   this.propEdibility = Some(new Edible())
 
@@ -132,7 +136,7 @@ class Orange extends Food {
 
 }
 
-class Grapefruit extends Food {
+class Grapefruit extends Fruit {
   this.name = "grapefruit"
   this.propEdibility = Some(new Edible())
 
@@ -148,7 +152,7 @@ class Grapefruit extends Food {
 
 }
 
-class Peach extends Food {
+class Peach extends Fruit {
   this.name = "peach"
   this.propEdibility = Some(new Edible())
 
@@ -164,7 +168,7 @@ class Peach extends Food {
 
 }
 
-class Pear extends Food {
+class Pear extends Fruit {
   this.name = "pear"
   this.propEdibility = Some(new Edible())
 
