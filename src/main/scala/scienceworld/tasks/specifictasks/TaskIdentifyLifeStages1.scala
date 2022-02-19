@@ -304,7 +304,7 @@ object TaskIdentifyLifeStages1 {
 
     //TaskParametric.runAction("focus on " + PathFinder.getObjUniqueReferent(found.get, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
     val container = found.get.getContainer().get
-    if (found.isInstanceOf[Plant]) {
+    if (found.get.isInstanceOf[Plant]) {
       val referent = found.get.name + " in the " + stageName + " stage"
       TaskParametric.runAction("focus on " + referent + " in " + container.name, runner)
     } else {
