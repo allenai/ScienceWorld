@@ -360,7 +360,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
       // See what the soil situation is like
       val soilInRoom = getCurrentAgentLocation(runner).getContainedObjectsOfType[Soil]().toArray
 
-      runAction("NOTE: " + flowerPotsWithSoil.size + " pots have soil.", runner)
+      //runAction("NOTE: " + flowerPotsWithSoil.size + " pots have soil.", runner)
 
       // Case 1: Flower pot already exists with soil inside
       if (flowerPotsWithSoil.size >= NUM_PLANTS_TO_GROW) {
@@ -419,7 +419,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
       // Check for infinite loops in case conditions can't be satisfied
       attempts += 1
       if (attempts > 4) {
-        runAction("ERROR: Ending early -- max attempts exceeded (" + attempts + ")", runner)
+        //runAction("ERROR: Ending early -- max attempts exceeded (" + attempts + ")", runner)
         return (false, getActionHistory(runner))
       }
     }
