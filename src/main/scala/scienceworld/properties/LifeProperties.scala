@@ -76,9 +76,6 @@ class LifePropertiesPea extends LifePropertiesPlant {
   this.lifeformType = PlantReproduction.PLANT_PEA
 }
 
-class LifePropertiesRandomGeneticsA extends LifePropertiesPlant {
-  this.lifeformType = PlantReproduction.PLANT_RANDOMGENETICS_A
-}
 
 class LifePropertiesRandomGeneticsB extends LifePropertiesPlant {
   this.lifeformType = PlantReproduction.PLANT_RANDOMGENETICS_B
@@ -90,6 +87,10 @@ class LifePropertiesRandomGeneticsC extends LifePropertiesPlant {
 
 class LifePropertiesRandomGeneticsD extends LifePropertiesPlant {
   this.lifeformType = PlantReproduction.PLANT_RANDOMGENETICS_D
+}
+
+class LifePropertiesRandomGeneticsE extends LifePropertiesPlant {
+  this.lifeformType = PlantReproduction.PLANT_RANDOMGENETICS_E
 }
 
 

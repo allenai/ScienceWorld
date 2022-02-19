@@ -9,7 +9,7 @@ import scala.collection.mutable.ArrayBuffer
  * Random (unknown) plants
  */
 
-object GeneticTraitUnknownPlantA {
+object GeneticTraitUnknownPlantE {
 
   def mkTraitSeedColor(dominantOrRecessive:String):GeneticTrait = {
     new GeneticTrait(TRAIT_SEED_COLOR, valueDominant = "blue", valueRecessive = "brown", strSuffix = "seed", dominantOrRecessive)

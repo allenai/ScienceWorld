@@ -575,11 +575,11 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
         if (adultPlant.propChromosomePairs.get.getPhenotypeValue(traitName).getOrElse("") == traitValue) {
           numObservationsOfTrait += 1
         }
-        runAction("OBSERVATION " + traitName + " " + adultPlant.propChromosomePairs.get.getPhenotypeValue(traitName), runner)
+        //runAction("OBSERVATION " + traitName + " " + adultPlant.propChromosomePairs.get.getPhenotypeValue(traitName), runner)
       }
     }
 
-    runAction("NOTE: Number of observations of trait: " + numObservationsOfTrait, runner)
+    //runAction("NOTE: Number of observations of trait: " + numObservationsOfTrait, runner)
 
     if (numObservationsOfTrait > (adultPlants.size/2)) {
       // Observed frequently -- likely a dominant trait
@@ -638,7 +638,7 @@ object TaskMendelianGenetics1 {
 
     // Make N uniquely-named flower pots
     val pots = new ArrayBuffer[EnvObject]()
-    for (i <- 0 until numPots) {
+    for (i <- 1 until maxIdx) {
       val flowerpot = new FlowerPot()
       flowerpot.name = "flower pot " + i
       flowerpot.addObject( new Soil() )

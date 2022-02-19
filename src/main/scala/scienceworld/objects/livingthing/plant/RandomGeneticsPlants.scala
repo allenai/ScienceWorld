@@ -1,8 +1,8 @@
 package scienceworld.objects.livingthing.plant
 
-import scienceworld.processes.genetics.{ChromosomePair, GeneticTrait, GeneticTraitPeas, GeneticTraitUnknownPlantA, GeneticTraitUnknownPlantB, GeneticTraitUnknownPlantC, GeneticTraitUnknownPlantD}
+import scienceworld.processes.genetics.{ChromosomePair, GeneticTrait, GeneticTraitPeas, GeneticTraitUnknownPlantE, GeneticTraitUnknownPlantB, GeneticTraitUnknownPlantC, GeneticTraitUnknownPlantD}
 import scienceworld.processes.lifestage.PlantLifeStages
-import scienceworld.properties.{Edible, LifePropertiesPea, LifePropertiesRandomGeneticsA, LifePropertiesRandomGeneticsB, LifePropertiesRandomGeneticsC, LifePropertiesRandomGeneticsD}
+import scienceworld.properties.{Edible, LifePropertiesPea, LifePropertiesRandomGeneticsE, LifePropertiesRandomGeneticsB, LifePropertiesRandomGeneticsC, LifePropertiesRandomGeneticsD}
 import scienceworld.struct.EnvObject._
 import util.StringHelpers
 
@@ -21,7 +21,7 @@ class RandomGeneticsPlants(_chromosomePairs:Option[ChromosomePair] = None) exten
 
   // TODO: specific to subclass
   if (this._chromosomePairs == None) {
-    this.propChromosomePairs = Some(GeneticTraitUnknownPlantA.mkRandomChromosomePair())      // Generate Random
+    this.propChromosomePairs = Some(GeneticTraitUnknownPlantE.mkRandomChromosomePair())      // Generate Random
   } else {
     this.propChromosomePairs = this._chromosomePairs                                // Defined starting chromosomes
   }
@@ -183,22 +183,6 @@ class RandomGeneticsPlants(_chromosomePairs:Option[ChromosomePair] = None) exten
 /*
  * Specific subclasses
  */
-class RandomGeneticsPlantsA(_chromosomePairs:Option[ChromosomePair] = None) extends RandomGeneticsPlants {
-  this.name = "unknown A"
-
-  this.propEdibility = Some(new Edible())
-  propLife = Some(new LifePropertiesRandomGeneticsA())
-
-  // Genetics/Chromosomes
-  if (this._chromosomePairs == None) {
-    this.propChromosomePairs = Some(GeneticTraitUnknownPlantA.mkRandomChromosomePair())      // Generate Random
-  } else {
-    this.propChromosomePairs = this._chromosomePairs                                // Defined starting chromosomes
-  }
-
-}
-
-
 class RandomGeneticsPlantsB(_chromosomePairs:Option[ChromosomePair] = None) extends RandomGeneticsPlants {
   this.name = "unknown B"
 
@@ -213,6 +197,7 @@ class RandomGeneticsPlantsB(_chromosomePairs:Option[ChromosomePair] = None) exte
   }
 
 }
+
 
 class RandomGeneticsPlantsC(_chromosomePairs:Option[ChromosomePair] = None) extends RandomGeneticsPlants {
   this.name = "unknown C"
@@ -238,6 +223,21 @@ class RandomGeneticsPlantsD(_chromosomePairs:Option[ChromosomePair] = None) exte
   // Genetics/Chromosomes
   if (this._chromosomePairs == None) {
     this.propChromosomePairs = Some(GeneticTraitUnknownPlantD.mkRandomChromosomePair())      // Generate Random
+  } else {
+    this.propChromosomePairs = this._chromosomePairs                                // Defined starting chromosomes
+  }
+
+}
+
+class RandomGeneticsPlantsE(_chromosomePairs:Option[ChromosomePair] = None) extends RandomGeneticsPlants {
+  this.name = "unknown E"
+
+  this.propEdibility = Some(new Edible())
+  propLife = Some(new LifePropertiesRandomGeneticsE())
+
+  // Genetics/Chromosomes
+  if (this._chromosomePairs == None) {
+    this.propChromosomePairs = Some(GeneticTraitUnknownPlantE.mkRandomChromosomePair())      // Generate Random
   } else {
     this.propChromosomePairs = this._chromosomePairs                                // Defined starting chromosomes
   }

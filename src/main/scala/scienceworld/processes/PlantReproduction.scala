@@ -1,6 +1,6 @@
 package scienceworld.processes
 
-import scienceworld.objects.livingthing.plant.{AppleTree, ApricotTree, AvocadoTree, BananaTree, CherryTree, GrapefruitTree, LemonTree, OrangeTree, PeaPlant, PeachTree, PearTree, RandomGeneticsPlantsA, RandomGeneticsPlantsB, RandomGeneticsPlantsC, RandomGeneticsPlantsD}
+import scienceworld.objects.livingthing.plant.{AppleTree, ApricotTree, AvocadoTree, BananaTree, CherryTree, GrapefruitTree, LemonTree, OrangeTree, PeaPlant, PeachTree, PearTree, RandomGeneticsPlantsE, RandomGeneticsPlantsB, RandomGeneticsPlantsC, RandomGeneticsPlantsD}
 import scienceworld.objects.substance.food.{Apple, Apricot, Avocado, Banana, Cherry, Grapefruit, Lemon, Orange, Peach, Pear}
 import scienceworld.processes.genetics.{ChromosomePair, GeneticReproduction}
 import scienceworld.struct.EnvObject
@@ -24,10 +24,10 @@ object PlantReproduction {
 
   val PLANT_PEA         = "pea"
 
-  val PLANT_RANDOMGENETICS_A         = "unknown A"
   val PLANT_RANDOMGENETICS_B         = "unknown B"
   val PLANT_RANDOMGENETICS_C         = "unknown C"
   val PLANT_RANDOMGENETICS_D         = "unknown D"
+  val PLANT_RANDOMGENETICS_E         = "unknown E"
 
 
   // Generator: Create an appropriate fruit for a given plant
@@ -67,10 +67,10 @@ object PlantReproduction {
 
       case PLANT_PEA      => { return Some(new PeaPlant(matedChromosomes))   }
 
-      case PLANT_RANDOMGENETICS_A      => { return Some(new RandomGeneticsPlantsA(matedChromosomes))   }
       case PLANT_RANDOMGENETICS_B      => { return Some(new RandomGeneticsPlantsB(matedChromosomes))   }
       case PLANT_RANDOMGENETICS_C      => { return Some(new RandomGeneticsPlantsC(matedChromosomes))   }
       case PLANT_RANDOMGENETICS_D      => { return Some(new RandomGeneticsPlantsD(matedChromosomes))   }
+      case PLANT_RANDOMGENETICS_E      => { return Some(new RandomGeneticsPlantsE(matedChromosomes))   }
 
       case _ => {
         println ("ERROR: Unknown fruit for plant type (" + plantType + "). ")
@@ -97,10 +97,10 @@ object PlantReproduction {
 
       case PLANT_PEA      => { return Some(new PeaPlant())    }
 
-      case PLANT_RANDOMGENETICS_A      => { return Some(new RandomGeneticsPlantsA())    }
       case PLANT_RANDOMGENETICS_B      => { return Some(new RandomGeneticsPlantsB())    }
       case PLANT_RANDOMGENETICS_C      => { return Some(new RandomGeneticsPlantsC())    }
       case PLANT_RANDOMGENETICS_D      => { return Some(new RandomGeneticsPlantsD())    }
+      case PLANT_RANDOMGENETICS_E      => { return Some(new RandomGeneticsPlantsE())    }
 
       case _ => {
         println ("ERROR: Unknown seed for plant type (" + plantType + "). ")

@@ -1,22 +1,27 @@
 package scienceworld.tasks.specifictasks
 
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.containers.{CeramicCup, FlowerPot}
-import scienceworld.objects.livingthing.plant.{PeaPlant, RandomGeneticsPlantsA, RandomGeneticsPlantsB, RandomGeneticsPlantsC, RandomGeneticsPlantsD, Soil}
+import scienceworld.objects.containers.{CeramicCup, FlowerPot, Jug, SelfWateringFlowerPot}
+import scienceworld.objects.livingthing.plant.{PeaPlant, Plant, RandomGeneticsPlants, RandomGeneticsPlantsE, RandomGeneticsPlantsB, RandomGeneticsPlantsC, RandomGeneticsPlantsD, Soil}
 import scienceworld.objects.taskitems.AnswerBox
-import scienceworld.processes.genetics.{Chromosomes, GeneticTrait, GeneticTraitPeas, GeneticTraitUnknownPlantA, GeneticTraitUnknownPlantB, GeneticTraitUnknownPlantC, GeneticTraitUnknownPlantD}
+import scienceworld.processes.genetics.{Chromosomes, GeneticTrait, GeneticTraitPeas, GeneticTraitUnknownPlantE, GeneticTraitUnknownPlantB, GeneticTraitUnknownPlantC, GeneticTraitUnknownPlantD}
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalContainerOpen, GoalFind, GoalInRoomWithObject, GoalLifeStageAnywhere, GoalMoveToLocation, GoalMoveToNewLocation, GoalSpecificObjectInDirectContainer}
 import TaskMendelialGenetics2._
 import scienceworld.actions.Action
+import scienceworld.goldagent.PathFinder
+import scienceworld.objects.containers.furniture.BeeHive
+import scienceworld.objects.devices.{Shovel, Sink}
+import scienceworld.objects.livingthing.LivingThing
 import scienceworld.processes.PlantReproduction
 import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT, PLANT_STAGE_REPRODUCING, PLANT_STAGE_SEED, PLANT_STAGE_SEEDLING}
 import scienceworld.runtime.pythonapi.PythonInterface
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
+import scala.util.control.Breaks.{break, breakable}
 
 class TaskMendelianGenetics2 {
 
@@ -46,10 +51,10 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
       var seedType:String = ""
 
       if (plantIdx == 0) {
-        traits = new Chromosomes(GeneticTraitUnknownPlantA.mkRandomTraits()) // Make a random instance of the plant, just to get the genetic trait names
+        traits = new Chromosomes(GeneticTraitUnknownPlantE.mkRandomTraits()) // Make a random instance of the plant, just to get the genetic trait names
         traitNames = traits.getTraitNames()
-        plantName = new RandomGeneticsPlantsA().name + " plant"
-        seedType = new RandomGeneticsPlantsA().propLife.get.lifeformType
+        plantName = new RandomGeneticsPlantsE().name + " plant"
+        seedType = new RandomGeneticsPlantsE().propLife.get.lifeformType
       } else if (plantIdx == 1) {
         traits = new Chromosomes(GeneticTraitUnknownPlantB.mkRandomTraits()) // Make a random instance of the plant, just to get the genetic trait names
         traitNames = traits.getTraitNames()
@@ -281,9 +286,355 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
   }
 
 
+  /*
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_MENDEL_UNKNOWN) {
+      return mkGoldActionSequenceMendel(modifiers, runner)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+
+  }
+
+  /*
+   * Gold action sequences
+   */
+  def mkGoldActionSequenceMendel(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val traitName = this.getTaskValueStr(modifiers, "traitName").get
+    val traitValue = this.getTaskValueStr(modifiers, "traitValue").get
+    val domOrRec = this.getTaskValueStr(modifiers, "domOrRec").get
+    val answerBoxDom = this.getTaskValueStr(modifiers, "answerBoxDom").get
+    val answerBoxRec = this.getTaskValueStr(modifiers, "answerBoxRec").get
+
+    val flowerPotNames = this.getTaskValueStr(modifiers, "flowerPotNames").get.split(",")
+    val seedType = this.getTaskValueStr(modifiers, "seedType").get
+
+    val seedLocation = "green house"
+
+    // Step 1: Move from starting location to task location
+    val startLocation = agent.getContainer().get.name
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation, endLocation = seedLocation)
+    runActionSequence(actionStrs, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+    // Take seed jar
+    val seedJars = PathFinder.getAllAccessibleEnvObject(queryName = "seed jar", getCurrentAgentLocation(runner))
+    if (seedJars.length == 0) return (false, getActionHistory(runner))
+    val seedJar = seedJars(0)
+    //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
+    runAction("pick up seed jar", runner)
+
+    /*
+    // Go to green house
+    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "green house")
+    runActionSequence(actionStrs1, runner)
+     */
+
+    // Look around
+    runAction("look around", runner)
+
+    // Get references to flower pots (and sort them by those with and without soil)
+    val flowerpots = Random.shuffle(getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[FlowerPot]() ++ getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[SelfWateringFlowerPot]()).toList
+    val flowerPotsWithSoil = new ArrayBuffer[EnvObject]
+    val flowerPotsWithoutSoil = new ArrayBuffer[EnvObject]
+
+    for (pot <- flowerpots) {
+      val soil = pot.getContainedAccessibleObjectsOfType[Soil]()
+      if (soil.size > 0) {
+        flowerPotsWithSoil.append(pot)
+      } else {
+        flowerPotsWithoutSoil.append(pot)
+      }
+    }
+
+    var attempts:Int = 0
+    val NUM_POTS_TO_PREPARE:Int = 6
+    while (flowerPotsWithSoil.size < NUM_POTS_TO_PREPARE) {
+      // See what the soil situation is like
+      val soilInRoom = getCurrentAgentLocation(runner).getContainedObjectsOfType[Soil]().toArray
+
+      runAction("NOTE: " + flowerPotsWithSoil.size + " pots have soil.", runner)
+
+      // Case 1: Flower pot already exists with soil inside
+      if (flowerPotsWithSoil.size >= NUM_POTS_TO_PREPARE) {
+        // No need to do more
+      } else {
+        // Add soil to a flower pot
+
+        // Case 2: Soil is accessible in room, just move it into the pot
+        if (soilInRoom.size > 0) {
+          val pot = flowerPotsWithoutSoil(0)
+          // Move soil to flower pot
+          TaskParametric.runAction("move " + PathFinder.getObjUniqueReferent(soilInRoom(0), getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(pot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+          // Move pot reference to list of pots with soil
+          flowerPotsWithoutSoil.remove(0)
+          flowerPotsWithSoil.append(pot)
+        } else {
+          // Case 3: Soil is not in room, have to go dig it up
+          val pot = flowerPotsWithoutSoil(0)
+
+          // Take shovel (if it's in this location)
+          var agentHasShovel: Boolean = false
+          if (getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[Shovel]().size > 0) {
+            TaskParametric.runAction("pick up shovel", runner)
+            agentHasShovel = true
+          }
+
+          // Go outside
+          val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "outside")
+          runActionSequence(actionStrs2, runner)
+
+          // Take shovel (if it's in this location)
+          if ((!agentHasShovel) && (getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[Shovel]().size > 0)) {
+            TaskParametric.runAction("pick up shovel", runner)
+          }
+
+          // Use shovel on ground
+          TaskParametric.runAction("use shovel in inventory on ground", runner)
+
+          // Pick up dirt
+          TaskParametric.runAction("pick up soil", runner)
+
+          // Go back to the green house
+          val (actions3, actionStrs3) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "green house")
+          runActionSequence(actionStrs3, runner)
+
+          // Move soil to flower pot
+          TaskParametric.runAction("move soil in inventory to " + PathFinder.getObjUniqueReferent(pot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+
+          // Move pot reference to list of pots with soil
+          flowerPotsWithoutSoil.remove(0)
+          flowerPotsWithSoil.append(pot)
+        }
+
+      }
+
+      // Check for infinite loops in case conditions can't be satisfied
+      attempts += 1
+      if (attempts > 4) {
+        runAction("ERROR: Ending early -- max attempts exceeded (" + attempts + ")", runner)
+        return (false, getActionHistory(runner))
+      }
+    }
+
+
+    // Put seeds in flower pots
+    val NUM_PLANTS_TO_GROW:Int = 2
+    val flowerPotsWithSeeds = new ArrayBuffer[EnvObject]()
+    for (i <- 0 until NUM_PLANTS_TO_GROW) {
+      val flowerpot = flowerPotsWithSoil(0)
+
+      // Move seed to flower pot
+      val seedName = seedType + " seed in seed jar"
+      TaskParametric.runAction("move " + seedName + " to " + PathFinder.getObjUniqueReferent(flowerpot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+      TaskParametric.runAction("0", runner) // Ambiguity resolution
+
+      flowerPotsWithSeeds.append(flowerpot)
+      flowerPotsWithSoil.remove(0)
+    }
+
+
+    // TODO: Do watering
+    // Pick up water jug
+    val waterJug = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[Jug]().toList.head
+    val sink = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[Sink]().toList.head
+
+
+    // Watering cycle
+    var beesReleased:Boolean = false
+    var done:Boolean = false
+    var cycles:Int = 0
+    while (!done && cycles < 10) {      // Wait 15 cycles, which should be enough time for the bees to do their thing
+      // Water plants regularly
+
+      // Turn on sink
+      runAction("activate " + PathFinder.getObjUniqueReferent(sink, getCurrentAgentLocation(runner)).get, runner)
+
+      // Water plant
+      for (flowerPotToWater <- flowerPotsWithSeeds) {
+        runAction("move " + PathFinder.getObjUniqueReferent(waterJug, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(sink, getCurrentAgentLocation(runner)).get, runner)
+        runAction("pour " + PathFinder.getObjUniqueReferent(waterJug, getCurrentAgentLocation(runner)).get + " into " + PathFinder.getObjUniqueReferent(flowerPotToWater, getCurrentAgentLocation(runner)).get, runner)
+      }
+
+      // Turn off sink
+      runAction("deactivate " + PathFinder.getObjUniqueReferent(sink, getCurrentAgentLocation(runner)).get, runner)
+
+      // Check if at least plants are at reproducing stage
+      if (!beesReleased) {
+        var foundReproducing:Boolean = false
+
+        breakable {
+          for (flowerpot <- flowerPotsWithSeeds) {
+            val plants = flowerpot.getContainedAccessibleObjectsOfType[Plant]().toList
+            for (plant <- plants) {
+              plant match {
+                case p:LivingThing => {
+                  if (p.lifecycle.get.getCurStageName() == PLANT_STAGE_REPRODUCING) {
+                    foundReproducing = true
+                    break()
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if (foundReproducing) {
+          // Release the pollinators
+
+          // First, close all the doors
+          for (portal <- getCurrentAgentLocation(runner).getPortals(includeHidden = false)) {
+            runAction("close " + PathFinder.getObjUniqueReferent(portal, getCurrentAgentLocation(runner)).get, runner)
+          }
+
+          // Then, open the bee hive
+          val beehive = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[BeeHive]().toList(0)
+          runAction("open " + PathFinder.getObjUniqueReferent(beehive, getCurrentAgentLocation(runner)).get, runner)
+
+          beesReleased = true
+        }
+      }
+
+      // Check for new seeds that have been produced by the plants
+      val peaplants = Random.shuffle(getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[RandomGeneticsPlants]().toList)
+      val newSeeds = new ArrayBuffer[EnvObject]
+      for (plant <- peaplants) {
+        plant match {
+          case pl:LivingThing => {
+            if (pl.lifecycle.get.getCurStageName() == PLANT_STAGE_SEED) {
+              newSeeds.append(plant)
+            }
+          }
+        }
+      }
+
+      // Check if there are enough seeds to harvest them
+      if (newSeeds.size >= 6) {
+        for (seed <- newSeeds) {
+          runAction("move " + PathFinder.getObjUniqueReferent(seed, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
+          runAction("0", runner)    // In case it's ambiguous
+        }
+        done = true
+      }
+
+      if (!done) {
+        for (j <- 0 until 5) {
+          runAction("wait1", runner)
+        }
+      }
+
+      runAction("look around", runner)
+
+      // Keep track of number of cycles, so we don't get stuck in an infinite loop if conditions aren't met.
+      cycles += 1
+    }
+
+    runAction("look at seed jar", runner)
+
+
+    /*
+     * Plant second generation
+     */
+    flowerPotsWithSeeds.clear()
+    for (i <- 0 until 4) {
+      val flowerpot = flowerPotsWithSoil(0)
+
+      // Move seed to flower pot
+      val seedName = seedType + " seed in seed jar"
+      TaskParametric.runAction("move " + seedName + " to " + PathFinder.getObjUniqueReferent(flowerpot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+      TaskParametric.runAction("0", runner) // Ambiguity resolution
+
+      flowerPotsWithSeeds.append(flowerpot)
+      flowerPotsWithSoil.remove(0)
+    }
+
+    // Watering cycle for second-generation plants
+    done = false
+    cycles = 0
+    val adultPlants = new ArrayBuffer[EnvObject]()
+    while (!done && cycles < 10) {      // Wait 15 cycles, which should be enough time for the bees to do their thing
+      // Water plants regularly
+
+      // Turn on sink
+      runAction("activate " + PathFinder.getObjUniqueReferent(sink, getCurrentAgentLocation(runner)).get, runner)
+
+      // Water plant
+      for (flowerPotToWater <- flowerPotsWithSeeds) {
+        runAction("move " + PathFinder.getObjUniqueReferent(waterJug, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(sink, getCurrentAgentLocation(runner)).get, runner)
+        runAction("pour " + PathFinder.getObjUniqueReferent(waterJug, getCurrentAgentLocation(runner)).get + " into " + PathFinder.getObjUniqueReferent(flowerPotToWater, getCurrentAgentLocation(runner)).get, runner)
+      }
+
+      // Turn off sink
+      runAction("deactivate " + PathFinder.getObjUniqueReferent(sink, getCurrentAgentLocation(runner)).get, runner)
+
+      // Check for a minimum number of adult plants
+      val peaplants = Random.shuffle(getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[RandomGeneticsPlants]().toList)
+      for (plant <- peaplants) {
+        plant match {
+          case pl:LivingThing => {
+            if ((pl.lifecycle.get.getCurStageName() == PLANT_STAGE_ADULT_PLANT) || (pl.lifecycle.get.getCurStageName() == PLANT_STAGE_REPRODUCING)) {
+              adultPlants.append(plant)
+            }
+          }
+        }
+      }
+
+      // If we have at least 4 new adult plants, we're done
+      if (adultPlants.size >= 4) {
+        done = true
+      } else {
+        // Clear the count for next time, so we don't accidentally double count them
+        adultPlants.clear()
+      }
+
+      if (!done) {
+        for (j <- 0 until 5) {
+          runAction("wait1", runner)
+        }
+      }
+
+      runAction("look around", runner)
+
+      // Keep track of number of cycles, so we don't get stuck in an infinite loop if conditions aren't met.
+      cycles += 1
+    }
+
+
+    // Count features on adult plants
+    var numObservationsOfTrait:Int = 0
+    for (adultPlant <- adultPlants) {
+      if (adultPlant.propChromosomePairs.isDefined) {
+        if (adultPlant.propChromosomePairs.get.getPhenotypeValue(traitName).getOrElse("") == traitValue) {
+          numObservationsOfTrait += 1
+        }
+        //runAction("OBSERVATION " + traitName + " " + adultPlant.propChromosomePairs.get.getPhenotypeValue(traitName), runner)
+      }
+    }
+
+    //runAction("NOTE: Number of observations of trait: " + numObservationsOfTrait, runner)
+
+    if (numObservationsOfTrait > (adultPlants.size/2)) {
+      // Observed frequently -- likely a dominant trait
+      runAction("focus on " + answerBoxDom, runner)
+    } else {
+      // Observed infrequently -- likely a recessive trait
+      runAction("focus on " + answerBoxRec, runner)
+    }
+
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    // Return
+    return (true, getActionHistory(runner))
   }
 
 
@@ -311,12 +662,12 @@ object TaskMendelialGenetics2 {
 
     if (plantIdx == 0) {
       // Double-dominant
-      val dom = GeneticTraitUnknownPlantA.mkRandomChromosomePairExcept(traitName, GeneticTrait.DOMINANT, GeneticTrait.DOMINANT)
-      val plantDom = new RandomGeneticsPlantsA(_chromosomePairs = Some(dom))
+      val dom = GeneticTraitUnknownPlantE.mkRandomChromosomePairExcept(traitName, GeneticTrait.DOMINANT, GeneticTrait.DOMINANT)
+      val plantDom = new RandomGeneticsPlantsE(_chromosomePairs = Some(dom))
       jar.addObject(plantDom)
       // Double-recessive
-      val rec = GeneticTraitUnknownPlantA.mkRandomChromosomePairExcept(traitName, GeneticTrait.RECESSIVE, GeneticTrait.RECESSIVE)
-      val plantRec = new RandomGeneticsPlantsA(_chromosomePairs = Some(rec))
+      val rec = GeneticTraitUnknownPlantE.mkRandomChromosomePairExcept(traitName, GeneticTrait.RECESSIVE, GeneticTrait.RECESSIVE)
+      val plantRec = new RandomGeneticsPlantsE(_chromosomePairs = Some(rec))
       jar.addObject(plantRec)
 
     } else if (plantIdx == 1) {
@@ -366,7 +717,7 @@ object TaskMendelialGenetics2 {
 
     // Make N uniquely-named flower pots
     val pots = new ArrayBuffer[EnvObject]()
-    for (i <- 0 until numPots) {
+    for (i <- 1 until maxIdx) {
       val flowerpot = new FlowerPot()
       flowerpot.name = "flower pot " + i
       flowerpot.addObject( new Soil() )
@@ -385,12 +736,12 @@ object TaskMendelialGenetics2 {
     val traitName = "seed color"
 
     // Double-dominant
-    val dom = GeneticTraitUnknownPlantA.mkRandomChromosomePairExcept(traitName, GeneticTrait.DOMINANT, GeneticTrait.DOMINANT)
-    val plantDom = new RandomGeneticsPlantsA(_chromosomePairs = Some(dom))
+    val dom = GeneticTraitUnknownPlantE.mkRandomChromosomePairExcept(traitName, GeneticTrait.DOMINANT, GeneticTrait.DOMINANT)
+    val plantDom = new RandomGeneticsPlantsE(_chromosomePairs = Some(dom))
 
     // Double-recessive
-    val rec = GeneticTraitUnknownPlantA.mkRandomChromosomePairExcept(traitName, GeneticTrait.RECESSIVE, GeneticTrait.RECESSIVE)
-    val plantRec = new RandomGeneticsPlantsA(_chromosomePairs = Some(rec))
+    val rec = GeneticTraitUnknownPlantE.mkRandomChromosomePairExcept(traitName, GeneticTrait.RECESSIVE, GeneticTrait.RECESSIVE)
+    val plantRec = new RandomGeneticsPlantsE(_chromosomePairs = Some(rec))
 
 
     val parent1Chromosomes = plantDom.propChromosomePairs
