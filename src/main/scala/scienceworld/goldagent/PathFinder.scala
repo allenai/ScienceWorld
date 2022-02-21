@@ -385,7 +385,7 @@ object PathFinder {
     return false
   }
 
-  // Handles getting water from the current location.
+  // Attempts to get water from the current location.  Finds a cup-like object, and attempts to transfer water into the cup.
   // Returns (success, container reference, water reference)
   def getWaterInContainer(runner:PythonInterface):(Boolean, Option[EnvObject], Option[EnvObject]) = {
     // Get current agent location
@@ -431,7 +431,15 @@ object PathFinder {
     // Attempt 2: Look for anything else that might have available water
     val accessibleWater = curLocation.getContainedAccessibleObjectsOfType[Water]()
     if (accessibleWater.size > 0) {
+      for (water <- accessibleWater) {
+        val waterContainer = water.getContainer().get
+        TaskParametric.runAction("dunk " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get + " into " + PathFinder.getObjUniqueReferent(waterContainer, curLocation).get, runner)
 
+        if (cup.get.getContainedAccessibleObjectsOfType[Water]().size > 0) {
+          // If the transfer was successful, return
+          return (true, cup, Some(water))
+        }
+      }
     }
 
     // If we reach here, the agent was not able to find any accessible water

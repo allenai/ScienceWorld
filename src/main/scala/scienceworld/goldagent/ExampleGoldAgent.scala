@@ -74,7 +74,7 @@ object ExampleGoldAgent {
         // For each variation
         //for (variationIdx <- 0 until maxTaskVariations) {
         //var subsampleEveryNth:Int = 1
-        var subsampleEveryNth:Int = 6
+        var subsampleEveryNth:Int = 3
         for (variationIdx <- 0 until math.min(1000, maxTaskVariations)) {
           if (variationIdx % subsampleEveryNth == 0) {
             println("---------------------------")

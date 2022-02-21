@@ -350,30 +350,44 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
     runAction("look around", runner)
 
     // Check to make sure the task object is available in an accessible container
-    var successOpeningContainers: Boolean = true
-    var substances: Array[EnvObject] = Array.empty[EnvObject]
-    breakable {
-      for (i <- 0 to 20) {
-        println("*** FIND SUBSTANCE ATTEMPT " + i)
-        substances = PathFinder.getAllAccessibleEnvObject(objectName, getCurrentAgentLocation(runner))
-        if (substances.size > 0) break // Found at least one substance matching the criteria
-        // If we reach here, we didn't find a subtance -- start opening closed containers
-        if (successOpeningContainers) {
-          successOpeningContainers = PathFinder.openRandomClosedContainer(currentLocation = getCurrentAgentLocation(runner), runner)
-        } else {
-          // No more containers to open
-          break()
+    var taskObject:EnvObject = null
+    if (objectName == "water") {
+      // Attempt to find water
+      val (success, waterContainer, waterRef) = PathFinder.getWaterInContainer(runner)
+
+      if (!success) {
+        runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
+      }
+
+      taskObject = waterRef.get
+
+    } else {
+      var successOpeningContainers: Boolean = true
+      var substances: Array[EnvObject] = Array.empty[EnvObject]
+      breakable {
+        for (i <- 0 to 20) {
+          println("*** FIND SUBSTANCE ATTEMPT " + i)
+          substances = PathFinder.getAllAccessibleEnvObject(objectName, getCurrentAgentLocation(runner))
+          if (substances.size > 0) break // Found at least one substance matching the criteria
+          // If we reach here, we didn't find a subtance -- start opening closed containers
+          if (successOpeningContainers) {
+            successOpeningContainers = PathFinder.openRandomClosedContainer(currentLocation = getCurrentAgentLocation(runner), runner)
+          } else {
+            // No more containers to open
+            break()
+          }
         }
       }
-    }
 
-    // Pick up the task object
-    val objects = PathFinder.getAllAccessibleEnvObject(queryName = objectName, getCurrentAgentLocation(runner))
-    if (objects.length == 0) {
-      runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + objectName + ")", runner)
-      return (false, getActionHistory(runner))
+      // Pick up the task object
+      val objects = PathFinder.getAllAccessibleEnvObject(queryName = objectName, getCurrentAgentLocation(runner))
+      if (objects.length == 0) {
+        runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + objectName + ")", runner)
+        return (false, getActionHistory(runner))
+      }
+
+      taskObject = objects(0)
     }
-    val taskObject = objects(0)
 
     // Two possibilities: Substance is a liquid (so needs to be cooled), or substance is a solid (and needs to be heated).
     var objTempC:Double = 0.0f    // Ultimate approximate melting point from either method
