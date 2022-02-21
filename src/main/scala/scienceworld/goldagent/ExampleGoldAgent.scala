@@ -73,83 +73,86 @@ object ExampleGoldAgent {
 
         // For each variation
         //for (variationIdx <- 0 until maxTaskVariations) {
-        for (variationIdx <- 0 until math.min(500, maxTaskVariations)) {
-          println("---------------------------")
-          println("   Task " + taskIdx + "   " + taskName)
-          println("   Variation: " + variationIdx + " / " + maxTaskVariations)
-          println("---------------------------")
+        //var subsampleEveryNth:Int = 1
+        var subsampleEveryNth:Int = 6
+        for (variationIdx <- 0 until math.min(1000, maxTaskVariations)) {
+          if (variationIdx % subsampleEveryNth == 0) {
+            println("---------------------------")
+            println("   Task " + taskIdx + "   " + taskName)
+            println("   Variation: " + variationIdx + " / " + maxTaskVariations)
+            println("---------------------------")
 
-          // Load the task/variation
-          interface.load(taskName, variationIdx, simplificationStr)
+            // Load the task/variation
+            interface.load(taskName, variationIdx, simplificationStr)
 
-          // Get reference to AgentInterface
-          val agentInterface = interface.agentInterface
+            // Get reference to AgentInterface
+            val agentInterface = interface.agentInterface
 
-          println("Task Description: " + agentInterface.get.getTaskDescription())
+            println("Task Description: " + agentInterface.get.getTaskDescription())
 
-          // Get the gold action sequence
-          val goldActionSeq = interface.getGoldActionSequence().asScala.toArray
+            // Get the gold action sequence
+            val goldActionSeq = interface.getGoldActionSequence().asScala.toArray
 
-          // Create a history object to store this run
-          var foldDesc = "train"
-          if (interface.getVariationsDev().asScala.toArray.contains(variationIdx)) foldDesc = "dev"
-          if (interface.getVariationsTest().asScala.toArray.contains(variationIdx)) foldDesc = "test"
-          val history = new RunHistory(taskName, taskIdx, variationIdx, taskDescription = agentInterface.get.getTaskDescription(), foldDesc = foldDesc)
+            // Create a history object to store this run
+            var foldDesc = "train"
+            if (interface.getVariationsDev().asScala.toArray.contains(variationIdx)) foldDesc = "dev"
+            if (interface.getVariationsTest().asScala.toArray.contains(variationIdx)) foldDesc = "test"
+            val history = new RunHistory(taskName, taskIdx, variationIdx, taskDescription = agentInterface.get.getTaskDescription(), foldDesc = foldDesc)
 
-          // Run a free initial 'look' action, and add it to the history?
-          val initialObs = agentInterface.get.step("look around")
-          history.addStep("look around", initialObs)
+            // Run a free initial 'look' action, and add it to the history?
+            val initialObs = agentInterface.get.step("look around")
+            history.addStep("look around", initialObs)
 
 
+            var curScore: Double = 0.0
+            for (actionIdx <- 0 until goldActionSeq.length) {
+              // Get next gold action
+              userInput = goldActionSeq(actionIdx)
 
-          var curScore: Double = 0.0
-          for (actionIdx <- 0 until goldActionSeq.length) {
-            // Get next gold action
-            userInput = goldActionSeq(actionIdx)
+              // Supply action to environment, get next environment observation
+              println(">> " + userInput)
+              val observation = agentInterface.get.step(userInput)
+              curScore = observation._2
+              println("Observation: ")
+              println(observation)
 
-            // Supply action to environment, get next environment observation
-            println(">> " + userInput)
-            val observation = agentInterface.get.step(userInput)
-            curScore = observation._2
-            println("Observation: ")
-            println(observation)
+              // Store in history
+              history.addStep(userInput, observation)
 
-            // Store in history
-            history.addStep(userInput, observation)
+              // Check for error state:
+              if (agentInterface.get.isInErrorState()) {
 
-            // Check for error state:
-            if (agentInterface.get.isInErrorState()) {
+                println("Action History:")
+                for (i <- 0 to actionIdx) {
+                  println(i + ": \t" + goldActionSeq(i))
+                }
+                println("")
+                println("ERROR STATE DETECTED!")
+                println("ERROR MESSAGE: ")
+                println(agentInterface.get.getErrorStateMessage())
 
-              println("Action History:")
-              for (i <- 0 to actionIdx) {
-                println(i + ": \t" + goldActionSeq(i))
+                sys.exit(1)
               }
-              println("")
-              println("ERROR STATE DETECTED!")
-              println("ERROR MESSAGE: ")
-              println(agentInterface.get.getErrorStateMessage())
 
-              sys.exit(1)
+              totalSteps += 1
             }
 
-            totalSteps += 1
+
+            // If we reach here, we're done with the gold action sequence.  Test to make sure the score is perfect
+            if (curScore < 1.0) {
+              val errStr = "ERROR: Score not 100% after running gold action sequence (Task: " + taskName + ", VariationIdx: " + variationIdx + ", Score: " + curScore + ")"
+              println(errStr)
+              errors.append(errStr)
+              println("Gold sequence: " + goldActionSeq.mkString(", "))
+
+              errorHistories.append(history)
+            }
+            episodeScores.append(curScore)
+            numVariationsTested += 1
+
+            // Store action sequence
+            goldActionSequences.append(history)
           }
-
-
-          // If we reach here, we're done with the gold action sequence.  Test to make sure the score is perfect
-          if (curScore < 1.0) {
-            val errStr = "ERROR: Score not 100% after running gold action sequence (Task: " + taskName + ", VariationIdx: " + variationIdx + ", Score: " + curScore + ")"
-            println(errStr)
-            errors.append(errStr)
-            println ("Gold sequence: " + goldActionSeq.mkString(", "))
-
-            errorHistories.append(history)
-          }
-          episodeScores.append(curScore)
-          numVariationsTested += 1
-
-          // Store action sequence
-          goldActionSequences.append(history)
         }
         taskScores.append(episodeScores.toArray)
 

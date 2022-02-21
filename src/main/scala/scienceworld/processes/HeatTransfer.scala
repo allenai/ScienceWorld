@@ -7,6 +7,8 @@ class HeatTransfer {
 }
 
 object HeatTransfer {
+  //val HEAT_TRANSFER_COEFFICIENT = 0.10
+  val HEAT_TRANSFER_COEFFICIENT = 0.03
 
   // Heat transfer between a heat source, and an object being heated by it
   def heatTransferHeatSource(heatSource: EnvObject, heatedObj: EnvObject): Unit = {
@@ -21,7 +23,7 @@ object HeatTransfer {
           val objTemp = heatedObj.propMaterial.get.temperatureC
           if (objTemp < heaterTemp) {
             val deltaTemp = heaterTemp - objTemp
-            var increment = deltaTemp * 0.10
+            var increment = deltaTemp * HEAT_TRANSFER_COEFFICIENT
             heatedObj.propMaterial.get.temperatureC += increment
 
             //println("Heat transfer: Object (" + heatedObj.name + ") tempererature now " + heatedObj.propMaterial.get.temperatureC)
@@ -47,7 +49,7 @@ object HeatTransfer {
           val objTemp = cooledObj.propMaterial.get.temperatureC
           if (objTemp > coolerTemp) {
             val deltaTemp = coolerTemp - objTemp
-            var increment = deltaTemp * 0.10
+            var increment = deltaTemp * HEAT_TRANSFER_COEFFICIENT
             cooledObj.propMaterial.get.temperatureC += increment
 
             //println("Heat transfer: Object (" + cooledObj.name + ") tempererature now " + cooledObj.propMaterial.get.temperatureC)
@@ -75,12 +77,12 @@ object HeatTransfer {
 
     // Delta between obj1 and obj2
     val delta1 = (obj2Prop.temperatureC - obj1Prop.temperatureC) * minThermalConductivity
-    val increment1 = delta1 * 0.10
+    val increment1 = delta1 * HEAT_TRANSFER_COEFFICIENT
     obj1.propMaterial.get.temperatureC += increment1
 
     // Delta between obj2 and obj1
     val delta2 = (obj1Prop.temperatureC - obj2Prop.temperatureC) * minThermalConductivity
-    val increment2 = delta2 * 0.10
+    val increment2 = delta2 * HEAT_TRANSFER_COEFFICIENT
     obj2.propMaterial.get.temperatureC += increment2
 
     //println ("Heat transfer (conductive - 1): Object (" + obj1.name + ") temperature from " + obj1Temp + " to " + obj1.propMaterial.get.temperatureC)

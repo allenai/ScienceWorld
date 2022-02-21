@@ -114,7 +114,10 @@ object TaskParametric {
    * Helper functions (runner for gold action sequences)
    */
   def runAction(actionStr:String, runner:PythonInterface): Unit = {
+    println(">>> " + actionStr)
     val observation = runner.step(actionStr)
+    println("OBS: " + observation)
+    println("")
   }
 
   def getActionHistory(runner:PythonInterface):Array[String] = {

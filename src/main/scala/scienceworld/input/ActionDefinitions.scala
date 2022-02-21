@@ -2,7 +2,7 @@ package scienceworld.input
 
 import language.model.{ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
 import main.scala.scienceworld.runtime.SimplifierProcessor
-import scienceworld.actions.{ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMix, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionTaskDesc, ActionUseDevice, ActionWait1, ActionWait10, PossibleAction}
+import scienceworld.actions.{ActionActivate, ActionCloseDoor, ActionConnectElectrical, ActionDeactivate, ActionDisconnectElectrical, ActionDunkObject, ActionEat, ActionFlush, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionLookIn, ActionMix, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor, ActionPickUpObjectIntoInventory, ActionPourObject, ActionPutDownObjectIntoInventory, ActionRead, ActionResetTask, ActionTaskDesc, ActionUseDevice, ActionWait1, ActionWait10, PossibleAction}
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 import SimplifierProcessor._
@@ -41,6 +41,7 @@ object ActionDefinitions {
   val ACTION_ID_MIX           = 23
   val ACTION_ID_TASKDESC      = 24
   val ACTION_ID_TELEPORT      = 25
+  val ACTION_ID_DUNKOBJECT    = 26
 
 
   /*
@@ -84,6 +85,7 @@ object ActionDefinitions {
     // Move an object to a new container
     ActionMoveObject.registerAction(actionHandler)
     ActionPourObject.registerAction(actionHandler)
+    ActionDunkObject.registerAction(actionHandler)
 
     // Focus on object
     ActionFocus.registerAction(actionHandler)
@@ -156,6 +158,7 @@ object ActionDefinitions {
     // Move an object to a new container
     out.insertAll(out.length, ActionMoveObject.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
     out.insertAll(out.length, ActionPourObject.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
+    out.insertAll(out.length, ActionDunkObject.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))
 
     // Focus on object
     out.insertAll(out.length, ActionFocus.generatePossibleValidActions(agent, visibleObjects, uuid2referentLUT))

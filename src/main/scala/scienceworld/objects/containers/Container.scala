@@ -53,10 +53,17 @@ class Container extends EnvObject {
 
 
 /*
+ * Base class for cannonical containers used to pick up other things
+ */
+class Cup extends Container {
+
+}
+
+/*
  * Pots
  */
 
-class MetalPot extends Container {
+class MetalPot extends Cup {
   this.name = "metal pot"
   this.propContainer = Some(new IsOpenUnclosableContainer())
   this.propMaterial = Some(new SteelProp())
@@ -71,7 +78,7 @@ class MetalPot extends Container {
 /*
  * Cups
  */
-class GlassCup extends Container {
+class GlassCup extends Cup {
   this.name = "glass cup"
   this.propContainer = Some(new IsOpenUnclosableContainer())
   this.propMaterial = Some(new GlassProp())
@@ -83,7 +90,7 @@ class GlassCup extends Container {
 }
 
 
-class PlasticCup extends Container {
+class PlasticCup extends Cup {
   this.name = "plastic cup"
   this.propContainer = Some(new IsOpenUnclosableContainer())
   this.propMaterial = Some(new PlasticProp())
@@ -94,7 +101,7 @@ class PlasticCup extends Container {
 
 }
 
-class WoodCup extends Container {
+class WoodCup extends Cup {
   this.name = "wood cup"
   this.propContainer = Some(new IsOpenUnclosableContainer())
   this.propMaterial = Some(new WoodProp())
@@ -105,7 +112,7 @@ class WoodCup extends Container {
 
 }
 
-class TinCup extends Container {
+class TinCup extends Cup {
   this.name = "tin cup"
   this.propContainer = Some(new IsOpenUnclosableContainer())
   this.propMaterial = Some(new TinProp())
@@ -117,7 +124,7 @@ class TinCup extends Container {
 
 }
 
-class PaperCup extends Container {
+class PaperCup extends Cup {
   this.name = "paper cup"
   this.propContainer = Some(new IsOpenUnclosableContainer())
   this.propMaterial = Some(new PaperProp())
@@ -128,7 +135,7 @@ class PaperCup extends Container {
 
 }
 
-class CeramicCup extends Container {
+class CeramicCup extends Cup {
   this.name = "ceramic cup"
   this.propContainer = Some(new IsOpenUnclosableContainer())
   this.propMaterial = Some(new CeramicProp())
@@ -139,7 +146,7 @@ class CeramicCup extends Container {
 
 }
 
-class WoodBowl extends Container {
+class WoodBowl extends Cup {
   this.name = "bowl"
   this.propContainer = Some(new IsOpenUnclosableContainer())
   this.propMaterial = Some(new WoodProp())
@@ -150,7 +157,7 @@ class WoodBowl extends Container {
 
 }
 
-class Jug extends Container {
+class Jug extends Cup {
   this.name = "jug"
   this.propContainer = Some(new IsOpenUnclosableContainer())
   this.propMaterial = Some(new PlasticProp())
@@ -162,7 +169,7 @@ class Jug extends Container {
 }
 
 
-class GlassJar extends Container {
+class GlassJar extends Cup {
   this.name = "glass jar"
   this.propContainer = Some(new IsContainer())
   this.propMaterial = Some(new GlassProp())

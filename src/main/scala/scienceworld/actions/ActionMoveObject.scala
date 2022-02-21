@@ -1,6 +1,7 @@
 package scienceworld.actions
 
 import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionExprObject, ActionExprText, ActionRequestDef, ActionTrigger}
+import scienceworld.actions.ActionDunkObject.getMoveableLiquids
 import scienceworld.actions.ActionPickUpObjectIntoInventory.remap
 import scienceworld.actions.ActionPutDownObjectIntoInventory.remap
 import scienceworld.objects.portal.Door
@@ -472,4 +473,152 @@ object ActionPourObject {
 }
 
 
-//## TODO: Dunk container in liquid?
+class ActionDunkObject(action: ActionRequestDef, assignments: Map[String, EnvObject]) extends Action(action, assignments) {
+
+  override def runAction(): (String, Boolean) = {
+    val agent = assignments("agent")
+    val containerToMoveFrom = assignments("moveFrom")
+    val containerMoveTo = assignments("moveTo")
+
+    // Do checks for valid action
+    val (invalidStr, isValid) = ActionDunkObject.isValidAction(assignments)
+    if (!isValid) return (invalidStr, false)
+
+    // Move the objects
+    val os = new StringBuilder
+    val (allLiquids, movableLiquids) = getMoveableLiquids(containerToMoveFrom)
+    for (liquid <- movableLiquids) {
+      containerMoveTo.addObject(liquid)
+      // TODO: Also disconnect the object, if it's electrically connected
+      if (liquid.isElectricallyConnected()) {
+        os.append("(disconnecting " + liquid.name + ")")
+        liquid.disconnectElectricalTerminals()
+      }
+    }
+
+    os.append("You dunk the " + containerMoveTo.name + " in the " + containerToMoveFrom.name + ", moving the liquids (" + movableLiquids.map(_.name).mkString(", ") + ") to the " + containerMoveTo.name + ".")
+
+
+    return (os.toString(), true)
+  }
+
+}
+
+object ActionDunkObject {
+  val ACTION_NAME = "dunk object"
+  val ACTION_ID   = ActionDefinitions.ACTION_ID_DUNKOBJECT
+  val isOracleAction = false
+
+  def registerAction(actionHandler:ActionHandler) {
+    // Action: Move
+    val triggerPhrase = new ActionTrigger(List(
+      new ActionExprOR(List("dunk")),
+      new ActionExprIdentifier("moveTo"),
+      new ActionExprOR(List("in", "into")),
+      new ActionExprIdentifier("moveFrom")
+    ))
+    val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
+    actionHandler.addAction(action)
+
+  }
+
+
+  def isValidAction(assignments:Map[String, EnvObject]): (String, Boolean) = {
+    val agent = assignments("agent")
+    val containerToMoveFrom = assignments("moveFrom")
+    val containerMoveTo = assignments("moveTo")
+
+    // Check 1: Check that agent is valid
+    agent match {
+      case a:Agent => { }
+      case _ => return ("I'm not sure what that means", false)
+    }
+
+    // Check that both arguments aren't the same
+    if (containerToMoveFrom.uuid == containerMoveTo.uuid) {
+      return ("You can't dunk something into itself.", false)
+    }
+
+    // Check that the container we're dunking is moveable
+    if ((containerMoveTo.propMoveable.isEmpty) || (!containerMoveTo.propMoveable.get.isMovable)) {
+      return ("The " + containerMoveTo.name + " is not moveable.", false)
+    }
+
+    // Check that the container we're dunking is open
+    if ((containerMoveTo.propContainer.isDefined) && (!containerMoveTo.propContainer.get.isOpen)) {
+      return ("The " + containerMoveTo.name + " is not open.", false)
+    }
+
+    // Check that the container we're dunking is open
+    if ((containerMoveTo.propContainer.isEmpty) || ((containerMoveTo.propContainer.isDefined) && (!containerMoveTo.propContainer.get.isContainer))) {
+      return ("The " + containerMoveTo.name + " is not a container.", false)
+    }
+
+    val (allLiquids, movableLiquids) = getMoveableLiquids(containerToMoveFrom)
+
+    // Check that there are liquids available to move
+    if (allLiquids.length == 0) {
+      return ("The " + containerToMoveFrom.name + " does not contain any liquids to dunk into.", false)
+    }
+
+    // Check that liquids are able to move, and are not marked as immovable
+    if (movableLiquids.length == 0) {
+      return ("The liquids in " + containerToMoveFrom.name + " aren't able to move.", false)
+    }
+
+    // If we reach here, the action is valid
+    return ("", true)
+  }
+
+  def generatePossibleValidActions(agent:EnvObject, visibleObjects:Array[EnvObject], uuid2referentLUT:Map[Long, String]):Array[PossibleAction] = {
+    val out = new ArrayBuffer[PossibleAction]()
+
+    for (obj1 <- visibleObjects) {
+      for (obj2 <- visibleObjects) {
+        // Pack for check
+        val assignments = Map(
+          "agent" -> agent,
+          "moveFrom" -> obj1,
+          "moveTo" -> obj2
+        )
+
+        // Do check
+        if (this.isValidAction(assignments)._2 == true) {
+          // Pack and store
+          val pa = new PossibleAction(Array[ActionExpr](
+            new ActionExprText("dunk"),
+            new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid)),
+            new ActionExprText("into"),
+            new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid))
+          ), this.ACTION_ID)
+          out.append(pa)
+        }
+      }
+    }
+
+    return out.toArray
+  }
+
+  // Helper function: finds list of liquids in a given container
+  def getMoveableLiquids(container:EnvObject):(Array[EnvObject], Array[EnvObject]) = {
+    // Find a list of things that we're moving (nominally, all liquids)
+    val liquids = new ArrayBuffer[EnvObject]()
+    for (cObj <- container.getContainedObjects(includeHidden = false)) {
+      if ((cObj.propMaterial.isDefined) && (cObj.propMaterial.get.stateOfMatter == "liquid")) {
+        liquids.append(cObj)
+      }
+    }
+
+    // Check that the liquids are movable
+    val liquidsThatCanMove = new ArrayBuffer[EnvObject]()
+    for (liquid <- liquids) {
+      if ((liquid.propMoveable.isDefined) && (liquid.propMoveable.get.isMovable)) {
+        liquidsThatCanMove.append(liquid)
+      }
+    }
+
+    // Return
+    (liquids.toArray, liquidsThatCanMove.toArray)
+  }
+
+}

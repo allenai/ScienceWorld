@@ -14,6 +14,7 @@ import TaskUseInstrumentThermometer2._
 import scienceworld.actions.Action
 import scienceworld.environments.ContainerMaker
 import scienceworld.goldagent.PathFinder
+import scienceworld.objects.containers.MetalPot
 import scienceworld.objects.substance.food.{Chocolate, OrangeJuice}
 import scienceworld.runtime.pythonapi.PythonInterface
 
@@ -379,16 +380,30 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
 
     if (taskObject.propMaterial.get.stateOfMatter == "solid") {
       // Substance is a solid -- do heating procedure to determine melting point
+
+      // Focus on task object
+      runAction("focus on " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
+
       runAction("open cupboard", runner)
 
-      runAction("move " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get + " to " + "metal pot", runner)
+      val container = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[MetalPot]().toList(0)
 
-      val heatingDeviceName:String = "stove"
-      runAction("move " + "metal pot" + " to " + "stove", runner)
+      runAction("move " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+
+      runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+
+      // Go to foundry
+      val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "foundry")
+      runActionSequence(actionStrs2, runner)
+
+      //val heatingDeviceName:String = "stove"
+      val heatingDeviceName:String = "blast furnace"
+      runAction("open " + heatingDeviceName, runner)
+      runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + heatingDeviceName, runner)
 
       runAction("activate " + heatingDeviceName, runner)
 
-      val MAX_ITER = 30
+      val MAX_ITER = 40
       breakable {
         for (i <- 0 until MAX_ITER) {
           // Check to see object's state of matter
@@ -396,8 +411,9 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
           val objSOM = taskObject.propMaterial.get.stateOfMatter
 
           // Measure object temperature
-          runAction("use " + instrument.name + " in inventory on " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
           objTempC = taskObject.propMaterial.get.temperatureC
+          runAction("use " + instrument.name + " in inventory on " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
+
 
           // Break when the object is no longer a liquid
           if (objSOM != "solid") break()
@@ -419,7 +435,7 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
       val coolingDeviceName:String = "freezer"
       runAction("open " + coolingDeviceName, runner)
 
-      runAction("move " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get + " to " + coolingDeviceName, runner)
+      runAction("move " + PathFinder.getObjUniqueReferent(substanceContainer, getCurrentAgentLocation(runner)).get + " to " + coolingDeviceName, runner)
 
       val MAX_ITER = 30
       breakable {
@@ -429,8 +445,8 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
           val objSOM = taskObject.propMaterial.get.stateOfMatter
 
           // Measure object temperature
-          runAction("use " + instrument.name + " in inventory on " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
           objTempC = taskObject.propMaterial.get.temperatureC
+          runAction("use " + instrument.name + " in inventory on " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
 
           // Break when the object is no longer a liquid
           if (objSOM != "liquid") break()
@@ -439,11 +455,18 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
 
     }
 
+    // Go to answer box location
+    val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = boxLocation)
+    runActionSequence(actionStrs2, runner)
+
+
     // Choose correct box based on temperature
     if (objTempC > tempPoint) {
+      runAction("NOTE: Object Temperature ( " + objTempC + ") is ABOVE temperature point (" + tempPoint + ")", runner)
       // Above threshold
       runAction("focus on " + boxAbove, runner)
     } else {
+      runAction("NOTE: Object Temperature ( " + objTempC + ") is BELOW temperature point (" + tempPoint + ")", runner)
       // Below threshold
       runAction("focus on " + boxBelow, runner)
     }

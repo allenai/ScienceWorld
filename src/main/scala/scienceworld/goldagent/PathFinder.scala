@@ -4,7 +4,10 @@ import language.model.ActionRequestDef
 import scienceworld.actions.{Action, ActionFocus, ActionLookAround, ActionMoveObject, ActionMoveThroughDoor, ActionOpenDoor}
 import scienceworld.input.InputParser
 import scienceworld.objects.agent.Agent
+import scienceworld.objects.containers.Cup
+import scienceworld.objects.devices.Sink
 import scienceworld.objects.location.{Location, Universe}
+import scienceworld.objects.substance.Water
 import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.ObjMonitor
@@ -14,6 +17,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.ClassTag
 import scala.util.Random
+import scala.util.control.Breaks._
 
 
 /*
@@ -379,6 +383,59 @@ object PathFinder {
 
     // If we reach here, no more containers to open
     return false
+  }
+
+  // Handles getting water from the current location.
+  // Returns (success, container reference, water reference)
+  def getWaterInContainer(runner:PythonInterface):(Boolean, Option[EnvObject], Option[EnvObject]) = {
+    // Get current agent location
+    val curLocation = TaskParametric.getCurrentAgentLocation(runner)
+
+    // Look for a container (cup-like)
+    // TODO: Add parameter for preferred container?
+    val cups = curLocation.getContainedAccessibleObjectsOfType[Cup]()
+    var cup:Option[EnvObject] = None
+    breakable {
+      for (cup_ <- cups) {
+        if (cup_.getContainedObjects(includeHidden = false).size == 0) {
+          cup = Some(cup_)
+          break()
+        }
+      }
+    }
+
+    if (cup.isEmpty) {
+      // ERROR: Can't find a cup
+      return (false, None, None)
+    }
+
+    // Attempt 1: Look for any sinks
+    val sinks = curLocation.getContainedAccessibleObjectsOfType[Sink]().toArray
+    if (sinks.size > 0) {
+      val sink = sinks(0)
+      // Put container in sink
+      TaskParametric.runAction("move " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get + " to " + PathFinder.getObjUniqueReferent(sink, curLocation).get, runner)
+      // Turn on sink
+      TaskParametric.runAction("activate " + PathFinder.getObjUniqueReferent(sink, curLocation).get, runner)
+      // Turn off sink
+      TaskParametric.runAction("deactivate " + PathFinder.getObjUniqueReferent(sink, curLocation).get, runner)
+
+      val water = cup.get.getContainedAccessibleObjectsOfType[Water]().toArray
+
+      if (water.size > 0) {
+        // Sinked worked -- return
+        return (true, cup, Some(water(0)))
+      }
+    }
+
+    // Attempt 2: Look for anything else that might have available water
+    val accessibleWater = curLocation.getContainedAccessibleObjectsOfType[Water]()
+    if (accessibleWater.size > 0) {
+
+    }
+
+    // If we reach here, the agent was not able to find any accessible water
+    return (false, None, None)
   }
 
 
