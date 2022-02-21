@@ -88,7 +88,7 @@ object UnknownSubstanceThermal {
     letterName match {
       case "A" => return 25.0
       case "B" => return 75.0
-      case "C" => return 125.0
+      case "C" => return 115.0
       case "D" => return -30.0
       case "E" => return -10.0
       case "F" => return 275.0
