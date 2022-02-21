@@ -13,11 +13,13 @@ import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalC
 import TaskUseInstrumentThermometer2._
 import scienceworld.actions.Action
 import scienceworld.environments.ContainerMaker
+import scienceworld.goldagent.PathFinder
 import scienceworld.objects.substance.food.{Chocolate, OrangeJuice}
 import scienceworld.runtime.pythonapi.PythonInterface
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
+import scala.util.control.Breaks._
 
 
 class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN) extends TaskParametric {
@@ -293,9 +295,165 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
   }
 
 
+  /*
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_MEASURE_MELTING_KNOWN) {
+      return mkGoldActionSequenceThermometer(modifiers, runner)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+  }
+
+
+  def mkGoldActionSequenceThermometer(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val objectName = this.getTaskValueStr(modifiers, "objectName").get
+    val objectLocation = this.getTaskValueStr(modifiers, "location").get
+    val tempPoint = this.getTaskValueDouble(modifiers, "temperaturePoint").get
+    val meltingPoint = this.getTaskValueDouble(modifiers, "meltingPoint").get
+    val instrumentName = this.getTaskValueStr(modifiers, "instrumentName").get
+    val boxAbove = this.getTaskValueStr(modifiers, "boxAbove").get
+    val boxBelow = this.getTaskValueStr(modifiers, "boxBelow").get
+    val boxLocation = this.getTaskValueStr(modifiers, key = "locationAnswerBox").get
+
+    // Stage 1: Get thermometer
+    // Move from starting location to get instrument (thermometer)
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "kitchen")
+    runActionSequence(actionStrs, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+    // Take instrument (thermometer)
+    val instruments = PathFinder.getAllAccessibleEnvObject(queryName = instrumentName, getCurrentAgentLocation(runner))
+    if (instruments.length == 0) return (false, getActionHistory(runner))
+    val instrument = instruments(0)
+    //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
+    runAction("pick up " + instrument.name, runner)
+
+    // Focus on instrument
+    runAction("focus on " + instrument.name + " in inventory", runner)
+
+
+    // Stage 2: Get task object
+    // Go to task location
+    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = objectLocation)
+    runActionSequence(actionStrs1, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+    // Check to make sure the task object is available in an accessible container
+    var successOpeningContainers: Boolean = true
+    var substances: Array[EnvObject] = Array.empty[EnvObject]
+    breakable {
+      for (i <- 0 to 20) {
+        println("*** FIND SUBSTANCE ATTEMPT " + i)
+        substances = PathFinder.getAllAccessibleEnvObject(objectName, getCurrentAgentLocation(runner))
+        if (substances.size > 0) break // Found at least one substance matching the criteria
+        // If we reach here, we didn't find a subtance -- start opening closed containers
+        if (successOpeningContainers) {
+          successOpeningContainers = PathFinder.openRandomClosedContainer(currentLocation = getCurrentAgentLocation(runner), runner)
+        } else {
+          // No more containers to open
+          break()
+        }
+      }
+    }
+
+    // Pick up the task object
+    val objects = PathFinder.getAllAccessibleEnvObject(queryName = objectName, getCurrentAgentLocation(runner))
+    if (objects.length == 0) {
+      runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + objectName + ")", runner)
+      return (false, getActionHistory(runner))
+    }
+    val taskObject = objects(0)
+
+    // Two possibilities: Substance is a liquid (so needs to be cooled), or substance is a solid (and needs to be heated).
+    var objTempC:Double = 0.0f    // Ultimate approximate melting point from either method
+
+    if (taskObject.propMaterial.get.stateOfMatter == "solid") {
+      // Substance is a solid -- do heating procedure to determine melting point
+      runAction("open cupboard", runner)
+
+      runAction("move " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get + " to " + "metal pot", runner)
+
+      val heatingDeviceName:String = "stove"
+      runAction("move " + "metal pot" + " to " + "stove", runner)
+
+      runAction("activate " + heatingDeviceName, runner)
+
+      val MAX_ITER = 30
+      breakable {
+        for (i <- 0 until MAX_ITER) {
+          // Check to see object's state of matter
+          runAction("examine " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
+          val objSOM = taskObject.propMaterial.get.stateOfMatter
+
+          // Measure object temperature
+          runAction("use " + instrument.name + " in inventory on " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
+          objTempC = taskObject.propMaterial.get.temperatureC
+
+          // Break when the object is no longer a liquid
+          if (objSOM != "solid") break()
+        }
+      }
+
+
+    } else {
+      // Substance is a liquid -- do cooling procedure to determine melting (freezing) point
+      val substanceContainer = taskObject.getContainer().get
+
+      //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
+      runAction("pick up " + PathFinder.getObjUniqueReferent(substanceContainer, getCurrentAgentLocation(runner)).get, runner)
+
+      // Focus on task object
+      runAction("focus on " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
+
+      // Move task object to freezer
+      val coolingDeviceName:String = "freezer"
+      runAction("open " + coolingDeviceName, runner)
+
+      runAction("move " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get + " to " + coolingDeviceName, runner)
+
+      val MAX_ITER = 30
+      breakable {
+        for (i <- 0 until MAX_ITER) {
+          // Check to see object's state of matter
+          runAction("examine " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
+          val objSOM = taskObject.propMaterial.get.stateOfMatter
+
+          // Measure object temperature
+          runAction("use " + instrument.name + " in inventory on " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
+          objTempC = taskObject.propMaterial.get.temperatureC
+
+          // Break when the object is no longer a liquid
+          if (objSOM != "liquid") break()
+        }
+      }
+
+    }
+
+    // Choose correct box based on temperature
+    if (objTempC > tempPoint) {
+      // Above threshold
+      runAction("focus on " + boxAbove, runner)
+    } else {
+      // Below threshold
+      runAction("focus on " + boxBelow, runner)
+    }
+
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    // Return
+    return (true, getActionHistory(runner))
   }
 
 }

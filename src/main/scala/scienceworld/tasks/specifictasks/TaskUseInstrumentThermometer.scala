@@ -224,17 +224,16 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
    */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     if (mode == MODE_USE_THERMOMETER) {
-      return mkGoldActionSequenceMendel(modifiers, runner)
+      return mkGoldActionSequenceThermometer(modifiers, runner)
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
     }
-
   }
 
   /*
    * Gold action sequences
    */
-  def mkGoldActionSequenceMendel(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceThermometer(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
