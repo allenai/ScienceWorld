@@ -11,12 +11,17 @@ import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalContainerByTemperature, GoalFind, GoalInRoomWithObject, GoalMoveToLocation, GoalMoveToNewLocation, GoalObjectInContainerByName, GoalObjectsInSingleContainer, GoalPastActionUseObjectOnObject, GoalSpecificObjectInDirectContainer}
 import TaskUseInstrumentThermometer._
 import scienceworld.actions.Action
-import scienceworld.objects.containers.WoodCup
-import scienceworld.objects.devices.Thermometer
+import scienceworld.goldagent.PathFinder
+import scienceworld.objects.containers.furniture.BeeHive
+import scienceworld.objects.containers.{FlowerPot, Jug, SelfWateringFlowerPot, WoodCup}
+import scienceworld.objects.devices.{Shovel, Sink, Thermometer}
+import scienceworld.objects.livingthing.LivingThing
+import scienceworld.objects.livingthing.plant.{PeaPlant, Plant, Soil}
 import scienceworld.runtime.pythonapi.PythonInterface
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
+import scala.util.control.Breaks.{break, breakable}
 
 
 
@@ -81,7 +86,7 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
 
       // Unknown (unnamed) substances)
       for (i <- 0 until 20) {
-        val unknownSubstance = new UnknownSubstanceThermal()
+        val unknownSubstance = new UnknownSubstanceThermal("B")
         unknownSubstance.propMaterial.get.temperatureC = TaskUseInstrumentThermometer.mkRandTemp(tempPoint)
         objectToTest.append(Array(
           new TaskObject(unknownSubstance.name, Some(unknownSubstance), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
@@ -214,9 +219,102 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
   }
 
 
+  /*
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_USE_THERMOMETER) {
+      return mkGoldActionSequenceMendel(modifiers, runner)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+
+  }
+
+  /*
+   * Gold action sequences
+   */
+  def mkGoldActionSequenceMendel(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val objectName = this.getTaskValueStr(modifiers, "objectName").get
+    val objectLocation = this.getTaskValueStr(modifiers, "location").get
+    val tempPoint = this.getTaskValueDouble(modifiers, "temperaturePoint").get
+    val instrumentName = this.getTaskValueStr(modifiers, "instrumentName").get
+    val boxAbove = this.getTaskValueStr(modifiers, "boxAbove").get
+    val boxBelow = this.getTaskValueStr(modifiers, "boxBelow").get
+    val boxLocation = this.getTaskValueStr(modifiers, key = "locationAnswerBox").get
+
+    val seedLocation = "green house"
+
+
+    // Stage 1: Get thermometer
+    // Move from starting location to get instrument (thermometer)
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "kitchen")
+    runActionSequence(actionStrs, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+    // Take instrument (thermometer)
+    val instruments = PathFinder.getAllAccessibleEnvObject(queryName = instrumentName, getCurrentAgentLocation(runner))
+    if (instruments.length == 0) return (false, getActionHistory(runner))
+    val instrument = instruments(0)
+    //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
+    runAction("pick up " + instrument.name, runner)
+
+    // Focus on instrument
+    runAction("focus on " + instrument.name + " in inventory", runner)
+
+
+    // Stage 2: Get task object
+    // Go to task location
+    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = objectLocation)
+    runActionSequence(actionStrs1, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+    // Pick up the task object
+    val objects = PathFinder.getAllAccessibleEnvObject(queryName = objectName, getCurrentAgentLocation(runner))
+    if (objects.length == 0) return (false, getActionHistory(runner))
+    val taskObject = objects(0)
+    //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
+    runAction("pick up " + taskObject.name, runner)
+
+    // Focus on task object
+    runAction("focus on " + taskObject.name + " in inventory", runner)
+
+
+    // Stage 3: Move to answer box location
+    // Go to task location
+    val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = boxLocation)
+    runActionSequence(actionStrs2, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+
+    // Stage 4: Measure temperature and select answer box
+    runAction("use " + instrument.name + " in inventory on " + taskObject.name + " in inventory", runner)
+    val objTempC = taskObject.propMaterial.get.temperatureC
+
+    if (objTempC > tempPoint) {
+      // Above threshold
+      runAction("move " + taskObject.name + " in inventory to " + boxAbove, runner)
+    } else {
+      // Below threshold
+      runAction("move " + taskObject.name + " in inventory to " + boxBelow, runner)
+    }
+
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    // Return
+    return (true, getActionHistory(runner))
   }
 
 }

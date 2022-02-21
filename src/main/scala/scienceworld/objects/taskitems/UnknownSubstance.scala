@@ -46,7 +46,7 @@ object UnknownSubstanceElectricalConductivity {
 }
 
 // An unknown substance used for temperature experiments
-class UnknownSubstanceThermal(letterName:String = "A") extends EnvObject {
+class UnknownSubstanceThermal(letterName:String = "B") extends EnvObject {
   this.name = "unknown substance " + letterName
 
   this.propMaterial = Some(new MetalProp)
@@ -63,7 +63,7 @@ class UnknownSubstanceThermal(letterName:String = "A") extends EnvObject {
 
 object UnknownSubstanceThermal {
 
-  def mkRandomSubstanceMeltingPoint(letterName:String = "A"):EnvObject = {
+  def mkRandomSubstanceMeltingPoint(letterName:String = "B"):EnvObject = {
     val substance = new UnknownSubstanceThermal(letterName)
 
     // Melting point
