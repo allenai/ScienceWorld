@@ -160,7 +160,7 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
     j <- objectToTest
     i <- temperaturePoints
     k <- answerBoxes
-  } yield List(h, i, j, k)
+  } yield List(h, j, i, k)
 
   println("Number of combinations: " + combinations.length)
 
@@ -404,18 +404,30 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
 
       runAction("move " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
 
-      runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
 
-      // Go to foundry
-      val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "foundry")
-      runActionSequence(actionStrs2, runner)
+      if (meltingPoint < 200.0f) {
+        // Since these substances are known, we can guess to use the stove or furnace on them.
 
-      //val heatingDeviceName:String = "stove"
-      val heatingDeviceName:String = "blast furnace"
-      runAction("open " + heatingDeviceName, runner)
-      runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + heatingDeviceName, runner)
+        // Use stove
+        val heatingDeviceName:String = "stove"
+        runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + heatingDeviceName, runner)
 
-      runAction("activate " + heatingDeviceName, runner)
+        runAction("activate " + heatingDeviceName, runner)
+
+      } else {
+        // Use blast furnace
+        runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+
+        // Go to foundry
+        val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "foundry")
+        runActionSequence(actionStrs2, runner)
+
+        val heatingDeviceName:String = "blast furnace"
+        runAction("open " + heatingDeviceName, runner)
+        runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + heatingDeviceName, runner)
+
+        runAction("activate " + heatingDeviceName, runner)
+      }
 
       val MAX_ITER = 40
       breakable {
