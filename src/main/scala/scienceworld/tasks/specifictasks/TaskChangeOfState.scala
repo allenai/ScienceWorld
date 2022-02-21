@@ -2,13 +2,15 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.actions.Action
 import scienceworld.environments.ContainerMaker
+import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
+import scienceworld.objects.containers.MetalPot
 import scienceworld.objects.devices.Stove
 import scienceworld.objects.substance.food.{AppleJuice, Chocolate, IceCream, Marshmallow, OrangeJuice}
 import scienceworld.objects.substance.{Caesium, Gallium, Ice, Lead, Mercury, Soap, Tin}
 import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
-import scienceworld.tasks.{Task, TaskDisable, TaskMaker1, TaskModifier, TaskObject}
+import scienceworld.tasks.{Task, TaskDisable, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalActivateDeviceWithName, GoalChangeStateOfMatter, GoalFind, GoalInRoomWithObject, GoalIsDifferentStateOfMatter, GoalIsNotStateOfMatter, GoalIsStateOfMatter, GoalMoveToLocation, GoalMoveToNewLocation, GoalObjectInContainer, GoalObjectInContainerByName, GoalObjectsInSingleContainer, GoalSpecificObjectInDirectContainer, GoalTemperatureDecrease, GoalTemperatureIncrease, GoalTemperatureOnFire}
 import scienceworld.tasks.specifictasks.TaskChangeOfState.{MODE_BOIL, MODE_CHANGESTATE, MODE_FREEZE, MODE_MELT}
@@ -23,29 +25,44 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
   val substancePossibilities = new ArrayBuffer[ Array[TaskModifier] ]()
   // Example of water (found in the environment)
-  substancePossibilities.append( Array(new TaskObject("water", None, "", Array.empty[String], 0) ))
+  substancePossibilities.append( Array(new TaskObject("water", None, "", Array.empty[String], 0),
+      new TaskValueStr(key = "objectName", value = "water") ))
 
   // Water, but disable the common source (the sink in the kitchen)
   substancePossibilities.append( Array(new TaskObject("water", None, "", Array.empty[String], 0),
-    new TaskDisable(name="sink", Array("kitchen") )))
+      new TaskDisable(name="sink", Array("kitchen")),
+      new TaskValueStr(key = "objectName", value = "water") ))
 
   // Example of ice (needs to be generated)
-  substancePossibilities.append( Array(new TaskObject("ice", Some(new Ice), "kitchen", Array("freezer"), 0) ))
+  substancePossibilities.append( Array(new TaskObject("ice", Some(new Ice), "kitchen", Array("freezer"), 0),
+    new TaskValueStr(key = "objectName", value = "ice")))
   // Example of something needing to be generated
-  substancePossibilities.append( Array(new TaskObject("orange juice", Some(ContainerMaker.mkRandomLiquidCup(new OrangeJuice)), "kitchen", Array("fridge"), 0) ))
-  substancePossibilities.append( Array(new TaskObject("apple juice", Some(ContainerMaker.mkRandomLiquidCup(new AppleJuice)), "kitchen", Array("fridge"), 0) ))
-  substancePossibilities.append( Array(new TaskObject("chocolate", Some(new Chocolate), "kitchen", Array("fridge"), 0) ))
-  substancePossibilities.append( Array(new TaskObject("marshmallow", Some(new Marshmallow), roomToGenerateIn = "kitchen", Array("cupboard", "table", "desk"), generateNear = 0) ))
-  substancePossibilities.append( Array(new TaskObject("ice cream", Some(ContainerMaker.mkRandomLiquidCup(new IceCream)), roomToGenerateIn = "kitchen", Array("freezer"), generateNear = 0) ))
+  substancePossibilities.append( Array(new TaskObject("orange juice", Some(ContainerMaker.mkRandomLiquidCup(new OrangeJuice)), "kitchen", Array("fridge"), 0),
+    new TaskValueStr(key = "objectName", value = "orange juice")))
+  substancePossibilities.append( Array(new TaskObject("apple juice", Some(ContainerMaker.mkRandomLiquidCup(new AppleJuice)), "kitchen", Array("fridge"), 0),
+    new TaskValueStr(key = "objectName", value = "apple juice")))
+  substancePossibilities.append( Array(new TaskObject("chocolate", Some(new Chocolate), "kitchen", Array("fridge"), 0),
+    new TaskValueStr(key = "objectName", value = "chocolate")))
+  substancePossibilities.append( Array(new TaskObject("marshmallow", Some(new Marshmallow), roomToGenerateIn = "kitchen", Array("cupboard", "table", "desk"), generateNear = 0),
+    new TaskValueStr(key = "objectName", value = "marshmallow")))
+  substancePossibilities.append( Array(new TaskObject("ice cream", Some(ContainerMaker.mkRandomLiquidCup(new IceCream)), roomToGenerateIn = "kitchen", Array("freezer"), generateNear = 0),
+    new TaskValueStr(key = "objectName", value = "ice cream")))
 
-  substancePossibilities.append( Array(new TaskObject("soap", Some(new Soap), roomToGenerateIn = "kitchen", Array("cupboard", "table", "desk"), generateNear = 0) ))
-  substancePossibilities.append( Array(new TaskObject("rubber", Some(new Soap), roomToGenerateIn = "workshop", Array("table", "desk"), generateNear = 0) ))
+  substancePossibilities.append( Array(new TaskObject("soap", Some(new Soap), roomToGenerateIn = "kitchen", Array("cupboard", "table", "desk"), generateNear = 0),
+    new TaskValueStr(key = "objectName", value = "soap")))
+  substancePossibilities.append( Array(new TaskObject("rubber", Some(new Soap), roomToGenerateIn = "workshop", Array("table", "desk"), generateNear = 0),
+    new TaskValueStr(key = "objectName", value = "rubber")))
 
-  substancePossibilities.append( Array(new TaskObject("lead", Some(new Lead()), "workshop", Array("table", "desk"), 0) ))                // Metals
-  substancePossibilities.append( Array(new TaskObject("tin", Some(new Tin()), "workshop", Array("table", "desk"), 0) ))
-  substancePossibilities.append( Array(new TaskObject("mercury", Some(new Mercury()), "workshop", Array("table", "desk"), 0) ))
-  substancePossibilities.append( Array(new TaskObject("gallium", Some(new Gallium()), "workshop", Array("table", "desk"), 0) ))
-  substancePossibilities.append( Array(new TaskObject("caesium", Some(new Caesium()), "workshop", Array("table", "desk"), 0) ))
+  substancePossibilities.append( Array(new TaskObject("lead", Some(new Lead()), "workshop", Array("table", "desk"), 0),
+    new TaskValueStr(key = "objectName", value = "lead")))
+  substancePossibilities.append( Array(new TaskObject("tin", Some(new Tin()), "workshop", Array("table", "desk"), 0),
+    new TaskValueStr(key = "objectName", value = "tin")))
+  substancePossibilities.append( Array(new TaskObject("mercury", Some(new Mercury()), "workshop", Array("table", "desk"), 0),
+    new TaskValueStr(key = "objectName", value = "mercury")))
+  substancePossibilities.append( Array(new TaskObject("gallium", Some(new Gallium()), "workshop", Array("table", "desk"), 0),
+    new TaskValueStr(key = "objectName", value = "gallium")))
+  substancePossibilities.append( Array(new TaskObject("caesium", Some(new Caesium()), "workshop", Array("table", "desk"), 0),
+    new TaskValueStr(key = "objectName", value = "caesium")))
 
 
 
@@ -251,9 +268,239 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
   }
 
 
+  /*
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_MELT) {
+      return mkGoldActionSequenceChangeState(modifiers, runner)
+    } else if (mode == MODE_BOIL) {
+      return mkGoldActionSequenceChangeState(modifiers, runner)
+    } else if (mode == MODE_FREEZE) {
+      return mkGoldActionSequenceChangeState(modifiers, runner)
+    } else if (mode == MODE_CHANGESTATE) {
+      return mkGoldActionSequenceChangeState(modifiers, runner)
+
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+  }
+
+
+  def mkGoldActionSequenceChangeState(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val objectName = this.getTaskValueStr(modifiers, "objectName").get
+    //val objectLocation = this.getTaskValueStr(modifiers, "location").get
+
+    // Stage 1: Get thermometer
+    // Move from starting location to get instrument (thermometer)
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "kitchen")
+    runActionSequence(actionStrs, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+    // Take instrument (thermometer)
+    val instrumentName = "thermometer"
+    val instruments = PathFinder.getAllAccessibleEnvObject(queryName = instrumentName, getCurrentAgentLocation(runner))
+    if (instruments.length == 0) return (false, getActionHistory(runner))
+    val instrument = instruments(0)
+    //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
+    runAction("pick up " + instrument.name, runner)
+
+    // Focus on instrument
+    runAction("focus on " + instrument.name + " in inventory", runner)
+
+
+    // Stage 2: Get task object
+    // Go to task location
+    /*
+    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = objectLocation)
+    runActionSequence(actionStrs1, runner)
+     */
+
+    // Look around
+    runAction("look around", runner)
+
+    // Check to make sure the task object is available in an accessible container
+    var taskObject:EnvObject = null
+    if (objectName == "water") {
+      // Attempt to find water
+      val (success, waterContainer, waterRef) = PathFinder.getWaterInContainer(runner)
+
+      if (!success) {
+        runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
+        return (false, getActionHistory(runner))
+      }
+
+      taskObject = waterRef.get
+
+    } else {
+
+      var successOpeningContainers: Boolean = true
+      var substances: Array[EnvObject] = Array.empty[EnvObject]
+      breakable {
+        for (i <- 0 to 20) {
+          println("*** FIND SUBSTANCE ATTEMPT " + i)
+          substances = PathFinder.getAllAccessibleEnvObject(objectName, getCurrentAgentLocation(runner))
+          if (substances.size > 0) break // Found at least one substance matching the criteria
+          // If we reach here, we didn't find a subtance -- start opening closed containers
+          if (successOpeningContainers) {
+            successOpeningContainers = PathFinder.openRandomClosedContainer(currentLocation = getCurrentAgentLocation(runner), runner)
+          } else {
+            // No more containers to open
+            break()
+          }
+        }
+      }
+
+      // Pick up the task object
+      var objects = PathFinder.getAllAccessibleEnvObject(queryName = objectName, getCurrentAgentLocation(runner))
+      if (objects.length == 0) {
+
+        // Try searching elsewhere
+        val actionStrsSearchPattern1 = PathFinder.createActionSequenceSearchPatternPrecomputed(universe, agent, getCurrentAgentLocation(runner).name)
+
+        var substance:Option[EnvObject] = None
+        var substanceContainer:Option[EnvObject] = None
+
+        // Walk around the environment until we find the thing to test
+        breakable {
+          for (searchPatternStep <- actionStrsSearchPattern1) {
+            // First, check to see if the object is here
+            val curLocSearch = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe) // Get a pointer to the whole room the answer box is in
+            var objects = PathFinder.getAllAccessibleEnvObject(queryName = objectName, getCurrentAgentLocation(runner))
+            if (objects.size > 0) {
+              break()
+            }
+
+            // If not found, move to next location to continue search
+            runActionSequence(searchPatternStep, runner)
+          }
+
+          // Return to kitchen
+          val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "kitchen")
+          runActionSequence(actionStrs2, runner)
+        }
+
+        if (objects.length == 0) {
+          runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + objectName + ")", runner)
+          return (false, getActionHistory(runner))
+        }
+      }
+
+      taskObject = objects(0)
+    }
+
+
+    // Focus on task object
+    runAction("focus on " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
+
+    runAction("open cupboard", runner)
+
+    val container = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[MetalPot]().toList(0)
+
+    runAction("move " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+
+
+    if (mode == MODE_MELT) {
+      this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", universe, agent, runner)
+    } else if (mode == MODE_BOIL) {
+      this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "gas", universe, agent, runner)
+    } else if (mode == MODE_FREEZE) {
+      this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "solid", universe, agent, runner)
+    } else if (mode == MODE_CHANGESTATE) {
+      // Any change is valid
+      // TODO
+    }
+
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    // Return
+    return (true, getActionHistory(runner))
+  }
+
+
+  // Heat the substance until it becomes a (liquid / gas)
+  def mkActionSequenceHeatToStateOfMatter(substance:EnvObject, container:EnvObject, stopAtStateOfMatter:String = "gas", universe:EnvObject, agent:Agent, runner:PythonInterface): Unit = {
+    val instrumentName = "thermometer"
+
+    //## TODO
+    if (true) {
+      val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "kitchen")
+      runActionSequence(actionStrs2, runner)
+
+      // Use stove
+      val heatingDeviceName:String = "stove"
+      runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + heatingDeviceName, runner)
+
+      runAction("activate " + heatingDeviceName, runner)
+
+    } else {
+      // Use blast furnace
+      runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+
+      // Go to foundry
+      val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "foundry")
+      runActionSequence(actionStrs2, runner)
+
+      val heatingDeviceName:String = "blast furnace"
+      runAction("open " + heatingDeviceName, runner)
+      runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + heatingDeviceName, runner)
+
+      runAction("activate " + heatingDeviceName, runner)
+    }
+
+    val MAX_ITER = 40
+    breakable {
+      for (i <- 0 until MAX_ITER) {
+        // Check to see object's state of matter
+        runAction("examine " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
+        val objSOM = substance.propMaterial.get.stateOfMatter
+
+        // Measure object temperature
+        val objTempC = substance.propMaterial.get.temperatureC
+        runAction("use " + instrumentName + " in inventory on " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
+
+        // Break when the object is no longer a liquid
+        if (objSOM == stopAtStateOfMatter) break()
+      }
+    }
+
+  }
+
+  def mkActionSequenceCoolToStateOfMatter(substance:EnvObject, container:EnvObject, stopAtStateOfMatter:String = "solid", universe:EnvObject, agent:Agent, runner:PythonInterface): Unit = {
+    val instrumentName = "thermometer"
+
+    val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "foundry")
+    runActionSequence(actionStrs2, runner)
+
+    // Use freezer
+    val coolingDeviceName:String = "freezer"
+    runAction("open " + coolingDeviceName, runner)
+    runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + coolingDeviceName, runner)
+
+    val MAX_ITER = 40
+    breakable {
+      for (i <- 0 until MAX_ITER) {
+        // Check to see object's state of matter
+        runAction("examine " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
+        val objSOM = substance.propMaterial.get.stateOfMatter
+
+        // Measure object temperature
+        val objTempC = substance.propMaterial.get.temperatureC
+        runAction("use " + instrumentName + " in inventory on " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
+
+        // Break when the object is no longer a liquid
+        if (objSOM == stopAtStateOfMatter) break()
+      }
+    }
+
   }
 
 }
