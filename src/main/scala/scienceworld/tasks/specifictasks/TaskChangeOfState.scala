@@ -54,15 +54,15 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
   substancePossibilities.append( Array(new TaskObject("rubber", Some(new Soap), roomToGenerateIn = "workshop", Array("table", "desk"), generateNear = 0),
     new TaskValueStr(key = "objectName", value = "rubber")))
 
-  substancePossibilities.append( Array(new TaskObject("lead", Some(new Lead()), "workshop", Array("table", "desk"), 0),
+  substancePossibilities.append( Array(new TaskObject("lead", Some(TaskChangeOfState.mkSubstanceInContainer(new Lead())), "workshop", Array("table", "desk"), forceAdd = true),
     new TaskValueStr(key = "objectName", value = "lead")))
-  substancePossibilities.append( Array(new TaskObject("tin", Some(new Tin()), "workshop", Array("table", "desk"), 0),
+  substancePossibilities.append( Array(new TaskObject("tin", Some(TaskChangeOfState.mkSubstanceInContainer(new Tin())), "workshop", Array("table", "desk"), forceAdd = true),
     new TaskValueStr(key = "objectName", value = "tin")))
-  substancePossibilities.append( Array(new TaskObject("mercury", Some(new Mercury()), "workshop", Array("table", "desk"), 0),
+  substancePossibilities.append( Array(new TaskObject("mercury", Some(TaskChangeOfState.mkSubstanceInContainer(new Mercury())), "workshop", Array("table", "desk"), forceAdd = true),
     new TaskValueStr(key = "objectName", value = "mercury")))
-  substancePossibilities.append( Array(new TaskObject("gallium", Some(new Gallium()), "workshop", Array("table", "desk"), 0),
+  substancePossibilities.append( Array(new TaskObject("gallium", Some(TaskChangeOfState.mkSubstanceInContainer(new Gallium())), "workshop", Array("table", "desk"), forceAdd = true),
     new TaskValueStr(key = "objectName", value = "gallium")))
-  substancePossibilities.append( Array(new TaskObject("caesium", Some(new Caesium()), "workshop", Array("table", "desk"), 0),
+  substancePossibilities.append( Array(new TaskObject("caesium", Some(TaskChangeOfState.mkSubstanceInContainer(new Caesium())), "workshop", Array("table", "desk"), forceAdd = true),
     new TaskValueStr(key = "objectName", value = "caesium")))
 
 
@@ -408,6 +408,11 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
     }
 
+    // Check it was picked up correctly
+    if (PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).isEmpty) {
+      runAction("NODE: CAN'T FIND THE OBJECT", runner)
+      return (false, getActionHistory(runner))
+    }
 
     // Focus on task object
     runAction("focus on " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
@@ -440,7 +445,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
 
   // Heat the substance until it becomes a (liquid / gas)
-  def mkActionSequenceHeatToStateOfMatter(substance:EnvObject, container:EnvObject, stopAtStateOfMatter:String = "gas", universe:EnvObject, agent:Agent, runner:PythonInterface): Unit = {
+  def mkActionSequenceHeatToStateOfMatter(substance:EnvObject, container:EnvObject, stopAtStateOfMatter:String = "gas", universe:EnvObject, agent:Agent, runner:PythonInterface): Boolean = {
     val instrumentName = "thermometer"
 
     //## TODO
@@ -477,7 +482,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
         if (substance.isDeteted()) {
           runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
-          return (false, None, None)
+          return false
         }
 
         runAction("examine " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
@@ -495,9 +500,10 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
       }
     }
 
+    return true
   }
 
-  def mkActionSequenceCoolToStateOfMatter(substance:EnvObject, container:EnvObject, stopAtStateOfMatter:String = "solid", universe:EnvObject, agent:Agent, runner:PythonInterface): Unit = {
+  def mkActionSequenceCoolToStateOfMatter(substance:EnvObject, container:EnvObject, stopAtStateOfMatter:String = "solid", universe:EnvObject, agent:Agent, runner:PythonInterface): Boolean = {
     val instrumentName = "thermometer"
 
     val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "foundry")
@@ -527,6 +533,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
       }
     }
 
+    return true
   }
 
 }
@@ -547,13 +554,9 @@ object TaskChangeOfState {
   }
 
   // Make an unknown substance, and put it in a container if it's a liquid
-  def mkRandomSubstanceInContainer(substance:EnvObject):(EnvObject, Option[EnvObject]) = {
-    if (substance.propMaterial.get.meltingPoint < 15.0f) {
-      // Put in a container
-      val container = ContainerMaker.mkRandomLiquidCup(substance)
-      return (substance, Some(container))
-    }
-    return (substance, None)
+  def mkSubstanceInContainer(substance:EnvObject):EnvObject = {
+    // Put in a container
+    return ContainerMaker.mkRandomLiquidCup(substance)
   }
 
 
