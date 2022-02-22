@@ -3,7 +3,7 @@ package scienceworld.environments
 import scienceworld.objects.livingthing.animals.{Animal, Bee}
 import scienceworld.objects.containers.{BookShelf, CeramicCup, Container, FlowerPot, GlassCup, GlassJar, Jug, MetalPot, Sewer, TinCup, WoodBowl, WoodCup}
 import scienceworld.objects.containers.furniture.{Bed, BeeHive, Chair, Closet, Couch, Counter, Cupboard, Desk, SteelTable, WoodTable}
-import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, StopWatch, Stove, Thermometer, Toilet}
+import scienceworld.objects.devices.{Axe, Bathtub, BlastFurnace, Freezer, Fridge, Lighter, Oven, Shovel, Sink, StopWatch, Stove, Thermometer, Toilet, UltraColdFreezer}
 import scienceworld.objects.electricalcomponent.{Battery, LightBulb, SolarPanel, Switch, Wire}
 import scienceworld.objects.environmentoutside.{FirePit, Fountain}
 import scienceworld.objects.livingthing.plant.{AppleTree, OrangeTree, PeaPlant, PeachTree, Plant, Soil}
@@ -253,6 +253,10 @@ object RoomMaker {
 
     val battery = new Battery()
     table.addObject(battery)
+
+
+    // Ultra low temperature freezer
+    room.addObject(new UltraColdFreezer)
 
     // Add a randomly generated substance that may or may not be electrically conductive
     /*

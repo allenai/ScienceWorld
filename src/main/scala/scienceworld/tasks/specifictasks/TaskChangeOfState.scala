@@ -474,7 +474,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
         this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", method = "stove", universe, agent, runner)
       } else {
         // If currently a liquid or gas, then cool until a solid, then start heating
-        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "solid", universe, agent, runner)
+        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "solid", method = "freezer", universe, agent, runner)
         runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
         this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", method = "stove", universe, agent, runner)
       }
@@ -485,7 +485,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
         this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "gas", method = "stove", universe, agent, runner)
       } else {
         // If currently a gas, then cool until a liquid, then start heating
-        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", universe, agent, runner)
+        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", method = "freezer", universe, agent, runner)
         runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
         this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "gas", method = "stove", universe, agent, runner)
       }
@@ -493,12 +493,12 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     } else if (mode == MODE_FREEZE) {
       if (currentSOM != "solid") {
         // If currently not a solid, then cool until a solid
-        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "solid", universe, agent, runner)
+        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "solid", method = "freezer", universe, agent, runner)
       } else {
         // If currently a solid, then heat until a liquid, then cool
         this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", method = "stove", universe, agent, runner)
         runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
-        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "solid", universe, agent, runner)
+        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "solid", method = "freezer", universe, agent, runner)
       }
 
     } else if (mode == MODE_CHANGESTATE) {
@@ -526,6 +526,8 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     //## TODO
     var activationSuccess:Boolean = false
     if (method == "stove") {
+      runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+
       val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "kitchen")
       runActionSequence(actionStrs2, runner)
 
@@ -619,23 +621,42 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     return true
   }
 
-  def mkActionSequenceCoolToStateOfMatter(substance:EnvObject, container:EnvObject, stopAtStateOfMatter:String = "solid", universe:EnvObject, agent:Agent, runner:PythonInterface): Boolean = {
+  def mkActionSequenceCoolToStateOfMatter(substance:EnvObject, container:EnvObject, stopAtStateOfMatter:String = "solid", method:String = "freezer", universe:EnvObject, agent:Agent, runner:PythonInterface): Boolean = {
     val instrumentName = "thermometer"
 
     val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "kitchen")
     runActionSequence(actionStrs2, runner)
 
     // Use freezer
-    val coolingDeviceName:String = "freezer"
-    runAction("open " + coolingDeviceName, runner)
-    runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + coolingDeviceName, runner)
+    if (method == "freezer") {
+      runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
 
-    val MAX_ITER = 40
+      val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "kitchen")
+      runActionSequence(actionStrs2, runner)
+
+      val coolingDeviceName: String = "freezer"
+      runAction("open " + coolingDeviceName, runner)
+      runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + coolingDeviceName, runner)
+
+    } else if (method == "ultfreezer") {
+      runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+
+      val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "workshop")
+      runActionSequence(actionStrs2, runner)
+
+      val coolingDeviceName: String = "freezer"
+      runAction("open " + coolingDeviceName, runner)
+      runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + coolingDeviceName, runner)
+
+    }
+
+    val MAX_ITER = 20
+    var objSOM = substance.propMaterial.get.stateOfMatter
     breakable {
       for (i <- 0 until MAX_ITER) {
         // Check to see object's state of matter
         runAction("examine " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
-        val objSOM = substance.propMaterial.get.stateOfMatter
+        objSOM = substance.propMaterial.get.stateOfMatter
 
         // Measure object temperature
         val objTempC = substance.propMaterial.get.temperatureC
@@ -650,7 +671,21 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
       }
     }
 
+    if (objSOM != stopAtStateOfMatter) {
+      // It didn't work, try a backoff strategy
+      if (method == "freezer") {
+        // Try the blast furnace
+        return mkActionSequenceCoolToStateOfMatter(substance, container, stopAtStateOfMatter, method = "ultfreezer", universe, agent, runner)
+      }
+
+
+      // If we reach here, the process didn't work
+      return false
+    }
+
+    // If we reach here, the process worked
     return true
+
   }
 
 }

@@ -22,3 +22,7 @@ class CoolingSourcePropertiesFridge extends CoolingSourceProperties(minTemp = 2.
 class CoolingSourcePropertiesFreezer extends CoolingSourceProperties(minTemp = -18.0f, curSetTemp = None) {
 
 }
+
+class CoolingSourcePropertiesULTFreezer extends CoolingSourceProperties(minTemp = -86.0f, curSetTemp = None) {
+
+}
