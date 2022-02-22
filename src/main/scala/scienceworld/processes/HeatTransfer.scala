@@ -7,8 +7,8 @@ class HeatTransfer {
 }
 
 object HeatTransfer {
-  //val HEAT_TRANSFER_COEFFICIENT = 0.10
-  val HEAT_TRANSFER_COEFFICIENT = 0.03
+  val HEAT_TRANSFER_COEFFICIENT = 0.10
+  //val HEAT_TRANSFER_COEFFICIENT = 0.06
 
   // Heat transfer between a heat source, and an object being heated by it
   def heatTransferHeatSource(heatSource: EnvObject, heatedObj: EnvObject): Unit = {

@@ -20,6 +20,9 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   // Alternate constructors
   def this() = this(name = "", objType = "")
 
+  // Variable noting whether this object has been deleted (removed from the simulation)
+  var deleted:Boolean = false
+
   // Contained objects
   private val containedObjects = mutable.Set[EnvObject]()
   private var inContainer:Option[EnvObject] = None
@@ -405,7 +408,10 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
 
     // Append special deleted flag, to notice the object when debugging if it happens to be left floating around in the simulation
     this.name += " (deleted)"
+    this.deleted = true
   }
+
+  def isDeteted():Boolean = this.deleted
 
 
   /*
