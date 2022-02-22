@@ -255,7 +255,9 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     }
 
     val taskLabel = taskName + "-variation" + combinationNum
-    val description = "Your task is to " + subTask + " " + substanceName + ". First, focus on the substance. Then, take actions that will cause it to change its state of matter. "
+    var description = "Your task is to " + subTask + " " + substanceName + ". "
+    if (mode == MODE_BOIL) description += "For compounds without a boiling point, combusting the substance is also acceptable. "
+    description += "First, focus on the substance. Then, take actions that will cause it to change its state of matter. "
     val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
     val task = new Task(taskName, description, goalSequence, taskModifiers = modifiers)
@@ -503,7 +505,26 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
     } else if (mode == MODE_CHANGESTATE) {
       // Any change is valid
-      // TODO
+      // Get current state of matter
+      val currentSOM = taskObject.propMaterial.get.stateOfMatter
+
+      // Change state according to current state of matter
+      if (currentSOM == "solid") {
+        // If a solid, try melting it
+        this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", method = "stove", universe, agent, runner)
+      } else if (currentSOM == "gas") {
+        // If a gas, try condensing it
+        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", method = "freezer", universe, agent, runner)
+      } else {
+        // If a liquid, first try cooling it -- if that doesn't work, try heating it
+        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "solid", method = "freezer", universe, agent, runner)
+        if (taskObject.propMaterial.get.stateOfMatter == "liquid") {
+          // Cooling didn't change the state -- try heating it
+          runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+          this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "gas", method = "stove", universe, agent, runner, isCombustionAllowed = true)
+        }
+      }
+
     }
 
 

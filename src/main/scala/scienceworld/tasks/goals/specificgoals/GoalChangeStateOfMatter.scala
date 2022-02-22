@@ -123,7 +123,7 @@ class GoalIsDifferentStateOfMatter(_isOptional:Boolean = false, description:Stri
     val lastStateOfMatter = gs.getKey("stateOfMatter")
     if (lastStateOfMatter.length == 0) GoalReturn.mkSubgoalUnsuccessful()     // key not present
 
-    if (lastStateOfMatter == stateOfMatter) {                                 // key present
+    if (stateOfMatter != lastStateOfMatter) {                                 // key present
       this.satisfiedWithObject = obj
       return GoalReturn.mkSubgoalSuccess()
     }
