@@ -765,7 +765,7 @@ class SoapProp extends MaterialProperties {
   stateOfMatter                   = "solid"
   boilingPoint                    = 100000.0f
   meltingPoint                    = 140.0f
-  combustionPoint                 = 100000.0f
+  combustionPoint                 = 537.0f
   // Electrical
   electricallyConductive          = false
   // Friction

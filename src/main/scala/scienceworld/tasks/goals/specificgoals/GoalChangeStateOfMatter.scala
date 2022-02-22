@@ -33,7 +33,7 @@ class GoalIsNotStateOfMatter(val isNotState:String, _isOptional:Boolean = false,
 
 }
 
-class GoalChangeStateOfMatter(val changeToState:String, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
+class GoalChangeStateOfMatter(val changeToState:String, combustionAllowed:Boolean = false, _isOptional:Boolean = false, description:String = "", key:String = "", keysMustBeCompletedBefore:Array[String] = Array.empty[String]) extends Goal(description, key, keysMustBeCompletedBefore) {
   this.isOptional = _isOptional
 
   override def isGoalConditionSatisfied(obj:Option[EnvObject], isFirstGoal:Boolean, gs:GoalSequence, agent:Agent):GoalReturn = {
@@ -53,6 +53,13 @@ class GoalChangeStateOfMatter(val changeToState:String, _isOptional:Boolean = fa
       this.satisfiedWithObject = obj
       return GoalReturn.mkSubgoalSuccess()
     }
+
+    // Alternatively, if combustion is allowed, also check for that
+    if (combustionAllowed && obj.get.propMaterial.get.isCombusting) {
+      this.satisfiedWithObject = obj
+      return GoalReturn.mkSubgoalSuccess()
+    }
+
     return GoalReturn.mkSubgoalUnsuccessful()
   }
 

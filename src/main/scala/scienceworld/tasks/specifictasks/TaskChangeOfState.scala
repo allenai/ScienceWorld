@@ -207,7 +207,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
       subTask = "boil"
       gSequence.append( new GoalFind(objectName = substanceName, description = "focus on substance") )
       gSequence.append( new GoalChangeStateOfMatter("liquid", description = "substance is in a liquid state") )
-      gSequence.append( new GoalChangeStateOfMatter("gas", description = "substance is in a gasseous state") )
+      gSequence.append( new GoalChangeStateOfMatter("gas", combustionAllowed = true, description = "substance is in a gasseous state (or combusting)") )
 
       // Unordered
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = substanceName, _isOptional = true, description = "be in same location as " + substanceName))
@@ -482,12 +482,12 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     } else if (mode == MODE_BOIL) {
       if (currentSOM != "gas") {
         // If currently a solid or liquid, then start heating
-        this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "gas", method = "stove", universe, agent, runner)
+        this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "gas", method = "stove", universe, agent, runner, isCombustionAllowed = true)
       } else {
         // If currently a gas, then cool until a liquid, then start heating
         this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", method = "freezer", universe, agent, runner)
         runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
-        this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "gas", method = "stove", universe, agent, runner)
+        this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "gas", method = "stove", universe, agent, runner, isCombustionAllowed = true)
       }
 
     } else if (mode == MODE_FREEZE) {
@@ -520,7 +520,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
 
   // Heat the substance until it becomes a (liquid / gas)
-  def mkActionSequenceHeatToStateOfMatter(substance:EnvObject, container:EnvObject, stopAtStateOfMatter:String = "gas", method:String = "stove", universe:EnvObject, agent:Agent, runner:PythonInterface): Boolean = {
+  def mkActionSequenceHeatToStateOfMatter(substance:EnvObject, container:EnvObject, stopAtStateOfMatter:String = "gas", method:String = "stove", universe:EnvObject, agent:Agent, runner:PythonInterface, isCombustionAllowed:Boolean = false): Boolean = {
     val instrumentName = "thermometer"
 
     //## TODO
@@ -577,6 +577,11 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
           // Check to see object's state of matter
           println("substance: " + substance.toStringMinimal())
 
+          // Alternatively, if combustion is allowed, also check for that
+          if (isCombustionAllowed && substance.propMaterial.get.isCombusting) {
+            break()
+          }
+
           if (substance.isDeteted()) {
             runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
             return false
@@ -606,6 +611,11 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     }
 
     if (objSOM != stopAtStateOfMatter) {
+      // Check for special case of combustion
+      if (isCombustionAllowed && substance.propMaterial.get.isCombusting) {
+        return true
+      }
+
       // It didn't work, try a backoff strategy
       if (method == "stove") {
         // Try the blast furnace
@@ -654,13 +664,27 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     var objSOM = substance.propMaterial.get.stateOfMatter
     breakable {
       for (i <- 0 until MAX_ITER) {
+        if (substance.isDeteted()) {
+          runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
+          return false
+        }
+
         // Check to see object's state of matter
         runAction("examine " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
         objSOM = substance.propMaterial.get.stateOfMatter
 
+        if (substance.isDeteted()) {
+          runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
+          return false
+        }
         // Measure object temperature
         val objTempC = substance.propMaterial.get.temperatureC
         runAction("use " + instrumentName + " in inventory on " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
+
+        if (substance.isDeteted()) {
+          runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
+          return false
+        }
 
         // Wait 10 steps
         runAction("wait", runner)
