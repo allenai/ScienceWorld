@@ -26,6 +26,15 @@ object ContainerMaker {
     // Make sure container is open
     container.propContainer.get.isOpen = true
 
+    // Set the temperature of the container to be the same as the temperature of the liquid (so it doesn't suddenly change state from being in a warmer/cooler container on initialization)
+    if (container.propMaterial.isDefined) {
+      container.propMaterial.get.temperatureC = liquidToInsert.propMaterial.get.temperatureC
+    }
+
+    if (liquidToInsert.name == "ice cream") {
+      println ("#### ICE CREAM: " + liquidToInsert.propMaterial.get.temperatureC)
+    }
+
     // Step 2: Insert liquid
     container.addObject( liquidToInsert )
 

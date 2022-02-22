@@ -74,8 +74,9 @@ object ExampleGoldAgent {
         // For each variation
         //var subsampleEveryNth:Int = 1
         var subsampleEveryNth:Int = 1
-        for (variationIdx <- 0 until maxTaskVariations) {
-        //for (variationIdx <- 0 until math.min(1000, maxTaskVariations)) {
+        //for (variationIdx <- 0 until maxTaskVariations) {
+        //for (variationIdx <- 15 until math.min(1000, maxTaskVariations)) {
+        for (variationIdx <- 15 until math.min(16, maxTaskVariations)) {
           if (variationIdx % subsampleEveryNth == 0) {
             println("---------------------------")
             println("   Task " + taskIdx + "   " + taskName)

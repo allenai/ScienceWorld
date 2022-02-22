@@ -778,7 +778,7 @@ class IceCreamProp extends MaterialProperties {
   nameInStateOfMatter             = Map("solid" -> "ice cream", "liquid" -> "liquid ice cream", "gas" -> "gaseous ice cream")
   color                           = "white"
   // Thermal
-  temperatureC                    = 10.0f
+  temperatureC                    = -15.0f
   thermalConductivity             = 0.5f
   stateOfMatter                   = "solid"
   boilingPoint                    = 101.0f
