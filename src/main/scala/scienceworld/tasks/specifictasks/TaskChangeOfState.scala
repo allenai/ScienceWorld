@@ -338,14 +338,42 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     var taskObject:EnvObject = null
     if (objectName == "water") {
       // Attempt to find water
-      val (success, waterContainer, waterRef) = PathFinder.getWaterInContainer(runner)
+      var (success, waterContainer, waterRef) = PathFinder.getWaterInContainer(runner, useInventoryContainer = Some(container))
 
       if (!success) {
         runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
-        return (false, getActionHistory(runner))
+
+        // Try searching elsewhere
+        val actionStrsSearchPattern1 = PathFinder.createActionSequenceSearchPatternPrecomputed(universe, agent, getCurrentAgentLocation(runner).name)
+
+        // Walk around the environment until we find the thing to test
+        breakable {
+          for (searchPatternStep <- actionStrsSearchPattern1) {
+            // First, check to see if the object is here
+            val (success1, waterContainer1, waterRef1) = PathFinder.getWaterInContainer(runner, useInventoryContainer = Some(container))
+            if (success1) {
+              taskObject = waterRef1.get
+              break()
+            }
+
+            // If not found, move to next location to continue search
+            runActionSequence(searchPatternStep, runner)
+            runAction("look around", runner)
+          }
+
+          val (success1, waterContainer1, waterRef1) = PathFinder.getWaterInContainer(runner, useInventoryContainer = Some(container))
+          if (!success1) {
+            runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
+            return (false, getActionHistory(runner))
+          }
+          taskObject = waterRef1.get
+        }
+
+      } else {
+        taskObject = waterRef.get
       }
 
-      taskObject = waterRef.get
+
 
     } else {
 
@@ -372,9 +400,6 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
         // Try searching elsewhere
         val actionStrsSearchPattern1 = PathFinder.createActionSequenceSearchPatternPrecomputed(universe, agent, getCurrentAgentLocation(runner).name)
-
-        var substance:Option[EnvObject] = None
-        var substanceContainer:Option[EnvObject] = None
 
         // Walk around the environment until we find the thing to test
         breakable {

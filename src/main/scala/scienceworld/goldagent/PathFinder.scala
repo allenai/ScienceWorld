@@ -387,7 +387,7 @@ object PathFinder {
 
   // Attempts to get water from the current location.  Finds a cup-like object, and attempts to transfer water into the cup.
   // Returns (success, container reference, water reference)
-  def getWaterInContainer(runner:PythonInterface):(Boolean, Option[EnvObject], Option[EnvObject]) = {
+  def getWaterInContainer(runner:PythonInterface, useInventoryContainer:Option[EnvObject] = None):(Boolean, Option[EnvObject], Option[EnvObject]) = {
     // Get current agent location
     val curLocation = TaskParametric.getCurrentAgentLocation(runner)
 
@@ -395,18 +395,22 @@ object PathFinder {
     // TODO: Add parameter for preferred container?
     val cups = curLocation.getContainedAccessibleObjectsOfType[Cup]()
     var cup:Option[EnvObject] = None
-    breakable {
-      for (cup_ <- cups) {
-        if (cup_.getContainedObjects(includeHidden = false).size == 0) {
-          cup = Some(cup_)
-          break()
+    if (useInventoryContainer.isDefined) {
+      cup = useInventoryContainer
+    } else {
+      breakable {
+        for (cup_ <- cups) {
+          if (cup_.getContainedObjects(includeHidden = false).size == 0) {
+            cup = Some(cup_)
+            break()
+          }
         }
       }
-    }
 
-    if (cup.isEmpty) {
-      // ERROR: Can't find a cup
-      return (false, None, None)
+      if (cup.isEmpty) {
+        // ERROR: Can't find a cup
+        return (false, None, None)
+      }
     }
 
     // Attempt 1: Look for any sinks
@@ -424,6 +428,7 @@ object PathFinder {
 
       if (water.size > 0) {
         // Sinked worked -- return
+        if (useInventoryContainer.isDefined) TaskParametric.runAction("pick up " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get, runner)
         return (true, cup, Some(water(0)))
       }
     }
@@ -437,10 +442,14 @@ object PathFinder {
 
         if (cup.get.getContainedAccessibleObjectsOfType[Water]().size > 0) {
           // If the transfer was successful, return
+          if (useInventoryContainer.isDefined) TaskParametric.runAction("pick up " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get, runner)
           return (true, cup, Some(water))
         }
       }
     }
+
+
+    if (useInventoryContainer.isDefined) TaskParametric.runAction("pick up " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get, runner)
 
     // If we reach here, the agent was not able to find any accessible water
     return (false, None, None)
