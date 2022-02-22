@@ -31,10 +31,6 @@ object ContainerMaker {
       container.propMaterial.get.temperatureC = liquidToInsert.propMaterial.get.temperatureC
     }
 
-    if (liquidToInsert.name == "ice cream") {
-      println ("#### ICE CREAM: " + liquidToInsert.propMaterial.get.temperatureC)
-    }
-
     // Step 2: Insert liquid
     container.addObject( liquidToInsert )
 
