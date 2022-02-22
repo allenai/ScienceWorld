@@ -190,7 +190,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   }
 
   def getContainedAccessibleObjects(includeHidden:Boolean = false, includePortals:Boolean = true):Set[EnvObject] = {
-    val out = mutable.Set[EnvObject]()
+    var out = mutable.Set[EnvObject]()
     // Contained objects in this container
     for (cObj <- this.getContainedObjects()) {
       if (!cObj.isHidden() || (includeHidden == true)) {   // If object is not hidden
@@ -215,7 +215,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
         }
 
         if ((cObj.propContainer.isDefined) && (cObj.propContainer.get.isOpen)) {      // If the object is an open container, add it's contents
-          out ++= cObj.getContainedAccessibleObjects(includeHidden)
+          out ++= cObj.getContainedAccessibleObjects(includeHidden, includePortals)
         }
       }
     }

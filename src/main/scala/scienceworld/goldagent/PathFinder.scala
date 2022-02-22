@@ -376,7 +376,7 @@ object PathFinder {
       if ((obj.propContainer.isDefined) && (obj.propContainer.get.isContainer) && (obj.propContainer.get.isOpen == false) && (obj.propContainer.get.isClosable)) {
         // Try to open this container
         TaskParametric.runAction("open " + PathFinder.getObjUniqueReferent(obj, currentLocation).get, runner)
-        TaskParametric.runAction("open " + obj.getReferents().mkString(", "), runner)
+        //TaskParametric.runAction("open " + obj.getReferents().mkString(", "), runner)
         return true
       }
     }

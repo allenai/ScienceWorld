@@ -20,7 +20,7 @@ object ExampleGoldAgent {
     //val specificTasks = Array(4,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29)           // Do specific tasks
     //val specificTasks = Array(9)           // Do specific tasks
     //val specificTasks = Array(18)           // Do specific tasks
-    val specificTasks = Array(0)           // Do specific tasks
+    val specificTasks = Array(3)           // Do specific tasks
     //val specificTasks = Array.empty[Int]      // Do all
 
     val exportFilename = "goldsequences-" + specificTasks.mkString("-") + ".json"

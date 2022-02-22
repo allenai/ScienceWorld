@@ -23,6 +23,9 @@ object ContainerMaker {
       case 6 => container = new Jug()
     }
 
+    // Make sure container is open
+    container.propContainer.get.isOpen = true
+
     // Step 2: Insert liquid
     container.addObject( liquidToInsert )
 

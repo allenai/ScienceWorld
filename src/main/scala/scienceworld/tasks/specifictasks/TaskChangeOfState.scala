@@ -7,7 +7,7 @@ import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.MetalPot
 import scienceworld.objects.devices.Stove
 import scienceworld.objects.substance.food.{AppleJuice, Chocolate, IceCream, Marshmallow, OrangeJuice}
-import scienceworld.objects.substance.{Caesium, Gallium, Ice, Lead, Mercury, Soap, Tin}
+import scienceworld.objects.substance.{Caesium, Gallium, Ice, Lead, Mercury, Rubber, Soap, Tin}
 import scienceworld.objects.taskitems.UnknownSubstanceThermal
 import scienceworld.runtime.pythonapi.PythonInterface
 import scienceworld.struct.EnvObject
@@ -51,7 +51,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
   substancePossibilities.append( Array(new TaskObject("soap", Some(new Soap), roomToGenerateIn = "kitchen", Array("cupboard", "table", "desk"), generateNear = 0),
     new TaskValueStr(key = "objectName", value = "soap")))
-  substancePossibilities.append( Array(new TaskObject("rubber", Some(new Soap), roomToGenerateIn = "workshop", Array("table", "desk"), generateNear = 0),
+  substancePossibilities.append( Array(new TaskObject("rubber", Some(new Rubber), roomToGenerateIn = "workshop", Array("table", "desk"), generateNear = 0),
     new TaskValueStr(key = "objectName", value = "rubber")))
 
   substancePossibilities.append( Array(new TaskObject("lead", Some(TaskChangeOfState.mkSubstanceInContainer(new Lead())), "workshop", Array("table", "desk"), forceAdd = true),
@@ -312,6 +312,14 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
     runAction("pick up " + instrument.name, runner)
 
+
+    // Take a container (metal pot)
+    runAction("open cupboard", runner)
+
+    val container = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[MetalPot]().toList(0)
+
+    runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+
     // Focus on instrument
     //runAction("focus on " + instrument.name + " in inventory", runner)
 
@@ -395,7 +403,12 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
         } else {
           // Pick up the object
           taskObject = objects(0)
-          runAction("pick up " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
+
+          if (taskObject.propMaterial.get.stateOfMatter == "solid") {
+            runAction("pick up " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
+          } else {
+            runAction("pick up " + PathFinder.getObjUniqueReferent(taskObject.getContainer().get, getCurrentAgentLocation(runner)).get, runner)
+          }
 
           // Return to kitchen
           val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "kitchen")
@@ -417,19 +430,52 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     // Focus on task object
     runAction("focus on " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
 
-    runAction("open cupboard", runner)
 
-    val container = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[MetalPot]().toList(0)
+    if (taskObject.propMaterial.get.stateOfMatter == "solid") {
+      // solid -- move to new container
+      runAction("move " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+    } else {
+      // liquid -- pour to new container
+      val oldContainer = taskObject.getContainer().get
+      runAction("pour " + PathFinder.getObjUniqueReferent(oldContainer, getCurrentAgentLocation(runner)).get + " into " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+    }
 
-    runAction("move " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
 
+    val currentSOM = taskObject.propMaterial.get.stateOfMatter
 
     if (mode == MODE_MELT) {
-      this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", universe, agent, runner)
+      if (currentSOM == "solid") {
+        // If a solid, start heating
+        this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", method = "stove", universe, agent, runner)
+      } else {
+        // If currently a liquid or gas, then cool until a solid, then start heating
+        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "solid", universe, agent, runner)
+        runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+        this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", method = "stove", universe, agent, runner)
+      }
+
     } else if (mode == MODE_BOIL) {
-      this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "gas", universe, agent, runner)
+      if (currentSOM != "gas") {
+        // If currently a solid or liquid, then start heating
+        this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "gas", method = "stove", universe, agent, runner)
+      } else {
+        // If currently a gas, then cool until a liquid, then start heating
+        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", universe, agent, runner)
+        runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+        this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "gas", method = "stove", universe, agent, runner)
+      }
+
     } else if (mode == MODE_FREEZE) {
-      this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "solid", universe, agent, runner)
+      if (currentSOM != "solid") {
+        // If currently not a solid, then cool until a solid
+        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "solid", universe, agent, runner)
+      } else {
+        // If currently a solid, then heat until a liquid, then cool
+        this.mkActionSequenceHeatToStateOfMatter(taskObject, container, stopAtStateOfMatter = "liquid", method = "stove", universe, agent, runner)
+        runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+        this.mkActionSequenceCoolToStateOfMatter(taskObject, container, stopAtStateOfMatter = "solid", universe, agent, runner)
+      }
+
     } else if (mode == MODE_CHANGESTATE) {
       // Any change is valid
       // TODO
@@ -439,17 +485,22 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     // Wait one moment
     runAction("wait1", runner)
 
+    //## debug, add subgoals
+    runAction(runner.agentInterface.get.getGoalProgressStr(), runner)
+
+
     // Return
     return (true, getActionHistory(runner))
   }
 
 
   // Heat the substance until it becomes a (liquid / gas)
-  def mkActionSequenceHeatToStateOfMatter(substance:EnvObject, container:EnvObject, stopAtStateOfMatter:String = "gas", universe:EnvObject, agent:Agent, runner:PythonInterface): Boolean = {
+  def mkActionSequenceHeatToStateOfMatter(substance:EnvObject, container:EnvObject, stopAtStateOfMatter:String = "gas", method:String = "stove", universe:EnvObject, agent:Agent, runner:PythonInterface): Boolean = {
     val instrumentName = "thermometer"
 
     //## TODO
-    if (true) {
+    var activationSuccess:Boolean = false
+    if (method == "stove") {
       val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "kitchen")
       runActionSequence(actionStrs2, runner)
 
@@ -459,7 +510,15 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
       runAction("activate " + heatingDeviceName, runner)
 
-    } else {
+      // Check that the device activated successfully
+      val heatingDevice = PathFinder.getEnvObject(heatingDeviceName, universe)
+      if (heatingDevice.isDefined) {
+        if (heatingDevice.get.propDevice.get.isActivated) {
+          activationSuccess = true
+        }
+      }
+
+    } else if (method == "blast furnace") {
       // Use blast furnace
       runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
 
@@ -472,41 +531,73 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
       runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + heatingDeviceName, runner)
 
       runAction("activate " + heatingDeviceName, runner)
+
+      // Check that the device activated successfully
+      val heatingDevice = PathFinder.getEnvObject(heatingDeviceName, universe)
+      if (heatingDevice.isDefined) {
+        if (heatingDevice.get.propDevice.get.isActivated) {
+          activationSuccess = true
+        }
+      }
+
     }
 
-    val MAX_ITER = 50
-    breakable {
-      for (i <- 0 until MAX_ITER) {
-        // Check to see object's state of matter
-        println("substance: " + substance.toStringMinimal())
+    val MAX_ITER = 30
+    var objSOM = substance.propMaterial.get.stateOfMatter
+    if (activationSuccess) {
+      breakable {
+        for (i <- 0 until MAX_ITER) {
+          // Check to see object's state of matter
+          println("substance: " + substance.toStringMinimal())
 
-        if (substance.isDeteted()) {
-          runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
-          return false
+          if (substance.isDeteted()) {
+            runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
+            return false
+          }
+
+          runAction("examine " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
+          objSOM = substance.propMaterial.get.stateOfMatter
+
+          if (substance.isDeteted()) {
+            runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
+            return false
+          }
+
+          // Measure object temperature
+          val objTempC = substance.propMaterial.get.temperatureC
+          runAction("use " + instrumentName + " in inventory on " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
+
+          // Wait 10 steps
+          //runAction("wait", runner)
+
+          // Break when the object is no longer a liquid
+          runAction("NOTE: STATE OF MATTER " + objSOM + " / " + stopAtStateOfMatter, runner)
+          if (objSOM == stopAtStateOfMatter) break()
+
         }
-
-        runAction("examine " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
-        val objSOM = substance.propMaterial.get.stateOfMatter
-
-        // Measure object temperature
-        val objTempC = substance.propMaterial.get.temperatureC
-        runAction("use " + instrumentName + " in inventory on " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
-
-        // Wait 10 steps
-        //runAction("wait", runner)
-
-        // Break when the object is no longer a liquid
-        if (objSOM == stopAtStateOfMatter) break()
       }
     }
 
+    if (objSOM != stopAtStateOfMatter) {
+      // It didn't work, try a backoff strategy
+      if (method == "stove") {
+        // Try the blast furnace
+        return mkActionSequenceHeatToStateOfMatter(substance, container, stopAtStateOfMatter, method = "blast furnace", universe, agent, runner)
+      }
+
+
+      // If we reach here, the process didn't work
+      return false
+    }
+
+    // If we reach here, the process worked
     return true
   }
 
   def mkActionSequenceCoolToStateOfMatter(substance:EnvObject, container:EnvObject, stopAtStateOfMatter:String = "solid", universe:EnvObject, agent:Agent, runner:PythonInterface): Boolean = {
     val instrumentName = "thermometer"
 
-    val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "foundry")
+    val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "kitchen")
     runActionSequence(actionStrs2, runner)
 
     // Use freezer
@@ -529,6 +620,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
         runAction("wait", runner)
 
         // Break when the object is no longer a liquid
+        runAction("NOTE: STATE OF MATTER " + objSOM + " / " + stopAtStateOfMatter, runner)
         if (objSOM == stopAtStateOfMatter) break()
       }
     }
