@@ -18,10 +18,10 @@ object ExampleGoldAgent {
 
     //val specificTasks = Array(11,12,13,14)           // Do specific tasks
     //val specificTasks = Array(0,1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29)           // Do specific tasks
-    //val specificTasks = Array(9)           // Do specific tasks
+    val specificTasks = Array(9, 10)           // Do specific tasks
     //val specificTasks = Array(18)           // Do specific tasks
     //val specificTasks = Array(17)           // Do specific tasks
-    val specificTasks = Array.empty[Int]      // Do all
+    //val specificTasks = Array.empty[Int]      // Do all
 
     val exportFilename = "goldsequences-" + specificTasks.mkString("-") + ".json"
 
@@ -75,7 +75,7 @@ object ExampleGoldAgent {
         //var subsampleEveryNth:Int = 1
         var subsampleEveryNth:Int = 1
         //for (variationIdx <- 0 until maxTaskVariations) {
-        for (variationIdx <- 0 until math.min(10, maxTaskVariations)) {
+        for (variationIdx <- 0 until math.min(50, maxTaskVariations)) {
           if (variationIdx % subsampleEveryNth == 0) {
             println("---------------------------")
             println("   Task " + taskIdx + "   " + taskName)

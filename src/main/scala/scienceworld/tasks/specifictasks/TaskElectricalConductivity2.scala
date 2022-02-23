@@ -58,8 +58,9 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
   // Variation 3: Substance to test
   val unknownSubstances = new ArrayBuffer[ Array[TaskModifier] ]()
   for (location <- locations) {
-    for (i <- 0 until 20) {
-      val unknownSubstance = UnknownSubstanceElectricalConductivity.mkRandomSubstanceElectricalConductive()
+    val validLetters = Array("B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z")
+    for (validLetter <- validLetters) {
+      val unknownSubstance = UnknownSubstanceElectricalConductivity.mkRandomSubstanceElectricalConductive(validLetter)
       unknownSubstances.append(Array(
         new TaskObject(unknownSubstance.name, Some(unknownSubstance), roomToGenerateIn = location, Array.empty[String], generateNear = 0),
         new TaskValueStr(key = "unknownSubstance", value = unknownSubstance.name),

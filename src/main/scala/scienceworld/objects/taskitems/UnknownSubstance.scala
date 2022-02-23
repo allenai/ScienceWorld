@@ -31,14 +31,14 @@ class UnknownSubstanceElectricalConductivity(letterName:String = "A", isConducti
 object UnknownSubstanceElectricalConductivity {
 
   // Make a random substance that is either electrically conductive or non-conductive
-  def mkRandomSubstanceElectricalConductive():EnvObject = {
+  def mkRandomSubstanceElectricalConductive(letterName:String):EnvObject = {
     val randDouble = Random.nextFloat()
-    val randLetter = (97 + Random.nextInt(25)).toChar.toString
+    //#val randLetter = (97 + Random.nextInt(25)).toChar.toString
 
     if (randDouble < 0.50) {
-      return new UnknownSubstanceElectricalConductivity(letterName = randLetter, isConductive = false)
+      return new UnknownSubstanceElectricalConductivity(letterName = letterName, isConductive = false)
     } else {
-      return new UnknownSubstanceElectricalConductivity(letterName = randLetter, isConductive = true)
+      return new UnknownSubstanceElectricalConductivity(letterName = letterName, isConductive = true)
     }
 
   }

@@ -343,36 +343,81 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
 
     var substance:Option[EnvObject] = None
     var substanceContainer:Option[EnvObject] = None
+    if (specificSubstanceName.get == "water") {
+      breakable {
+        // Attempt to find water
+        var (success, waterContainer, waterRef) = PathFinder.getWaterInContainer(runner)
 
-    // Walk around the environment until we find the thing to test
-    breakable {
-      for (searchPatternStep <- actionStrsSearchPattern1) {
-        // First, check to see if the object is here
-        val curLocSearch = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe) // Get a pointer to the whole room the answer box is in
-        val substance_ = PathFinder.getAllAccessibleEnvObject(specificSubstanceName.get, curLocSearch.get)
+        if (!success) {
+          //## runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
 
-        if (substance_.length > 0) {
-          // Substance likely found -- try to pick it up
-          substance = Some(substance_(0))
-          // If it's not a solid, then pick up it's container
-          if ((substance.get.propMaterial.isDefined) && (substance.get.propMaterial.get.stateOfMatter != "solid")) {
-            // Assume liquid, pick up container
-            // TODO: Check that container is movable.
-            substanceContainer = substance.get.getContainer()
-            runAction("pick up " + PathFinder.getObjUniqueReferent(substance.get, getCurrentAgentLocation(runner)).get, runner)
+          // Try searching elsewhere
+          val actionStrsSearchPattern1 = PathFinder.createActionSequenceSearchPatternPrecomputed(universe, agent, getCurrentAgentLocation(runner).name)
 
-          } else {
-            // Assume solid, pick up thing
-            substanceContainer = substance // Container is itself, since it's the thing we'll be 'moving' to the workshop to test conductivity
-            runAction("pick up " + PathFinder.getObjUniqueReferent(substanceContainer.get, getCurrentAgentLocation(runner)).get, runner)
+          // Walk around the environment until we find the thing to test
+          breakable {
+            for (searchPatternStep <- actionStrsSearchPattern1) {
+              // First, check to see if the object is here
+              val (success1, waterContainer1, waterRef1) = PathFinder.getWaterInContainer(runner)
+              if (success1) {
+                substance = waterRef1
+                substanceContainer = waterContainer1
+                break()
+              }
+
+              // If not found, move to next location to continue search
+              runActionSequence(searchPatternStep, runner)
+              runAction("look around", runner)
+            }
+
+            val (success1, waterContainer1, waterRef1) = PathFinder.getWaterInContainer(runner)
+            if (!success1) {
+              //## runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
+              return (false, getActionHistory(runner))
+            }
+            substance = waterRef1
+            substanceContainer = waterContainer1
           }
 
-          // If we reach here, we've found and picked up the substance
-          break
+        } else {
+          substance = waterRef
+          substanceContainer = waterContainer
         }
 
-        // If not found, move to next location to continue search
-        runActionSequence(searchPatternStep, runner)
+        runAction("pick up " + PathFinder.getObjUniqueReferent(substanceContainer.get, getCurrentAgentLocation(runner)).get, runner)
+      }
+
+    } else {
+      // Walk around the environment until we find the thing to test
+      breakable {
+        for (searchPatternStep <- actionStrsSearchPattern1) {
+          // First, check to see if the object is here
+          val curLocSearch = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe) // Get a pointer to the whole room the answer box is in
+          val substance_ = PathFinder.getAllAccessibleEnvObject(specificSubstanceName.get, curLocSearch.get)
+
+          if (substance_.length > 0) {
+            // Substance likely found -- try to pick it up
+            substance = Some(substance_(0))
+            // If it's not a solid, then pick up it's container
+            if ((substance.get.propMaterial.isDefined) && (substance.get.propMaterial.get.stateOfMatter != "solid")) {
+              // Assume liquid, pick up container
+              // TODO: Check that container is movable.
+              substanceContainer = substance.get.getContainer()
+              runAction("pick up " + PathFinder.getObjUniqueReferent(substance.get, getCurrentAgentLocation(runner)).get, runner)
+
+            } else {
+              // Assume solid, pick up thing
+              substanceContainer = substance // Container is itself, since it's the thing we'll be 'moving' to the workshop to test conductivity
+              runAction("pick up " + PathFinder.getObjUniqueReferent(substanceContainer.get, getCurrentAgentLocation(runner)).get, runner)
+            }
+
+            // If we reach here, we've found and picked up the substance
+            break
+          }
+
+          // If not found, move to next location to continue search
+          runActionSequence(searchPatternStep, runner)
+        }
       }
     }
 
