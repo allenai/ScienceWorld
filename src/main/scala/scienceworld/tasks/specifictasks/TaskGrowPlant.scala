@@ -360,7 +360,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
       // See what the soil situation is like
       val soilInRoom = getCurrentAgentLocation(runner).getContainedObjectsOfType[Soil]().toArray
 
-      //runAction("NOTE: " + flowerPotsWithSoil.size + " pots have soil.", runner)
+      ////## runAction("NOTE: " + flowerPotsWithSoil.size + " pots have soil.", runner)
 
       // Case 1: Flower pot already exists with soil inside
       if (flowerPotsWithSoil.size >= NUM_PLANTS_TO_GROW) {

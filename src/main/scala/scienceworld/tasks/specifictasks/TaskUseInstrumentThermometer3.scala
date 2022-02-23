@@ -307,7 +307,7 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
       val (success, waterContainer, waterRef) = PathFinder.getWaterInContainer(runner)
 
       if (!success) {
-        runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
+        //## runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
       }
 
       taskObject = waterRef.get
@@ -333,7 +333,7 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
       // Pick up the task object
       val objects = PathFinder.getAllAccessibleEnvObject(queryName = objectName, getCurrentAgentLocation(runner))
       if (objects.length == 0) {
-        runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + objectName + ")", runner)
+        //## runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + objectName + ")", runner)
         return (false, getActionHistory(runner))
       }
 
@@ -427,11 +427,11 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
 
     // Choose correct box based on temperature
     if (objTempC > tempPoint) {
-      runAction("NOTE: Object Temperature ( " + objTempC + ") is ABOVE temperature point (" + tempPoint + ")", runner)
+      //## runAction("NOTE: Object Temperature ( " + objTempC + ") is ABOVE temperature point (" + tempPoint + ")", runner)
       // Above threshold
       runAction("focus on " + boxAbove, runner)
     } else {
-      runAction("NOTE: Object Temperature ( " + objTempC + ") is BELOW temperature point (" + tempPoint + ")", runner)
+      //## runAction("NOTE: Object Temperature ( " + objTempC + ") is BELOW temperature point (" + tempPoint + ")", runner)
       // Below threshold
       runAction("focus on " + boxBelow, runner)
     }

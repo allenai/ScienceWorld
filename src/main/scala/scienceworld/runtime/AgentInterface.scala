@@ -522,14 +522,18 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
 
     if (!success) {
       // If input was not successfully matched to an action, then do not continue/do a tick/etc:
+      //println("### ERROR PARSING INPUT: " + statusStr)
       val score = task.goalSequence.score()
       val isCompleted = task.goalSequence.isCompleted()
+      userOutStr.append(statusStr)
       return (userOutStr.toString(), score, isCompleted)
     }
 
     // Check for ambiguity resolution case after parsing new input
     if (this.inputParser.isInAmbiguousState()) {
+      // TODO: I think this is now handled by the generic error case above
       // Request clarification from user to resolve ambiguity -- do not run tick(), etc.
+      //println("### AMBIGUITY RESOLUTION CASE: " + statusStr)
       val score = task.goalSequence.score()
       val isCompleted = task.goalSequence.isCompleted()
       return (statusStr, score, isCompleted)

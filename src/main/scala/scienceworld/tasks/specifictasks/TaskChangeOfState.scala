@@ -343,7 +343,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
       var (success, waterContainer, waterRef) = PathFinder.getWaterInContainer(runner, useInventoryContainer = Some(container))
 
       if (!success) {
-        runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
+        //## runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
 
         // Try searching elsewhere
         val actionStrsSearchPattern1 = PathFinder.createActionSequenceSearchPatternPrecomputed(universe, agent, getCurrentAgentLocation(runner).name)
@@ -365,7 +365,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
           val (success1, waterContainer1, waterRef1) = PathFinder.getWaterInContainer(runner, useInventoryContainer = Some(container))
           if (!success1) {
-            runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
+            //## runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
             return (false, getActionHistory(runner))
           }
           taskObject = waterRef1.get
@@ -425,7 +425,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
 
         if (objects.length == 0) {
-          runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + objectName + ")", runner)
+          //## runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + objectName + ")", runner)
           return (false, getActionHistory(runner))
         } else {
           // Pick up the object
@@ -532,7 +532,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     runAction("wait1", runner)
 
     //## debug, add subgoals
-    runAction(runner.agentInterface.get.getGoalProgressStr(), runner)
+    //runAction(runner.agentInterface.get.getGoalProgressStr(), runner)
 
     // Return
     return (true, getActionHistory(runner))
@@ -603,7 +603,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
           }
 
           if (substance.isDeteted()) {
-            runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
+            //## runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
             return false
           }
 
@@ -611,7 +611,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
           objSOM = substance.propMaterial.get.stateOfMatter
 
           if (substance.isDeteted()) {
-            runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
+            //## runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
             return false
           }
 
@@ -623,7 +623,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
           //runAction("wait", runner)
 
           // Break when the object is no longer a liquid
-          runAction("NOTE: STATE OF MATTER " + objSOM + " / " + stopAtStateOfMatter, runner)
+          //## runAction("NOTE: STATE OF MATTER " + objSOM + " / " + stopAtStateOfMatter, runner)
           if (objSOM == stopAtStateOfMatter) break()
 
         }
@@ -685,7 +685,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     breakable {
       for (i <- 0 until MAX_ITER) {
         if (substance.isDeteted()) {
-          runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
+          //## runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
           return false
         }
 
@@ -694,7 +694,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
         objSOM = substance.propMaterial.get.stateOfMatter
 
         if (substance.isDeteted()) {
-          runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
+          //## runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
           return false
         }
         // Measure object temperature
@@ -702,7 +702,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
         runAction("use " + instrumentName + " in inventory on " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
 
         if (substance.isDeteted()) {
-          runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
+          //## runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
           return false
         }
 
@@ -710,7 +710,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
         runAction("wait", runner)
 
         // Break when the object is no longer a liquid
-        runAction("NOTE: STATE OF MATTER " + objSOM + " / " + stopAtStateOfMatter, runner)
+        //## runAction("NOTE: STATE OF MATTER " + objSOM + " / " + stopAtStateOfMatter, runner)
         if (objSOM == stopAtStateOfMatter) break()
       }
     }

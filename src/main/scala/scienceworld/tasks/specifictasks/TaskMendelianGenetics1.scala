@@ -321,7 +321,7 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
       // See what the soil situation is like
       val soilInRoom = getCurrentAgentLocation(runner).getContainedObjectsOfType[Soil]().toArray
 
-      runAction("NOTE: " + flowerPotsWithSoil.size + " pots have soil.", runner)
+      //## runAction("NOTE: " + flowerPotsWithSoil.size + " pots have soil.", runner)
 
       // Case 1: Flower pot already exists with soil inside
       if (flowerPotsWithSoil.size >= NUM_POTS_TO_PREPARE) {
@@ -579,7 +579,7 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
       }
     }
 
-    //runAction("NOTE: Number of observations of trait: " + numObservationsOfTrait, runner)
+    ////## runAction("NOTE: Number of observations of trait: " + numObservationsOfTrait, runner)
 
     if (numObservationsOfTrait > (adultPlants.size/2)) {
       // Observed frequently -- likely a dominant trait

@@ -267,7 +267,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
 
     // Check to make sure the task object is available in an accessible container
     for (inputChemical <- inputChemicals) {
-      runAction("NOTE: SEARCHING FOR INPUT CHEMICAL (" + inputChemical + ")", runner)
+      //## runAction("NOTE: SEARCHING FOR INPUT CHEMICAL (" + inputChemical + ")", runner)
       var taskObject: EnvObject = null
 
       if (inputChemical == "water") {
@@ -275,7 +275,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
         var (success, waterContainer, waterRef) = PathFinder.getWaterInContainer(runner, useInventoryContainer = Some(container))
 
         if (!success) {
-          runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
+          //## runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
 
           // Try searching elsewhere
           val actionStrsSearchPattern1 = PathFinder.createActionSequenceSearchPatternPrecomputed(universe, agent, getCurrentAgentLocation(runner).name)
@@ -297,7 +297,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
 
             val (success1, waterContainer1, waterRef1) = PathFinder.getWaterInContainer(runner, useInventoryContainer = Some(container))
             if (!success1) {
-              runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
+              //## runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
               return (false, getActionHistory(runner))
             }
             taskObject = waterRef1.get
@@ -340,10 +340,10 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
               val curLocSearch = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe) // Get a pointer to the whole room the answer box is in
               objects = PathFinder.getAllAccessibleEnvObject(queryName = inputChemical, getCurrentAgentLocation(runner))
               if (objects.size > 0) {
-                runAction("NOTE: SEE INPUT CHEMICAL (" + inputChemical + ")", runner)
+                //## runAction("NOTE: SEE INPUT CHEMICAL (" + inputChemical + ")", runner)
                 break()
               } else {
-                runAction("NOTE: DO NOT SEE INPUT CHEMICAL (" + inputChemical + ")", runner)
+                //## runAction("NOTE: DO NOT SEE INPUT CHEMICAL (" + inputChemical + ")", runner)
               }
 
               // If not found, move to next location to continue search
@@ -358,7 +358,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
 
 
           if (objects.length == 0) {
-            runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + inputChemical + ")", runner)
+            //## runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + inputChemical + ")", runner)
             return (false, getActionHistory(runner))
           } else {
             taskObject = objects(0)
@@ -382,7 +382,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
 
       // Check it was picked up correctly
       if (PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).isEmpty) {
-        runAction("NOTE: CAN'T FIND THE OBJECT", runner)
+        //## runAction("NOTE: CAN'T FIND THE OBJECT", runner)
         return (false, getActionHistory(runner))
       }
 
@@ -402,7 +402,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     // Focus on task result
     val resultChemicals = PathFinder.getAllAccessibleEnvObject(resultChemical, container)
     if (resultChemicals.size == 0) {
-      runAction("NOTE: CAN'T FIND RESULT CHEMICAL", runner)
+      //## runAction("NOTE: CAN'T FIND RESULT CHEMICAL", runner)
       return (false, getActionHistory(runner))
     }
     val result:EnvObject = resultChemicals(0)
@@ -413,7 +413,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     runAction("wait1", runner)
 
     //## debug, add subgoals
-    runAction(runner.agentInterface.get.getGoalProgressStr(), runner)
+    //runAction(runner.agentInterface.get.getGoalProgressStr(), runner)
 
     // Return
     return (true, getActionHistory(runner))
