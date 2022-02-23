@@ -79,9 +79,14 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
     m <- timeMeasurementDevice
   } yield List(i, j, k, m)
 
+
   // Remove any combinations that have the same angle
   // Also add extra information as keys (e.g. steepest/shallowest angle)
-  val combinations = TaskInclinedPlane3.filterDuplicatesAndAddMostLeast(combinations1)
+  var combinations = TaskInclinedPlane3.filterDuplicatesAndAddMostLeast(combinations1)
+
+  // Randomize order, and subsample to half the original size (so some combinations are never seen)
+  //val r = new scala.util.Random(2)
+  //combinations = r.shuffle(combinations.toList).slice(0, combinations.length/2).toArray
 
 
   println("Number of combinations: " + combinations.length)

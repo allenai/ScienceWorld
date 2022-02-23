@@ -36,7 +36,8 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
   ))
 
   // Variation 1: Temperature point (above/below X degrees C)
-  val temperaturePointPresets = Array(-50, 10, 50, 150, 250)
+  //val temperaturePointPresets = Array(-50, 10, 50, 150, 250)
+  val temperaturePointPresets = Array(-10, 10, 50, 150, 200)
   val temperaturePoints = new ArrayBuffer[ Array[TaskModifier] ]()
   for (tempPoint <- temperaturePointPresets) {
     temperaturePoints.append( Array(new TaskValueDouble(key = "temperaturePoint", value = tempPoint)) )
@@ -154,13 +155,20 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
     }
   }
 
+
+  // Sort so that substances remain separated in train/dev/test folds
+  val objectToTestSorted = objectToTest.sortBy(getTaskValueStr(_, "objectName"))
+
   // Combinations
-  val combinations = for {
+  var combinations = for {
     h <- instrument
-    j <- objectToTest
+    j <- objectToTestSorted
     i <- temperaturePoints
     k <- answerBoxes
   } yield List(h, j, i, k)
+
+  // Subsample, since the number of combinations is large
+  combinations = TaskUseInstrumentThermometer3.subsampleWithinTrainDevTest(combinations, subsampleProportion = 0.20)
 
   println("Number of combinations: " + combinations.length)
 

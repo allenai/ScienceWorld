@@ -61,11 +61,15 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
   }
 
   // Combinations
-  val combinations = for {
+  var combinations = for {
     i <- animalsLongLived
     j <- animalsMediumLived
     k <- animalsShortLived
   } yield List(i, j, k)
+
+  // Shuffle the combinations, using a repeatable shuffler
+  val r = new scala.util.Random(0)
+  combinations = r.shuffle(combinations)
 
   println("Number of combinations: " + combinations.length)
 

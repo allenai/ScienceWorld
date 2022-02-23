@@ -142,14 +142,12 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
     new TaskValueStr(key = "tertiaryColor", value = "blue-violet paint")
   ))
 
-
-
-
+  val paintNamesSorted = paintNames.sortBy(e => getTaskValueStr(e, "secondaryColor").get + " " + getTaskValueStr(e, "tertiaryColor").get  )
 
   // Combinations
   val combinations = for {
-    i <- additionalPaint
-    j <- paintNames
+    i <- paintNames
+    j <- additionalPaint
   } yield List(i, j)
 
   println("Number of combinations: " + combinations.length)
@@ -326,6 +324,10 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
         // If not found, move to next location to continue search
         runActionSequence(searchPatternStep, runner)
       }
+
+      // First, check to see if the object is here
+      val curLocSearch = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe) // Get a pointer to the whole room the answer box is in
+      substances = curLocSearch.get.getContainedAccessibleObjectsOfType[Paint]()     // Look for a location that has paints
 
     }
 

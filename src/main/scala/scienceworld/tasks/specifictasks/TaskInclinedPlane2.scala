@@ -82,6 +82,10 @@ class TaskInclinedPlane2(val mode:String = MODE_FRICTION_UNNAMED) extends TaskPa
   // Also add extra information as keys (e.g. most friction/least friction)
   val combinations = TaskInclinedPlane2.filterDuplicatesAndAddMostLeast(combinations1)
 
+  // Randomize order, and subsample to half the original size (so some combinations are never seen)
+  //val r = new scala.util.Random(2)
+  //combinations = r.shuffle(combinations.toList).slice(0, combinations.length/10).toArray
+
 
   println("Number of combinations: " + combinations.length)
 
@@ -300,7 +304,7 @@ object TaskInclinedPlane2 {
     val out = new ArrayBuffer[EnvObject]
 
     // Metal surfaces
-    out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialA) )
+    //out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialA) )
     out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialB) )
     out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialC) )
     out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialD) )
@@ -310,8 +314,9 @@ object TaskInclinedPlane2 {
     out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialH) )
     out.append( new InclinedPlane(angleDeg, surfaceMaterial = new UnknownFrictionMaterialJ) )
 
-    // Return
-    out.toArray
+    // Randomize Order
+    val r = new scala.util.Random(4)
+    return r.shuffle(out).toArray
   }
 
 

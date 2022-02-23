@@ -85,7 +85,7 @@ class TaskInclinedPlane1(val mode:String = MODE_FRICTION_NAMED) extends TaskPara
 
   // Remove any combinations that have the same coefficient of friction
   // Also add extra information as keys (e.g. most friction/least friction)
-  val combinations = TaskInclinedPlane1.filterDuplicatesAndAddMostLeast(combinations1)
+  val combinations = TaskInclinedPlane1.filterDuplicatesAndAddMostLeast(combinations1.toArray)
 
 
   println("Number of combinations: " + combinations.length)
@@ -331,12 +331,13 @@ object TaskInclinedPlane1 {
     out.append( new InclinedPlane(angleDeg, surfaceMaterial = new SoapyWaterProp) )
     out.append( new InclinedPlane(angleDeg, surfaceMaterial = new GreenPaintProp) )
 
-    // Return
-    out.toArray
+    // Shuffle order
+    val r = new scala.util.Random(3)
+    return r.shuffle(out).toArray
   }
 
 
-  def filterDuplicatesAndAddMostLeast(in:Traversable[List[Array[TaskModifier]]], threshold:Double = 0.05): Array[List[List[TaskModifier]]] = {
+  def filterDuplicatesAndAddMostLeast(in:Array[List[Array[TaskModifier]]], threshold:Double = 0.05): Array[List[List[TaskModifier]]] = {
     val out = new ArrayBuffer[ List[List[TaskModifier]] ]
 
     var count:Int = 0

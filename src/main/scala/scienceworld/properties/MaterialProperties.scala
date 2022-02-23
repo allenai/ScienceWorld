@@ -1276,7 +1276,7 @@ class UnknownFrictionMaterialF extends UnknownFrictionMaterial {
 }
 
 class UnknownFrictionMaterialG extends UnknownFrictionMaterial {
-  substanceName                   = "unknown material -G"
+  substanceName                   = "unknown material G"
   frictionCoefficient             = 0.3
 }
 

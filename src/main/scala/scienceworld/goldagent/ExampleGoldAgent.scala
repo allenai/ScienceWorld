@@ -16,7 +16,7 @@ object ExampleGoldAgent {
   def main(args:Array[String]) = {
     val interface = new PythonInterface()
 
-    val specificTasks = Array(15)           // Do specific tasks
+    val specificTasks = Array(4,5)           // Do specific tasks
     //val specificTasks = Array(0,1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29)           // Do specific tasks
     //val specificTasks = Array(9, 10)           // Do specific tasks
     //val specificTasks = Array(18)           // Do specific tasks
@@ -75,7 +75,7 @@ object ExampleGoldAgent {
         //var subsampleEveryNth:Int = 1
         var subsampleEveryNth:Int = 1
         for (variationIdx <- 0 until maxTaskVariations) {
-        //for (variationIdx <- 115 until math.min(116, maxTaskVariations)) {
+        //for (variationIdx <- 0 until math.min(20, maxTaskVariations)) {
           if (variationIdx % subsampleEveryNth == 0) {
             println("---------------------------")
             println("   Task " + taskIdx + "   " + taskName)

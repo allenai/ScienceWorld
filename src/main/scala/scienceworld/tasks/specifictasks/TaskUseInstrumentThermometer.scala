@@ -117,13 +117,19 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
     }
   }
 
+  // Sort so that substances remain separated in train/dev/test folds
+  val objectToTestSorted = objectToTest.sortBy(getTaskValueStr(_, "objectName"))
+
   // Combinations
-  val combinations = for {
+  var combinations = for {
     h <- instrument
-    j <- objectToTest
+    j <- objectToTestSorted
     i <- temperaturePoints
     k <- answerBoxes
-  } yield List(h, i, j, k)
+  } yield List(h, j, i, k)
+
+  // Subsample, since the number of combinations is large
+  combinations = TaskUseInstrumentThermometer3.subsampleWithinTrainDevTest(combinations, subsampleProportion = 0.02)
 
   println("Number of combinations: " + combinations.length)
 

@@ -47,10 +47,16 @@ class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskPar
     animalsAndStages.append( TaskIdentifyLifeStages1.mkTaskVariation(livingThing = new Wolf(), location = location) ++ TaskIdentifyLifeStages1.mkDistractorAnimals(location, numDistractors, 13))
   }
 
+  // Repeatably shuffle order, so all of one type isn't in a given train/dev/test set
+  val r = new scala.util.Random(1)
+  val animalsAndStagesRandomized = r.shuffle(animalsAndStages.toList)
+
   // Combinations
   val combinations = for {
-    i <- animalsAndStages
+    i <- animalsAndStagesRandomized
   } yield List(i)
+
+
 
   println("Number of combinations: " + combinations.length)
 

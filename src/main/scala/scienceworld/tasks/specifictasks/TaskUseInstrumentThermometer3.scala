@@ -2,7 +2,7 @@ package scienceworld.tasks.specifictasks
 
 import scienceworld.environments.ContainerMaker
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.devices.Thermometer
+import scienceworld.objects.devices.{Stove, Thermometer}
 import scienceworld.objects.substance.{Gallium, Lead, Mercury, Tin, Water}
 import scienceworld.objects.substance.food.{Chocolate, OrangeJuice}
 import scienceworld.objects.taskitems.{AnswerBox, UnknownSubstanceThermal}
@@ -34,7 +34,7 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
   ))
 
   // Variation 1: Temperature point (above/below X degrees C)
-  val temperaturePointPresets = Array(-50, 10, 50, 150, 250)
+  val temperaturePointPresets = Array(-10, 10, 50, 150, 200)
   val temperaturePoints = new ArrayBuffer[ Array[TaskModifier] ]()
   for (tempPoint <- temperaturePointPresets) {
     temperaturePoints.append( Array(new TaskValueDouble(key = "temperaturePoint", value = tempPoint)) )
@@ -103,13 +103,19 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
     }
   }
 
+  // Sort so that substances remain separated in train/dev/test folds
+  val objectToTestSorted = objectToTest.sortBy(getTaskValueStr(_, "objectName"))
+
   // Combinations
-  val combinations = for {
+  var combinations = for {
     h <- instrument
-    j <- objectToTest
+    j <- objectToTestSorted
     i <- temperaturePoints
     k <- answerBoxes
   } yield List(h, j, i, k)
+
+  // Subsample, since the number of combinations is large
+  combinations = TaskUseInstrumentThermometer3.subsampleWithinTrainDevTest(combinations, subsampleProportion = 0.020)
 
   println("Number of combinations: " + combinations.length)
 
@@ -357,16 +363,29 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
 
       runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
 
-      // Go to foundry
-      val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "foundry")
-      runActionSequence(actionStrs2, runner)
 
-      //val heatingDeviceName:String = "stove"
-      val heatingDeviceName:String = "blast furnace"
-      runAction("open " + heatingDeviceName, runner)
-      runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + heatingDeviceName, runner)
+      // Try stove first
+      val stoveObj = getCurrentAgentLocation(runner).getContainedObjectsOfType[Stove]().toArray.head
+      runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + "stove", runner)
+      runAction("activate " + "stove", runner)
 
-      runAction("activate " + heatingDeviceName, runner)
+      if (stoveObj.propDevice.get.isBroken == true) {
+        // Stove is broken, go to foundry
+        runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+
+        // Go to foundry
+        val (actions2, actionStrs2) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "foundry")
+        runActionSequence(actionStrs2, runner)
+
+        //val heatingDeviceName:String = "stove"
+        val heatingDeviceName:String = "blast furnace"
+        runAction("open " + heatingDeviceName, runner)
+        runAction("move " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get + " to " + heatingDeviceName, runner)
+
+        runAction("activate " + heatingDeviceName, runner)
+
+      }
+
 
       val MAX_ITER = 40
       breakable {
@@ -402,7 +421,7 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
 
       runAction("move " + PathFinder.getObjUniqueReferent(substanceContainer, getCurrentAgentLocation(runner)).get + " to " + coolingDeviceName, runner)
 
-      val MAX_ITER = 30
+      val MAX_ITER = 40
       breakable {
         for (i <- 0 until MAX_ITER) {
           // Check to see object's state of matter
@@ -472,6 +491,22 @@ object TaskUseInstrumentThermometer3 {
       return (substance, Some(container))
     }
     return (substance, None)
+  }
+
+  // Subsample a large set of combinations to be a smaller set, while maintaining the splits between train/dev/test folds
+  def subsampleWithinTrainDevTest(combinations:ArrayBuffer[List[Array[TaskModifier]]], subsampleProportion:Double = 0.50): ArrayBuffer[List[Array[TaskModifier]]] = {
+    val train = combinations.slice(0, math.floor(combinations.length * 0.5).toInt)
+    val dev = combinations.slice(math.floor(combinations.length * 0.5).toInt, math.floor(combinations.length * 0.75).toInt)
+    val test = combinations.slice(math.floor(combinations.length * 0.75).toInt, math.floor(combinations.length * 1.0).toInt)
+
+    var r = new scala.util.Random(5)
+    val trainSubsampled = r.shuffle(train).slice(0, (train.length * subsampleProportion).toInt)
+    val devSubsampled = r.shuffle(dev).slice(0, (dev.length * subsampleProportion).toInt)
+    val testSubsampled = r.shuffle(test).slice(0, (test.length * subsampleProportion).toInt)
+
+    val out = new ArrayBuffer[List[Array[TaskModifier]]]()
+    out.insertAll(0, trainSubsampled ++ devSubsampled ++ testSubsampled)
+    return out
   }
 
 }
