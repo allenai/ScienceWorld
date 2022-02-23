@@ -395,7 +395,7 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
       // Move seed to flower pot
       val seedName = seedType + " seed in seed jar"
       TaskParametric.runAction("move " + seedName + " to " + PathFinder.getObjUniqueReferent(flowerpot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
-      TaskParametric.runAction("0", runner) // Ambiguity resolution
+      //TaskParametric.runAction("0", runner) // Ambiguity resolution
 
       flowerPotsWithSeeds.append(flowerpot)
       flowerPotsWithSoil.remove(0)
@@ -480,7 +480,7 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
       if (newSeeds.size >= 6) {
         for (seed <- newSeeds) {
           runAction("move " + PathFinder.getObjUniqueReferent(seed, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
-          runAction("0", runner)    // In case it's ambiguous
+          //runAction("0", runner)    // In case it's ambiguous
         }
         done = true
       }
@@ -510,7 +510,7 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
       // Move seed to flower pot
       val seedName = seedType + " seed in seed jar"
       TaskParametric.runAction("move " + seedName + " to " + PathFinder.getObjUniqueReferent(flowerpot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
-      TaskParametric.runAction("0", runner) // Ambiguity resolution
+      //TaskParametric.runAction("0", runner) // Ambiguity resolution
 
       flowerPotsWithSeeds.append(flowerpot)
       flowerPotsWithSoil.remove(0)

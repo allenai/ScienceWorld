@@ -433,7 +433,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
       // Move seed to flower pot
       val seedName = seedType + " seed in seed jar"
       TaskParametric.runAction("move " + seedName + " to " + PathFinder.getObjUniqueReferent(flowerpot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
-      TaskParametric.runAction("0", runner) // Ambiguity resolution
+      //TaskParametric.runAction("0", runner) // Ambiguity resolution
 
       flowerPotsWithSeeds.append(flowerpot)
       flowerPotsWithSoil.remove(0)
@@ -509,7 +509,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
             if (fruit.name.toLowerCase == seedType.toLowerCase) {
               // Found fruit
               runAction("focus on " + PathFinder.getObjUniqueReferent(fruit, getCurrentAgentLocation(runner)).get, runner)
-              runAction("0", runner)    // In case it's ambiguous
+              //runAction("0", runner)    // In case it's ambiguous
               done = true
               break()
             }
@@ -647,7 +647,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     // Move seed to flower pot
     val seedName = seedType + " seed in seed jar"
     TaskParametric.runAction("move " + seedName + " to " + PathFinder.getObjUniqueReferent(flowerpot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
-    TaskParametric.runAction("0", runner)   // Ambiguity resolution
+    //TaskParametric.runAction("0", runner)   // Ambiguity resolution
 
     // Get reference to seed
     val seed = flowerpot.getContainedAccessibleObjectsOfType[LivingThing]().toList(0)
