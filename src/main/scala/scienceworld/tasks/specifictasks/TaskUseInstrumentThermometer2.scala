@@ -168,7 +168,7 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
   } yield List(h, j, i, k)
 
   // Subsample, since the number of combinations is large
-  combinations = TaskUseInstrumentThermometer3.subsampleWithinTrainDevTest(combinations, subsampleProportion = 0.20)
+  combinations = TaskUseInstrumentThermometer3.subsampleWithinTrainDevTest(combinations, subsampleProportion = 0.50)
 
   println("Number of combinations: " + combinations.length)
 
