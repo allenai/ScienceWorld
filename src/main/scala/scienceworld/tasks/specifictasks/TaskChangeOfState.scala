@@ -534,7 +534,6 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     //## debug, add subgoals
     runAction(runner.agentInterface.get.getGoalProgressStr(), runner)
 
-
     // Return
     return (true, getActionHistory(runner))
   }

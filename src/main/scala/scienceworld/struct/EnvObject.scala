@@ -582,7 +582,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
       }
     }
 
-    out.toSet
+    out.toSet.filter(_.length > 1)
   }
 
   def getDescription(mode:Int = MODE_CURSORY_DETAIL):String = {

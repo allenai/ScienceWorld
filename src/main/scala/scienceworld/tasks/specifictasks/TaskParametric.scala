@@ -118,6 +118,13 @@ object TaskParametric {
     val observation = runner.step(actionStr)
     println("OBS: " + observation)
     println("")
+
+    // Check for ambiguous state -- if it happens, automatically pick the first possible resolution.
+    if (runner.agentInterface.get.inputParser.isInAmbiguousState()) {
+      // If in an ambiguous state, then select the first option
+      this.runAction("0", runner)
+    }
+
   }
 
   def getActionHistory(runner:PythonInterface):Array[String] = {

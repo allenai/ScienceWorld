@@ -1,12 +1,13 @@
 package scienceworld.tasks.specifictasks
 
 import scienceworld.actions.Action
+import scienceworld.goldagent.PathFinder
 import scienceworld.objects.agent.Agent
-import scienceworld.objects.containers.{CeramicCup, FlowerPot}
+import scienceworld.objects.containers.{CeramicCup, Cup, FlowerPot, MetalPot}
 import scienceworld.objects.document.{Paper, Recipe}
 import scienceworld.objects.livingthing.plant.{Plant, Soil}
 import scienceworld.objects.substance.food.{Almond, Apple, Banana, Bread, Cachew, Chocolate, Flour, Jam, Marshmallow, Orange, Peanut}
-import scienceworld.objects.substance.paint.{BluePaint, GreenPaint}
+import scienceworld.objects.substance.paint.{BluePaint, GreenPaint, RedPaint}
 import scienceworld.objects.substance.{AceticAcid, IronBlock, Soap, SodiumBicarbonate, SodiumChloride, Sugar, Water}
 import scienceworld.processes.PlantReproduction
 import scienceworld.processes.lifestage.PlantLifeStages.{PLANT_STAGE_ADULT_PLANT, PLANT_STAGE_REPRODUCING, PLANT_STAGE_SEED, PLANT_STAGE_SEEDLING}
@@ -19,6 +20,7 @@ import scienceworld.tasks.specifictasks.TaskChemistryMix.MODE_CHEMISTRY_MIX
 import scienceworld.tasks.specifictasks.TaskFindLivingNonLiving.MODE_LIVING
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.control.Breaks.{break, breakable}
 
 class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
   val taskName = "task-5-" + mode.replaceAll(" ", "-")
@@ -82,7 +84,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "fruit salad", inputObjects = Array(apple, orange, banana), generateLocation = location))
 
     // jam + bread = peanut butter with jam sandwhich
-    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "jam sandwhich", inputObjects = Array(new Peanut(), new Bread()), generateLocation = location))
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "jam sandwhich", inputObjects = Array(new Jam(), new Bread()), generateLocation = location))
   }
 
   // Test
@@ -100,8 +102,8 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
 
     // Paper + green paint = green paper  (paint should be found in art room)
     val paper2 = new Paper()
-    val greenpaint = new GreenPaint()
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "green paper", inputObjects = Array(paper2, greenpaint), generateLocation = location, excludeFromAdding = Array(greenpaint.name)) )
+    val redpaint = new RedPaint()
+    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "red paper", inputObjects = Array(paper2, redpaint), generateLocation = location, excludeFromAdding = Array(redpaint.name)) )
   }
 
 
@@ -197,9 +199,224 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
   }
 
 
+  /*
+   * Gold Action Sequences
+   */
   def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
-    // TODO: Unimplemented
-    return (false, Array.empty[String])
+    if (mode == MODE_CHEMISTRY_MIX) {
+      return mkGoldActionSequenceChemistryMix(modifiers, runner)
+    } else {
+      throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
+    }
+  }
+
+
+  def mkGoldActionSequenceChemistryMix(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    val universe = runner.agentInterface.get.universe
+    val agent = runner.agentInterface.get.agent
+
+    // Task variables
+    val resultChemical = this.getTaskValueStr(modifiers, key = "result").get
+    val inputChemicals = this.getTaskValueStr(modifiers, key = "inputChemicals").get.split(",")
+    val location = this.getTaskValueStr(modifiers, key = "location").get
+
+
+    // Step 1: Take a container (metal pot)
+    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "kitchen")
+    runActionSequence(actionStrs1, runner)
+
+    runAction("open cupboard", runner)
+
+    val containers = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[Cup]().toList
+    val containersEmpty = containers.filter(_.getContainedObjects(includeHidden = false).size == 0)
+    val container = containersEmpty(0)
+
+    runAction("pick up " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+
+
+    // Stage 1: Get recipe
+    // Move from starting location to get recipe (thermometer)
+    val (actions, actionStrs) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = location)
+    runActionSequence(actionStrs, runner)
+
+    // Look around
+    runAction("look around", runner)
+
+    // Take recipe
+    val recipes = PathFinder.getAllAccessibleEnvObject(queryName = "recipe", getCurrentAgentLocation(runner))
+    if (recipes.length == 0) return (false, getActionHistory(runner))
+    val recipe = recipes(0)
+    //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
+    runAction("pick up " + recipe.name, runner)
+
+    // Read recipe
+    runAction("read " + "recipe in inventory", runner)
+
+    // Focus on instrument
+    //runAction("focus on " + instrument.name + " in inventory", runner)
+
+    // Stage 2: Get task object
+    // Go to task location
+    /*
+    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = objectLocation)
+    runActionSequence(actionStrs1, runner)
+     */
+
+    // Look around
+    runAction("look around", runner)
+
+    // Check to make sure the task object is available in an accessible container
+    for (inputChemical <- inputChemicals) {
+      runAction("NOTE: SEARCHING FOR INPUT CHEMICAL (" + inputChemical + ")", runner)
+      var taskObject: EnvObject = null
+
+      if (inputChemical == "water") {
+        // Attempt to find water
+        var (success, waterContainer, waterRef) = PathFinder.getWaterInContainer(runner, useInventoryContainer = Some(container))
+
+        if (!success) {
+          runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
+
+          // Try searching elsewhere
+          val actionStrsSearchPattern1 = PathFinder.createActionSequenceSearchPatternPrecomputed(universe, agent, getCurrentAgentLocation(runner).name)
+
+          // Walk around the environment until we find the thing to test
+          breakable {
+            for (searchPatternStep <- actionStrsSearchPattern1) {
+              // First, check to see if the object is here
+              val (success1, waterContainer1, waterRef1) = PathFinder.getWaterInContainer(runner, useInventoryContainer = Some(container))
+              if (success1) {
+                taskObject = waterRef1.get
+                break()
+              }
+
+              // If not found, move to next location to continue search
+              runActionSequence(searchPatternStep, runner)
+              runAction("look around", runner)
+            }
+
+            val (success1, waterContainer1, waterRef1) = PathFinder.getWaterInContainer(runner, useInventoryContainer = Some(container))
+            if (!success1) {
+              runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
+              return (false, getActionHistory(runner))
+            }
+            taskObject = waterRef1.get
+          }
+
+        } else {
+          taskObject = waterRef.get
+        }
+
+      } else {
+
+        var successOpeningContainers: Boolean = true
+        var substances: Array[EnvObject] = Array.empty[EnvObject]
+        breakable {
+          for (i <- 0 to 5) {
+            println("*** FIND SUBSTANCE ATTEMPT " + i)
+            substances = PathFinder.getAllAccessibleEnvObject(inputChemical, getCurrentAgentLocation(runner))
+            if (substances.size > 0) break // Found at least one substance matching the criteria
+            // If we reach here, we didn't find a subtance -- start opening closed containers
+            if (successOpeningContainers) {
+              successOpeningContainers = PathFinder.openRandomClosedContainer(currentLocation = getCurrentAgentLocation(runner), runner)
+            } else {
+              // No more containers to open
+              break()
+            }
+          }
+        }
+
+        // Pick up the task object
+        var objects = PathFinder.getAllAccessibleEnvObject(queryName = inputChemical, getCurrentAgentLocation(runner))
+        if (objects.length == 0) {
+
+          // Try searching elsewhere
+          val actionStrsSearchPattern1 = PathFinder.createActionSequenceSearchPatternPrecomputed(universe, agent, getCurrentAgentLocation(runner).name)
+
+          // Walk around the environment until we find the thing to test
+          breakable {
+            for (searchPatternStep <- actionStrsSearchPattern1) {
+              // First, check to see if the object is here
+              val curLocSearch = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe) // Get a pointer to the whole room the answer box is in
+              objects = PathFinder.getAllAccessibleEnvObject(queryName = inputChemical, getCurrentAgentLocation(runner))
+              if (objects.size > 0) {
+                runAction("NOTE: SEE INPUT CHEMICAL (" + inputChemical + ")", runner)
+                break()
+              } else {
+                runAction("NOTE: DO NOT SEE INPUT CHEMICAL (" + inputChemical + ")", runner)
+              }
+
+              // If not found, move to next location to continue search
+              runActionSequence(searchPatternStep, runner)
+              runAction("look around", runner)
+            }
+
+            val curLocSearch = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe) // Get a pointer to the whole room the answer box is in
+            objects = PathFinder.getAllAccessibleEnvObject(queryName = inputChemical, getCurrentAgentLocation(runner))
+
+          }
+
+
+          if (objects.length == 0) {
+            runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + inputChemical + ")", runner)
+            return (false, getActionHistory(runner))
+          } else {
+            taskObject = objects(0)
+          }
+        }
+
+        // Pick up the object
+        if (taskObject == null) {
+          taskObject = objects(0)
+        }
+
+        if ((taskObject.propMaterial.isEmpty) || (taskObject.propMaterial.get.stateOfMatter == "solid")) {
+          runAction("pick up " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get, runner)
+          runAction("move " + PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+        } else {
+          runAction("pick up " + PathFinder.getObjUniqueReferent(taskObject.getContainer().get, getCurrentAgentLocation(runner)).get, runner)
+        }
+
+
+      }
+
+      // Check it was picked up correctly
+      if (PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).isEmpty) {
+        runAction("NOTE: CAN'T FIND THE OBJECT", runner)
+        return (false, getActionHistory(runner))
+      }
+
+      // If it's a liquid, pour it into the main mixing container
+      if ((taskObject.propMaterial.isDefined) && (taskObject.propMaterial.get.stateOfMatter == "liquid")) {
+        // TODO: Needs proper referents
+        runAction("pour " + PathFinder.getObjUniqueReferent(taskObject.getContainer().get, getCurrentAgentLocation(runner)).get + " into " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+      }
+
+    }
+
+
+    // Do mixing
+    runAction("examine " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+    runAction("mix " + PathFinder.getObjUniqueReferent(container, getCurrentAgentLocation(runner)).get, runner)
+
+    // Focus on task result
+    val resultChemicals = PathFinder.getAllAccessibleEnvObject(resultChemical, container)
+    if (resultChemicals.size == 0) {
+      runAction("NOTE: CAN'T FIND RESULT CHEMICAL", runner)
+      return (false, getActionHistory(runner))
+    }
+    val result:EnvObject = resultChemicals(0)
+    runAction("focus on " + PathFinder.getObjUniqueReferent(result, getCurrentAgentLocation(runner)).get, runner)
+
+
+    // Wait one moment
+    runAction("wait1", runner)
+
+    //## debug, add subgoals
+    runAction(runner.agentInterface.get.getGoalProgressStr(), runner)
+
+    // Return
+    return (true, getActionHistory(runner))
   }
 
 
