@@ -65,6 +65,9 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
   }
 
+  // Sort seeds by seed name (so that unseen seeds will show up in the dev set)
+  val seedsSorted = seeds.sortBy(getTaskValueStr(_, "seedType"))
+
 
   // Variation 2: What containers are available to grow the seeds in
   val plantContainers = new ArrayBuffer[ Array[TaskModifier] ]()
@@ -118,7 +121,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
   // Combinations
   val combinations = for {
-    i <- seeds
+    i <- seedsSorted
     j <- plantContainers
   } yield List(i, j)
 
@@ -341,7 +344,8 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     runAction("look around", runner)
 
     // Get references to flower pots (and sort them by those with and without soil)
-    val flowerpots = Random.shuffle(getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[FlowerPot]() ++ getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[SelfWateringFlowerPot]()).toList
+    val fps = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[FlowerPot]() ++ getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[SelfWateringFlowerPot]()  // Determinism
+    val flowerpots = Random.shuffle(fps.toList.sortBy(_.uuid))
     val flowerPotsWithSoil = new ArrayBuffer[EnvObject]
     val flowerPotsWithoutSoil = new ArrayBuffer[EnvObject]
 
@@ -502,13 +506,14 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
       }
 
       // Check for fruit
-      val fruits = Random.shuffle(getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[Fruit]().toList)
+      val fruits = Random.shuffle(getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[Fruit]().toList.sortBy(_.uuid))
       if (fruits.size > 0) {
         breakable {
           for (fruit <- fruits) {
             if (fruit.name.toLowerCase == seedType.toLowerCase) {
               // Found fruit
               runAction("focus on " + PathFinder.getObjUniqueReferent(fruit, getCurrentAgentLocation(runner)).get, runner)
+
               //runAction("0", runner)    // In case it's ambiguous
               done = true
               break()

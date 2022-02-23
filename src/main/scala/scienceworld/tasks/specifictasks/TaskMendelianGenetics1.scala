@@ -464,7 +464,7 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
       }
 
       // Check for new seeds that have been produced by the plants
-      val peaplants = Random.shuffle(getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[PeaPlant]().toList)
+      val peaplants = Random.shuffle(getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[PeaPlant]().toList.sortBy(_.uuid))
       val newSeeds = new ArrayBuffer[EnvObject]
       for (plant <- peaplants) {
         plant match {
@@ -536,7 +536,7 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
       runAction("deactivate " + PathFinder.getObjUniqueReferent(sink, getCurrentAgentLocation(runner)).get, runner)
 
       // Check for a minimum number of adult plants
-      val peaplants = Random.shuffle(getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[PeaPlant]().toList)
+      val peaplants = Random.shuffle(getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[PeaPlant]().toList.sortBy(_.uuid))
       for (plant <- peaplants) {
         plant match {
           case pl:LivingThing => {

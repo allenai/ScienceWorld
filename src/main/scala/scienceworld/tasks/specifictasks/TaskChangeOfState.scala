@@ -113,6 +113,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     if (combinationNum >= this.numCombinations()) {
       return (false, "ERROR: The requested variation (" + combinationNum + ") exceeds the total number of variations (" + this.numCombinations() + ").")
     }
+    Random.setSeed(combinationNum)
     return this.setupCombination( this.getCombination(combinationNum), universe, agent )
   }
 

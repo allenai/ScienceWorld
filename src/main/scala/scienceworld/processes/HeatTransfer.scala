@@ -8,6 +8,7 @@ class HeatTransfer {
 
 object HeatTransfer {
   val HEAT_TRANSFER_COEFFICIENT = 0.10
+  val MAX_TRANSFER_PER_STEP     = 1000.0f   // Maximum temperature differential to transfer per tick (e.g. 50c)
   //val HEAT_TRANSFER_COEFFICIENT = 0.06
 
   // Heat transfer between a heat source, and an object being heated by it
@@ -24,6 +25,7 @@ object HeatTransfer {
           if (objTemp < heaterTemp) {
             val deltaTemp = heaterTemp - objTemp
             var increment = deltaTemp * HEAT_TRANSFER_COEFFICIENT
+            if (math.abs(increment) > MAX_TRANSFER_PER_STEP) increment = MAX_TRANSFER_PER_STEP * increment.signum     // Clip to a maximum of (-MAX_TRANSFER_PER_STEP, +MAX_TRANSFER_PER_STEP)
             heatedObj.propMaterial.get.temperatureC += increment
 
             //println("Heat transfer: Object (" + heatedObj.name + ") tempererature now " + heatedObj.propMaterial.get.temperatureC)
@@ -50,6 +52,7 @@ object HeatTransfer {
           if (objTemp > coolerTemp) {
             val deltaTemp = coolerTemp - objTemp
             var increment = deltaTemp * HEAT_TRANSFER_COEFFICIENT
+            if (math.abs(increment) > MAX_TRANSFER_PER_STEP) increment = MAX_TRANSFER_PER_STEP * increment.signum     // Clip to a maximum of (-MAX_TRANSFER_PER_STEP, +MAX_TRANSFER_PER_STEP)
             cooledObj.propMaterial.get.temperatureC += increment
 
             //println("Heat transfer: Object (" + cooledObj.name + ") tempererature now " + cooledObj.propMaterial.get.temperatureC)
@@ -77,12 +80,14 @@ object HeatTransfer {
 
     // Delta between obj1 and obj2
     val delta1 = (obj2Prop.temperatureC - obj1Prop.temperatureC) * minThermalConductivity
-    val increment1 = delta1 * HEAT_TRANSFER_COEFFICIENT
+    var increment1 = delta1 * HEAT_TRANSFER_COEFFICIENT
+    if (math.abs(increment1) > MAX_TRANSFER_PER_STEP) increment1 = MAX_TRANSFER_PER_STEP * increment1.signum     // Clip to a maximum of (-MAX_TRANSFER_PER_STEP, +MAX_TRANSFER_PER_STEP)
     obj1.propMaterial.get.temperatureC += increment1
 
     // Delta between obj2 and obj1
     val delta2 = (obj1Prop.temperatureC - obj2Prop.temperatureC) * minThermalConductivity
-    val increment2 = delta2 * HEAT_TRANSFER_COEFFICIENT
+    var increment2 = delta2 * HEAT_TRANSFER_COEFFICIENT
+    if (math.abs(increment2) > MAX_TRANSFER_PER_STEP) increment2 = MAX_TRANSFER_PER_STEP * increment2.signum     // Clip to a maximum of (-MAX_TRANSFER_PER_STEP, +MAX_TRANSFER_PER_STEP)
     obj2.propMaterial.get.temperatureC += increment2
 
     //println ("Heat transfer (conductive - 1): Object (" + obj1.name + ") temperature from " + obj1Temp + " to " + obj1.propMaterial.get.temperatureC)

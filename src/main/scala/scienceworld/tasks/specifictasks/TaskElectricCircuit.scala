@@ -271,7 +271,7 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
 
     // Parts to use to power
     val battery = curLoc1.get.getContainedAccessibleObjectsOfType[Battery](includeHidden = false)
-    val wires = Random.shuffle( curLoc1.get.getContainedAccessibleObjectsOfType[Wire](includeHidden = false).toList )
+    val wires = Random.shuffle( curLoc1.get.getContainedAccessibleObjectsOfType[Wire](includeHidden = false).toList.sortBy(_.uuid) )
     if (wires.size < 2) {
       // Fail
       return (false, getActionHistory(runner))
@@ -365,7 +365,7 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
 
     // Parts to use to power
     val powerSource = PathFinder.getAllEnvObject(queryName = powerSourceToUse.get, curLoc1.get)(0)   //##
-    val wires = Random.shuffle( curLoc1.get.getContainedAccessibleObjectsOfType[Wire](includeHidden = false).toList )
+    val wires = Random.shuffle( curLoc1.get.getContainedAccessibleObjectsOfType[Wire](includeHidden = false).toList.sortBy(_.uuid) )
     if (wires.size < 2) {
       // Fail
       return (false, getActionHistory(runner))

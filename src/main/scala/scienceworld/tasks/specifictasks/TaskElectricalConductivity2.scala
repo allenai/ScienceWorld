@@ -322,7 +322,7 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
 
     // Parts to use to power
     val battery = curLoc1.get.getContainedAccessibleObjectsOfType[Battery](includeHidden = false)
-    val wires = Random.shuffle( curLoc1.get.getContainedAccessibleObjectsOfType[Wire](includeHidden = false).toList )
+    val wires = Random.shuffle( curLoc1.get.getContainedAccessibleObjectsOfType[Wire](includeHidden = false).toList.sortBy(_.uuid) )
     if (wires.size < 3) {
       // Fail
       return (false, getActionHistory(runner))

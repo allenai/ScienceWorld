@@ -6,6 +6,7 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.specifictasks.{TaskChangeOfState, TaskChemistryMix, TaskChemistryMixPaint, TaskElectricCircuit, TaskElectricalConductivity, TaskElectricalConductivity2, TaskFindLivingNonLiving, TaskGrowPlant, TaskIdentifyLifeStages1, TaskIdentifyLifeStages2, TaskInclinedPlane1, TaskInclinedPlane2, TaskInclinedPlane3, TaskLifeSpan, TaskMendelialGenetics2, TaskMendelianGenetics1, TaskParametric, TaskUseInstrumentThermometer, TaskUseInstrumentThermometer2, TaskUseInstrumentThermometer3}
 
 import scala.collection.mutable
+import scala.util.Random
 
 class TaskMaker1 {
   val tasks = mutable.Map[String, TaskParametric]()
@@ -50,6 +51,7 @@ class TaskMaker1 {
     if (tp.isEmpty) return (None, "ERROR: Unknown task (" + taskName + ").")
 
     // First, setup environment
+    Random.setSeed(variationIdx)
     val (success, errStr) = tp.get.setupCombination(variationIdx, universe, agent)
     if (!success) return (None, errStr)
 

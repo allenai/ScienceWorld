@@ -123,7 +123,13 @@ object TaskParametric {
     if (runner.agentInterface.get.inputParser.isInAmbiguousState()) {
       // If in an ambiguous state, then select the first option
       this.runAction("0", runner)
+    } /*else {
+      if (observation.contains("Ambiguous")) {
+        runner.currentHistory.addStep("not in ambiguous state BUT OBSERVATION CONTAINS AMBIGUOUS", ("", 0, false))
+      }
+      runner.currentHistory.addStep("not in ambiguous state", ("", 0, false))
     }
+    */
 
   }
 

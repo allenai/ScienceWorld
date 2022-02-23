@@ -98,7 +98,7 @@ class TaskObject(val name:String, val exampleInstance:Option[EnvObject], val roo
           println("### TaskObject: Adding object (" + exampleInstance.get.name + ") to (" + obj.name + ")")
         } else {
           // CASE 2: Generate in a sub-container of the main container
-          val containedObjects = Random.shuffle( obj.getContainedObjectsRecursive().toList )
+          val containedObjects = Random.shuffle( obj.getContainedObjectsRecursive().toArray.sortBy(_.uuid).toList )     // Since the order of a set is not guaranteed, this tries to keep it the same between runs (by sorting) so the generation is deterministic
 
           for (cObj <- containedObjects) {
             if (possibleContainerNames.contains(cObj.name)) {

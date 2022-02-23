@@ -141,7 +141,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     }
 
     val taskLabel = taskName + "-variation" + combinationNum
-    val description = "Your task is to find a " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName.get + " in the " + answerBoxLocation.get + "."
+    val description = "Your task is to find a(n) " + subTask + ". First, focus on the thing. Then, move it to the " + answerBoxName.get + " in the " + answerBoxLocation.get + "."
     val goalSequence = new GoalSequence(gSequence.toArray, gSequenceUnordered.toArray)
 
     val task = new Task(taskName, description, goalSequence, taskModifiers = modifiers)
