@@ -514,7 +514,10 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
               // Found fruit
               runAction("focus on " + PathFinder.getObjUniqueReferent(fruit, getCurrentAgentLocation(runner)).get, runner)
 
-              //runAction("0", runner)    // In case it's ambiguous
+              // In case it's ambiguous (hacky, but there is some non-determinism in here somewhere, possibly with the stochastic bees).
+              if (runner.currentHistory.historyActions.last != "0") {
+                runAction("0", runner)
+              }
               done = true
               break()
             }
