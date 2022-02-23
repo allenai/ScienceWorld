@@ -73,7 +73,7 @@ object ExampleGoldAgent {
 
         // For each variation
         //var subsampleEveryNth:Int = 1
-        var subsampleEveryNth:Int = 5
+        var subsampleEveryNth:Int = 1
         for (variationIdx <- 0 until maxTaskVariations) {
         //for (variationIdx <- 0 until math.min(20, maxTaskVariations)) {
           if (variationIdx % subsampleEveryNth == 0) {
@@ -316,8 +316,8 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
       json.append("\"observation\":\"" + RunHistory.sanitizeJSON(obs) + "\", ")
       json.append("\"score\":\"" + score + "\", ")
       json.append("\"isCompleted\":\"" + isCompleted + "\", ")
-      json.append("\"freelook\":\"" + freelook + "\", ")
-      json.append("\"inventory\":\"" + inventory + "\"")
+      json.append("\"freelook\":\"" + RunHistory.sanitizeJSON(freelook) + "\", ")
+      json.append("\"inventory\":\"" + RunHistory.sanitizeJSON(inventory) + "\"")
       json.append("}")
 
       points.append( json.toString())
