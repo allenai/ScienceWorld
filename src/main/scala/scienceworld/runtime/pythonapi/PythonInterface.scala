@@ -327,13 +327,17 @@ class PythonInterface() {
       return "Task description:\n" + agentInterface.get.getTaskDescription()
     }
 
+    // For history: record free look and inventory before step is taken
+    val freelookStr = this.freeActionLook()
+    val inventoryStr = this.freeActionInventory()
+
     // Process step in environment
     val (description, score_, isCompleted_) = agentInterface.get.step(userInputString)
     this.score = score_
     this.isComplete = isCompleted_
 
     // Store in history
-    currentHistory.addStep(userInputString, (description, score_, isCompleted_))
+    currentHistory.addStep(userInputString, (description, score_, isCompleted_), freelookStr, inventoryStr)
 
     println("Description: ")
     println(description)

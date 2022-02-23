@@ -73,7 +73,7 @@ object ExampleGoldAgent {
 
         // For each variation
         //var subsampleEveryNth:Int = 1
-        var subsampleEveryNth:Int = 1
+        var subsampleEveryNth:Int = 5
         for (variationIdx <- 0 until maxTaskVariations) {
         //for (variationIdx <- 0 until math.min(20, maxTaskVariations)) {
           if (variationIdx % subsampleEveryNth == 0) {
@@ -100,14 +100,20 @@ object ExampleGoldAgent {
             val history = new RunHistory(taskName, taskIdx, variationIdx, taskDescription = agentInterface.get.getTaskDescription(), foldDesc = foldDesc)
 
             // Run a free initial 'look' action, and add it to the history?
+            val initialFl = interface.freeActionLook()
+            val initialInv = interface.freeActionInventory()
             val initialObs = agentInterface.get.step("look around")
-            history.addStep("look around", initialObs)
+            history.addStep("look around", initialObs, initialFl, initialInv)
 
 
             var curScore: Double = 0.0
             for (actionIdx <- 0 until goldActionSeq.length) {
               // Get next gold action
               userInput = goldActionSeq(actionIdx)
+
+              // Record free look and inventory before step is taken
+              val freelookStr = interface.freeActionLook()
+              val inventoryStr = interface.freeActionInventory()
 
               // Supply action to environment, get next environment observation
               println(">> " + userInput)
@@ -117,7 +123,7 @@ object ExampleGoldAgent {
               println(observation)
 
               // Store in history
-              history.addStep(userInput, observation)
+              history.addStep(userInput, observation, freelookStr, inventoryStr)
 
               // Check for error state:
               if (agentInterface.get.isInErrorState()) {
@@ -271,13 +277,17 @@ object ExampleGoldAgent {
 class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val taskDescription:String = "", val foldDesc:String = "") {
   val historyActions = new ArrayBuffer[String]
   val historyObservations = new ArrayBuffer[(String, Double, Boolean)]
+  val historyFreeLook = new ArrayBuffer[String]
+  val historyInventory = new ArrayBuffer[String]
   val notes = new ArrayBuffer[String]
 
   def length:Int = this.historyActions.length
 
-  def addStep(action:String, observation:(String, Double, Boolean)): Unit = {
+  def addStep(action:String, observation:(String, Double, Boolean), freeLookStr:String, inventoryStr:String): Unit = {
     historyActions.append(action)
     historyObservations.append(observation)
+    historyFreeLook.append(freeLookStr)
+    historyInventory.append(inventoryStr)
   }
 
   def addNote(strIn:String): Unit = {
@@ -297,13 +307,17 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
       val obs = historyObservations(i)._1
       val score = historyObservations(i)._2
       val isCompleted = historyObservations(i)._3
+      val freelook = historyFreeLook(i)
+      val inventory = historyInventory(i)
 
       val json = new StringBuilder
       json.append("{")
       json.append("\"action\":\"" + RunHistory.sanitizeJSON(action) + "\", ")
       json.append("\"observation\":\"" + RunHistory.sanitizeJSON(obs) + "\", ")
       json.append("\"score\":\"" + score + "\", ")
-      json.append("\"isCompleted\":\"" + isCompleted + "\"")
+      json.append("\"isCompleted\":\"" + isCompleted + "\", ")
+      json.append("\"freelook\":\"" + freelook + "\", ")
+      json.append("\"inventory\":\"" + inventory + "\"")
       json.append("}")
 
       points.append( json.toString())
@@ -327,7 +341,9 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
 
     for (i <- 0 until this.length) {
       os.append(">>> " + historyActions(i) + "\n")
-      os.append(historyObservations(i)._1 + "\n")
+      os.append("Observation: " + historyObservations(i)._1 + "\n")
+      os.append("Free Look: " + historyFreeLook(i) + "\n")
+      os.append("Inventory: " + historyInventory(i) + "\n")
       os.append("Score: " + historyObservations(i)._2 + "\n")
       os.append("\n")
     }
