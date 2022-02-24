@@ -278,6 +278,27 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
         // If not found, move to next location to continue search
         runActionSequence(searchPatternStep, runner)
       }
+
+      // Edge case: Substance is found at the end of the path
+      val curLocSearch = PathFinder.getEnvObject(queryName = getCurrentAgentLocation(runner).name, universe) // Get a pointer to the whole room the answer box is in
+      val substance_ = PathFinder.getAllAccessibleEnvObject(unknownSubstanceName.get, curLocSearch.get)
+      if (substance_.length > 0) {
+        // Substance likely found -- try to pick it up
+        substance = Some(substance_(0))
+        // If it's not a solid, then pick up it's container
+        if ((substance.get.propMaterial.isDefined) && (substance.get.propMaterial.get.stateOfMatter != "solid")) {
+          // Assume liquid, pick up container
+          // TODO: Check that container is movable.
+          substanceContainer = substance.get.getContainer()
+          runAction("pick up " + PathFinder.getObjUniqueReferent(substance.get, getCurrentAgentLocation(runner)).get, runner)
+
+        } else {
+          // Assume solid, pick up thing
+          substanceContainer = substance // Container is itself, since it's the thing we'll be 'moving' to the workshop to test conductivity
+          runAction("pick up " + PathFinder.getObjUniqueReferent(substanceContainer.get, getCurrentAgentLocation(runner)).get, runner)
+        }
+      }
+
     }
 
     // Check that we successfully found the substance -- if not, fail

@@ -16,11 +16,11 @@ object ExampleGoldAgent {
   def main(args:Array[String]) = {
     val interface = new PythonInterface()
 
-    val specificTasks = Array(4,5)           // Do specific tasks
+    //val specificTasks = Array(11,12,13,14)           // Do specific tasks
     //val specificTasks = Array(0,1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29)           // Do specific tasks
     //val specificTasks = Array(9, 10)           // Do specific tasks
     //val specificTasks = Array(18)           // Do specific tasks
-    //val specificTasks = Array(2)           // Do specific tasks
+    val specificTasks = Array(9)           // Do specific tasks
     //val specificTasks = Array.empty[Int]      // Do all
 
     val exportFilename = "goldsequences-" + specificTasks.mkString("-") + ".json"
@@ -73,7 +73,7 @@ object ExampleGoldAgent {
 
         // For each variation
         //var subsampleEveryNth:Int = 1
-        var subsampleEveryNth:Int = 1
+        var subsampleEveryNth:Int = 20
         for (variationIdx <- 0 until maxTaskVariations) {
         //for (variationIdx <- 0 until math.min(20, maxTaskVariations)) {
           if (variationIdx % subsampleEveryNth == 0) {
@@ -342,8 +342,8 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
     for (i <- 0 until this.length) {
       os.append(">>> " + historyActions(i) + "\n")
       os.append("Observation: " + historyObservations(i)._1 + "\n")
-      os.append("Free Look: " + historyFreeLook(i) + "\n")
-      os.append("Inventory: " + historyInventory(i) + "\n")
+      //os.append("Free Look: " + historyFreeLook(i) + "\n")
+      //os.append("Inventory: " + historyInventory(i) + "\n")
       os.append("Score: " + historyObservations(i)._2 + "\n")
       os.append("\n")
     }
