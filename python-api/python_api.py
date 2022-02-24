@@ -194,6 +194,14 @@ class VirtualEnv:
         return self.gateway.getTaskDescription()
 
 
+    # History
+    def getRunHistory(self):
+        historyStr = self.gateway.getRunHistoryJSON()
+        print("historyStr: " + str(historyStr))
+        jsonOut = json.loads(historyStr)
+        return jsonOut        
+
+
     # Train/development/test sets
     def getVariationsTrain(self):
         return self.gateway.getVariationsTrain()

@@ -37,6 +37,7 @@ scienceworld.objects.containers.furniture.Couch	30
 scienceworld.objects.devices.Lighter	109
 scienceworld.objects.devices.Oven	107
 scienceworld.objects.electricalcomponent.NuclearGenerator	80
+scienceworld.objects.substance.Rubber	161
 scienceworld.objects.document.BookPrideAndPredjudice	60
 scienceworld.objects.document.BookBeowulf	59
 scienceworld.objects.substance.SodiumChloride	81
@@ -45,8 +46,8 @@ scienceworld.objects.taskitems.UnknownSubstanceElectricalConductivity	1
 scienceworld.objects.livingthing.animals.Chameleon	104
 scienceworld.objects.containers.GlassCup	28
 scienceworld.objects.substance.food.OrangeJuice	24
-scienceworld.objects.document.BookOriginOfSpecies	34
 scienceworld.objects.containers.furniture.WoodTable	108
+scienceworld.objects.document.BookOriginOfSpecies	34
 scienceworld.objects.livingthing.animals.BrownBear	96
 scienceworld.objects.livingthing.plant.RandomGeneticsPlantsC	135
 scienceworld.objects.environmentoutside.Fountain	118
@@ -86,6 +87,7 @@ scienceworld.objects.electricalcomponent.ElectricMotor	75
 scienceworld.objects.substance.Ice	62
 scienceworld.objects.electricalcomponent.LightBulb	41
 scienceworld.objects.devices.Fridge	10
+scienceworld.objects.livingthing.plant.RandomGeneticsPlantsE	162
 scienceworld.objects.document.Paper	151
 scienceworld.objects.containers.Jug	111
 scienceworld.objects.livingthing.plant.Flower	139
@@ -122,6 +124,7 @@ scienceworld.objects.livingthing.plant.LemonTree	86
 scienceworld.objects.substance.food.Chocolate	65
 scienceworld.objects.livingthing.animals.Elephant	94
 scienceworld.objects.livingthing.plant.Pollen	140
+scienceworld.objects.devices.UltraColdFreezer	163
 scienceworld.objects.livingthing.animals.Ant	106
 scienceworld.objects.substance.Lead	69
 scienceworld.objects.livingthing.animals.Moth	123

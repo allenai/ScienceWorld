@@ -200,8 +200,19 @@ def userConsole(jarPath:str):
         # Sanitize input
         userInputStr = userInputStr.lower().strip()
 
+
+    # Display run history 
+    runHistory = env.getRunHistory()    
+    print("Run History:")
+    print(runHistory)
+    for item in runHistory:
+        print("* One step: \n" + str(item))
+        print("")
+
     print("Shutting down server...")    
-    #env.shutdown()
+    env.shutdown()
+
+
 
     print("Completed.")
 

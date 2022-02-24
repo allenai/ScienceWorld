@@ -225,6 +225,11 @@ class PythonInterface() {
     return this.currentHistory.historyActions.toList.asJava
   }
 
+  // Get entire run history for this instance in JSON format
+  def getRunHistoryJSON():String = {
+    return this.currentHistory.toJSONArray(0)
+  }
+
   // TODO: Add function to return complete history as JSON
 
   /*
