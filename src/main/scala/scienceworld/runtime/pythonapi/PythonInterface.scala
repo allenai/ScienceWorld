@@ -107,12 +107,12 @@ class PythonInterface() {
 
       // Reset run history
       val taskIdx = this.getTaskNames().indexOf(taskStr)
-      currentHistory = new RunHistory(taskStr, taskIdx, variationIdx)
+      currentHistory = new RunHistory(taskStr, taskIdx, variationIdx, getTaskDescription())
 
     } else {
       this.errorUnknownEnvironment = true
       agentInterface = None
-      currentHistory = new RunHistory("", -1, -1)
+      currentHistory = new RunHistory("", -1, -1, "")
     }
 
   }
