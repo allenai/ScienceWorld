@@ -36,6 +36,9 @@ class VirtualEnv:
         # Set the environment step limit
         self.envStepLimit = envStepLimit
 
+        # Clear the run histories
+        self.clearRunHistories()
+
     #
     #   Destructor
     #
@@ -193,8 +196,9 @@ class VirtualEnv:
     def getTaskDescription(self):
         return self.gateway.getTaskDescription()
 
-
+    #
     # History
+    #
     def getRunHistory(self):
         historyStr = self.gateway.getRunHistoryJSON()
         print("historyStr: " + str(historyStr))
@@ -202,7 +206,51 @@ class VirtualEnv:
         return jsonOut        
 
 
+    # History saving (provides an API to do this, so it's consistent across agents)
+    def storeRunHistory(self, episodeIdxKey, notes):
+        packed = {
+            'episodeIdx': episodeIdxKey,
+            'notes': notes,
+            'history': self.getRunHistory()
+        }
+
+        self.runHistories[episodeIdxKey] = packed
+
+    def saveRunHistories(self, filenameOutPrefix):
+        # Save history
+
+        # Create verbose filename
+        filenameOut = filenameOutPrefix 
+        keys = sorted(self.runHistories.keys())
+        if (len(keys) > 0):            
+            keyFirst = keys[0]
+            keyLast = keys[-1]
+            filenameOut += "-" + str(keyFirst) + "-" + str(keyLast) 
+
+        filenameOut += ".json"
+
+        print("* Saving run history ( " + str(filenameOut) + ")...")
+
+        with open(filenameOut, 'w') as outfile:
+            #print(type(self.runHistories))
+            json.dump(self.runHistories, outfile, sort_keys=True, indent=4)
+    
+    def getRunHistorySize(self):
+        return len(self.runHistories)
+
+    def clearRunHistories(self):
+        self.runHistories = {}
+
+    # A one-stop function to handle saving. 
+    def saveRunHistoriesBufferIfFull(self, filenameOutPrefix, maxPerFile=1000, forceSave=False):
+        if ((self.getRunHistorySize() >= maxPerFile) or (forceSave == True)):            
+            self.saveRunHistories(filenameOutPrefix)
+            self.clearRunHistories()
+
+
+    #
     # Train/development/test sets
+    #
     def getVariationsTrain(self):
         return self.gateway.getVariationsTrain()
 

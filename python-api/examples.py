@@ -46,91 +46,106 @@ def speedTest(jarPath:str):
 def randomModel(jarPath:str):
     exitCommands = ["quit", "exit"]
 
-    # Initialize environment    
-    env = VirtualEnv("", jarPath, threadNum = 0)
+    numEpisodes = 25
 
+    simplificationStr = ""
+    taskIdx = 13
+
+    # Initialize environment
+    env = VirtualEnv("", jarPath, envStepLimit = 100, threadNum = 0)
     taskNames = env.getTaskNames()
-    taskName = taskNames[0]        # Just get first task    
+    taskName = taskNames[taskIdx]        # Just get first task    
     maxVariations = env.getMaxVariations(taskName)
-    randVariationIdx = random.randrange(0, maxVariations)           # Pick a random variation
-    env.load(taskName, randVariationIdx)
-    
-    initialObs, initialDict = env.reset()
 
-    print("Task Names: " + str(taskNames))
+    for episodeIdx in range(0, numEpisodes):
 
-    print("Possible actions: " + str(env.getPossibleActions()) )
-    print("Possible objects: " + str(env.getPossibleObjects()) )
-    templates, lut = env.getPossibleActionObjectCombinations()
+        randVariationIdx = random.randrange(0, maxVariations)           # Pick a random variation
+        env.load(taskName, randVariationIdx, simplificationStr)
 
-    #print("Possible action/object combinations: " + str(templates))
-    #print("Object IDX to Object Referent LUT: " + str(lut))
+        initialObs, initialDict = env.reset()
 
-    print("Task Name: " + taskName)
-    print("Task Variation: " + str(randVariationIdx) + " / " + str(maxVariations))
-    print("Task Description: " + str(env.getTaskDescription()) )    
-    
+        print("Task Names: " + str(taskNames))
 
-    print("look: " + str(env.look()) )
-    print("inventory: " + str(env.inventory()) )
-    print("taskdescription: " + str(env.taskdescription()) )
-    
-
-    score = 0.0
-    isCompleted = False
-    curIter = 0
-    maxIter = 10
-
-    userInputStr = "look around"        # First action
-    while (userInputStr not in exitCommands) and (isCompleted == False) and (curIter < maxIter):
-        print("----------------------------------------------------------------")
-        print ("Iteration: " + str(curIter))
-
-        ## DEBUG
-        if (curIter % 30 == 0 and curIter != 0):
-            initialObs, initialDict = env.reset()
-            
-            print("RESETTING")
-            print(initialObs)
-
-
-        # Send user input, get response
-        observation, score, isCompleted, _ = env.step(userInputStr)
-        print("\n>>> " + observation)
-        print("Score: " + str(score))
-        print("isCompleted: " + str(isCompleted))
-
-        if (isCompleted):
-            break
-
-        # Randomly select action        
+        print("Possible actions: " + str(env.getPossibleActions()) )
+        print("Possible objects: " + str(env.getPossibleObjects()) )
         templates, lut = env.getPossibleActionObjectCombinations()
-        print(list(lut.keys())[-1])
+
         #print("Possible action/object combinations: " + str(templates))
         #print("Object IDX to Object Referent LUT: " + str(lut))
 
-        randomTemplate = random.choice( templates )        
-        print(randomTemplate)
-        userInputStr = randomTemplate["action"]
-
-        # Sanitize input
-        userInputStr = userInputStr.lower().strip()
-        print("Choosing random action: " + str(userInputStr))
-
-        curIter += 1
-
-        #if (curIter > 30):
-        #    time.sleep(1)
-
+        print("Task Name: " + taskName)
+        print("Task Variation: " + str(randVariationIdx) + " / " + str(maxVariations))
+        print("Task Description: " + str(env.getTaskDescription()) )    
         
-    # Report progress of model
-    if (curIter == maxIter):
-        print("Maximum number of iterations reached (" + str(maxIter) + ")")
-    print ("Final score: " + str(score))
-    print ("isCompleted: " + str(isCompleted))
+
+        print("look: " + str(env.look()) )
+        print("inventory: " + str(env.inventory()) )
+        print("taskdescription: " + str(env.taskdescription()) )
+        
+
+        score = 0.0
+        isCompleted = False
+        curIter = 0
+        maxIter = 10
+
+        userInputStr = "look around"        # First action
+        while (userInputStr not in exitCommands) and (isCompleted == False) and (curIter < maxIter):
+            print("----------------------------------------------------------------")
+            print ("Iteration: " + str(curIter))
+
+            ## DEBUG
+            if (curIter % 30 == 0 and curIter != 0):
+                initialObs, initialDict = env.reset()
+                
+                print("RESETTING")
+                print(initialObs)
+
+
+            # Send user input, get response
+            observation, score, isCompleted, _ = env.step(userInputStr)
+            print("\n>>> " + observation)
+            print("Score: " + str(score))
+            print("isCompleted: " + str(isCompleted))
+
+            if (isCompleted):
+                break
+
+            # Randomly select action        
+            templates, lut = env.getPossibleActionObjectCombinations()
+            print(list(lut.keys())[-1])
+            #print("Possible action/object combinations: " + str(templates))
+            #print("Object IDX to Object Referent LUT: " + str(lut))
+
+            randomTemplate = random.choice( templates )        
+            print(randomTemplate)
+            userInputStr = randomTemplate["action"]
+
+            # Sanitize input
+            userInputStr = userInputStr.lower().strip()
+            print("Choosing random action: " + str(userInputStr))
+
+            curIter += 1
+
+            #if (curIter > 30):
+            #    time.sleep(1)
+
+            
+        # Report progress of model
+        if (curIter == maxIter):
+            print("Maximum number of iterations reached (" + str(maxIter) + ")")
+        print ("Final score: " + str(score))
+        print ("isCompleted: " + str(isCompleted))
+
+        # Save history -- and when we reach maxPerFile, export them to file
+        filenameOutPrefix = "savehistories-task" + str(taskIdx)        
+        env.storeRunHistory(episodeIdx, notes = {'text':'my notes here'} )
+        env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=10)
+
+    # Episodes are finished -- manually save any last histories still in the buffer
+    env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=10, forceSave=True)
 
     print("Shutting down server...")    
-    #env.shutdown()
+    env.shutdown()
 
     print("Completed.")
 
@@ -229,13 +244,13 @@ def main():
     print("Virtual Text Environment API demo")
 
     # Run a user console
-    userConsole(jarPath)
+    #userConsole(jarPath)
 
     # Run speed test
     #speedTest(jarPath)
 
     # Run a model that chooses random actions until successfully reaching the goal
-    #randomModel(jarPath)
+    randomModel(jarPath)
 
     print("Exiting.")
 
