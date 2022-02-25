@@ -22,9 +22,10 @@ object ExampleRandomAgent {
     //val specificTasks = Array(13)           // Do specific tasks
     val specificTasks = Array.empty[Int]    // Do all
 
-    val simplificationStr = "teleportAction,noElectricalAction,openDoors"
+    //val simplificationStr = "teleportAction,noElectricalAction,openDoors"
+    val simplificationStr = "easy"
 
-    val maxEpisodes:Int = 100
+    val maxEpisodes:Int = 10
     val maxIterPerEpisode:Int = 20
 
     // Create environment
@@ -56,7 +57,7 @@ object ExampleRandomAgent {
           val variationIdx = Random.nextInt(maxVariations)
 
           // Load the task/variation
-          interface.load(taskName, variationIdx, simplificationStr)
+          interface.load(taskName, variationIdx, simplificationStr, generateGoldPath = false)
 
           // Get reference to AgentInterface
           val agentInterface = interface.agentInterface
@@ -112,7 +113,7 @@ object ExampleRandomAgent {
               println(agentInterface.get.getErrorStateMessage())
 
 
-              sys.exit(1)
+              //sys.exit(1)
             }
 
             curIter += 1

@@ -48,19 +48,23 @@ class PythonInterface() {
   /*
    * Load/reset/shutdown server
    */
-  def load(taskStr:String, variationIdx:Int, simplificationStr:String): Unit = {
-    // First, reset environment to new specifications
-    doLoad(taskStr, variationIdx, simplificationStr)
+  def load(taskStr:String, variationIdx:Int, simplificationStr:String, generateGoldPath:Boolean = false): Unit = {
+    if (generateGoldPath) {
+      // First, reset environment to new specifications
+      doLoad(taskStr, variationIdx, simplificationStr)
 
-    // Then, compute gold path
-    val (goldPath, success) = taskMaker.createGoldActions(taskStr, variationIdx, this)
-    // TODO: Check for failure in generating gold path
+      // Then, compute gold path
+      val (goldPath, success) = taskMaker.createGoldActions(taskStr, variationIdx, this)
+
+      // Then, store gold path
+      this.goldActionsStr = goldPath
+    } else {
+      goldActionsStr = Array.empty[String]
+    }
 
     // Then, reset environment again
     doLoad(taskStr, variationIdx, simplificationStr)
 
-    // Then, store gold path
-    this.goldActionsStr = goldPath
   }
 
   def reset() = {

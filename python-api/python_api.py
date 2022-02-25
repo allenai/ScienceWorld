@@ -63,12 +63,12 @@ class VirtualEnv:
         time.sleep(5)
 
     # Ask the simulator to load an environment from a script
-    def load(self, taskName, variationIdx, simplificationStr):
+    def load(self, taskName, variationIdx, simplificationStr, generateGoldPath=False):
         # TODO: Error handling
         self.scriptFilename = taskName        
 
         print("Load: " + self.scriptFilename + " (variation: " + str(variationIdx) + ")" + " (simplifications: " + simplificationStr + ")")
-        self.gateway.load(self.scriptFilename, variationIdx, simplificationStr)
+        self.gateway.load(self.scriptFilename, variationIdx, simplificationStr, generateGoldPath)
 
 
     # Ask the simulator to reset an environment back to it's initial state
@@ -201,7 +201,7 @@ class VirtualEnv:
     #
     def getRunHistory(self):
         historyStr = self.gateway.getRunHistoryJSON()
-        print("historyStr: " + str(historyStr))
+        #print("historyStr: " + str(historyStr))
         jsonOut = json.loads(historyStr)
         return jsonOut        
 
@@ -316,3 +316,62 @@ class VirtualEnv:
         observation = self.gateway.freeActionTaskDesc()
         return observation
 
+
+
+
+
+class BufferedHistorySaver:
+
+    #
+    # Constructor
+    #
+    def __init__(self, filenameOutPrefix):
+        self.filenameOutPrefix = filenameOutPrefix
+
+        # Clear the run histories
+        self.clearRunHistories()
+
+    #
+    # Methods
+    #
+
+    # History saving (provides an API to do this, so it's consistent across agents)
+    def storeRunHistory(self, runHistory, episodeIdxKey, notes):
+        packed = {
+            'episodeIdx': episodeIdxKey,
+            'notes': notes,
+            'history': runHistory
+        }
+
+        self.runHistories[episodeIdxKey] = packed
+
+    def saveRunHistories(self):
+        # Save history
+
+        # Create verbose filename
+        filenameOut = self.filenameOutPrefix 
+        keys = sorted(self.runHistories.keys())
+        if (len(keys) > 0):            
+            keyFirst = keys[0]
+            keyLast = keys[-1]
+            filenameOut += "-" + str(keyFirst) + "-" + str(keyLast) 
+
+        filenameOut += ".json"
+
+        print("* Saving run history ( " + str(filenameOut) + ")...")
+
+        with open(filenameOut, 'w') as outfile:
+            #print(type(self.runHistories))
+            json.dump(self.runHistories, outfile, sort_keys=True, indent=4)
+    
+    def getRunHistorySize(self):
+        return len(self.runHistories)
+
+    def clearRunHistories(self):
+        self.runHistories = {}
+
+    # A one-stop function to handle saving. 
+    def saveRunHistoriesBufferIfFull(self, maxPerFile=1000, forceSave=False):
+        if ((self.getRunHistorySize() >= maxPerFile) or (forceSave == True)):            
+            self.saveRunHistories()
+            self.clearRunHistories()
