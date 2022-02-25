@@ -332,6 +332,19 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
     return jsonOut
   }
 
+  // More complete than above
+  def toJSON(indentLevel:Int = 0):String = {
+    val json = new StringBuilder
+    json.append("{")
+    json.append("\"taskIdx\":\"" + taskIdx + "\", ")
+    json.append("\"taskName\":\"" + taskName + "\", ")
+    json.append("\"variationIdx\":\"" + variationIdx + "\", ")
+    json.append("\"taskDescription\":\"" + RunHistory.sanitizeJSON(taskDescription) + "\", ")
+    json.append("\"history\":" + this.toJSONArray()+ " ")
+    json.append("}")
+
+    return json.toString
+  }
 
   override def toString():String = {
     val os = new StringBuilder

@@ -227,10 +227,9 @@ class PythonInterface() {
 
   // Get entire run history for this instance in JSON format
   def getRunHistoryJSON():String = {
-    return this.currentHistory.toJSONArray(0)
+    return this.currentHistory.toJSON()
   }
 
-  // TODO: Add function to return complete history as JSON
 
   /*
    * Get object/action space
