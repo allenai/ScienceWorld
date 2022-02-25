@@ -101,7 +101,7 @@ object ExampleGoldAgent {
             var foldDesc = "train"
             if (interface.getVariationsDev().asScala.toArray.contains(variationIdx)) foldDesc = "dev"
             if (interface.getVariationsTest().asScala.toArray.contains(variationIdx)) foldDesc = "test"
-            val history = new RunHistory(taskName, taskIdx, variationIdx, taskDescription = agentInterface.get.getTaskDescription(), foldDesc = foldDesc)
+            val history = new RunHistory(taskName, taskIdx, variationIdx, taskDescription = agentInterface.get.getTaskDescription(), simplificationStr = simplificationStr, foldDesc = foldDesc)
 
             // Run a free initial 'look' action, and add it to the history?
             val initialFl = interface.freeActionLook()
@@ -278,7 +278,7 @@ object ExampleGoldAgent {
 
 
 // Storage class for histories
-class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val taskDescription:String = "", val foldDesc:String = "") {
+class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val taskDescription:String = "", val simplificationStr:String = "", val foldDesc:String = "") {
   val historyActions = new ArrayBuffer[String]
   val historyObservations = new ArrayBuffer[(String, Double, Boolean)]
   val historyFreeLook = new ArrayBuffer[String]
@@ -340,6 +340,7 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
     json.append("\"taskName\":\"" + taskName + "\", ")
     json.append("\"variationIdx\":\"" + variationIdx + "\", ")
     json.append("\"taskDescription\":\"" + RunHistory.sanitizeJSON(taskDescription) + "\", ")
+    json.append("\"simplifications\":\"" + RunHistory.sanitizeJSON(simplificationStr) + "\", ")
     json.append("\"history\":" + this.toJSONArray()+ " ")
     json.append("}")
 
