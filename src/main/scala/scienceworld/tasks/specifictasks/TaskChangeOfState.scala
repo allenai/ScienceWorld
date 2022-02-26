@@ -138,6 +138,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     val gSequenceUnordered = new ArrayBuffer[Goal]
     if (mode == MODE_CHANGESTATE) {
       subTask = "change the state of matter of"
+      gSequence.append( new GoalFind(objectName = substanceName, description = "focus on substance") )
       gSequence.append( new GoalIsStateOfMatter() )             // Be in any state
       gSequence.append( new GoalIsDifferentStateOfMatter() )    // Be in any state but the first state
 

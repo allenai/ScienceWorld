@@ -25,14 +25,16 @@ object ExampleRandomAgent {
     //val simplificationStr = "teleportAction,noElectricalAction,openDoors"
     val simplificationStr = "easy"
 
-    val maxEpisodes:Int = 10
-    val maxIterPerEpisode:Int = 20
+    val maxEpisodes:Int = 100
+    val maxIterPerEpisode:Int = 100
 
     // Create environment
     // Get a task name
     val taskNames = interface.getTaskNames().asScala.toList
 
     val taskScores = new ArrayBuffer[ Array[Double] ]()
+    val r = new scala.util.Random(0)
+
     for (taskIdx <- 0 until taskNames.length) {
       breakable {
         val taskName = taskNames(taskIdx)
@@ -50,11 +52,18 @@ object ExampleRandomAgent {
 
         var userInput = "look around"
         val episodeScores = new ArrayBuffer[Double]
+
+        // Initialize one variation (that won't be used), so that the interface knows what task we're using and will be able to populate the getRandomVariation functions.
+        interface.load(taskName, 0, simplificationStr, generateGoldPath = false)
+
         while (curEpisode < maxEpisodes) {
 
           // Choose a variation
-          val maxVariations = interface.getTaskMaxVariations(taskName)
-          val variationIdx = Random.nextInt(maxVariations)
+          //val maxVariations = interface.getTaskMaxVariations(taskName)
+          //val variationIdx = Random.nextInt(maxVariations)
+
+          // Uncomment below to generate the performance of the random agent on the test variations only
+          val variationIdx = interface.getRandomVariationTest()
 
           // Load the task/variation
           interface.load(taskName, variationIdx, simplificationStr, generateGoldPath = false)
@@ -93,7 +102,7 @@ object ExampleRandomAgent {
 
             // Mode 2: Use getValidActions
             val validActions = agentInterface.get.getValidActionObjectCombinations()
-            val randIdx = Random.nextInt(validActions.length)
+            val randIdx = r.nextInt(validActions.length)
             val randAction = validActions(randIdx)
             //println (">>>>>>>>>>>> " + randTemplate.actionString )
             userInput = randAction
