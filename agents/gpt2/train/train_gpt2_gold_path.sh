@@ -13,8 +13,8 @@ deepspeed --num_gpus=4 run_clm.py \
         --do_eval true \
         --do_predict true \
         --dataset_config_name wikitext-2-raw-v1 \
-        --per_device_train_batch_size 16 \
-        --per_device_eval_batch_size 16 \
+        --per_device_train_batch_size 8 \
+        --per_device_eval_batch_size 8 \
         --output_dir /media/scratch/scienceworld-logs/calm/gpt2_goldpath \
         --overwrite_output_dir\
         --num_train_epochs 1\
