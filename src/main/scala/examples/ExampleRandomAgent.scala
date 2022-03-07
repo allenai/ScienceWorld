@@ -25,7 +25,7 @@ object ExampleRandomAgent {
     //val simplificationStr = "teleportAction,noElectricalAction,openDoors"
     val simplificationStr = "easy"
 
-    val maxEpisodes:Int = 100
+    val maxEpisodes:Int = 1000
     val maxIterPerEpisode:Int = 100
 
     // Create environment
