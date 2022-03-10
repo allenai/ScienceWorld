@@ -8,6 +8,7 @@
 
 
 from scienceworld_python_api import ScienceWorldEnv
+import argparse
 import random
 import timeit
 import time
@@ -15,20 +16,25 @@ import time
 #
 #   Example random agent -- randomly picks an action at each step.
 #
-def randomModel(jarPath:str, taskIdx, simplificationStr="easy"):
-    exitCommands = ["quit", "exit"]
+def randomModel(args):
+    exitCommands = ["quit", "exit"]    
 
-    numEpisodes = 5        
+    taskIdx = args['task_num']
+    simplificationStr = args['simplification_str']
+    numEpisodes = args['num_episodes']      
 
     # Keep track of the agent's final scores
     finalScores = []
 
     # Initialize environment
-    env = ScienceWorldEnv("", jarPath, envStepLimit = 100, threadNum = 0)
+    env = ScienceWorldEnv("", args['jar_path'], envStepLimit = args['env_step_limit'] , threadNum = 0)
     taskNames = env.getTaskNames()
     taskName = taskNames[taskIdx]        # Just get first task    
     maxVariations = env.getMaxVariations(taskName)
     print("Task Names: " + str(taskNames))
+
+    print("Starting Task " + str(taskIdx) + ": " + taskName)
+    time.sleep(2)
 
     # Start running episodes
     for episodeIdx in range(0, numEpisodes):        
@@ -98,20 +104,21 @@ def randomModel(jarPath:str, taskIdx, simplificationStr="easy"):
         print ("isCompleted: " + str(isCompleted))        
 
         # Save history -- and when we reach maxPerFile, export them to file
-        filenameOutPrefix = "savehistories-task" + str(taskIdx)        
+        filenameOutPrefix = args['output_path_prefix'] + str(taskIdx)        
         env.storeRunHistory(episodeIdx, notes = {'text':'my notes here'} )
-        env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=100)
+        env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=args['max_episode_per_file'])
 
     # Episodes are finished -- manually save any last histories still in the buffer
-    env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=100, forceSave=True)
+    env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=args['max_episode_per_file'], forceSave=True)
 
     # Show final episode scores to user: 
+    avg = sum([x for x in finalScores if x >=0]) / len(finalScores)     # Clip negative scores to 0 for average calculation
     print ("")
     print ("---------------------------------------------------------------------")
-    print (" Summary")
+    print (" Summary (Random Agent)")
+    print (" Task " + str(taskIdx) + ": " + taskName)
     print ("---------------------------------------------------------------------")
-    print (" Epsiode scores: " + str(finalScores))
-    avg = sum(finalScores) / len(finalScores)
+    print (" Epsiode scores: " + str(finalScores))    
     print (" Average episode score: " + str(avg))
     print ("---------------------------------------------------------------------")
     print ("")
@@ -204,25 +211,40 @@ def userConsole(jarPath:str):
     print("Completed.")
 
 
+#
+#   Parse command line arguments
+#
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--jar_path", type=str, default="scienceworld-1.0.jar")
+    parser.add_argument("--task_num", type=int, default=13)
+    parser.add_argument("--env_step_limit", type=int, default=100)    
+    parser.add_argument("--num_episodes", type=int, default=5)    
+    parser.add_argument("--simplification_str", default="easy")
+    parser.add_argument("--max_episode_per_file", type=int, default=1000)
+    parser.add_argument("--mode", default="random")
+    parser.add_argument("--output_path_prefix", default="save-histories")
+
+    args = parser.parse_args()
+    params = vars(args)
+    return params
 
 
 #
 #   Main
 #
-def main():    
-    jarPath = "scienceworld-1.0.jar"    
+def main():        
+    print("ScienceWorld 1.0 API Examples")    
 
-    print("Virtual Text Environment API demo")
-    simplificationStr = "easy"
+    # Parse command line arguments
+    args = parse_args()
 
     # Run a user console
     #userConsole(jarPath)
 
-    # Run speed test
-    #speedTest(jarPath)
-
     # Run a model that chooses random actions until successfully reaching the goal
-    randomModel(jarPath, taskIdx=13, simplificationStr=simplificationStr)
+    if (args['mode'] == 'random'):
+        randomModel(args)
 
     print("Exiting.")
 
