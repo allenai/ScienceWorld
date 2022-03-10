@@ -1,1 +1,75 @@
-# virtualenv-scala
+# ScienceWorld 
+
+ScienceWorld is a text-based virtual environment centered around accomplishing tasks from the standardized elementary science curriculum.  This code accompanies the paper [ScienceWorld: Is your Textual Agent Smarter than a 5th grader?](http://www.google.com).
+
+# Quickstart
+**Before running:** You will have to have `Java 1.8+` installed on your system (shipped with most linux distributions).
+
+Install Dependencies: py4j
+```bash
+conda create --name scienceworld python=3.8
+conda activate scienceworld
+pip install py4j
+```
+
+Run an example random agent, on task 13 (classification: place a non-living thing in a box), for 5 episodes:
+```bash
+python examples.py --mode=randomagent --task_num=13 --num_episodes=5
+```
+
+Run a user console where you can interact with the environment, on task 3 (change of state: melting):
+```bash
+python examples.py --mode=userconsole --task_num=3 --num_episodes=5
+```
+
+# ScienceWorld Design
+ScienceWorld is written in Scala (2.12.9), and compiles using `sbt` into a JAR file that is run with `java`.  For convenience, a `python` API is provided, which interfaces using the `py4j` package.
+
+**Ports:** ScienceWorld is nominally run as a server, which interfaces to the Python API with `py4j` through a port.  The default port is `25335`.  The actual port used will be 25335 + the thread number provided when a ScienceWorld class is instantiated. 
+
+**Threads:** ScienceWorld is designed to run many threads simultaneously, if desired.  To do so, initialize one `ScienceWorldEnv` object per thread, and provide a unique `threadNum` for each thread.  Don't forget to close down servers that you instantiate using the `env.shutdown()` command.  If you are spawning many threads (10+) at the same time, you may wish to add a short delay (5-10 seconds) after initialization to wait for all the servers to initialize. 
+
+# Tasks
+The subtasks and their associated subtask indices are listed below.  Subtask indices are automatically assigned by sorting task names:
+
+| SubTask #  | Task Name                                          | 
+|-----|-----------------------------------------------------------|
+| 0  | task-1-boil                                               |
+| 1  | task-1-change-the-state-of-matter-of                      |
+| 2  | task-1-freeze                                             |
+| 3  | task-1-melt                                               |
+| 4  | task-10-measure-melting-point-(known-substance)           |
+| 5  | task-10-measure-melting-point-(unknown-substance)         |
+| 6  | task-10-use-thermometer                                   |
+| 7  | task-2-power-component                                    |
+| 8  | task-2-power-component-(renewable-vs-nonrenewable-energy) |
+| 9  | task-2a-test-conductivity                                 |
+| 10 | task-2a-test-conductivity-of-unknown-substances           |
+| 11 | task-3-find-animal                                        |
+| 12 | task-3-find-living-thing                                  |
+| 13 | task-3-find-non-living-thing                              |
+| 14 | task-3-find-plant                                         |
+| 15 | task-4-grow-fruit                                         |
+| 16 | task-4-grow-plant                                         |
+| 17 | task-5-chemistry-mix                                      |
+| 18 | task-5-chemistry-mix-paint-(secondary-color)              |
+| 19 | task-5-chemistry-mix-paint-(tertiary-color)               |
+| 20 | task-6-lifespan-(longest-lived)                           |
+| 21 | task-6-lifespan-(longest-lived-then-shortest-lived)       |
+| 22 | task-6-lifespan-(shortest-lived)                          |
+| 23 | task-7-identify-life-stages-1 (animal)                    |
+| 24 | task-7-identify-life-stages-2 (plant)                     |
+| 25 | task-8-inclined-plane-determine-angle                     |
+| 26 | task-8-inclined-plane-friction-(named-surfaces)           |
+| 27 | task-8-inclined-plane-friction-(unnamed-surfaces)         |
+| 28 | task-9-mendellian-genetics-(known-plant)                  |
+| 29 | task-9-mendellian-genetics-(unknown-plant)                |
+
+# Examples 
+
+
+# Citation
+Bibtex
+```
+TODO
+```
