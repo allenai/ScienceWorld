@@ -29,17 +29,19 @@ def randomModel(args):
     # Initialize environment
     env = ScienceWorldEnv("", args['jar_path'], envStepLimit = args['env_step_limit'] , threadNum = 0)
     taskNames = env.getTaskNames()
-    taskName = taskNames[taskIdx]        # Just get first task    
-    maxVariations = env.getMaxVariations(taskName)
     print("Task Names: " + str(taskNames))
 
+    # Choose task
+    taskName = taskNames[taskIdx]        # Just get first task        
+    env.load(taskName, 0, "")            # Load the task, so we have access to some extra accessors e.g. getRandomVariationTrain() )
+    maxVariations = env.getMaxVariations(taskName)    
     print("Starting Task " + str(taskIdx) + ": " + taskName)
     time.sleep(2)
 
     # Start running episodes
     for episodeIdx in range(0, numEpisodes):        
         # Pick a random task variation
-        randVariationIdx = random.randrange(0, maxVariations)
+        randVariationIdx = env.getRandomVariationTrain()
         env.load(taskName, randVariationIdx, simplificationStr)
 
         # Reset the environment
@@ -61,8 +63,7 @@ def randomModel(args):
 
         score = 0.0
         isCompleted = False
-        curIter = 0
-        maxIter = 10
+        curIter = 0        
 
         # Run one episode until we reach a stopping condition (including exceeding the maximum steps)
         userInputStr = "look around"        # First action
@@ -93,8 +94,12 @@ def randomModel(args):
             userInputStr = userInputStr.lower().strip()
             print("Choosing random action: " + str(userInputStr))
 
+            # Keep track of the number of commands sent to the environment in this episode
             curIter += 1
 
+        print("Goal Progress:")
+        print(env.getGoalProgressStr())
+        time.sleep(1)
 
         # Episode finished -- Record the final score
         finalScores.append(score)
@@ -130,23 +135,32 @@ def randomModel(args):
 
 
 # Example user input console, to play through a game. 
-def userConsole(jarPath:str):
-    exitCommands = ["quit", "exit"]
+def userConsole(args):
+    exitCommands = ["quit", "exit"]    
 
-    simplificationStr = ""
+    taskIdx = args['task_num']
+    simplificationStr = args['simplification_str']      
 
     # Initialize environment
-    env = ScienceWorldEnv("", jarPath, envStepLimit = 100, threadNum = 0)
+    env = ScienceWorldEnv("", args['jar_path'], envStepLimit = args['env_step_limit'] , threadNum = 0)
     taskNames = env.getTaskNames()
-    taskName = taskNames[0]        # Just get first task    
-    maxVariations = env.getMaxVariations(taskName)
-    randVariationIdx = random.randrange(0, maxVariations)           # Pick a random variation
-    env.load(taskName, randVariationIdx, simplificationStr)
-
-    initialObs, initialDict = env.reset()
-    
     print("Task Names: " + str(taskNames))
 
+    # Choose task
+    taskName = taskNames[taskIdx]
+    env.load(taskName, args['var_num'], simplificationStr)
+    print("Starting Task " + str(taskIdx) + ": " + taskName)
+    time.sleep(2)    
+
+    # Reset the environment
+    initialObs, initialDict = env.reset()
+    
+    
+    #
+    #   Examples of how to access much of the environment information that the API exposes. 
+    #   (Many of these are similar to the Jericho API)
+    #
+    print("Task Names: " + str(taskNames))
     print("Possible actions: " + str(env.getPossibleActions()) )
     print("Possible objects: " + str(env.getPossibleObjects()) )
     templates, lut = env.getPossibleActionObjectCombinations()
@@ -166,47 +180,72 @@ def userConsole(jarPath:str):
     print("All objects, their ids, types, and referents: " + str(env.getAllObjectIdsTypesReferentsLUTJSON() ))
     print("\n")
     print("Valid action-object combinations (with templates): " + str(env.getValidActionObjectCombinationsWithTemplates() ))
-    print("\n")
+    print("\n")    
+    print("Object Type LUT: " + str(env.getPossibleObjectReferentTypesLUT()))
+    print("Variations (train): " + str(env.getVariationsTrain() ))    
 
-    typeLUT = env.getPossibleObjectReferentTypesLUT()
-    print("typeLUT: " + str(typeLUT))
+    print("")
+    print("----------------------------------------------------------------------------------")
+    print("")
 
     print("Task Name: " + taskName)
-    print("Task Variation: " + str(randVariationIdx) + " / " + str(maxVariations))
-    print("Task Description: " + str(env.getTaskDescription()) )    
-
-    print("")
-    print("Variations (train): " + str(env.getVariationsTrain() ))
-    print("type: " + str(type(env.getVariationsTrain())) )
-    print("")
-
+    print("Variation: " + str(args['var_num']) + " / " + str(env.getMaxVariations(taskName)))
+    print("Task Description: " + str(env.getTaskDescription()) )        
+    
+    #
+    #   Main user input loop
+    #
     userInputStr = "look around"        # First action
     while (userInputStr not in exitCommands):
-        # Send user input, get response
-        observation, score, isCompleted, additionalInfo = env.step(userInputStr)
-        print("\n" + observation)
-        print("Score: " + str(score))
-        print("isCompleted: " + str(isCompleted))
-        print("AdditionalInfo: " + str(additionalInfo))
+        if (userInputStr == "help"):
+            print("Possible actions: ")
+            for actionStr in env.getPossibleActions():
+                print("\t" + str(actionStr))
 
-        # Get user input
+        elif (userInputStr == "objects"):
+            print("Possible objects (one referent listed per object): ")
+            for actionStr in env.getPossibleObjects():
+                print("\t" + str(actionStr))
+
+        elif (userInputStr == "valid"):        
+            print("Valid action-object combinations:")
+            print(env.getValidActionObjectCombinationsWithTemplates())
+
+        elif (userInputStr == 'goals'):
+            print(env.getGoalProgressStr())
+            
+        else:
+            # Send user input, get response
+            observation, score, isCompleted, info = env.step(userInputStr)
+            print("\n" + observation)
+            print("Score: " + str(score))
+            print("isCompleted: " + str(isCompleted))
+            #print("info: " + str(info))
+
+        print("'help' lists valid action templates, 'objects' lists valid objects, 'valid' lists valid action-object combinations (long!). ")
+        print("'goals' lists progress on subgoals.")
+        print("type 'exit' to quit.")
+
+        # Get user input        
         userInputStr = input('> ')
         # Sanitize input
         userInputStr = userInputStr.lower().strip()
 
-
-    # Display run history 
+    
+    # Display run history     
     runHistory = env.getRunHistory()    
     print("Run History:")
     print(runHistory)
     for item in runHistory:
-        print("* One step: \n" + str(item))
+        print(item)
         print("")
+
+    # Display subgoal progress
+    print(env.getGoalProgressStr())
+
 
     print("Shutting down server...")    
     env.shutdown()
-
-
 
     print("Completed.")
 
@@ -218,11 +257,12 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--jar_path", type=str, default="scienceworld-1.0.jar")
     parser.add_argument("--task_num", type=int, default=13)
+    parser.add_argument("--var_num", type=int, default=0)    
     parser.add_argument("--env_step_limit", type=int, default=100)    
     parser.add_argument("--num_episodes", type=int, default=5)    
     parser.add_argument("--simplification_str", default="easy")
     parser.add_argument("--max_episode_per_file", type=int, default=1000)
-    parser.add_argument("--mode", default="random")
+    parser.add_argument("--mode", default="randomagent")
     parser.add_argument("--output_path_prefix", default="save-histories")
 
     args = parser.parse_args()
@@ -240,10 +280,11 @@ def main():
     args = parse_args()
 
     # Run a user console
-    #userConsole(jarPath)
+    if (args['mode'] == 'userconsole'):
+        userConsole(args)
 
     # Run a model that chooses random actions until successfully reaching the goal
-    if (args['mode'] == 'random'):
+    if (args['mode'] == 'randomagent'):
         randomModel(args)
 
     print("Exiting.")

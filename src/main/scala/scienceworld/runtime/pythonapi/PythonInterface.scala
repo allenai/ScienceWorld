@@ -306,12 +306,13 @@ class PythonInterface() {
    * Take action steps and get observations/scores
    */
 
-  // Normal
-
   def getScore():Double = this.score
+
+  def getGoalProgressStr():String = agentInterface.get.getGoalProgressStr()
 
   def getCompleted():Boolean = this.isComplete
 
+  // Normal
   def step(userInputString:String): String = {
     val outStr = new StringBuilder
     // Error checking

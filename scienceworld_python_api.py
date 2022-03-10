@@ -318,7 +318,10 @@ class ScienceWorldEnv:
         observation = self.gateway.freeActionTaskDesc()
         return observation
 
-
+    # Goal progress
+    def getGoalProgressStr(self):
+        goalStr = self.gateway.getGoalProgressStr()
+        return goalStr
 
 
 
