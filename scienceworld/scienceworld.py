@@ -8,8 +8,12 @@
 from py4j.java_gateway import JavaGateway, GatewayParameters
 import subprocess
 
+import os
 import time
 import json
+
+BASEPATH = os.path.dirname(os.path.abspath(__file__))
+JAR_PATH = os.path.join(BASEPATH, 'scienceworld-1.0.jar')
 
 
 class ScienceWorldEnv:
@@ -17,11 +21,12 @@ class ScienceWorldEnv:
     #
     # Constructor
     #
-    def __init__(self, taskName, serverPath, envStepLimit, threadNum=0, launchServer=True):
+    def __init__(self, taskName, serverPath=None, envStepLimit=100, threadNum=0, launchServer=True):
         self.taskName = taskName
+        serverPath = serverPath or JAR_PATH  # Use the builtin jar.
 
         # Define the port number
-        self.portNum = 25335 + threadNum        
+        self.portNum = 25335 + threadNum
 
         # Launch the server
         if (launchServer == True):
@@ -55,19 +60,19 @@ class ScienceWorldEnv:
     # Launches the PY4J server
     def launchServer(self, serverPath):
         print("Launching ScienceWorld Server (Port " + str(self.portNum) + ") -- this may take a moment.")
-        # /home/ruoyao/Documents/projects/virtualenv-scala2/python-api/virtualenv-scala-assembly-1.0.jar            
+        # /home/ruoyao/Documents/projects/virtualenv-scala2/python-api/virtualenv-scala-assembly-1.0.jar
         cmd = "nohup java -cp " + serverPath + " scienceworld.runtime.pythonapi.PythonInterface " + str(self.portNum) + " >/dev/null 2>&1 &"
         #"nohup usr/local/bin/otherscript.pl {0} >/dev/null 2>&1 &", shell=True
-        
+
         subprocess.Popen(cmd, shell=True)
-        # The sleep command here is to give time for the server process to spawn.  
-        # If you are spawning many threads simultaneously, you may need to increase this time. 
+        # The sleep command here is to give time for the server process to spawn.
+        # If you are spawning many threads simultaneously, you may need to increase this time.
         time.sleep(5)
 
     # Ask the simulator to load an environment from a script
     def load(self, taskName, variationIdx, simplificationStr, generateGoldPath=False):
         # TODO: Error handling
-        self.scriptFilename = taskName        
+        self.scriptFilename = taskName
 
         print("Load: " + self.scriptFilename + " (variation: " + str(variationIdx) + ")" + " (simplifications: " + simplificationStr + ")")
         self.gateway.load(self.scriptFilename, variationIdx, simplificationStr, generateGoldPath)
@@ -132,18 +137,18 @@ class ScienceWorldEnv:
     def getPossibleObjectReferentLUT(self):
         jsonStr = self.gateway.getPossibleObjectReferentLUTJSON()
         data = json.loads(jsonStr)
-        return data       
+        return data
 
     # As above, but dictionary is referenced by object type ID
     def getPossibleObjectReferentTypesLUT(self):
         jsonStr = self.gateway.getPossibleObjectReferentTypesLUTJSON()
         data = json.loads(jsonStr)
-        return data       
+        return data
 
     # Get a list of *valid* agent-object combinations
     def getValidActionObjectCombinations(self):
         return self.gateway.getValidActionObjectCombinations()
-    
+
     def getValidActionObjectCombinationsWithTemplates(self):
         jsonStr = self.gateway.getValidActionObjectCombinationsJSON()
         data = json.loads(jsonStr)
@@ -153,16 +158,16 @@ class ScienceWorldEnv:
     def getAllObjectTypesLUTJSON(self):
         jsonStr = self.gateway.getAllObjectTypesLUTJSON()
         data = json.loads(jsonStr)
-        return data        
+        return data
 
     # Get a LUT of {object_id: {type_id, referent:[]} } tuples
     def getAllObjectIdsTypesReferentsLUTJSON(self):
         jsonStr = self.gateway.getAllObjectIdsTypesReferentsLUTJSON()
         data = json.loads(jsonStr)
-        return data        
+        return data
 
     # Get possible action/object combinations
-    def getPossibleActionObjectCombinations(self):        
+    def getPossibleActionObjectCombinations(self):
         combinedJSON = self.gateway.getPossibleActionObjectCombinationsJSON()
         data = json.loads(combinedJSON)
         templates = data['templates']
@@ -178,17 +183,17 @@ class ScienceWorldEnv:
 
     # Get the vocabulary of the model (at the current state)
     def getVocabulary(self):
-        vocab = set()        
+        vocab = set()
 
         # Action vocabulary
         for actionStr in self.getPossibleActions():
             for word in actionStr.split(" "):
                 vocab.add(word)
 
-        # Object vocabulary (keep as compound nouns?)                    
+        # Object vocabulary (keep as compound nouns?)
         vocabObjects = self.getPossibleObjects()
         vocab = vocab.union( set(vocabObjects) )
-        
+
         return vocab
 
 
@@ -205,7 +210,7 @@ class ScienceWorldEnv:
         historyStr = self.gateway.getRunHistoryJSON()
         #print("historyStr: " + str(historyStr))
         jsonOut = json.loads(historyStr)
-        return jsonOut        
+        return jsonOut
 
 
     # History saving (provides an API to do this, so it's consistent across agents)
@@ -222,12 +227,12 @@ class ScienceWorldEnv:
         # Save history
 
         # Create verbose filename
-        filenameOut = filenameOutPrefix 
+        filenameOut = filenameOutPrefix
         keys = sorted(self.runHistories.keys())
-        if (len(keys) > 0):            
+        if (len(keys) > 0):
             keyFirst = keys[0]
             keyLast = keys[-1]
-            filenameOut += "-" + str(keyFirst) + "-" + str(keyLast) 
+            filenameOut += "-" + str(keyFirst) + "-" + str(keyLast)
 
         filenameOut += ".json"
 
@@ -236,16 +241,16 @@ class ScienceWorldEnv:
         with open(filenameOut, 'w') as outfile:
             #print(type(self.runHistories))
             json.dump(self.runHistories, outfile, sort_keys=True, indent=4)
-    
+
     def getRunHistorySize(self):
         return len(self.runHistories)
 
     def clearRunHistories(self):
         self.runHistories = {}
 
-    # A one-stop function to handle saving. 
+    # A one-stop function to handle saving.
     def saveRunHistoriesBufferIfFull(self, filenameOutPrefix, maxPerFile=1000, forceSave=False):
-        if ((self.getRunHistorySize() >= maxPerFile) or (forceSave == True)):            
+        if ((self.getRunHistorySize() >= maxPerFile) or (forceSave == True)):
             self.saveRunHistories(filenameOutPrefix)
             self.clearRunHistories()
 
@@ -263,13 +268,13 @@ class ScienceWorldEnv:
         return self.gateway.getVariationsTest()
 
     def getRandomVariationTrain(self):
-        return self.gateway.getRandomVariationTrain()    
+        return self.gateway.getRandomVariationTrain()
 
     def getRandomVariationDev(self):
-        return self.gateway.getRandomVariationDev()    
+        return self.gateway.getRandomVariationDev()
 
     def getRandomVariationTest(self):
-        return self.gateway.getRandomVariationTest()  
+        return self.gateway.getRandomVariationTest()
 
 
     # Step
@@ -288,11 +293,11 @@ class ScienceWorldEnv:
         #print("score: " + str(score))
         #print("moves: " + str(numMoves))
 
-        # Mirror of Jericho API        
-        infos = {'moves': numMoves, 
-                 'score': score, 
-                 'look': self.look(), 
-                 'inv': self.inventory(), 
+        # Mirror of Jericho API
+        infos = {'moves': numMoves,
+                 'score': score,
+                 'look': self.look(),
+                 'inv': self.inventory(),
                  'taskDesc': self.taskdescription(),
                  'valid': self.getValidActionObjectCombinations() }
                  #'valid': ['wait1']}
@@ -306,15 +311,15 @@ class ScienceWorldEnv:
 
 
     # Special actions that are "free" (consume zero time)
-    def look(self):        
+    def look(self):
         observation = self.gateway.freeActionLook()
         return observation
 
-    def inventory(self):        
+    def inventory(self):
         observation = self.gateway.freeActionInventory()
         return observation
 
-    def taskdescription(self):        
+    def taskdescription(self):
         observation = self.gateway.freeActionTaskDesc()
         return observation
 
@@ -354,12 +359,12 @@ class BufferedHistorySaver:
         # Save history
 
         # Create verbose filename
-        filenameOut = self.filenameOutPrefix 
+        filenameOut = self.filenameOutPrefix
         keys = sorted(self.runHistories.keys())
-        if (len(keys) > 0):            
+        if (len(keys) > 0):
             keyFirst = keys[0]
             keyLast = keys[-1]
-            filenameOut += "-" + str(keyFirst) + "-" + str(keyLast) 
+            filenameOut += "-" + str(keyFirst) + "-" + str(keyLast)
 
         filenameOut += ".json"
 
@@ -368,15 +373,15 @@ class BufferedHistorySaver:
         with open(filenameOut, 'w') as outfile:
             #print(type(self.runHistories))
             json.dump(self.runHistories, outfile, sort_keys=True, indent=4)
-    
+
     def getRunHistorySize(self):
         return len(self.runHistories)
 
     def clearRunHistories(self):
         self.runHistories = {}
 
-    # A one-stop function to handle saving. 
+    # A one-stop function to handle saving.
     def saveRunHistoriesBufferIfFull(self, maxPerFile=1000, forceSave=False):
-        if ((self.getRunHistorySize() >= maxPerFile) or (forceSave == True)):            
+        if ((self.getRunHistorySize() >= maxPerFile) or (forceSave == True)):
             self.saveRunHistories()
             self.clearRunHistories()

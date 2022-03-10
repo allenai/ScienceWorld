@@ -7,7 +7,7 @@
 #   pip install -U pywebio                          (for web server)
 
 
-from scienceworld_python_api import ScienceWorldEnv
+from scienceworld import ScienceWorldEnv
 import argparse
 import random
 import timeit
@@ -255,7 +255,7 @@ def userConsole(args):
 #
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--jar_path", type=str, default="scienceworld-1.0.jar")
+    parser.add_argument("--jar_path", type=str)
     parser.add_argument("--task_num", type=int, default=13)
     parser.add_argument("--var_num", type=int, default=0)    
     parser.add_argument("--env_step_limit", type=int, default=100)    
