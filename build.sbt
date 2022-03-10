@@ -3,6 +3,8 @@ name := "scienceworld-scala"
 version := "1.0"
 
 scalaVersion := "2.12.9"
+sbtVersion := "1.3.9"
+
 
 resolvers += "jetbrains-intellij-dependencies" at "https://packages.jetbrains.team/maven/p/ij/intellij-dependencies"
 
