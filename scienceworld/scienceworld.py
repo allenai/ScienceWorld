@@ -72,6 +72,12 @@ class ScienceWorldEnv:
         self.scriptFilename = taskName
 
         print("Load: " + self.scriptFilename + " (variation: " + str(variationIdx) + ")" + " (simplifications: " + simplificationStr + ")")
+
+        is_electrical_task = "power-component" in taskName or "conductivity" in taskName
+        if is_electrical_task and "noElectricalAction" in simplificationStr:
+            msg = "Invalid simplification. Task '{}' requires electrical actions but '--no-electrical' was provided."
+            raise ValueError(msg.format(taskName))
+
         self.gateway.load(self.scriptFilename, variationIdx, simplificationStr, generateGoldPath)
 
 
@@ -324,7 +330,6 @@ class ScienceWorldEnv:
     def getGoalProgressStr(self):
         goalStr = self.gateway.getGoalProgressStr()
         return goalStr
-
 
 
 class BufferedHistorySaver:
