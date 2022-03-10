@@ -82,13 +82,23 @@ def randomModel(args):
                 break
 
             # Randomly select action        
-            templates, lut = env.getPossibleActionObjectCombinations()
-            print(list(lut.keys())[-1])
+
+            ## Any action (valid or not)
+            #templates, lut = env.getPossibleActionObjectCombinations()            
             #print("Possible action/object combinations: " + str(templates))
             #print("Object IDX to Object Referent LUT: " + str(lut))
-            randomTemplate = random.choice( templates )        
-            print("Next random action: " + str(randomTemplate))
-            userInputStr = randomTemplate["action"]
+            #randomTemplate = random.choice( templates )        
+            #print("Next random action: " + str(randomTemplate))
+            #userInputStr = randomTemplate["action"]
+
+            ## Only valid actions
+            validActions = env.getValidActionObjectCombinationsWithTemplates()
+            randomAction = random.choice( validActions )        
+            print("Next random action: " + str(randomAction))
+            userInputStr = randomAction["action"]
+
+                        
+            print(list(lut.keys())[-1])
 
             # Sanitize input
             userInputStr = userInputStr.lower().strip()
@@ -122,6 +132,7 @@ def randomModel(args):
     print ("---------------------------------------------------------------------")
     print (" Summary (Random Agent)")
     print (" Task " + str(taskIdx) + ": " + taskName)
+    print (" Simplifications: " + str(simplificationStr))
     print ("---------------------------------------------------------------------")
     print (" Epsiode scores: " + str(finalScores))    
     print (" Average episode score: " + str(avg))
