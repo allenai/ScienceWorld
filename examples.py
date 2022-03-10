@@ -1,83 +1,53 @@
 #
 #   Examples
 #
-#   conda create --name virtualenv-scala python=3.8
-#   conda activate virtualenv-scala
+#   conda create --name scienceworld python=3.8
+#   conda activate scienceworld
 #   pip install py4j                                (for scala-python interface)
 #   pip install -U pywebio                          (for web server)
 
 
-from python_api import VirtualEnv
+from scienceworld_python_api import ScienceWorldEnv
 import random
 import timeit
 import time
 
-def speedTest(jarPath:str):
+#
+#   Example random agent -- randomly picks an action at each step.
+#
+def randomModel(jarPath:str, taskIdx, simplificationStr="easy"):
     exitCommands = ["quit", "exit"]
 
-    # Initialize environment    
-    env = VirtualEnv("", jarPath, threadNum = 0)
-    taskNames = env.getTaskNames()
-    taskName = taskNames[0]        # Just get first task    
-    maxVariations = env.getMaxVariations(taskName)
-    randVariationIdx = random.randrange(0, maxVariations)           # Pick a random variation
-    env.load(taskName, randVariationIdx)
-    initialObs, initialDict = env.reset()
+    numEpisodes = 5        
 
-    numEpochs = 1000
-
-    start = timeit.default_timer()
-    userInputStr = "look around"        # First action
-    for i in range(0, numEpochs):
-        # Send user input, get response    
-        observation, score, isCompleted, _ = env.step(userInputStr)
-        
-    end = timeit.default_timer()
-    deltaTime = end - start
-    print("Runtime: " + str(deltaTime) + " seconds")
-    print("Rate: " + str(numEpochs / deltaTime) + " epochs/second")
-
-    print("Shutting down server...")    
-    #env.shutdown()
-
-    print("Completed.")
-
-# Example user input console, to play through a game. 
-def randomModel(jarPath:str):
-    exitCommands = ["quit", "exit"]
-
-    numEpisodes = 25
-
-    simplificationStr = ""
-    taskIdx = 13
+    # Keep track of the agent's final scores
+    finalScores = []
 
     # Initialize environment
-    env = VirtualEnv("", jarPath, envStepLimit = 100, threadNum = 0)
+    env = ScienceWorldEnv("", jarPath, envStepLimit = 100, threadNum = 0)
     taskNames = env.getTaskNames()
     taskName = taskNames[taskIdx]        # Just get first task    
     maxVariations = env.getMaxVariations(taskName)
+    print("Task Names: " + str(taskNames))
 
-    for episodeIdx in range(0, numEpisodes):
-
-        randVariationIdx = random.randrange(0, maxVariations)           # Pick a random variation
+    # Start running episodes
+    for episodeIdx in range(0, numEpisodes):        
+        # Pick a random task variation
+        randVariationIdx = random.randrange(0, maxVariations)
         env.load(taskName, randVariationIdx, simplificationStr)
 
+        # Reset the environment
         initialObs, initialDict = env.reset()
-
-        print("Task Names: " + str(taskNames))
-
+        
+        # Example accessors
         print("Possible actions: " + str(env.getPossibleActions()) )
         print("Possible objects: " + str(env.getPossibleObjects()) )
         templates, lut = env.getPossibleActionObjectCombinations()
-
-        #print("Possible action/object combinations: " + str(templates))
-        #print("Object IDX to Object Referent LUT: " + str(lut))
-
+        print("Possible action/object combinations: " + str(templates))
+        print("Object IDX to Object Referent LUT: " + str(lut))
         print("Task Name: " + taskName)
         print("Task Variation: " + str(randVariationIdx) + " / " + str(maxVariations))
-        print("Task Description: " + str(env.getTaskDescription()) )    
-        
-
+        print("Task Description: " + str(env.getTaskDescription()) )        
         print("look: " + str(env.look()) )
         print("inventory: " + str(env.inventory()) )
         print("taskdescription: " + str(env.taskdescription()) )
@@ -88,25 +58,19 @@ def randomModel(jarPath:str):
         curIter = 0
         maxIter = 10
 
+        # Run one episode until we reach a stopping condition (including exceeding the maximum steps)
         userInputStr = "look around"        # First action
-        while (userInputStr not in exitCommands) and (isCompleted == False) and (curIter < maxIter):
+        while (userInputStr not in exitCommands) and (isCompleted == False):
             print("----------------------------------------------------------------")
-            print ("Iteration: " + str(curIter))
-
-            ## DEBUG
-            if (curIter % 30 == 0 and curIter != 0):
-                initialObs, initialDict = env.reset()
-                
-                print("RESETTING")
-                print(initialObs)
-
+            print ("Step: " + str(curIter))
 
             # Send user input, get response
-            observation, score, isCompleted, _ = env.step(userInputStr)
+            observation, score, isCompleted, info = env.step(userInputStr)
             print("\n>>> " + observation)
             print("Score: " + str(score))
             print("isCompleted: " + str(isCompleted))
 
+            # The environment will makke isCompleted `True` when a stop condition has happened, or the maximum number of steps is reached.
             if (isCompleted):
                 break
 
@@ -115,9 +79,8 @@ def randomModel(jarPath:str):
             print(list(lut.keys())[-1])
             #print("Possible action/object combinations: " + str(templates))
             #print("Object IDX to Object Referent LUT: " + str(lut))
-
             randomTemplate = random.choice( templates )        
-            print(randomTemplate)
+            print("Next random action: " + str(randomTemplate))
             userInputStr = randomTemplate["action"]
 
             # Sanitize input
@@ -126,23 +89,32 @@ def randomModel(jarPath:str):
 
             curIter += 1
 
-            #if (curIter > 30):
-            #    time.sleep(1)
 
+        # Episode finished -- Record the final score
+        finalScores.append(score)
             
-        # Report progress of model
-        if (curIter == maxIter):
-            print("Maximum number of iterations reached (" + str(maxIter) + ")")
+        # Report progress of model        
         print ("Final score: " + str(score))
-        print ("isCompleted: " + str(isCompleted))
+        print ("isCompleted: " + str(isCompleted))        
 
         # Save history -- and when we reach maxPerFile, export them to file
         filenameOutPrefix = "savehistories-task" + str(taskIdx)        
         env.storeRunHistory(episodeIdx, notes = {'text':'my notes here'} )
-        env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=10)
+        env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=100)
 
     # Episodes are finished -- manually save any last histories still in the buffer
-    env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=10, forceSave=True)
+    env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=100, forceSave=True)
+
+    # Show final episode scores to user: 
+    print ("")
+    print ("---------------------------------------------------------------------")
+    print (" Summary")
+    print ("---------------------------------------------------------------------")
+    print (" Epsiode scores: " + str(finalScores))
+    avg = sum(finalScores) / len(finalScores)
+    print (" Average episode score: " + str(avg))
+    print ("---------------------------------------------------------------------")
+    print ("")
 
     print("Shutting down server...")    
     env.shutdown()
@@ -157,7 +129,7 @@ def userConsole(jarPath:str):
     simplificationStr = ""
 
     # Initialize environment
-    env = VirtualEnv("", jarPath, envStepLimit = 100, threadNum = 0)
+    env = ScienceWorldEnv("", jarPath, envStepLimit = 100, threadNum = 0)
     taskNames = env.getTaskNames()
     taskName = taskNames[0]        # Just get first task    
     maxVariations = env.getMaxVariations(taskName)
@@ -238,10 +210,10 @@ def userConsole(jarPath:str):
 #   Main
 #
 def main():    
-    jarPath = "virtualenv-scala-assembly-1.0.jar"
-    #jarPath = "/home/ruoyao/Documents/projects/virtualenv-scala2/python-api/virtualenv-scala-assembly-1.0.jar"
+    jarPath = "scienceworld-1.0.jar"    
 
     print("Virtual Text Environment API demo")
+    simplificationStr = "easy"
 
     # Run a user console
     #userConsole(jarPath)
@@ -250,7 +222,7 @@ def main():
     #speedTest(jarPath)
 
     # Run a model that chooses random actions until successfully reaching the goal
-    randomModel(jarPath)
+    randomModel(jarPath, taskIdx=13, simplificationStr=simplificationStr)
 
     print("Exiting.")
 

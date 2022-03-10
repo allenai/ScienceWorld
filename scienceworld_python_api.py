@@ -1,7 +1,7 @@
 # python-api.py
 #
-#   conda create --name virtualenv-scala python=3.8
-#   conda activate virtualenv-scala
+#   conda create --name scienceworld python=3.8
+#   conda activate scienceworld
 #   pip install py4j                                (for scala-python interface)
 #   pip install -U pywebio                          (for web server)
 
@@ -12,7 +12,7 @@ import time
 import json
 
 
-class VirtualEnv:
+class ScienceWorldEnv:
 
     #
     # Constructor
@@ -229,7 +229,7 @@ class VirtualEnv:
 
         filenameOut += ".json"
 
-        print("* Saving run history ( " + str(filenameOut) + ")...")
+        print("* Saving run history (" + str(filenameOut) + ")...")
 
         with open(filenameOut, 'w') as outfile:
             #print(type(self.runHistories))
