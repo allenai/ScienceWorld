@@ -19,7 +19,7 @@ object UniqueTypeID {
   def getID(key:String):Long = {
     // Case 1: Existing ID
     if (lut.contains(key)) return lut(key)
-    
+
     // Case 2: Add new
     return this.add(key)
   }
