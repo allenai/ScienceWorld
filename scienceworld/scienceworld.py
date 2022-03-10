@@ -60,9 +60,7 @@ class ScienceWorldEnv:
     # Launches the PY4J server
     def launchServer(self, serverPath):
         print("Launching ScienceWorld Server (Port " + str(self.portNum) + ") -- this may take a moment.")
-        # /home/ruoyao/Documents/projects/virtualenv-scala2/python-api/virtualenv-scala-assembly-1.0.jar
         cmd = "nohup java -cp " + serverPath + " scienceworld.runtime.pythonapi.PythonInterface " + str(self.portNum) + " >/dev/null 2>&1 &"
-        #"nohup usr/local/bin/otherscript.pl {0} >/dev/null 2>&1 &", shell=True
 
         subprocess.Popen(cmd, shell=True)
         # The sleep command here is to give time for the server process to spawn.
@@ -71,7 +69,6 @@ class ScienceWorldEnv:
 
     # Ask the simulator to load an environment from a script
     def load(self, taskName, variationIdx, simplificationStr, generateGoldPath=False):
-        # TODO: Error handling
         self.scriptFilename = taskName
 
         print("Load: " + self.scriptFilename + " (variation: " + str(variationIdx) + ")" + " (simplifications: " + simplificationStr + ")")
