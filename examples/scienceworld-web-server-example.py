@@ -1,4 +1,8 @@
-# scienceworld-web-server.py
+# scienceworld-web-server-example.py
+#
+#   Uses pywebio to open a simple web-based interface for running ScienceWorld in the web browser. 
+#   After running, open a web browser and point to 'localhost:8080'. 
+#   It may take a 5-10 seconds to initialize the server on the first run. 
 #
 #   pip install -U pywebio                          (for web server)
 
