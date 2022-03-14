@@ -1,6 +1,6 @@
 # ScienceWorld
 
-ScienceWorld is a text-based virtual environment centered around accomplishing tasks from the standardized elementary science curriculum.  This code accompanies the paper [ScienceWorld: Is your Textual Agent Smarter than a 5th grader?](http://www.google.com).
+ScienceWorld is a text-based virtual environment centered around accomplishing tasks from the standardized elementary science curriculum.  This code accompanies the paper [ScienceWorld: Is your Textual Agent Smarter than a 5th grader?](ScienceWorld-preprint.pdf).
 
 # Quickstart
 **Before running:** You will have to have `Java 1.8+` installed on your system (shipped with most linux distributions).
