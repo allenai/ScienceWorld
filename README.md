@@ -29,6 +29,21 @@ A web server demo is also available, that allows running a ScienceWorld user con
 
 ![screenshot](examples/web_demo_screenshot.png)
 
+To run the web server demo:
+```bash
+conda create --name scienceworld python=3.8
+conda activate scienceworld
+pip install .
+pip install -U pywebio
+```
+
+Run the web server:
+> python examples/scienceworld-web-server-example.py
+
+Point your web browser to:
+`localhost:8080`
+
+
 # ScienceWorld Design
 ScienceWorld is written in Scala (2.12.9), and compiles using `sbt` into a JAR file that is run with `java`.  For convenience, a `python` API is provided, which interfaces using the `py4j` package.
 
