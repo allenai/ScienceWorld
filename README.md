@@ -2,6 +2,10 @@
 
 ScienceWorld is a text-based virtual environment centered around accomplishing tasks from the standardized elementary science curriculum.  This code accompanies the paper [ScienceWorld: Is your Textual Agent Smarter than a 5th grader?](ScienceWorld-preprint.pdf).
 
+# Examples
+
+Example play-through transcripts are available at: https://sciworld.apps.allenai.org/explore
+
 # Quickstart
 **Before running:** You will have to have `Java 1.8+` installed on your system (shipped with most linux distributions).
 
@@ -61,8 +65,6 @@ The subtasks and their associated subtask indices are listed below.  Subtask ind
 | 27 | task-8-inclined-plane-friction-(unnamed-surfaces)         |
 | 28 | task-9-mendellian-genetics-(known-plant)                  |
 | 29 | task-9-mendellian-genetics-(unknown-plant)                |
-
-# Examples
 
 
 # Citation
