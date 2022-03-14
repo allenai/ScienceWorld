@@ -23,6 +23,12 @@ Run a user console where you can interact with the environment, on task 3 (chang
 > python examples/human.py --task-num=3 --num-episodes=5
 
 
+# Web Server Demo
+
+A web server demo is also available, that allows running a ScienceWorld user console that can be interacted with in a web browser. 
+
+![screenshot](examples/web_demo_screenshot.png)
+
 # ScienceWorld Design
 ScienceWorld is written in Scala (2.12.9), and compiles using `sbt` into a JAR file that is run with `java`.  For convenience, a `python` API is provided, which interfaces using the `py4j` package.
 
