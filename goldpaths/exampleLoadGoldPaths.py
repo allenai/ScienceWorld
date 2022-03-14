@@ -1,11 +1,11 @@
-# loadGoldPaths1.py
+# exampeLoadGoldPaths.py
+#
+# This example illustrates how to traverse the gold (oracle) paths for ScienceWorld.
+#
 
 import json
 
-
-#filenameIn = "../goldsequences-7-8-11-12-13-14.json"
-#filenameIn = "../goldsequences-almostworking-some-errors.json"
-filenameIn = "../goldsequences-5.json"
+filenameIn = "goldsequences-0-1-2-3.json"
 f = open(filenameIn)
 data = json.load(f)
 
@@ -37,17 +37,16 @@ for taskIdx in data.keys():
         lineOut = str(taskIdx) + "\t" + str(variationIdx) + "\t" + str(fold) + "\t" + str(taskDescription)
         linesOut.append(lineOut)
 
-        # for step in path:
-        #     action = step['action']
-        #     obs = step['observation']
-        #     score = step['score']
-        #     isCompleted = step['isCompleted']
-
-        #     print("> " + str(action))
-        #     print(obs)
-        #     print("")        
+        for step in path:
+            action = step['action']
+            obs = step['observation']
+            score = step['score']
+            isCompleted = step['isCompleted']
+            print("> " + str(action))
+            print(obs)
+            print("")        
  
-        #     numMoves +=1
+            numMoves +=1
         numSequences += 1
 
 
@@ -57,9 +56,3 @@ print("numTasks: " + str(len(data.keys())))
 print("numSequences: " + str(numSequences))
 print("numMoves: " + str(numMoves))
 
-
-filenameOut = "debug1.tsv"
-print("Writing : " + filenameOut)
-with open(filenameOut, 'w') as f:
-    for item in linesOut:
-        f.write("%s\n" % item)
