@@ -1,29 +1,22 @@
 # scienceworld-web-server-example.py
 #
-#   Uses pywebio to open a simple web-based interface for running ScienceWorld in the web browser. 
-#   After running, open a web browser and point to 'localhost:8080'. 
-#   It may take a 5-10 seconds to initialize the server on the first run. 
+#   Uses pywebio to open a simple web-based interface for running ScienceWorld in the web browser.
+#   After running, open a web browser and point to 'localhost:8080'.
+#   It may take a 5-10 seconds to initialize the server on the first run.
 #
 #   pip install -U pywebio                          (for web server)
 
-from py4j.java_gateway import JavaGateway, GatewayParameters
-import subprocess
-import random
-import timeit
-import time
 import json
-import py4j
+import time
+import argparse
 
 from datetime import datetime
 
 from scienceworld import ScienceWorldEnv
 
-# Web interface
-from pywebio.input import *
-from pywebio.output import *
-from pywebio.input import textarea, input
-from pywebio.session import *
-from pywebio import start_server
+import pywebio
+import pywebio.output as pywebio_out
+
 
 class OutputLog:
     #
@@ -69,7 +62,7 @@ def saveJSONHistory(history:list):
     taskName = history[-1]['taskName']
     varIdx = history[-1]['variationIdx']
     score = history[-1]['score']
-    
+
     result = "success"
     if (score != 1.0):
         result = "failure"
@@ -89,32 +82,32 @@ def saveJSONHistory(history:list):
 #
 #   Web server main
 #
-def app():    
+def app():
     exitCommands = ["quit", "exit"]
 
-    simplificationStr = ""    
+    simplificationStr = ""
     htmlLog = OutputLog()
-    
-    set_env(title='ScienceWorld Demo', auto_scroll_bottom=True)    
 
-    # Initialize environment    
+    pywebio.session.set_env(title='ScienceWorld Demo', auto_scroll_bottom=True)
+
+    # Initialize environment
     env = ScienceWorldEnv("", serverPath=None, envStepLimit = 100, threadNum = 5)
 
-    put_markdown('## Science World (Text Simulation)')
+    pywebio_out.put_markdown('## Science World (Text Simulation)')
     #put_button("Click here to export transcript", onclick=lambda: , color='success', outline=True)
 
     htmlLog.addHeading("Science World (Text Simulation)")
-    htmlLog.addHorizontalRule()    
+    htmlLog.addHorizontalRule()
 
-    taskName = select("Select a task:", env.getTaskNames())    
+    taskName = pywebio.input.select("Select a task:", env.getTaskNames())
     maxVariations = env.getMaxVariations(taskName)
 
-    #variationIdx = slider("Task Variation: ", min_value=0, max_value=(maxVariations-1))    
-    variationIdx = input('Enter the task variation (min = 0, max = ' + str(maxVariations) + "):")
+    #variationIdx = slider("Task Variation: ", min_value=0, max_value=(maxVariations-1))
+    variationIdx = pywebio.input.input('Enter the task variation (min = 0, max = ' + str(maxVariations) + "):")
     variationIdx = int(variationIdx) if variationIdx.isdigit() else 0
 
     # Load environment
-    env.load(taskName, variationIdx, simplificationStr)    
+    env.load(taskName, variationIdx, simplificationStr)
     initialObs, initialDict = env.reset()
     #time.sleep(1)
 
@@ -122,7 +115,7 @@ def app():
     #print("Possible objects: " + str(env.getPossibleObjects()) )
     #print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
 
-    put_table([
+    pywebio_out.put_table([
         ["Task", env.getTaskDescription()],
         ["Variation", str(variationIdx) + " / " + str(maxVariations)]
     ])
@@ -138,15 +131,15 @@ def app():
     while (userInputStr not in exitCommands):
         #put_markdown("### Move " + str(env.getNumMoves()) )
         #htmlLog.addSubheading("Move " + str(env.getNumMoves()))
-        put_markdown("### Move " + str(consoleMoveCount) )
+        pywebio_out.put_markdown("### Move " + str(consoleMoveCount) )
         htmlLog.addSubheading("Move " + str(consoleMoveCount))
 
         # Send user input, get response
-        observation, score, isCompleted, additionalInfo = env.step(userInputStr)        
-        
+        observation, score, isCompleted, additionalInfo = env.step(userInputStr)
+
         # Output (server)
-        put_text(observation)
-        put_table([
+        pywebio_out.put_text(observation)
+        pywebio_out.put_table([
             ["Score:", str(score)],
             ["isCompleted:", str(isCompleted)]
         ])
@@ -157,27 +150,28 @@ def app():
             htmlLog.addStr("<font color=green>Task Score: " + str(score) + "  (isCompleted: " + str(isCompleted) + ") </font><br><br>")
         else:
             htmlLog.addStr("<font color=grey>Task Score: " + str(score) + "  (isCompleted: " + str(isCompleted) + ") </font><br><br>")
-        
+
         logFilename = "log-" + taskName + ".html"
-        put_file(logFilename, htmlLog.getHTML().encode(), '(click here to export transcript)')
+        pywebio_out.put_file(logFilename, htmlLog.getHTML().encode(), '(click here to export transcript)')
 
         #print("\n" + observation)
         #print("Score: " + str(score))
         #print("isCompleted: " + str(isCompleted))
 
         # Get user input
-        userInputStr = input('Enter your action (`help` for list of actions, `objects` for list of object referents) ')
-        
+        userInputStr = pywebio.input.input('Enter your action (`help` for list of actions, `objects` for list of object referents) ')
+
+
         # Sanitize input
         userInputStr = userInputStr.lower().strip()
 
-        put_text("> " + userInputStr)
+        pywebio_out.put_text("> " + userInputStr)
         htmlLog.addStr("User Input:<br>")
         htmlLog.addStr("<i> > " + userInputStr + "</i><br>")
-    
+
         # Record history
         packed = {
-            'observation': observation, 
+            'observation': observation,
             'score': score,
             'isCompleted': isCompleted,
             'userInput': userInputStr,
@@ -188,23 +182,34 @@ def app():
             'variationIdx': variationIdx,
             'consoleMoveCount': consoleMoveCount,
         }
-        historyRecording.append(packed) 
-        
+        historyRecording.append(packed)
+
         # If this session is completed, save the recording
         if (isCompleted == True):
             saveJSONHistory(historyRecording)
 
         consoleMoveCount += 1
 
-        time.sleep(1)    
+        time.sleep(1)
 
 
-    print("Shutting down server...")    
+    print("Shutting down server...")
     env.shutdown()
 
     print("Completed.")
 
 
+def parse_args():
+    desc = "Launch a webserver to interact with ScienceWorld from your browser."
+    parser = argparse.ArgumentParser(desc)
+    parser.add_argument("--port", type=int, default=8080,
+                        help="Port to use for the webserver.")
+    parser.add_argument("--debug", action="store_true",
+                        help="Run webserver in debug mode.")
+
+    return parser.parse_args()
+
 
 if __name__ == '__main__':
-    start_server(app, port=8080, debug=True)
+    args = parse_args()
+    pywebio.start_server(app, port=args.port, debug=args.debug)

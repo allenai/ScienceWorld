@@ -2,6 +2,8 @@
 
 ScienceWorld is a text-based virtual environment centered around accomplishing tasks from the standardized elementary science curriculum.  This code accompanies the paper [ScienceWorld: Is your Textual Agent Smarter than a 5th grader?](ScienceWorld-preprint.pdf).
 
+<h1 align="center"><img src="media/scienceworld_environment.png" width="75%"/></h1>
+
 # Examples
 
 Example play-through transcripts are available at: https://sciworld.apps.allenai.org/explore
@@ -25,16 +27,15 @@ Run a user console where you can interact with the environment, on task 3 (chang
 
 # Web Server Demo
 
-A web server demo is also available, that allows running a ScienceWorld user console that can be interacted with in a web browser. 
+A web server demo is also available, that allows running a ScienceWorld user console that can be interacted with in a web browser.
 
-![screenshot](examples/web_demo_screenshot.png)
+<h1 align="center"><img src="media/web_demo_screenshot.png" width="75%"/></h1>
 
 To run the web server demo:
 ```bash
 conda create --name scienceworld python=3.8
 conda activate scienceworld
-pip install .
-pip install -U pywebio
+pip install .[webserver]
 ```
 
 Run the web server:

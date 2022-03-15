@@ -14,7 +14,6 @@ if not os.path.isfile(JAR_PATH):
 
 setup(name='scienceworld',
     version='1.0.0',
-    install_requires=open('requirements.txt').readlines(),
     description='ScienceWorld: An interactive text environment to study AI agents on science related tasks.',
     author='Peter Jansen',
     packages=['scienceworld'],
@@ -24,4 +23,8 @@ setup(name='scienceworld',
     url="https://scienceworld.github.io",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
+    install_requires=open('requirements.txt').readlines(),
+    extras_require={
+        'webserver': open('requirements.txt').readlines() + ['pywebio'],
+    },
 )
