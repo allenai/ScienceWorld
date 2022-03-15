@@ -6,6 +6,8 @@ from setuptools import setup
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
 JAR_FILE = 'scienceworld-1.0.jar'
 JAR_PATH = os.path.join(BASEPATH, 'scienceworld', JAR_FILE)
+OBJECTS_LUT_FILE = "object_type_ids.tsv"
+
 # TODO: build jar using package.sh?
 
 if not os.path.isfile(JAR_PATH):
@@ -13,13 +15,13 @@ if not os.path.isfile(JAR_PATH):
     sys.exit(1)
 
 setup(name='scienceworld',
-    version='1.0.0rc1',
+    version='1.0.0rc2',
     description='ScienceWorld: An interactive text environment to study AI agents on accomplishing tasks from the standardized elementary science curriculum.',
     author='Peter Jansen',
     packages=['scienceworld'],
     include_package_data=True,
     package_dir={'scienceworld': 'scienceworld'},
-    package_data={'scienceworld': [JAR_FILE]},
+    package_data={'scienceworld': [JAR_FILE, OBJECTS_LUT_FILE]},
     url="https://scienceworld.github.io",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

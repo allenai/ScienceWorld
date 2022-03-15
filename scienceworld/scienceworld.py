@@ -62,7 +62,7 @@ class ScienceWorldEnv:
         print("Launching ScienceWorld Server (Port " + str(self.portNum) + ") -- this may take a moment.")
         cmd = "nohup java -cp " + serverPath + " scienceworld.runtime.pythonapi.PythonInterface " + str(self.portNum) + " >/dev/null 2>&1 &"
 
-        subprocess.Popen(cmd, shell=True)
+        subprocess.Popen(cmd, cwd=BASEPATH, shell=True)
         # The sleep command here is to give time for the server process to spawn.
         # If you are spawning many threads simultaneously, you may need to increase this time.
         time.sleep(5)
