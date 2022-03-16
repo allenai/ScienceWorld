@@ -2,11 +2,24 @@
 
 ScienceWorld is a text-based virtual environment centered around accomplishing tasks from the standardized elementary science curriculum.  This code accompanies the paper [ScienceWorld: Is your Textual Agent Smarter than a 5th grader?](ScienceWorld-preprint.pdf).
 
-<h1 align="center"><img src="https://github.com/allenai/ScienceWorld/blob/main/media/scienceworld_environment.png" width="75%"/></h1>
+<h3 align="center"><img src="https://github.com/allenai/ScienceWorld/blob/main/media/scienceworld_environment.png" width="75%"/></h3>
 
-# Examples
+### Examples
 
-Example play-through transcripts are available at: https://sciworld.apps.allenai.org/explore
+Read some of the playthrough transcripts available at: https://sciworld.apps.allenai.org/explore
+
+### Citation
+```
+@misc{scienceworld2022,
+    title={ScienceWorld: Is your Agent Smarter than a 5th Grader?},
+    author={Ruoyao Wang and Peter Jansen and Marc-Alexandre C{\^o}t{\'e} and Prithviraj Ammanabrolu},
+    year={2022},
+    eprint={2203.07540},
+    archivePrefix={arXiv},
+    primaryClass={cs.CL},
+    url={https://arxiv.org/abs/2203.07540}
+}
+```
 
 # Quickstart
 **Before running:** You will have to have `Java 1.8+` installed on your system (shipped with most linux distributions).
@@ -29,7 +42,7 @@ Run a user console where you can interact with the environment, on task 3 (chang
 
 A web server demo is also available, that allows running a ScienceWorld user console that can be interacted with in a web browser.
 
-<h1 align="center"><img src="https://github.com/allenai/ScienceWorld/blob/main/media/web_demo_screenshot.png" width="75%"/></h1>
+<h3 align="center"><img src="https://github.com/allenai/ScienceWorld/blob/main/media/web_demo_screenshot.png" width="75%"/></h3>
 
 To run the web server demo:
 ```bash
@@ -89,11 +102,8 @@ The subtasks and their associated subtask indices are listed below.  Subtask ind
 | 29 | task-9-mendellian-genetics-(unknown-plant)                |
 
 
-# Additional Documentation
+# Baseline Agents
 Coming soon!
 
-# Citation
-Bibtex
-```
-TODO
-```
+# Additional Documentation
+Coming soon!
