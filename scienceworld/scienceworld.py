@@ -287,7 +287,7 @@ class ScienceWorldEnv:
 
     # Gold action sequence
     def getGoldActionSequence(self):
-        if (self.goldPathGenerated == True):
+        if (self.goldPathGenerated == True):            
             return self.gateway.getGoldActionSequence()
         else:
             return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]

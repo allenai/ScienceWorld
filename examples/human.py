@@ -17,13 +17,15 @@ def userConsole(args):
     print("Task Names: " + str(taskNames))
 
     # Choose task
-    taskName = taskNames[taskIdx]
-    env.load(taskName, args['var_num'], simplificationStr)
+    taskName = taskNames[taskIdx]    
+    env.load(taskName, args['var_num'], simplificationStr, generateGoldPath=True)
     print("Starting Task " + str(taskIdx) + ": " + taskName)
     time.sleep(2)
 
+
     # Reset the environment
     initialObs, initialDict = env.reset()
+
 
 
     #
@@ -57,6 +59,9 @@ def userConsole(args):
     print("")
     print("----------------------------------------------------------------------------------")
     print("")
+
+
+    print("Gold Path:" + str(env.getGoldActionSequence()))
 
     print("Task Name: " + taskName)
     print("Variation: " + str(args['var_num']) + " / " + str(env.getMaxVariations(taskName)))

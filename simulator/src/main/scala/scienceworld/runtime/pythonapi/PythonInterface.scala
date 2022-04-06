@@ -33,6 +33,7 @@ class PythonInterface() {
   var simplificationStr:String = ""      // CSV delimited string of simplifications to perform to the environment
 
   var goldActionsStr = Array.empty[String]    // Sequence of gold actions for this task
+  var goldPathGenerationEnabled:Boolean = false
 
   var score:Double = 0.0
   var isComplete:Boolean = false
@@ -49,15 +50,28 @@ class PythonInterface() {
    * Load/reset/shutdown server
    */
   def load(taskStr:String, variationIdx:Int, simplificationStr:String, generateGoldPath:Boolean = false): Unit = {
+    var goldActionSequence = Array.empty[String]
+
     if (generateGoldPath) {
       // First, reset environment to new specifications
       doLoad(taskStr, variationIdx, simplificationStr)
 
+      println("* Generating Gold Path")
       // Then, compute gold path
       val (goldPath, success) = taskMaker.createGoldActions(taskStr, variationIdx, this)
+      println("* Completed Generating Gold Path")
+      println("* Gold path (length = " + goldPath.length + " actions):")
+      println("----")
+      println(goldPath.mkString("\n"))
+      println("----")
 
-      // Then, store gold path
-      this.goldActionsStr = goldPath
+      println("this.goldActionStr:")
+      println(this.goldActionsStr.mkString("\n"))
+
+      // Store gold action sequence
+      goldActionSequence = goldPath
+      this.goldPathGenerationEnabled = generateGoldPath
+
     } else {
       goldActionsStr = Array.empty[String]
     }
@@ -65,10 +79,15 @@ class PythonInterface() {
     // Then, reset environment again
     doLoad(taskStr, variationIdx, simplificationStr)
 
+    // Store gold action sequence, since 'doLoad' clears it
+    if (generateGoldPath == true) {
+      this.goldActionsStr = goldActionSequence
+    }
+
   }
 
   def reset() = {
-    this.load(this.taskStr, this.taskVariationIdx, this.simplificationStr)
+    this.load(this.taskStr, this.taskVariationIdx, this.simplificationStr, generateGoldPath = this.goldPathGenerationEnabled)
   }
 
 
