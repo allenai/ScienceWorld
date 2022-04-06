@@ -44,6 +44,9 @@ class ScienceWorldEnv:
         # Clear the run histories
         self.clearRunHistories()
 
+        # By default, set that the gold path was not generated unless the user asked for it
+        self.goldPathGenerated = False
+
     #
     #   Destructor
     #
@@ -79,6 +82,9 @@ class ScienceWorldEnv:
             raise ValueError(msg.format(taskName))
 
         self.gateway.load(self.scriptFilename, variationIdx, simplificationStr, generateGoldPath)
+
+        # Keep track of whether the gold path was generated, to generate verbose error messages
+        self.goldPathGenerated = generateGoldPath
 
 
     # Ask the simulator to reset an environment back to it's initial state
@@ -279,6 +285,12 @@ class ScienceWorldEnv:
     def getRandomVariationTest(self):
         return self.gateway.getRandomVariationTest()
 
+    # Gold action sequence
+    def getGoldActionSequence(self):
+        if (self.goldPathGenerated == True):
+            return self.gateway.getGoldActionSequence()
+        else:
+            return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]
 
     # Step
     def step(self, inputStr:str):
