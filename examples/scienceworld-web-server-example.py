@@ -135,11 +135,13 @@ def app():
         htmlLog.addSubheading("Move " + str(consoleMoveCount))
 
         # Send user input, get response
-        observation, score, isCompleted, additionalInfo = env.step(userInputStr)
+        observation, reward, isCompleted, additionalInfo = env.step(userInputStr)
+        score = additionalInfo['score']
 
         # Output (server)
         pywebio_out.put_text(observation)
         pywebio_out.put_table([
+            ["Reward:", str(reward)],
             ["Score:", str(score)],
             ["isCompleted:", str(isCompleted)]
         ])
@@ -172,6 +174,7 @@ def app():
         # Record history
         packed = {
             'observation': observation,
+            'reward': reward,
             'score': score,
             'isCompleted': isCompleted,
             'userInput': userInputStr,
