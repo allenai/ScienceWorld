@@ -15,7 +15,7 @@ if not os.path.isfile(JAR_PATH):
     sys.exit(1)
 
 setup(name='scienceworld',
-    version='1.0.0rc2',
+    version='1.0.0rc3',
     description='ScienceWorld: An interactive text environment to study AI agents on accomplishing tasks from the standardized elementary science curriculum.',
     author='Peter Jansen',
     packages=['scienceworld'],
