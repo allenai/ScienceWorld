@@ -357,7 +357,15 @@ object PathFinder {
     for (tuple <- uniqueReferents) {
       val referent = tuple._1
       val referentObj = tuple._2
-      if (referentObj == obj) return Some(referent)
+      if (referentObj == obj) {
+        //## (TODO, keep this here for a while to make sure that it throws an error if there are bad referents being generated)
+        if ((referent.length < 2) || (referent.startsWith(" ")) || (referent.contains("  "))) {
+          println("*Potential referent issue identified:* " )
+          println("referent: " + referent + "\t referentObj: " + referentObj.toStringMinimal() + " \t obj: " + obj.toStringMinimal())
+          sys.exit(1)
+        }
+        return Some(referent)
+      }
 
       //println("referent: " + referent + "\t referentObj: " + referentObj.toStringMinimal() + " \t obj: " + obj.toStringMinimal())
     }

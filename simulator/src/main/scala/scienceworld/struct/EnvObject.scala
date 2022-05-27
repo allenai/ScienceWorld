@@ -572,12 +572,14 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     }
 
     for (ref <- referents) {
-      out.add(ref.toLowerCase)
-      val container = this.getContainer()
-      if (container.isDefined) {
-        for (containerRef <- container.get.getReferents()) {
-          out.add( (ref + " in " + containerRef).toLowerCase )
-          out.add( (ref + " on " + containerRef).toLowerCase )
+      if (ref.trim.length > 0) {      // Ensure that the referent has text (PJ: May 27/2022)
+        out.add(ref.toLowerCase)
+        val container = this.getContainer()
+        if (container.isDefined) {
+          for (containerRef <- container.get.getReferents()) {
+            out.add((ref + " in " + containerRef).toLowerCase)
+            out.add((ref + " on " + containerRef).toLowerCase)
+          }
         }
       }
     }
