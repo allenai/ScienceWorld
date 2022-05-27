@@ -35,6 +35,9 @@ class ScienceWorldEnv:
         # Connect to the JVM
         self.gateway = JavaGateway(gateway_parameters=GatewayParameters(auto_field=True, port=self.portNum))
 
+        # Keep track of the last step score, to calculate reward from score
+        self.lastStepScore = 0
+
         # Load the script
         self.load(self.taskName, 0, "")
 
@@ -83,6 +86,9 @@ class ScienceWorldEnv:
 
         self.gateway.load(self.scriptFilename, variationIdx, simplificationStr, generateGoldPath)
 
+        # Reset last step score (used to calculate reward from current-previous score)
+        self.lastStepScore = 0
+
         # Keep track of whether the gold path was generated, to generate verbose error messages
         self.goldPathGenerated = generateGoldPath
 
@@ -90,6 +96,10 @@ class ScienceWorldEnv:
     # Ask the simulator to reset an environment back to it's initial state
     def reset(self):
         self.gateway.reset()
+
+        # Reset last step score (used to calculate reward from current-previous score)
+        self.lastStepScore = 0
+
         # Make first move
         observation, score, isCompleted, info = self.step("look around")
 
@@ -99,6 +109,9 @@ class ScienceWorldEnv:
     # Ask the simulator to reset an environment back to it's initial state
     def resetWithVariation(self, variationIdx, simplificationStr):
         self.load(self.scriptFilename, variationIdx, simplificationStr)
+
+        # Reset last step score (used to calculate reward from current-previous score)
+        self.lastStepScore = 0
 
         # Make first move
         observation, score, isCompleted, info = self.step("look around")
@@ -300,6 +313,11 @@ class ScienceWorldEnv:
         isCompleted = self.gateway.getCompleted()
         numMoves = self.getNumMoves()
 
+        # Calculate reward
+        reward = score - self.lastStepScore         # Calculate reward (delta score) for this step
+        self.lastStepScore = score                  # Store current score for reward calculation on the next step
+
+
         # If the number of moves exceeds the environment step limit, then set isCompleted to be true
         if (numMoves > self.envStepLimit):
             isCompleted = True
@@ -311,6 +329,7 @@ class ScienceWorldEnv:
         # Mirror of Jericho API
         infos = {'moves': numMoves,
                  'score': score,
+                 'reward': reward,
                  'look': self.look(),
                  'inv': self.inventory(),
                  'taskDesc': self.taskdescription(),
@@ -322,7 +341,8 @@ class ScienceWorldEnv:
         #print("infos:")
         #print(infos)
 
-        return observation, score, isCompleted, infos
+        #return observation, score, isCompleted, infos
+        return observation, reward, isCompleted, infos
 
 
     # Special actions that are "free" (consume zero time)
