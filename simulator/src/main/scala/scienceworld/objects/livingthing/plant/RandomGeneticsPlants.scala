@@ -71,10 +71,12 @@ class RandomGeneticsPlants(_chromosomePairs:Option[ChromosomePair] = None) exten
     if (traitPrefix.startsWith(" with a ")) {                       // If the genetic trait prefix starts with " with a ", then trim off " with a "
       traitPrefix = traitPrefix.substring(7).trim()
     }
-    for (elem <- out) {
-      out2 += elem.replaceAll(plantName, traitPrefix + " " + plantName)
+    if (traitPrefix.length > 0) {
+      for (elem <- out) {
+        out2 += elem.replaceAll(plantName, traitPrefix.trim() + " " + plantName)
+      }
+      out ++= out2
     }
-    out ++= out2
 
     // If ill, append ill referents too
     if (this.propLife.get.isSickly) {
