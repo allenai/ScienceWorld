@@ -63,7 +63,7 @@ def randomModel(args):
 
             # Send user input, get response
             observation, reward, isCompleted, info = env.step(userInputStr)
-            score = info['reward']
+            score = info['score']
 
             print("\n>>> " + observation)
             print("Reward: " + str(reward))

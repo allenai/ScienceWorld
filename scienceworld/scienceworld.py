@@ -300,14 +300,13 @@ class ScienceWorldEnv:
 
     # Gold action sequence
     def getGoldActionSequence(self):
-        if (self.goldPathGenerated == True):            
+        if (self.goldPathGenerated == True):
             return self.gateway.getGoldActionSequence()
         else:
             return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]
 
     # Step
     def step(self, inputStr:str):
-        #observation, score, isCompleted = self.gateway.step(inputStr)
         observation = self.gateway.step(inputStr)
         score = int(round(100 * self.gateway.getScore()))        # Convert from 0-1 to 0-100
         isCompleted = self.gateway.getCompleted()
@@ -322,10 +321,6 @@ class ScienceWorldEnv:
         if (numMoves > self.envStepLimit):
             isCompleted = True
 
-        #print("> " + str(inputStr))
-        #print("score: " + str(score))
-        #print("moves: " + str(numMoves))
-
         # Mirror of Jericho API
         infos = {'moves': numMoves,
                  'score': score,
@@ -334,14 +329,7 @@ class ScienceWorldEnv:
                  'inv': self.inventory(),
                  'taskDesc': self.taskdescription(),
                  'valid': self.getValidActionObjectCombinations() }
-                 #'valid': ['wait1']}
 
-        #print("API MODIFIED TO ONLY HAVE LOOK ACTION FOR BUG TESTING!!!!!!!!")
-
-        #print("infos:")
-        #print(infos)
-
-        #return observation, score, isCompleted, infos
         return observation, reward, isCompleted, infos
 
 
