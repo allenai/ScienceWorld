@@ -62,8 +62,12 @@ class PeaPlant(_chromosomePairs:Option[ChromosomePair] = None) extends Tree {
 
     // Substitute in the genetic trait string to the rest of it
     val out2 = mutable.Set[String]()
+    var traitPrefix = this.mkGeneticTraitsStr()
+    if (traitPrefix.startsWith(" with a ")) {                       // If the genetic trait prefix starts with " with a ", then trim off " with a "
+      traitPrefix = traitPrefix.substring(7).trim()
+    }
     for (elem <- out) {
-      out2 += elem.replaceAll(plantName, mkGeneticTraitsStr + " " + plantName)
+      out2 += elem.replaceAll(plantName, traitPrefix + " " + plantName)
     }
     out ++= out2
 
