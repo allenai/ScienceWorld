@@ -4,7 +4,7 @@ from setuptools import setup
 
 
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
-JAR_FILE = 'scienceworld-1.0.jar'
+JAR_FILE = 'scienceworld-1.0.1.jar'
 JAR_PATH = os.path.join(BASEPATH, 'scienceworld', JAR_FILE)
 OBJECTS_LUT_FILE = "object_type_ids.tsv"
 
@@ -15,7 +15,7 @@ if not os.path.isfile(JAR_PATH):
     sys.exit(1)
 
 setup(name='scienceworld',
-    version='1.0.0rc2',
+    version='1.0.1',
     description='ScienceWorld: An interactive text environment to study AI agents on accomplishing tasks from the standardized elementary science curriculum.',
     author='Peter Jansen',
     packages=['scienceworld'],

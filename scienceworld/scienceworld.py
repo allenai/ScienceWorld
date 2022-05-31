@@ -13,7 +13,7 @@ import time
 import json
 
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
-JAR_PATH = os.path.join(BASEPATH, 'scienceworld-1.0.jar')
+JAR_PATH = os.path.join(BASEPATH, 'scienceworld-1.0.1.jar')
 
 
 class ScienceWorldEnv:
