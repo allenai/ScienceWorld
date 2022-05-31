@@ -62,8 +62,11 @@ def randomModel(args):
             print ("Step: " + str(curIter))
 
             # Send user input, get response
-            observation, score, isCompleted, info = env.step(userInputStr)
+            observation, reward, isCompleted, info = env.step(userInputStr)
+            score = info['score']
+
             print("\n>>> " + observation)
+            print("Reward: " + str(reward))
             print("Score: " + str(score))
             print("isCompleted: " + str(isCompleted))
 

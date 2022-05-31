@@ -2,7 +2,6 @@ import os.path, sys
 
 from setuptools import setup
 
-
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
 JAR_FILE = 'scienceworld-1.0.1.jar'
 JAR_PATH = os.path.join(BASEPATH, 'scienceworld', JAR_FILE)
