@@ -13,7 +13,7 @@ import time
 import json
 
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
-JAR_PATH = os.path.join(BASEPATH, 'scienceworld-1.0.jar')
+JAR_PATH = os.path.join(BASEPATH, 'scienceworld-1.0.0.jar')
 
 
 class ScienceWorldEnv:
@@ -320,6 +320,14 @@ class ScienceWorldEnv:
         # If the number of moves exceeds the environment step limit, then set isCompleted to be true
         if (numMoves > self.envStepLimit):
             isCompleted = True
+
+        # New: Handle this in the API rather than the agent -- if the score is less than zero, then set the isCompleted flag to true. 
+        if (score < 0):
+            isCompleted = True
+
+        #print("> " + str(inputStr))
+        #print("score: " + str(score))
+        #print("moves: " + str(numMoves))
 
         # Mirror of Jericho API
         infos = {'moves': numMoves,

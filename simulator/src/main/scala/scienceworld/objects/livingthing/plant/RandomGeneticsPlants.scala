@@ -67,10 +67,16 @@ class RandomGeneticsPlants(_chromosomePairs:Option[ChromosomePair] = None) exten
 
     // Substitute in the genetic trait string to the rest of it
     val out2 = mutable.Set[String]()
-    for (elem <- out) {
-      out2 += elem.replaceAll(plantName, mkGeneticTraitsStr + " " + plantName)
+    var traitPrefix = this.mkGeneticTraitsStr()
+    if (traitPrefix.startsWith(" with a ")) {                       // If the genetic trait prefix starts with " with a ", then trim off " with a "
+      traitPrefix = traitPrefix.substring(7).trim()
     }
-    out ++= out2
+    if (traitPrefix.length > 0) {
+      for (elem <- out) {
+        out2 += elem.replaceAll(plantName, traitPrefix.trim() + " " + plantName)
+      }
+      out ++= out2
+    }
 
     // If ill, append ill referents too
     if (this.propLife.get.isSickly) {

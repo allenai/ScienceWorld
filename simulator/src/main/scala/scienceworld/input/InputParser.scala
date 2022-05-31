@@ -543,12 +543,23 @@ object InputParser {
     val uniqueReferents = this.chooseUniqueReferents(objReferents.toArray)
 
     // Step 2A: Populate an array of the unique referents (as strings)
+    var errors:Boolean = false
     val out = new ArrayBuffer[(String, EnvObject)]()
     for (i <- 0 until allObjs.length) {
       val referent = uniqueReferents(i)
+
+      //## (TODO, keep this here for a while to make sure that it throws an error if there are bad referents being generated)
+      if (referent.startsWith(" ")) {
+        println ("REFERENT STARTS WITH SPACE: '" + referent + "' for object: " + allObjs(i).toStringMinimal())
+        errors = true
+      }
+
       out.append( (referent.toLowerCase(), allObjs(i)) )
       //println(referent.toLowerCase.formatted("%30s") + "\t" + allObjs(i).toStringMinimal())
     }
+
+    //## (TODO, keep this here for a while to make sure that it throws an error if there are bad referents being generated)
+    if (errors) sys.exit(1)
 
     // Return
     out.toArray.sortBy(_._1)
