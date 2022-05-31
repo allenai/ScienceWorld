@@ -304,6 +304,10 @@ class ScienceWorldEnv:
         if (numMoves > self.envStepLimit):
             isCompleted = True
 
+        # New: Handle this in the API rather than the agent -- if the score is less than zero, then set the isCompleted flag to true. 
+        if (score < 0):
+            isCompleted = True
+
         #print("> " + str(inputStr))
         #print("score: " + str(score))
         #print("moves: " + str(numMoves))
