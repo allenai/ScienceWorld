@@ -2,19 +2,20 @@ import os.path, sys
 
 from setuptools import setup
 
+with open(os.path.join("scienceworld", "version.py")) as f:
+    VERSION = f.readlines()[0].split("=")[-1].strip("' \n")
+
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
-JAR_FILE = 'scienceworld-1.0.0.jar'
+JAR_FILE = 'scienceworld-{version}.jar'.format(version=VERSION)
 JAR_PATH = os.path.join(BASEPATH, 'scienceworld', JAR_FILE)
 OBJECTS_LUT_FILE = "object_type_ids.tsv"
-
-# TODO: build jar using package.sh?
 
 if not os.path.isfile(JAR_PATH):
     print('ERROR: Unable to find required library:', JAR_PATH)
     sys.exit(1)
 
 setup(name='scienceworld',
-    version='1.0.0',
+    version=VERSION,
     description='ScienceWorld: An interactive text environment to study AI agents on accomplishing tasks from the standardized elementary science curriculum.',
     author='Peter Jansen',
     packages=['scienceworld'],
