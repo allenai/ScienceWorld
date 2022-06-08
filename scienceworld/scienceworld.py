@@ -281,13 +281,13 @@ class ScienceWorldEnv:
     # Train/development/test sets
     #
     def getVariationsTrain(self):
-        return self.gateway.getVariationsTrain()
+        return list(self.gateway.getVariationsTrain())
 
     def getVariationsDev(self):
-        return self.gateway.getVariationsDev()
+        return list(self.gateway.getVariationsDev())
 
     def getVariationsTest(self):
-        return self.gateway.getVariationsTest()
+        return list(self.gateway.getVariationsTest())
 
     def getRandomVariationTrain(self):
         return self.gateway.getRandomVariationTrain()
@@ -321,7 +321,7 @@ class ScienceWorldEnv:
         if (numMoves > self.envStepLimit):
             isCompleted = True
 
-        # New: Handle this in the API rather than the agent -- if the score is less than zero, then set the isCompleted flag to true. 
+        # New: Handle this in the API rather than the agent -- if the score is less than zero, then set the isCompleted flag to true.
         if (score < 0):
             isCompleted = True
 
