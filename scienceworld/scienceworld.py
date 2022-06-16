@@ -11,9 +11,10 @@ import subprocess
 import os
 import time
 import json
-
+import scienceworld
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
-JAR_PATH = os.path.join(BASEPATH, 'scienceworld-1.0.0.jar')
+JAR_FILE = 'scienceworld-{version}.jar'.format(version=scienceworld.__version__)
+JAR_PATH = os.path.join(BASEPATH, JAR_FILE)
 
 
 class ScienceWorldEnv:
