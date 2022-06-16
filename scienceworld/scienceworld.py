@@ -123,7 +123,8 @@ class ScienceWorldEnv:
 
     # Shutdown the scala server
     def shutdown(self):
-        self.gateway.shutdown()
+        if hasattr(self, 'gateway'):
+            self.gateway.shutdown()
 
 
     # Simplifications
