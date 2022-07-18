@@ -135,7 +135,7 @@ class ScienceWorldEnv:
 
     # Get a list of valid tasks/environments
     def getTaskNames(self):
-        return self.gateway.getTaskNames()
+        return list(self.gateway.getTaskNames())
 
     # Get the maximum number of variations for this task
     def getMaxVariations(self, taskName):
@@ -143,7 +143,7 @@ class ScienceWorldEnv:
 
     # Get possible actions
     def getPossibleActions(self):
-        return self.gateway.getPossibleActions()
+        return list(self.gateway.getPossibleActions())
 
     # Get possible actions (and also include the template IDs for those actions)
     def getPossibleActionsWithIDs(self):
