@@ -155,7 +155,7 @@ class ScienceWorldEnv:
 
     # Get possible objects
     def getPossibleObjects(self):
-        return self.gateway.getPossibleObjects()
+        return list(self.gateway.getPossibleObjects())
 
     # Get a list of object_ids to unique referents
     def getPossibleObjectReferentLUT(self):
@@ -303,7 +303,7 @@ class ScienceWorldEnv:
     # Gold action sequence
     def getGoldActionSequence(self):
         if (self.goldPathGenerated == True):
-            return self.gateway.getGoldActionSequence()
+            return list(self.gateway.getGoldActionSequence())
         else:
             return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]
 
