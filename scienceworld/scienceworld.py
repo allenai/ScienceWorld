@@ -171,7 +171,7 @@ class ScienceWorldEnv:
 
     # Get a list of *valid* agent-object combinations
     def getValidActionObjectCombinations(self):
-        return self.gateway.getValidActionObjectCombinations()
+        return list(self.gateway.getValidActionObjectCombinations())
 
     def getValidActionObjectCombinationsWithTemplates(self):
         jsonStr = self.gateway.getValidActionObjectCombinationsJSON()
