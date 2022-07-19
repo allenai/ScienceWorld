@@ -320,7 +320,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
       // Create all possible permutations of combinations of N objects
       val combos = objects combinations(numPlaceholders)
       for (combo <- combos) {
-        for (perm <- combo permutations) {
+        for (perm <- combo.permutations) {
           val outStr = new StringBuilder
           val outObjs = new ArrayBuffer[EnvObject]
 

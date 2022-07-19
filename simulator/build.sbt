@@ -13,4 +13,4 @@ libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % 
 libraryDependencies += "net.sf.py4j" % "py4j" % "0.10.3"
 
 // Set main class to be the Python Interface
-mainClass in Compile := Some("scienceworld.runtime.pythonapi.PythonInterface")
+Compile / mainClass := Some("scienceworld.runtime.pythonapi.PythonInterface")
