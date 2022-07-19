@@ -196,7 +196,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
     var objToMove:Option[EnvObject] = None
     breakable {
-      for (obj <- Random.shuffle(objsInRoom.toList)) {
+      for (obj <- Random.shuffle(objsInRoom.toList.sortBy(_.name))) {
         if ((obj.propMoveable.isDefined) && (obj.propMoveable.get.isMovable == true)) {
           // Thing should not be answer box
           if (!obj.isInstanceOf[AnswerBox]) {

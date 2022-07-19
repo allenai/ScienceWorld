@@ -11,7 +11,7 @@ object StringHelpers {
   def objectListToStringDescription(objs:Set[EnvObject], perspectiveContainer:EnvObject, mode:Int = MODE_CURSORY_DETAIL, multiline:Boolean = false):String = {
     // Collect object descriptions
     val filteredObjDescs = new ArrayBuffer[String]
-    for (obj <- objs) {
+    for (obj <- objs.toList.sortBy(_.name)) {
       obj match {
         case x:Portal => {
           val desc = x.getDescriptionSafe(mode, perspectiveContainer)
@@ -44,7 +44,7 @@ object StringHelpers {
 
 
   def portalListToStringDescription(objs:Set[Portal], perspectiveContainer:EnvObject, mode:Int = MODE_CURSORY_DETAIL, multiline:Boolean = false):String = {
-    val filteredObjs = objs.map(_.getDescriptionSafe(mode, perspectiveContainer)).filter(_.isDefined).map(_.get)
+    val filteredObjs = objs.map(_.getDescriptionSafe(mode, perspectiveContainer)).filter(_.isDefined).map(_.get).toList.sorted
 
     // No contents
     if (filteredObjs.size == 0) {
