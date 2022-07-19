@@ -1,6 +1,6 @@
 name := "scienceworld-scala"
 
-version := "1.0.0"
+version := "1.0.3"
 
 scalaVersion := "2.12.9"
 

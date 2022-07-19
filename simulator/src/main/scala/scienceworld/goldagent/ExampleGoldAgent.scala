@@ -24,11 +24,11 @@ object ExampleGoldAgent {
     //val specificTasks = Array(15,16)           // Do specific tasks
     //val specificTasks = Array(28,29)           // Do specific tasks
     //val specificTasks = Array(4,5,6,7)           // Do specific tasks
-    //## val specificTasks = Array(0,1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29)           // Do specific tasks
+    val specificTasks = Array(0,1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29)           // Do specific tasks
 
     //val specificTasks = Array(9, 10)           // Do specific tasks
     //val specificTasks = Array(18)           // Do specific tasks
-    val specificTasks = Array(13)           // Do specific tasks
+    //val specificTasks = Array(13)           // Do specific tasks
 
     //val specificTasks = Array(0,1,2,3)         // Do specific tasks
     //val specificTasks = Array(4,5,6)           // Do specific tasks
@@ -44,8 +44,7 @@ object ExampleGoldAgent {
 
     //val specificTasks = Array.empty[Int]      // Do all
 
-    //## val exportFilename = "goldsequences-" + specificTasks.mkString("-") + ".json"
-    val exportFilename = "goldsequencesDEBUG-" + specificTasks.mkString("-") + ".json"
+    val exportFilename = "goldsequences-" + specificTasks.mkString("-") + ".json"
 
     val simplificationStr = "easy"
 
@@ -90,11 +89,7 @@ object ExampleGoldAgent {
         val episodeScores = new ArrayBuffer[Double]
 
 
-        //##val maxTaskVariations = interface.getTaskMaxVariations(taskName)
-        val maxTaskVariations = 10
-        println ("NOTE: CHANGE MAX TASK VARIATIONS BACK TO USE REAL NUMBER!!!!!")
-
-
+        val maxTaskVariations = interface.getTaskMaxVariations(taskName)
 
         // For each variation
         var subsampleEveryNth:Int = 1
@@ -220,8 +215,6 @@ object ExampleGoldAgent {
 
 
     println ("Completed...")
-
-    println ("!!!!!!!!!!!! ************* NOTE: CHANGE MAX TASK VARIATIONS BACK TO USE REAL NUMBER!!!!!")
 
   }
 
