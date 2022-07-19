@@ -284,7 +284,7 @@ class PythonInterface() {
 
   def getValidActionObjectCombinations():java.util.List[String] = {
     if (!agentInterface.isDefined) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
-    agentInterface.get.getValidActionObjectCombinations().toList.asJava
+    agentInterface.get.getValidActionObjectCombinations().toList.sorted.asJava
   }
 
   def getValidActionObjectCombinationsJSON():String = {
