@@ -33,6 +33,7 @@ class PythonInterface() {
   var simplificationStr:String = ""      // CSV delimited string of simplifications to perform to the environment
 
   var goldActionsStr = Array.empty[String]    // Sequence of gold actions for this task
+  var goldActionsJSON:String = ""
   var goldPathGenerationEnabled:Boolean = false
 
   var score:Double = 0.0
@@ -51,6 +52,7 @@ class PythonInterface() {
    */
   def load(taskStr:String, variationIdx:Int, simplificationStr:String, generateGoldPath:Boolean = false): Unit = {
     var goldActionSequence = Array.empty[String]
+    var goldActionsJSON:String = ""
 
     if (generateGoldPath) {
       // First, reset environment to new specifications
@@ -58,7 +60,7 @@ class PythonInterface() {
 
       println("* Generating Gold Path")
       // Then, compute gold path
-      val (goldPath, success) = taskMaker.createGoldActions(taskStr, variationIdx, this)
+      val (goldPath, goldPathJSON, success) = taskMaker.createGoldActions(taskStr, variationIdx, this)
       println("* Completed Generating Gold Path")
       println("* Gold path (length = " + goldPath.length + " actions):")
       println("----")
@@ -70,10 +72,12 @@ class PythonInterface() {
 
       // Store gold action sequence
       goldActionSequence = goldPath
+      goldActionsJSON = goldPathJSON
       this.goldPathGenerationEnabled = generateGoldPath
 
     } else {
       goldActionsStr = Array.empty[String]
+      goldActionsJSON = ""
     }
 
     // Then, reset environment again
@@ -82,6 +86,7 @@ class PythonInterface() {
     // Store gold action sequence, since 'doLoad' clears it
     if (generateGoldPath == true) {
       this.goldActionsStr = goldActionSequence
+      this.goldActionsJSON = goldActionsJSON
     }
 
   }
@@ -239,6 +244,11 @@ class PythonInterface() {
    */
   def getGoldActionSequence():java.util.List[String] = {
     return this.goldActionsStr.toList.asJava
+  }
+
+  // A more verbose version with additional information, returned in JSON
+  def getGoldActionSequenceJSON():String = {
+    return this.goldActionsJSON
   }
 
   /*

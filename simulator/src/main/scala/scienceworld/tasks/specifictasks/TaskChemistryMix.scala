@@ -202,7 +202,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
   /*
    * Gold Action Sequences
    */
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     if (mode == MODE_CHEMISTRY_MIX) {
       return mkGoldActionSequenceChemistryMix(modifiers, runner)
     } else {
@@ -211,7 +211,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
   }
 
 
-  def mkGoldActionSequenceChemistryMix(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceChemistryMix(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -244,7 +244,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
 
     // Take recipe
     val recipes = PathFinder.getAllAccessibleEnvObject(queryName = "recipe", getCurrentAgentLocation(runner))
-    if (recipes.length == 0) return (false, getActionHistory(runner))
+    if (recipes.length == 0) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     val recipe = recipes(0)
     //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
     runAction("pick up " + recipe.name, runner)
@@ -298,7 +298,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
             val (success1, waterContainer1, waterRef1) = PathFinder.getWaterInContainer(runner, useInventoryContainer = Some(container))
             if (!success1) {
               //## runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
-              return (false, getActionHistory(runner))
+              return (false, getActionHistory(runner), getActionHistoryJSON(runner))
             }
             taskObject = waterRef1.get
           }
@@ -359,7 +359,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
 
           if (objects.length == 0) {
             //## runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + inputChemical + ")", runner)
-            return (false, getActionHistory(runner))
+            return (false, getActionHistory(runner), getActionHistoryJSON(runner))
           } else {
             taskObject = objects(0)
           }
@@ -383,7 +383,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
       // Check it was picked up correctly
       if (PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).isEmpty) {
         //## runAction("NOTE: CAN'T FIND THE OBJECT", runner)
-        return (false, getActionHistory(runner))
+        return (false, getActionHistory(runner), getActionHistoryJSON(runner))
       }
 
       // If it's a liquid, pour it into the main mixing container
@@ -403,7 +403,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     val resultChemicals = PathFinder.getAllAccessibleEnvObject(resultChemical, container)
     if (resultChemicals.size == 0) {
       //## runAction("NOTE: CAN'T FIND RESULT CHEMICAL", runner)
-      return (false, getActionHistory(runner))
+      return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
     val result:EnvObject = resultChemicals(0)
     runAction("focus on " + PathFinder.getObjUniqueReferent(result, getCurrentAgentLocation(runner)).get, runner)
@@ -416,7 +416,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     //runAction(runner.agentInterface.get.getGoalProgressStr(), runner)
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 

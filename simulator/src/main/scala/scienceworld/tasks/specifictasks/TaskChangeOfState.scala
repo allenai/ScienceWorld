@@ -276,7 +276,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
   /*
    * Gold Action Sequences
    */
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     if (mode == MODE_MELT) {
       return mkGoldActionSequenceChangeState(modifiers, runner)
     } else if (mode == MODE_BOIL) {
@@ -292,7 +292,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
   }
 
 
-  def mkGoldActionSequenceChangeState(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceChangeState(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -311,7 +311,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     // Take instrument (thermometer)
     val instrumentName = "thermometer"
     val instruments = PathFinder.getAllAccessibleEnvObject(queryName = instrumentName, getCurrentAgentLocation(runner))
-    if (instruments.length == 0) return (false, getActionHistory(runner))
+    if (instruments.length == 0) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     val instrument = instruments(0)
     //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
     runAction("pick up " + instrument.name, runner)
@@ -368,7 +368,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
           val (success1, waterContainer1, waterRef1) = PathFinder.getWaterInContainer(runner, useInventoryContainer = Some(container))
           if (!success1) {
             //## runAction("NOTE: WAS NOT ABLE TO FIND WATER", runner)
-            return (false, getActionHistory(runner))
+            return (false, getActionHistory(runner), getActionHistoryJSON(runner))
           }
           taskObject = waterRef1.get
         }
@@ -428,7 +428,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
         if (objects.length == 0) {
           //## runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + objectName + ")", runner)
-          return (false, getActionHistory(runner))
+          return (false, getActionHistory(runner), getActionHistoryJSON(runner))
         } else {
           // Pick up the object
           taskObject = objects(0)
@@ -453,7 +453,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     // Check it was picked up correctly
     if (PathFinder.getObjUniqueReferent(taskObject, getCurrentAgentLocation(runner)).isEmpty) {
       runAction("NODE: CAN'T FIND THE OBJECT", runner)
-      return (false, getActionHistory(runner))
+      return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
     // Focus on task object
@@ -537,7 +537,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     //runAction(runner.agentInterface.get.getGoalProgressStr(), runner)
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 

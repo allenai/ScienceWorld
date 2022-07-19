@@ -228,7 +228,7 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
   /*
    * Gold Action Sequences
    */
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     if (mode == MODE_POWER_COMPONENT) {
       return mkGoldActionSequencePowerComponent(modifiers, runner)
     } else if (mode == MODE_POWER_COMPONENT_RENEWABLE) {
@@ -242,7 +242,7 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
   /*
    * Gold action sequences
    */
-  def mkGoldActionSequencePowerComponent(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequencePowerComponent(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -274,7 +274,7 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
     val wires = Random.shuffle( curLoc1.get.getContainedAccessibleObjectsOfType[Wire](includeHidden = false).toList.sortBy(_.uuid) )
     if (wires.size < 2) {
       // Fail
-      return (false, getActionHistory(runner))
+      return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
     val wire1 = wires(0)
@@ -317,11 +317,11 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
 
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 
-  def mkGoldActionSequencePowerComponentRenewable(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequencePowerComponentRenewable(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -368,7 +368,7 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
     val wires = Random.shuffle( curLoc1.get.getContainedAccessibleObjectsOfType[Wire](includeHidden = false).toList.sortBy(_.uuid) )
     if (wires.size < 2) {
       // Fail
-      return (false, getActionHistory(runner))
+      return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
     val wire1 = wires(0)
@@ -438,11 +438,11 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
 
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
   /*
-    def mkGoldActionSequencePowerComponent(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+    def mkGoldActionSequencePowerComponent(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
       // TODO: Unimplemented
       val answerBoxName = this.getTaskValueStr(modifiers, "answerBox").get
       val answerBoxLocation = this.getTaskValueStr(modifiers, "location").get
@@ -527,7 +527,7 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
 
       // If we didn't find a movable object, we're in trouble -- quit
       if (objToMove.isEmpty) {
-        return (false, getActionHistory(runner))
+        return (false, getActionHistory(runner), getActionHistoryJSON(runner))
       }
 
       // Step 3: Focus on that random object
@@ -552,7 +552,7 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
       runAction(actionMoveObjStr, runner)
 
       // Return
-      return (true, getActionHistory(runner))
+      return (true, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
    */

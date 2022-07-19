@@ -297,7 +297,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
   /*
    * Gold Action Sequences
    */
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     if (mode == MODE_GROW_PLANT) {
       return mkGoldActionSequenceGrowPlant(modifiers, runner)
     } else if (mode == MODE_GROW_FRUIT) {
@@ -311,7 +311,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
   /*
    * Gold action sequences
    */
-  def mkGoldActionSequenceGrowFruits(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceGrowFruits(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -331,7 +331,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
     // Take seed jar
     val seedJars = PathFinder.getAllAccessibleEnvObject(queryName = "seed jar", getCurrentAgentLocation(runner))
-    if (seedJars.length == 0) return (false, getActionHistory(runner))
+    if (seedJars.length == 0) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     val seedJar = seedJars(0)
     //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
     runAction("pick up seed jar", runner)
@@ -424,7 +424,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
       attempts += 1
       if (attempts > 4) {
         //runAction("ERROR: Ending early -- max attempts exceeded (" + attempts + ")", runner)
-        return (false, getActionHistory(runner))
+        return (false, getActionHistory(runner), getActionHistoryJSON(runner))
       }
     }
 
@@ -540,11 +540,11 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     runAction("wait1", runner)
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 
-  def mkGoldActionSequenceGrowPlant(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceGrowPlant(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -564,7 +564,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
     // Take seed jar
     val seedJars = PathFinder.getAllAccessibleEnvObject(queryName = "seed jar", getCurrentAgentLocation(runner))
-    if (seedJars.length == 0) return (false, getActionHistory(runner))
+    if (seedJars.length == 0) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     val seedJar = seedJars(0)
     //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
     runAction("pick up seed jar", runner)
@@ -694,7 +694,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     runAction("wait1", runner)
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 }

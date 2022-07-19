@@ -19,7 +19,7 @@ trait TaskParametric {
 
   def setupGoals(combinationNum:Int): Task
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String])
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String)
 
   /*
    * Helpers
@@ -101,6 +101,10 @@ trait TaskParametric {
     TaskParametric.getActionHistory(runner)
   }
 
+  def getActionHistoryJSON(runner:PythonInterface):String = {
+    TaskParametric.getActionHistoryJSON(runner)
+  }
+
   def getCurrentAgentLocation(runner:PythonInterface):EnvObject = {
     TaskParametric.getCurrentAgentLocation(runner)
   }
@@ -135,6 +139,10 @@ object TaskParametric {
 
   def getActionHistory(runner:PythonInterface):Array[String] = {
     return runner.getActionHistory().asScala.toArray
+  }
+
+  def getActionHistoryJSON(runner:PythonInterface):String = {
+    return runner.getRunHistoryJSON()
   }
 
   def getCurrentAgentLocation(runner:PythonInterface):EnvObject = {

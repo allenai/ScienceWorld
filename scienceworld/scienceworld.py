@@ -307,6 +307,14 @@ class ScienceWorldEnv:
         else:
             return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]
 
+    def getGoldActionSequenceExtended(self):
+        if (self.goldPathGenerated == True):
+            jsonOut = json.loads(self.gateway.getGoldActionSequenceJSON())
+            return jsonOut
+        else:
+            return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]
+
+
     # Step
     def step(self, inputStr:str):
         observation = self.gateway.step(inputStr)

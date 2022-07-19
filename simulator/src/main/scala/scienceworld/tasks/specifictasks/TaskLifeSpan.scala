@@ -172,7 +172,7 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
   /*
    * Gold Action Sequences
    */
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     if (mode == MODE_LIFESPAN_LONGEST) {
       return mkGoldActionSequenceLifeSpan(modifiers, runner)
     } else if (mode == MODE_LIFESPAN_SHORTEST) {
@@ -188,7 +188,7 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
   /*
    * Gold action sequences
    */
-  def mkGoldActionSequenceLifeSpan(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceLifeSpan(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -225,7 +225,7 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
     runAction("wait1", runner)
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 }

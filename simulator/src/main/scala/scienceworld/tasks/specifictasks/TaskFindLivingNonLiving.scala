@@ -154,7 +154,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     this.setupGoals( this.getCombination(combinationNum), combinationNum )
   }
 
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     if (mode == MODE_LIVING) {
       return mkGoldActionSequenceLiving(modifiers, runner)
     } else if (mode == MODE_NONLIVING) {
@@ -172,7 +172,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
   /*
    * Gold action sequences
    */
-  def mkGoldActionSequenceNonLiving(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceNonLiving(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     // TODO: Unimplemented
     val answerBoxName = this.getTaskValueStr(modifiers, "answerBox").get
     val answerBoxLocation = this.getTaskValueStr(modifiers, "location").get
@@ -216,7 +216,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
     // If we didn't find a movable object, we're in trouble -- quit
     if (objToMove.isEmpty) {
-      return (false, getActionHistory(runner))
+      return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
     // Step 3: Focus on that random object
@@ -234,11 +234,11 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 
-  def mkGoldActionSequenceLiving(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceLiving(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     // TODO: Unimplemented
     val answerBoxName = this.getTaskValueStr(modifiers, "answerBox").get
     val answerBoxLocation = this.getTaskValueStr(modifiers, "location").get
@@ -323,7 +323,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
     // If we didn't find a movable object, we're in trouble -- quit
     if (objToMove.isEmpty) {
-      return (false, getActionHistory(runner))
+      return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
     // Step 3: Focus on that random object
@@ -348,7 +348,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     runAction(actionMoveObjStr, runner)
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 }

@@ -289,7 +289,7 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
   /*
    * Gold Action Sequences
    */
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     if (mode == MODE_MENDEL_UNKNOWN) {
       return mkGoldActionSequenceMendel(modifiers, runner)
     } else {
@@ -301,7 +301,7 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
   /*
    * Gold action sequences
    */
-  def mkGoldActionSequenceMendel(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceMendel(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -327,7 +327,7 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
 
     // Take seed jar
     val seedJars = PathFinder.getAllAccessibleEnvObject(queryName = "seed jar", getCurrentAgentLocation(runner))
-    if (seedJars.length == 0) return (false, getActionHistory(runner))
+    if (seedJars.length == 0) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     val seedJar = seedJars(0)
     //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
     runAction("pick up seed jar", runner)
@@ -421,7 +421,7 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
       attempts += 1
       if (attempts > 4) {
         runAction("ERROR: Ending early -- max attempts exceeded (" + attempts + ")", runner)
-        return (false, getActionHistory(runner))
+        return (false, getActionHistory(runner), getActionHistoryJSON(runner))
       }
     }
 
@@ -634,7 +634,7 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
     runAction("wait1", runner)
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 

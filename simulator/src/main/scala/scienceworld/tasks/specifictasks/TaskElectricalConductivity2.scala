@@ -214,7 +214,7 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
   /*
    * Gold Action Sequences
    */
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     if (mode == MODE_TEST_CONDUCTIVITY_UNKNOWN) {
       return mkGoldActionSequenceTestComponent(modifiers, runner)
     } else {
@@ -226,7 +226,7 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
   /*
    * Gold action sequences
    */
-  def mkGoldActionSequenceTestComponent(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceTestComponent(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -304,7 +304,7 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
     // Check that we successfully found the substance -- if not, fail
     if (substanceContainer.isEmpty) {
       // Fail
-      return (false, getActionHistory(runner))
+      return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
     // Step 2: Focus on substance
@@ -321,7 +321,7 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
     val nameOfThingToDrop = PathFinder.getObjUniqueReferent(substanceContainer.get, agent)      //## TODO: Fails on getting container sometimes, for some reason.  (probably not movable, so wasn't picked up in the first place)
     if (nameOfThingToDrop.isEmpty) {
       // Fail
-      return (false, getActionHistory(runner))
+      return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
     runAction("drop " + nameOfThingToDrop.get, runner)
 
@@ -346,7 +346,7 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
     val wires = Random.shuffle( curLoc1.get.getContainedAccessibleObjectsOfType[Wire](includeHidden = false).toList.sortBy(_.uuid) )
     if (wires.size < 3) {
       // Fail
-      return (false, getActionHistory(runner))
+      return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
     val wire1 = wires(0)
@@ -411,7 +411,7 @@ class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNO
     runAction("wait1", runner)
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 }

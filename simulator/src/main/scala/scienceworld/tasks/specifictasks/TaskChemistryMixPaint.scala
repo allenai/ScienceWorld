@@ -265,7 +265,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
   /*
    * Gold Action Sequences
    */
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     if (mode == MODE_CHEMISTRY_MIX_PAINT_SECONDARY) {
       return mkGoldActionSequenceMixPaint(modifiers, runner)
     } else if (mode == MODE_CHEMISTRY_MIX_PAINT_TERTIARY) {
@@ -279,7 +279,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
   /*
    * Gold action sequences
    */
-  def mkGoldActionSequenceMixPaint(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceMixPaint(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -334,7 +334,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
     // Check that we successfully found the paints -- if not, fail
     if (substances.size == 0) {
       // Fail
-      return (false, getActionHistory(runner))
+      return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
     runAction("look around", runner)
@@ -354,7 +354,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
 
     if (mixingContainer.isEmpty) {
       // Fail
-      return (false, getActionHistory(runner))
+      return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
     // Step N: Mix secondary colour
@@ -375,7 +375,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
 
     // Step N: Focus on substance
     val mixingResult1 = PathFinder.getAllAccessibleEnvObject(secondaryColor.get, getCurrentAgentLocation(runner))
-    if (mixingResult1.size == 0) return (false, getActionHistory(runner))
+    if (mixingResult1.size == 0) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     runAction("focus on " + PathFinder.getObjUniqueReferent(mixingResult1(0), getCurrentAgentLocation(runner)).get, runner)
 
     // Wait one moment
@@ -385,7 +385,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
     // Stop point -- check if we only need to mix secondary paint colour
     if (mode == MODE_CHEMISTRY_MIX_PAINT_SECONDARY) {
       // Stop here
-      return (true, getActionHistory(runner))
+      return (true, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
 
@@ -420,7 +420,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
 
           if (attempts > 1) {
             // fail
-            return (false, getActionHistory(runner))
+            return (false, getActionHistory(runner), getActionHistoryJSON(runner))
           } else {
             // Pick up container
             val containerReferent = PathFinder.getObjUniqueReferent(mixingContainer.get, getCurrentAgentLocation(runner))
@@ -460,7 +460,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
 
     // Step N: Focus on substance
     val mixingResult2 = PathFinder.getAllAccessibleEnvObject(tertiaryColor.get, getCurrentAgentLocation(runner))
-    if (mixingResult2.size == 0) return (false, getActionHistory(runner))
+    if (mixingResult2.size == 0) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     runAction("focus on " + PathFinder.getObjUniqueReferent(mixingResult2(0), getCurrentAgentLocation(runner)).get, runner)
 
     // Wait one moment
@@ -468,7 +468,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
 
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 

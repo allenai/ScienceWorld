@@ -228,7 +228,7 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
   /*
    * Gold Action Sequences
    */
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     if (mode == MODE_USE_THERMOMETER) {
       return mkGoldActionSequenceThermometer(modifiers, runner)
     } else {
@@ -239,7 +239,7 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
   /*
    * Gold action sequences
    */
-  def mkGoldActionSequenceThermometer(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceThermometer(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -265,7 +265,7 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
 
     // Take instrument (thermometer)
     val instruments = PathFinder.getAllAccessibleEnvObject(queryName = instrumentName, getCurrentAgentLocation(runner))
-    if (instruments.length == 0) return (false, getActionHistory(runner))
+    if (instruments.length == 0) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     val instrument = instruments(0)
     //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
     runAction("pick up " + instrument.name, runner)
@@ -284,7 +284,7 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
 
     // Pick up the task object
     val objects = PathFinder.getAllAccessibleEnvObject(queryName = objectName, getCurrentAgentLocation(runner))
-    if (objects.length == 0) return (false, getActionHistory(runner))
+    if (objects.length == 0) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     val taskObject = objects(0)
     //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
     runAction("pick up " + taskObject.name, runner)
@@ -319,7 +319,7 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
     runAction("wait1", runner)
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 }

@@ -256,7 +256,7 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
   /*
    * Gold Action Sequences
    */
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     if (mode == MODE_MEASURE_MELTING_UNKNOWN) {
       return mkGoldActionSequenceThermometer(modifiers, runner)
     } else {
@@ -265,7 +265,7 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
   }
 
 
-  def mkGoldActionSequenceThermometer(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceThermometer(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -289,7 +289,7 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
 
     // Take instrument (thermometer)
     val instruments = PathFinder.getAllAccessibleEnvObject(queryName = instrumentName, getCurrentAgentLocation(runner))
-    if (instruments.length == 0) return (false, getActionHistory(runner))
+    if (instruments.length == 0) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     val instrument = instruments(0)
     //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
     runAction("pick up " + instrument.name, runner)
@@ -340,7 +340,7 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
       val objects = PathFinder.getAllAccessibleEnvObject(queryName = objectName, getCurrentAgentLocation(runner))
       if (objects.length == 0) {
         //## runAction("NOTE: WAS NOT ABLE TO FIND SUBSTANCE (" + objectName + ")", runner)
-        return (false, getActionHistory(runner))
+        return (false, getActionHistory(runner), getActionHistoryJSON(runner))
       }
 
       taskObject = objects(0)
@@ -460,7 +460,7 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
     runAction("wait1", runner)
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 }

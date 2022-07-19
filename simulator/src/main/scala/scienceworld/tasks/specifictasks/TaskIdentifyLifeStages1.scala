@@ -155,7 +155,7 @@ class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskPar
   /*
    * Gold Action Sequences
    */
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     if (mode == MODE_LIFESTAGES) {
       return mkGoldActionSequenceLifeStages(modifiers, runner)
     } else {
@@ -167,7 +167,7 @@ class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskPar
   /*
    * Gold action sequences
    */
-  def mkGoldActionSequenceLifeStages(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceLifeStages(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -191,31 +191,31 @@ class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskPar
     // Stage 1
     if (stage1.isDefined) {
       val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage1.get, livingThingName = animalName, runner)
-      if (!success) return (false, getActionHistory(runner))
+      if (!success) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
     // Stage 2
     if (stage2.isDefined) {
       val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage2.get, livingThingName = animalName, runner)
-      if (!success) return (false, getActionHistory(runner))
+      if (!success) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
     // Stage 3
     if (stage3.isDefined) {
       val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage3.get, livingThingName = animalName, runner)
-      if (!success) return (false, getActionHistory(runner))
+      if (!success) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
     // Stage 4
     if (stage4.isDefined) {
       val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage4.get, livingThingName = animalName, runner)
-      if (!success) return (false, getActionHistory(runner))
+      if (!success) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
     // Stage 5
     if (stage5.isDefined) {
       val success = mkActionSequenceWaitForLivingThingInStage(stageName = stage5.get, livingThingName = animalName, runner)
-      if (!success) return (false, getActionHistory(runner))
+      if (!success) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     }
 
 
@@ -223,7 +223,7 @@ class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskPar
     runAction("wait1", runner)
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 

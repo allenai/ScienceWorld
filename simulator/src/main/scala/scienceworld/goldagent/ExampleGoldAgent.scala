@@ -353,10 +353,6 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
         json.append("\"actionName\":\"" + action.get.action.name + "\", ")
         json.append("\"actionId\":\"" + action.get.action.uniqueActionID + "\", ")
 
-        println ("ACTION123: ")
-        println (action.get.action.toString)
-        println (action.get.assignments.toString())
-
         // Extract parameter names (and the values that populate them) in order, so they can be exported in order.
         val objArgsInOrder = new ArrayBuffer[EnvObject]
 
@@ -367,7 +363,6 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
               triggerElem match {
                 case x: ActionExprIdentifier => {
                   val paramName = x.identifier
-                  println("PARAM NAME: " + paramName)
                   if (action.get.assignments.contains(paramName)) {
                     val paramValue = action.get.assignments(paramName)
                     objArgsInOrder.append(paramValue)

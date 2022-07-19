@@ -194,7 +194,7 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
   /*
    * Gold Action Sequences
    */
-  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequence(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     if (mode == MODE_ANGLE) {
       return mkGoldActionSequenceLifeStages(modifiers, runner)
     } else {
@@ -206,7 +206,7 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
   /*
    * Gold action sequences
    */
-  def mkGoldActionSequenceLifeStages(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
+  def mkGoldActionSequenceLifeStages(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String], String) = {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
@@ -232,14 +232,14 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
 
     // Take stop watch
     val timeTools = PathFinder.getAllAccessibleEnvObject(queryName = timeDeviceName, getCurrentAgentLocation(runner))
-    if (timeTools.length == 0) return (false, getActionHistory(runner))
+    if (timeTools.length == 0) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     val timeTool = timeTools(0)
     runAction("pick up " + PathFinder.getObjUniqueReferent(timeTool, getCurrentAgentLocation(runner)).get, runner)
 
 
     // Get reference to block
     val blocks = PathFinder.getAllAccessibleEnvObject(queryName = blockName, getCurrentAgentLocation(runner))
-    if (blocks.length == 0) return (false, getActionHistory(runner))
+    if (blocks.length == 0) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
     val block = blocks(0)
 
     // Get reference to inclined planes
@@ -250,11 +250,11 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
 
     // Slide block down plane 1
     val (success1, time1) = actionSequenceMeasureBlockFallTime(block = block, timeTool = timeTool, inclinedPlane = inclinedPlane1, runner)
-    if (!success1) return (false, getActionHistory(runner))
+    if (!success1) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
 
     // Slide block down plane 2
     val (success2, time2) = actionSequenceMeasureBlockFallTime(block = block, timeTool = timeTool, inclinedPlane = inclinedPlane2, runner)
-    if (!success2) return (false, getActionHistory(runner))
+    if (!success2) return (false, getActionHistory(runner), getActionHistoryJSON(runner))
 
 
     var planeToSelect:Option[EnvObject] = None
@@ -281,7 +281,7 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
     runAction("wait1", runner)
 
     // Return
-    return (true, getActionHistory(runner))
+    return (true, getActionHistory(runner), getActionHistoryJSON(runner))
   }
 
 

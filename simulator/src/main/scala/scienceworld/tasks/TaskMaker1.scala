@@ -62,10 +62,10 @@ class TaskMaker1 {
     (Some(task), "")
   }
 
-
-  def createGoldActions(taskName:String, variationIdx:Int, runner:PythonInterface): (Array[String], String) = {
+  // Returns: Array(gold actions), Gold Action JSON, success/failure string.
+  def createGoldActions(taskName:String, variationIdx:Int, runner:PythonInterface): (Array[String], String, String) = {
     val tp = this.getTask(taskName)
-    if (tp.isEmpty) return (Array.empty[String], "ERROR: Unknown task (" + taskName + ").")
+    if (tp.isEmpty) return (Array.empty[String], "", "ERROR: Unknown task (" + taskName + ").")
 
     // Get task
     val task = tp.get.setupGoals(variationIdx)
@@ -74,10 +74,10 @@ class TaskMaker1 {
     val universe = runner.agentInterface.get.universe
     val agent = runner.agentInterface.get.agent
 
-    val (goldSuccess, goldActionStr) = tp.get.mkGoldActionSequence(modifiers = task.taskModifiers, runner)
+    val (goldSuccess, goldActionStr, goldActionStrJSON) = tp.get.mkGoldActionSequence(modifiers = task.taskModifiers, runner)
 
     // Return
-    return (goldActionStr, "")
+    return (goldActionStr, goldActionStrJSON, "")
   }
 
   /*

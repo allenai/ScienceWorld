@@ -124,6 +124,8 @@ object EntryPoint {
 
         println("Referents: " + interface.agentInterface.get.getAllObjectIdsTypesReferentsLUTJSON() )
 
+        println("Possible actions: " + interface.agentInterface.get.getPossibleActions().mkString(", "))
+
         //println("Locations: " + PathFinder.buildLocationGraph(universe) )
 
         //println("Pathfinder test: " + PathFinder.getLocationSequence(universe, startLocation = "living room", endLocation = "foundry")._2.mkString(", "))
