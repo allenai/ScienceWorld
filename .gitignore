@@ -1,1 +1,8 @@
 .idea/**
+
+# Project-specific
+scienceworld.egg-info/
+simulator/project/build.properties
+simulator/project/project/
+simulator/project/target/
+simulator/target/
