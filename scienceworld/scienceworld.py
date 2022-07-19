@@ -137,7 +137,7 @@ class ScienceWorldEnv:
 
     # Get a list of valid tasks/environments
     def getTaskNames(self):
-        return self.gateway.getTaskNames()
+        return list(self.gateway.getTaskNames())
 
     # Get the maximum number of variations for this task
     def getMaxVariations(self, taskName):
@@ -145,7 +145,7 @@ class ScienceWorldEnv:
 
     # Get possible actions
     def getPossibleActions(self):
-        return self.gateway.getPossibleActions()
+        return list(self.gateway.getPossibleActions())
 
     # Get possible actions (and also include the template IDs for those actions)
     def getPossibleActionsWithIDs(self):
@@ -155,7 +155,7 @@ class ScienceWorldEnv:
 
     # Get possible objects
     def getPossibleObjects(self):
-        return self.gateway.getPossibleObjects()
+        return list(self.gateway.getPossibleObjects())
 
     # Get a list of object_ids to unique referents
     def getPossibleObjectReferentLUT(self):
@@ -171,7 +171,7 @@ class ScienceWorldEnv:
 
     # Get a list of *valid* agent-object combinations
     def getValidActionObjectCombinations(self):
-        return self.gateway.getValidActionObjectCombinations()
+        return list(self.gateway.getValidActionObjectCombinations())
 
     def getValidActionObjectCombinationsWithTemplates(self):
         jsonStr = self.gateway.getValidActionObjectCombinationsJSON()
@@ -303,7 +303,7 @@ class ScienceWorldEnv:
     # Gold action sequence
     def getGoldActionSequence(self):
         if (self.goldPathGenerated == True):
-            return self.gateway.getGoldActionSequence()
+            return list(self.gateway.getGoldActionSequence())
         else:
             return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]
 
