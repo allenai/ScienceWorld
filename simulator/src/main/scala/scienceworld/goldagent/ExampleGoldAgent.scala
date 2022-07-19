@@ -1,8 +1,11 @@
 package scienceworld.goldagent
 import java.io.PrintWriter
 
+import language.model.ActionExprIdentifier
 import main.scala.scienceworld.runtime.SimplifierProcessor
+import scienceworld.actions.Action
 import scienceworld.runtime.pythonapi.PythonInterface
+import scienceworld.struct.EnvObject
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
@@ -21,10 +24,11 @@ object ExampleGoldAgent {
     //val specificTasks = Array(15,16)           // Do specific tasks
     //val specificTasks = Array(28,29)           // Do specific tasks
     //val specificTasks = Array(4,5,6,7)           // Do specific tasks
-    val specificTasks = Array(0,1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29)           // Do specific tasks
+    //## val specificTasks = Array(0,1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29)           // Do specific tasks
+
     //val specificTasks = Array(9, 10)           // Do specific tasks
     //val specificTasks = Array(18)           // Do specific tasks
-    //val specificTasks = Array(14)           // Do specific tasks
+    val specificTasks = Array(13)           // Do specific tasks
 
     //val specificTasks = Array(0,1,2,3)         // Do specific tasks
     //val specificTasks = Array(4,5,6)           // Do specific tasks
@@ -40,7 +44,8 @@ object ExampleGoldAgent {
 
     //val specificTasks = Array.empty[Int]      // Do all
 
-    val exportFilename = "goldsequences-" + specificTasks.mkString("-") + ".json"
+    //## val exportFilename = "goldsequences-" + specificTasks.mkString("-") + ".json"
+    val exportFilename = "goldsequencesDEBUG-" + specificTasks.mkString("-") + ".json"
 
     val simplificationStr = "easy"
 
@@ -83,7 +88,11 @@ object ExampleGoldAgent {
 
         var userInput = "look around"
         val episodeScores = new ArrayBuffer[Double]
-        val maxTaskVariations = interface.getTaskMaxVariations(taskName)
+
+
+        //##val maxTaskVariations = interface.getTaskMaxVariations(taskName)
+        val maxTaskVariations = 10
+        println ("NOTE: CHANGE MAX TASK VARIATIONS BACK TO USE REAL NUMBER!!!!!")
 
 
 
@@ -212,6 +221,8 @@ object ExampleGoldAgent {
 
     println ("Completed...")
 
+    println ("!!!!!!!!!!!! ************* NOTE: CHANGE MAX TASK VARIATIONS BACK TO USE REAL NUMBER!!!!!")
+
   }
 
 
@@ -292,14 +303,14 @@ object ExampleGoldAgent {
 // Storage class for histories
 class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val taskDescription:String = "", val simplificationStr:String = "", val foldDesc:String = "") {
   val historyActions = new ArrayBuffer[String]
-  val historyObservations = new ArrayBuffer[(String, Double, Boolean)]
+  val historyObservations = new ArrayBuffer[(String, Double, Boolean, Option[Action])]
   val historyFreeLook = new ArrayBuffer[String]
   val historyInventory = new ArrayBuffer[String]
   val notes = new ArrayBuffer[String]
 
   def length:Int = this.historyActions.length
 
-  def addStep(action:String, observation:(String, Double, Boolean), freeLookStr:String, inventoryStr:String): Unit = {
+  def addStep(action:String, observation:(String, Double, Boolean, Option[Action]), freeLookStr:String, inventoryStr:String): Unit = {
     historyActions.append(action)
     historyObservations.append(observation)
     historyFreeLook.append(freeLookStr)
@@ -319,21 +330,60 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
 
     val points = new ArrayBuffer[String]
     for (i <- 0 until this.length) {
-      val action = historyActions(i)
+      val actionStr = historyActions(i)
       val obs = historyObservations(i)._1
       val score = historyObservations(i)._2
       val isCompleted = historyObservations(i)._3
+      val action = historyObservations(i)._4
+
       val freelook = historyFreeLook(i)
       val inventory = historyInventory(i)
 
       val json = new StringBuilder
       json.append("{")
-      json.append("\"action\":\"" + RunHistory.sanitizeJSON(action) + "\", ")
+      json.append("\"action\":\"" + RunHistory.sanitizeJSON(actionStr) + "\", ")
       json.append("\"observation\":\"" + RunHistory.sanitizeJSON(obs) + "\", ")
       json.append("\"score\":\"" + score + "\", ")
       json.append("\"isCompleted\":\"" + isCompleted + "\", ")
       json.append("\"freelook\":\"" + RunHistory.sanitizeJSON(freelook) + "\", ")
       json.append("\"inventory\":\"" + RunHistory.sanitizeJSON(inventory) + "\"")
+
+      if (action.isDefined) {
+        json.append(", ")
+        json.append("\"actionName\":\"" + action.get.action.name + "\", ")
+        json.append("\"actionId\":\"" + action.get.action.uniqueActionID + "\", ")
+
+        println ("ACTION123: ")
+        println (action.get.action.toString)
+        println (action.get.assignments.toString())
+
+        // Extract parameter names (and the values that populate them) in order, so they can be exported in order.
+        val objArgsInOrder = new ArrayBuffer[EnvObject]
+
+        breakable {
+          for (oneTriggerPhrase <- action.get.action.triggers) {    // It's possible for there to be more than one trigger phrase possibility for this action.  Try them all, until one gets non-zero matches.
+            objArgsInOrder.clear()
+            for (triggerElem <- oneTriggerPhrase.pattern) {
+              triggerElem match {
+                case x: ActionExprIdentifier => {
+                  val paramName = x.identifier
+                  println("PARAM NAME: " + paramName)
+                  if (action.get.assignments.contains(paramName)) {
+                    val paramValue = action.get.assignments(paramName)
+                    objArgsInOrder.append(paramValue)
+                  }
+                }
+                case _ => {
+                  // Do nothing
+                }
+              }
+            }
+            if (!objArgsInOrder.isEmpty) break()
+          }
+        }
+        json.append("\"actionArgObjIds\":[" + objArgsInOrder.map(_.uuid).mkString(", ") + "] ")
+      }
+
       json.append("}")
 
       points.append( json.toString())

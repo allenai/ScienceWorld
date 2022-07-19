@@ -421,7 +421,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     return inputStr
   }
 
-  def processUserInput(inputStr:String, universe:EnvObject):(Boolean, String) = {   // (Success, statusString)
+  def processUserInput(inputStr:String, universe:EnvObject):(Boolean, String, Option[Action]) = {   // (Success, statusString)
     val (successVisible, visibleObjects) = this.getAgentVisibleObjects()      // TODO: Currently just a reference to the container (current room), rather than a list
 
     if (!successVisible) throw new RuntimeException("ERROR: Agent is not in container.")
@@ -442,7 +442,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
         actionHandler.queueAction(action.get)
       }
 
-      return (successUserInput, userStr)
+      return (successUserInput, userStr, action)
     } else {
       // Case 2: Waiting to resolve an ambiguity
 
@@ -451,7 +451,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
       if (action.isDefined) {
         actionHandler.queueAction(action.get)
       }
-      return (true, userStr)
+      return (true, userStr, action)
 
     }
 
@@ -503,17 +503,17 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
 
 
   // Returns (observation, score, isCompleted)
-  def step(userInputStr: String): (String, Double, Boolean) = {
+  def step(userInputStr: String): (String, Double, Boolean, Option[Action]) = {
     val userOutStr = new StringBuilder()
 
 
     // Check whether the simulator is in an error state (if so, return the error message)
     if (this.isInErrorState()) {
-      return (this.getErrorStateMessage(), -1, true)
+      return (this.getErrorStateMessage(), -1, true, None)
     }
 
     // Parse user input
-    val (success, statusStr) = this.processUserInput(userInputStr, universe)
+    val (success, statusStr, action) = this.processUserInput(userInputStr, universe)
 
     /*
     // Uncomment to include the user input parse success/failure in the string (e.g. "successfully parsed action (look around)")
@@ -528,7 +528,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
       val score = task.goalSequence.score()
       val isCompleted = task.goalSequence.isCompleted()
       userOutStr.append(statusStr)
-      return (userOutStr.toString(), score, isCompleted)
+      return (userOutStr.toString(), score, isCompleted, action)
     }
 
     // Check for ambiguity resolution case after parsing new input
@@ -538,7 +538,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
       //println("### AMBIGUITY RESOLUTION CASE: " + statusStr)
       val score = task.goalSequence.score()
       val isCompleted = task.goalSequence.isCompleted()
-      return (statusStr, score, isCompleted)
+      return (statusStr, score, isCompleted, action)
     }
 
     try {
@@ -592,7 +592,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
 
     // Return action string
     val outStr = userOutStr.toString().trim.replaceAll(" +", " ")
-    return (outStr, score, isCompleted)
+    return (outStr, score, isCompleted, action)
   }
 
 }
