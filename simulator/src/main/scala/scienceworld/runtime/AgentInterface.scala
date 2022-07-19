@@ -182,7 +182,9 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
       if (!filter) {
         val uuid = obj.uuid
         val typeId = obj.typeID
-        val referents = obj.getReferents()
+        //val referents = obj.getReferents()
+        val referents = obj.getReferentsWithContainers(perspectiveContainer = this.agent.getContainer().get).toArray.sortBy(_.length)
+
         val referentsProcessed = new ArrayBuffer[String]
         for (referent <- referents) {
           referentsProcessed.append("\"" + referent + "\"")
