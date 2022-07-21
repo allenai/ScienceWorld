@@ -126,6 +126,11 @@ object EntryPoint {
 
         println("Possible actions: " + interface.agentInterface.get.getPossibleActions().mkString(", "))
 
+        println("Possible objects: " + interface.agentInterface.get.getPossibleObjects().mkString(", "))
+
+        val agent = interface.agentInterface.get.agent
+        val accessibleObjects = InputParser.collectAccessibleObjects(objectTreeRoot = agent.getContainer().get, includeHidden = true)
+        println("Accessible objects: " + accessibleObjects.map(_.name).mkString(", ") )
         //println("Locations: " + PathFinder.buildLocationGraph(universe) )
 
         //println("Pathfinder test: " + PathFinder.getLocationSequence(universe, startLocation = "living room", endLocation = "foundry")._2.mkString(", "))

@@ -8,6 +8,7 @@ import util.{UniqueIdentifier, UniqueTypeID}
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import EnvObject._
+import scienceworld.objects.agent.Agent
 import scienceworld.objects.electricalcomponent.ElectricalComponent.ROLE_VOLTAGE_USER
 import scienceworld.objects.electricalcomponent.{PolarizedElectricalComponent, Terminal, UnpolarizedElectricalComponent}
 import scienceworld.processes.genetics.ChromosomePair
@@ -214,7 +215,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
           }
         }
 
-        if ((cObj.propContainer.isDefined) && (cObj.propContainer.get.isOpen)) {      // If the object is an open container, add it's contents
+        if (((cObj.propContainer.isDefined) && (cObj.propContainer.get.isOpen)) || (cObj.isInstanceOf[Agent])) {      // If the object is an open container, add it's contents.  Edge case: If the object is an agent, also add it's contents (inventory)
           out ++= cObj.getContainedAccessibleObjects(includeHidden, includePortals)
         }
       }
