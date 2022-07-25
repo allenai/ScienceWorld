@@ -24,11 +24,11 @@ object ExampleGoldAgent {
     //val specificTasks = Array(15,16)           // Do specific tasks
     //val specificTasks = Array(28,29)           // Do specific tasks
     //val specificTasks = Array(4,5,6,7)           // Do specific tasks
-    val specificTasks = Array(0,1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29)           // Do specific tasks
+    //## val specificTasks = Array(0,1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29)           // Do specific tasks
 
     //val specificTasks = Array(9, 10)           // Do specific tasks
     //val specificTasks = Array(18)           // Do specific tasks
-    //val specificTasks = Array(13)           // Do specific tasks
+    val specificTasks = Array(15)           // Do specific tasks
 
     //val specificTasks = Array(0,1,2,3)         // Do specific tasks
     //val specificTasks = Array(4,5,6)           // Do specific tasks
@@ -89,7 +89,9 @@ object ExampleGoldAgent {
         val episodeScores = new ArrayBuffer[Double]
 
 
-        val maxTaskVariations = interface.getTaskMaxVariations(taskName)
+        //## val maxTaskVariations = interface.getTaskMaxVariations(taskName)
+        val maxTaskVariations = 2
+
 
         // For each variation
         var subsampleEveryNth:Int = 1
@@ -215,6 +217,7 @@ object ExampleGoldAgent {
 
 
     println ("Completed...")
+    println ("##############!!!!!!!!!!!!!!! MAX TASK VARIATIONS SET TO A LOW VALUE, RETURN TO NORMAL VALUE BEFORE COMMITTING!")
 
   }
 
@@ -296,14 +299,14 @@ object ExampleGoldAgent {
 // Storage class for histories
 class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val taskDescription:String = "", val simplificationStr:String = "", val foldDesc:String = "") {
   val historyActions = new ArrayBuffer[String]
-  val historyObservations = new ArrayBuffer[(String, Double, Boolean, Option[Action])]
+  val historyObservations = new ArrayBuffer[(String, Double, Boolean, Option[Action], Option[Array[Action]])]
   val historyFreeLook = new ArrayBuffer[String]
   val historyInventory = new ArrayBuffer[String]
   val notes = new ArrayBuffer[String]
 
   def length:Int = this.historyActions.length
 
-  def addStep(action:String, observation:(String, Double, Boolean, Option[Action]), freeLookStr:String, inventoryStr:String): Unit = {
+  def addStep(action:String, observation:(String, Double, Boolean, Option[Action], Option[Array[Action]]), freeLookStr:String, inventoryStr:String): Unit = {
     historyActions.append(action)
     historyObservations.append(observation)
     historyFreeLook.append(freeLookStr)
@@ -328,6 +331,9 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
       val score = historyObservations(i)._2
       val isCompleted = historyObservations(i)._3
       val action = historyObservations(i)._4
+      val ambiguousActionPossibilities = historyObservations(i)._5
+
+      // TODO: OUTPUT: ADD AMBIGUOUS ACTION POSSIBILITIES
 
       val freelook = historyFreeLook(i)
       val inventory = historyInventory(i)
@@ -372,6 +378,47 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
         json.append("\"actionArgObjIds\":[" + objArgsInOrder.map(_.uuid).mkString(", ") + "] ")
       }
 
+
+      val ambiguousActionJSONPieces = new ArrayBuffer[String]
+      if (ambiguousActionPossibilities.isDefined) {
+        for (ambiguousActionPossibility <- ambiguousActionPossibilities.get) {
+          val jsonPiece = new StringBuilder
+          jsonPiece.append("{")
+          jsonPiece.append("\"actionName\":\"" + ambiguousActionPossibility.action.name + "\", ")
+          jsonPiece.append("\"actionId\":\"" + ambiguousActionPossibility.action.uniqueActionID + "\", ")
+
+          // Extract parameter names (and the values that populate them) in order, so they can be exported in order.
+          val objArgsInOrder = new ArrayBuffer[EnvObject]
+
+          breakable {
+            for (oneTriggerPhrase <- ambiguousActionPossibility.action.triggers) { // It's possible for there to be more than one trigger phrase possibility for this action.  Try them all, until one gets non-zero matches.
+              objArgsInOrder.clear()
+              for (triggerElem <- oneTriggerPhrase.pattern) {
+                triggerElem match {
+                  case x: ActionExprIdentifier => {
+                    val paramName = x.identifier
+                    if (ambiguousActionPossibility.assignments.contains(paramName)) {
+                      val paramValue = ambiguousActionPossibility.assignments(paramName)
+                      objArgsInOrder.append(paramValue)
+                    }
+                  }
+                  case _ => {
+                    // Do nothing
+                  }
+                }
+              }
+              if (!objArgsInOrder.isEmpty) break()
+            }
+          }
+          jsonPiece.append("\"actionArgObjIds\":[" + objArgsInOrder.map(_.uuid).mkString(", ") + "] ")
+          jsonPiece.append("}")
+          ambiguousActionJSONPieces.append(jsonPiece.toString())
+        }
+      }
+
+      // Export
+      json.append(", ")
+      json.append("\"ambiguousActionPossibilities\":[" + ambiguousActionJSONPieces.mkString(", ") + "]")
       json.append("}")
 
       points.append( json.toString())

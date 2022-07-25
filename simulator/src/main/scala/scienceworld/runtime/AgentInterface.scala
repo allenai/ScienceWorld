@@ -3,7 +3,7 @@ package scienceworld.runtime
 import language.model.{ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
 import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.actions.{Action, ActionInventory, ActionLookAround, ActionTaskDesc}
-import scienceworld.input.{ActionDefinitions, ActionHandler, ExampleAction, InputParser}
+import scienceworld.input.{ActionDefinitions, ActionHandler, ActionTypecaster, ExampleAction, InputParser}
 import scienceworld.objects.agent.Agent
 import scienceworld.objects.electricalcomponent.Terminal
 import scienceworld.runtime.pythonapi.TemplateAction
@@ -421,7 +421,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     return inputStr
   }
 
-  def processUserInput(inputStr:String, universe:EnvObject):(Boolean, String, Option[Action]) = {   // (Success, statusString)
+  def processUserInput(inputStr:String, universe:EnvObject):(Boolean, String, Option[Action], Option[Array[Action]]) = {   // (Success, statusString, Action, or Array(AmbiguousActionPossibilities))
     val (successVisible, visibleObjects) = this.getAgentVisibleObjects()      // TODO: Currently just a reference to the container (current room), rather than a list
 
     if (!successVisible) throw new RuntimeException("ERROR: Agent is not in container.")
@@ -442,7 +442,9 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
         actionHandler.queueAction(action.get)
       }
 
-      return (successUserInput, userStr, action)
+      // Convert from array of InputMatches to array of possible Actions
+
+      return (successUserInput, userStr, action, this.convertAmbiguousActionsToActions)
     } else {
       // Case 2: Waiting to resolve an ambiguity
 
@@ -451,10 +453,25 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
       if (action.isDefined) {
         actionHandler.queueAction(action.get)
       }
-      return (true, userStr, action)
+      return (true, userStr, action, this.convertAmbiguousActionsToActions)
 
     }
 
+  }
+
+  // This is used for outputing ambiguous action possibilities in the gold output
+  def convertAmbiguousActionsToActions():Option[Array[Action]] = {
+    val out = new ArrayBuffer[Action]
+    if (inputParser.lastAmbiguousMatches.isEmpty) return None
+
+    // Convert each possible ambiguous action (as InputMatch) into an Action storage class
+    for (oneMatch <- inputParser.lastAmbiguousMatches.get) {
+      val oneAction = ActionTypecaster.typecastAction(oneMatch, objMonitor, task.goalSequence, agent)
+      out.append(oneAction)
+    }
+
+    // Return
+    Some(out.toArray)
   }
 
   /*
@@ -503,17 +520,17 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
 
 
   // Returns (observation, score, isCompleted)
-  def step(userInputStr: String): (String, Double, Boolean, Option[Action]) = {
+  def step(userInputStr: String): (String, Double, Boolean, Option[Action], Option[Array[Action]]) = {
     val userOutStr = new StringBuilder()
 
 
     // Check whether the simulator is in an error state (if so, return the error message)
     if (this.isInErrorState()) {
-      return (this.getErrorStateMessage(), -1, true, None)
+      return (this.getErrorStateMessage(), -1, true, None, None)
     }
 
     // Parse user input
-    val (success, statusStr, action) = this.processUserInput(userInputStr, universe)
+    val (success, statusStr, action, ambiguousActionPossibilities) = this.processUserInput(userInputStr, universe)
 
     /*
     // Uncomment to include the user input parse success/failure in the string (e.g. "successfully parsed action (look around)")
@@ -528,7 +545,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
       val score = task.goalSequence.score()
       val isCompleted = task.goalSequence.isCompleted()
       userOutStr.append(statusStr)
-      return (userOutStr.toString(), score, isCompleted, action)
+      return (userOutStr.toString(), score, isCompleted, action, ambiguousActionPossibilities)
     }
 
     // Check for ambiguity resolution case after parsing new input
@@ -538,7 +555,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
       //println("### AMBIGUITY RESOLUTION CASE: " + statusStr)
       val score = task.goalSequence.score()
       val isCompleted = task.goalSequence.isCompleted()
-      return (statusStr, score, isCompleted, action)
+      return (statusStr, score, isCompleted, action, ambiguousActionPossibilities)
     }
 
     try {
@@ -592,7 +609,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
 
     // Return action string
     val outStr = userOutStr.toString().trim.replaceAll(" +", " ")
-    return (outStr, score, isCompleted, action)
+    return (outStr, score, isCompleted, action, ambiguousActionPossibilities)
   }
 
 }
