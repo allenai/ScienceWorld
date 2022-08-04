@@ -12,9 +12,7 @@ import os
 import time
 import json
 import scienceworld
-BASEPATH = os.path.dirname(os.path.abspath(__file__))
-JAR_FILE = 'scienceworld-{version}.jar'.format(version=scienceworld.__version__)
-JAR_PATH = os.path.join(BASEPATH, JAR_FILE)
+from scienceworld.utils import DEFAULT_JAR_PATH
 
 
 class ScienceWorldEnv:
@@ -22,10 +20,8 @@ class ScienceWorldEnv:
     #
     # Constructor
     #
-    def __init__(self, taskName, serverPath=None, envStepLimit=100, threadNum=0, launchServer=True):
+    def __init__(self, taskName, serverPath=DEFAULT_JAR_PATH, envStepLimit=100, threadNum=0, launchServer=True):
         self.taskName = taskName
-        serverPath = serverPath or JAR_PATH  # Use the builtin jar.
-
         # Define the port number
         self.portNum = 25335 + threadNum
 

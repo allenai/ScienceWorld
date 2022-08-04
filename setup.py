@@ -2,16 +2,16 @@ import os.path, sys
 
 from setuptools import setup
 
-with open(os.path.join("scienceworld", "version.py")) as f:
-    VERSION = f.readlines()[0].split("=")[-1].strip("' \n")
+from scienceworld import scienceworld
+from scienceworld.utils import DEFAULT_JAR_PATH
 
-BASEPATH = os.path.dirname(os.path.abspath(__file__))
-JAR_FILE = 'scienceworld-{version}.jar'.format(version=VERSION)
-JAR_PATH = os.path.join(BASEPATH, 'scienceworld', JAR_FILE)
 OBJECTS_LUT_FILE = "object_type_ids.tsv"
+VERSION = scienceworld.version.__version__
 
-if not os.path.isfile(JAR_PATH):
-    print('ERROR: Unable to find required library:', JAR_PATH)
+JAR_FILE = DEFAULT_JAR_PATH.name
+
+if not DEFAULT_JAR_PATH.exists():
+    print('ERROR: Unable to find required library:', DEFAULT_JAR_PATH)
     sys.exit(1)
 
 setup(name='scienceworld',
