@@ -131,7 +131,7 @@ class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskPar
 
       val numLifeStages = gSequence.length
 
-      description = "Your task is to focus on the " + numLifeStages + " life stages of the " + animalName.get + ", starting from earliest to latest." // TODO: Better description?
+      description = "Your task is to focus on the " + numLifeStages + " life stages of the " + animalName.get + " located " + animalLocation.get + ", starting from earliest to latest." // TODO: Better description?
 
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
