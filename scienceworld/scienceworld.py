@@ -125,6 +125,7 @@ class ScienceWorldEnv:
     def shutdown(self):
         if hasattr(self, 'gateway'):
             self.gateway.shutdown()
+            del self.gateway
 
 
     # Simplifications
