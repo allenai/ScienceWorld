@@ -5,11 +5,9 @@
 #   pip install py4j                                (for scala-python interface)
 #   pip install -U pywebio                          (for web server)
 
-from py4j.java_gateway import JavaGateway, GatewayParameters
-import subprocess
+from py4j.java_gateway import JavaGateway, GatewayParameters, launch_gateway, CallbackServerParameters
 
 import os
-import time
 import json
 import scienceworld
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
@@ -22,19 +20,33 @@ class ScienceWorldEnv:
     #
     # Constructor
     #
-    def __init__(self, taskName, serverPath=None, envStepLimit=100, threadNum=0, launchServer=True):
+    def __init__(self, taskName, serverPath=None, envStepLimit=100):
         self.taskName = taskName
         serverPath = serverPath or JAR_PATH  # Use the builtin jar.
 
-        # Define the port number
-        self.portNum = 25335 + threadNum
+        # Launch the server and connect to the JVM.
 
-        # Launch the server
-        if (launchServer == True):
-            self.launchServer(serverPath)
+        # Launch Java side with dynamic port and get back the port on which the
+        # server was bound to.
+        port = launch_gateway(classpath=serverPath, die_on_exit=True, cwd=BASEPATH)
 
-        # Connect to the JVM
-        self.gateway = JavaGateway(gateway_parameters=GatewayParameters(auto_field=True, port=self.portNum))
+        # Connect python side to Java side with Java dynamic port and start python
+        # callback server with a dynamic port
+        self._gateway = JavaGateway(
+            gateway_parameters=GatewayParameters(auto_field=True, port=port),
+            callback_server_parameters=CallbackServerParameters(port=0, daemonize=True))
+
+        # Retrieve the port on which the python callback server was bound to.
+        python_port = self._gateway.get_callback_server().get_listening_port()
+
+        # Tell the Java side to connect to the python callback server with the new
+        # python port. Note that we use the java_gateway_server attribute that
+        # retrieves the GatewayServer instance.
+        self._gateway.java_gateway_server.resetCallbackClient(
+            self._gateway.java_gateway_server.getCallbackClient().getAddress(),
+            python_port)
+
+        self.server = self._gateway.jvm.scienceworld.runtime.pythonapi.PythonInterface()
 
         # Keep track of the last step score, to calculate reward from score
         self.lastStepScore = 0
@@ -51,28 +63,10 @@ class ScienceWorldEnv:
         # By default, set that the gold path was not generated unless the user asked for it
         self.goldPathGenerated = False
 
-    #
-    #   Destructor
-    #
-    def __del__(self):
-        # Shutdown the server
-        self.shutdown()
-
-
 
     #
     #   Methods
     #
-
-    # Launches the PY4J server
-    def launchServer(self, serverPath):
-        print("Launching ScienceWorld Server (Port " + str(self.portNum) + ") -- this may take a moment.")
-        cmd = "nohup java -cp " + serverPath + " scienceworld.runtime.pythonapi.PythonInterface " + str(self.portNum) + " >/dev/null 2>&1 &"
-
-        subprocess.Popen(cmd, cwd=BASEPATH, shell=True)
-        # The sleep command here is to give time for the server process to spawn.
-        # If you are spawning many threads simultaneously, you may need to increase this time.
-        time.sleep(5)
 
     # Ask the simulator to load an environment from a script
     def load(self, taskName, variationIdx, simplificationStr, generateGoldPath=False):
@@ -85,7 +79,7 @@ class ScienceWorldEnv:
             msg = "Invalid simplification. Task '{}' requires electrical actions but '--no-electrical' was provided."
             raise ValueError(msg.format(taskName))
 
-        self.gateway.load(self.scriptFilename, variationIdx, simplificationStr, generateGoldPath)
+        self.server.load(self.scriptFilename, variationIdx, simplificationStr, generateGoldPath)
 
         # Reset last step score (used to calculate reward from current-previous score)
         self.lastStepScore = 0
@@ -96,7 +90,7 @@ class ScienceWorldEnv:
 
     # Ask the simulator to reset an environment back to it's initial state
     def reset(self):
-        self.gateway.reset()
+        self.server.reset()
 
         # Reset last step score (used to calculate reward from current-previous score)
         self.lastStepScore = 0
@@ -121,79 +115,72 @@ class ScienceWorldEnv:
         return observation, info
 
 
-    # Shutdown the scala server
-    def shutdown(self):
-        if hasattr(self, 'gateway'):
-            self.gateway.shutdown()
-            del self.gateway
-
-
     # Simplifications
     def getSimplificationsUsed(self):
-        return self.gateway.getSimplificationsUsed()
+        return self.server.getSimplificationsUsed()
 
     def getPossibleSimplifications(self):
-        return self.gateway.getPossibleSimplifications()
+        return self.server.getPossibleSimplifications()
 
 
     # Get a list of valid tasks/environments
     def getTaskNames(self):
-        return list(self.gateway.getTaskNames())
+        return list(self.server.getTaskNames())
 
     # Get the maximum number of variations for this task
     def getMaxVariations(self, taskName):
-        return self.gateway.getTaskMaxVariations(taskName)
+        return self.server.getTaskMaxVariations(taskName)
 
     # Get possible actions
     def getPossibleActions(self):
-        return list(self.gateway.getPossibleActions())
+        return list(self.server.getPossibleActions())
 
     # Get possible actions (and also include the template IDs for those actions)
     def getPossibleActionsWithIDs(self):
-        jsonStr = self.gateway.getPossibleActionsWithIDs()
+        jsonStr = self.server.getPossibleActionsWithIDs()
         data = json.loads(jsonStr)
         return data
 
     # Get possible objects
     def getPossibleObjects(self):
-        return list(self.gateway.getPossibleObjects())
+        return list(self.server.getPossibleObjects())
 
     # Get a list of object_ids to unique referents
     def getPossibleObjectReferentLUT(self):
-        jsonStr = self.gateway.getPossibleObjectReferentLUTJSON()
+        jsonStr = self.server.getPossibleObjectReferentLUTJSON()
         data = json.loads(jsonStr)
         return data
 
     # As above, but dictionary is referenced by object type ID
     def getPossibleObjectReferentTypesLUT(self):
-        jsonStr = self.gateway.getPossibleObjectReferentTypesLUTJSON()
+        jsonStr = self.server.getPossibleObjectReferentTypesLUTJSON()
         data = json.loads(jsonStr)
         return data
 
     # Get a list of *valid* agent-object combinations
     def getValidActionObjectCombinations(self):
-        return list(self.gateway.getValidActionObjectCombinations())
+        return list(self.server.getValidActionObjectCombinations())
 
     def getValidActionObjectCombinationsWithTemplates(self):
-        jsonStr = self.gateway.getValidActionObjectCombinationsJSON()
+        jsonStr = self.server.getValidActionObjectCombinationsJSON()
         data = json.loads(jsonStr)
         return data['validActions']
 
     # Get a LUT of object_id to type_id
     def getAllObjectTypesLUTJSON(self):
-        jsonStr = self.gateway.getAllObjectTypesLUTJSON()
+        jsonStr = self.server.getAllObjectTypesLUTJSON()
         data = json.loads(jsonStr)
         return data
 
     # Get a LUT of {object_id: {type_id, referent:[]} } tuples
     def getAllObjectIdsTypesReferentsLUTJSON(self):
-        jsonStr = self.gateway.getAllObjectIdsTypesReferentsLUTJSON()
+        jsonStr = self.server.getAllObjectIdsTypesReferentsLUTJSON()
         data = json.loads(jsonStr)
         return data
 
     # Get possible action/object combinations
     def getPossibleActionObjectCombinations(self):
-        combinedJSON = self.gateway.getPossibleActionObjectCombinationsJSON()
+        combinedJSON = self.server.getPossibleActionObjectCombinationsJSON()
         data = json.loads(combinedJSON)
         templates = data['templates']
         lookUpTable = data['lookUpTable']
@@ -202,7 +189,7 @@ class ScienceWorldEnv:
 
     # Get a list of object types and their IDs
     def getObjectTypes(self):
-        jsonStr = self.gateway.getObjectTypesLUTJSON()
+        jsonStr = self.server.getObjectTypesLUTJSON()
         data = json.loads(jsonStr)
         return data
 
@@ -223,16 +210,16 @@ class ScienceWorldEnv:
 
 
     def getNumMoves(self):
-        return self.gateway.getNumMoves()
+        return self.server.getNumMoves()
 
     def getTaskDescription(self):
-        return self.gateway.getTaskDescription()
+        return self.server.getTaskDescription()
 
     #
     # History
     #
     def getRunHistory(self):
-        historyStr = self.gateway.getRunHistoryJSON()
+        historyStr = self.server.getRunHistoryJSON()
         #print("historyStr: " + str(historyStr))
         jsonOut = json.loads(historyStr)
         return jsonOut
@@ -284,35 +271,35 @@ class ScienceWorldEnv:
     # Train/development/test sets
     #
     def getVariationsTrain(self):
-        return list(self.gateway.getVariationsTrain())
+        return list(self.server.getVariationsTrain())
 
     def getVariationsDev(self):
-        return list(self.gateway.getVariationsDev())
+        return list(self.server.getVariationsDev())
 
     def getVariationsTest(self):
-        return list(self.gateway.getVariationsTest())
+        return list(self.server.getVariationsTest())
 
     def getRandomVariationTrain(self):
-        return self.gateway.getRandomVariationTrain()
+        return self.server.getRandomVariationTrain()
 
     def getRandomVariationDev(self):
-        return self.gateway.getRandomVariationDev()
+        return self.server.getRandomVariationDev()
 
     def getRandomVariationTest(self):
-        return self.gateway.getRandomVariationTest()
+        return self.server.getRandomVariationTest()
 
     # Gold action sequence
     def getGoldActionSequence(self):
         if (self.goldPathGenerated == True):
-            return list(self.gateway.getGoldActionSequence())
+            return list(self.server.getGoldActionSequence())
         else:
             return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]
 
     # Step
     def step(self, inputStr:str):
-        observation = self.gateway.step(inputStr)
-        score = int(round(100 * self.gateway.getScore()))        # Convert from 0-1 to 0-100
-        isCompleted = self.gateway.getCompleted()
+        observation = self.server.step(inputStr)
+        score = int(round(100 * self.server.getScore()))        # Convert from 0-1 to 0-100
+        isCompleted = self.server.getCompleted()
         numMoves = self.getNumMoves()
 
         # Calculate reward
@@ -346,20 +333,20 @@ class ScienceWorldEnv:
 
     # Special actions that are "free" (consume zero time)
     def look(self):
-        observation = self.gateway.freeActionLook()
+        observation = self.server.freeActionLook()
         return observation
 
     def inventory(self):
-        observation = self.gateway.freeActionInventory()
+        observation = self.server.freeActionInventory()
         return observation
 
     def taskdescription(self):
-        observation = self.gateway.freeActionTaskDesc()
+        observation = self.server.freeActionTaskDesc()
         return observation
 
     # Goal progress
     def getGoalProgressStr(self):
-        goalStr = self.gateway.getGoalProgressStr()
+        goalStr = self.server.getGoalProgressStr()
         return goalStr
 
 

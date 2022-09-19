@@ -91,7 +91,7 @@ def app():
     pywebio.session.set_env(title='ScienceWorld Demo', auto_scroll_bottom=True)
 
     # Initialize environment
-    env = ScienceWorldEnv("", serverPath=None, envStepLimit = 100, threadNum = 5)
+    env = ScienceWorldEnv("", serverPath=None, envStepLimit = 100)
 
     pywebio_out.put_markdown('## Science World (Text Simulation)')
     #put_button("Click here to export transcript", onclick=lambda: , color='success', outline=True)
@@ -195,9 +195,6 @@ def app():
 
         time.sleep(1)
 
-
-    print("Shutting down server...")
-    env.shutdown()
 
     print("Completed.")
 
