@@ -29,7 +29,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
   val mixingContainers = Random.shuffle( List(new GlassCup(), new WoodBowl(), new Jug()) )
   val locations = Array("art studio", "workshop")
 
-  //val locations = Array("green house")
+  //val locations = Array("greenhouse")
   for (location <- locations) {
     val paints2 = Array(new RedPaint, new BluePaint, new YellowPaint) //, new GreenPaint, new VioletPaint, new OrangePaint)
 

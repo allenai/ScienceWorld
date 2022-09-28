@@ -32,7 +32,7 @@ class TaskMendelianGenetics2 {
 class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends TaskParametric {
   val taskName = "task-9-" + mode.replaceAll(" ", "-")
 
-  val locations = Array("green house")
+  val locations = Array("greenhouse")
 
   // Variation 1: Genetic Trait
   val genetics = new ArrayBuffer[ Array[TaskModifier] ]()
@@ -223,8 +223,8 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
 
       // Moving to helpful locations
       gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
-      gSequenceUnordered.append(new GoalMoveToLocation("green house", _isOptional = true, key = "move1", description = "move to the green house") )
-      gSequenceUnordered.append(new GoalMoveToLocation("green house", _isOptional = true, key = "move2", keysMustBeCompletedBefore = Array("haveSeedJar"), description = "move to the green house (after having seed jar)") )
+      gSequenceUnordered.append(new GoalMoveToLocation("greenhouse", _isOptional = true, key = "move1", description = "move to the greenhouse") )
+      gSequenceUnordered.append(new GoalMoveToLocation("greenhouse", _isOptional = true, key = "move2", keysMustBeCompletedBefore = Array("haveSeedJar"), description = "move to the greenhouse (after having seed jar)") )
 
       // Have soil in flower pots
       var cIdx:Int = 1
@@ -315,7 +315,7 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
     val flowerPotNames = this.getTaskValueStr(modifiers, "flowerPotNames").get.split(",")
     val seedType = this.getTaskValueStr(modifiers, "seedType").get
 
-    val seedLocation = "green house"
+    val seedLocation = "greenhouse"
 
     // Step 1: Move from starting location to task location
     val startLocation = agent.getContainer().get.name
@@ -333,8 +333,8 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
     runAction("pick up seed jar", runner)
 
     /*
-    // Go to green house
-    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "green house")
+    // Go to greenhouse
+    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "greenhouse")
     runActionSequence(actionStrs1, runner)
      */
 
@@ -403,8 +403,8 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
           // Pick up dirt
           TaskParametric.runAction("pick up soil", runner)
 
-          // Go back to the green house
-          val (actions3, actionStrs3) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "green house")
+          // Go back to the greenhouse
+          val (actions3, actionStrs3) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "greenhouse")
           runActionSequence(actionStrs3, runner)
 
           // Move soil to flower pot
