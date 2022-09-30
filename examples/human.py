@@ -129,21 +129,21 @@ def userConsole(args):
 
 def build_simplification_str(args):
     """ Build simplification_str from args. """
-    simplifications = set()
+    simplifications = list()
     if args["teleport"]:
-        simplifications.add("teleportAction")
+        simplifications.append("teleportAction")
 
     if args["self_watering_plants"]:
-        simplifications.add("selfWateringFlowerPots")
+        simplifications.append("selfWateringFlowerPots")
 
     if args["open_containers"]:
-        simplifications.add("openContainers")
+        simplifications.append("openContainers")
 
     if args["open_doors"]:
-        simplifications.add("openDoors")
+        simplifications.append("openDoors")
 
     if args["no_electrical"]:
-        simplifications.add("noElectricalAction")
+        simplifications.append("noElectricalAction")
 
     return args["simplifications_preset"] or ",".join(simplifications)
 
