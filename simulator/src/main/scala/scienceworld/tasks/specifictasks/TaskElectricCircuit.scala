@@ -453,12 +453,12 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
 
       var livingThingLocation = "outside"
       if (mode == MODE_LIVING) {
-        val shuffledLocations = Random.shuffle(List("outside", "green house"))
+        val shuffledLocations = Random.shuffle(List("outside", "greenhouse"))
         livingThingLocation = shuffledLocations(0)
       } else if (mode == MODE_ANIMAL) {
         livingThingLocation = "outside"         // Animals are outside
       } else if (mode == MODE_PLANT) {
-        livingThingLocation = "green house"     // Plants are in the green house
+        livingThingLocation = "greenhouse"     // Plants are in the greenhouse
       }
 
       // Step 1: Move from starting location to a place likely to have animals

@@ -252,7 +252,7 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
     val boxBelow = this.getTaskValueStr(modifiers, "boxBelow").get
     val boxLocation = this.getTaskValueStr(modifiers, key = "locationAnswerBox").get
 
-    val seedLocation = "green house"
+    val seedLocation = "greenhouse"
 
 
     // Stage 1: Get thermometer

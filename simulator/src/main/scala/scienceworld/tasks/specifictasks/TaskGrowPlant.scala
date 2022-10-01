@@ -38,8 +38,8 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
   // Variation 1: Which seeds to grow
   val seeds = new ArrayBuffer[ Array[TaskModifier] ]()
-  val locations = Array("kitchen", "bathroom", "living room", "bedroom", "workshop", "green house")
-  //val locations = Array("green house")
+  val locations = Array("kitchen", "bathroom", "living room", "bedroom", "workshop", "greenhouse")
+  //val locations = Array("greenhouse")
   for (location <- locations) {
 
     val seedJarApple = TaskGrowPlant.mkSeedJar(PlantReproduction.PLANT_APPLE)
@@ -80,7 +80,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     val container = new FlowerPot()
     container.name = "flower pot " + (i+1)
     container.addObject( new Soil() )
-    case1tm.append( new TaskObject(container.name, Some(container), roomToGenerateIn = "green house", Array.empty[String], generateNear = 0))
+    case1tm.append( new TaskObject(container.name, Some(container), roomToGenerateIn = "greenhouse", Array.empty[String], generateNear = 0))
     containerNames1.append(container.name)
   }
   case1tm.append( new TaskValueStr("containerNames", containerNames1.mkString(",")))
@@ -93,11 +93,11 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
   for (i <- 0 until numContainers) {
     val container = new FlowerPot()
     container.name = "flower pot " + (i+1)
-    case2tm.append( new TaskObject(container.name, Some(container), roomToGenerateIn = "green house", Array.empty[String], generateNear = 0))
+    case2tm.append( new TaskObject(container.name, Some(container), roomToGenerateIn = "greenhouse", Array.empty[String], generateNear = 0))
     containerNames2.append(container.name)
 
     val soil = new Soil()
-    case2tm.append( new TaskObject(soil.name, Some(soil), roomToGenerateIn = "green house", Array.empty[String], generateNear = 0))
+    case2tm.append( new TaskObject(soil.name, Some(soil), roomToGenerateIn = "greenhouse", Array.empty[String], generateNear = 0))
   }
   case2tm.append( new TaskValueStr("containerNames", containerNames2.mkString(",")))
   plantContainers.append( case2tm.toArray )
@@ -108,7 +108,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
   for (i <- 0 until numContainers) {
     val container = new FlowerPot()
     container.name = "flower pot " + (i+1)
-    case3tm.append( new TaskObject(container.name, Some(container), roomToGenerateIn = "green house", Array.empty[String], generateNear = 0))
+    case3tm.append( new TaskObject(container.name, Some(container), roomToGenerateIn = "greenhouse", Array.empty[String], generateNear = 0))
     containerNames3.append(container.name)
   }
   case3tm.append( new TaskValueStr("containerNames", containerNames3.mkString(",")))
@@ -192,8 +192,8 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
       // Moving to helpful locations
       gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
-      gSequenceUnordered.append(new GoalMoveToLocation("green house", _isOptional = true, key = "move1", description = "move to the green house") )
-      gSequenceUnordered.append(new GoalMoveToLocation("green house", _isOptional = true, key = "move2", keysMustBeCompletedBefore = Array("haveSeedJar"), description = "move to the green house (after having seed jar)") )
+      gSequenceUnordered.append(new GoalMoveToLocation("greenhouse", _isOptional = true, key = "move1", description = "move to the greenhouse") )
+      gSequenceUnordered.append(new GoalMoveToLocation("greenhouse", _isOptional = true, key = "move2", keysMustBeCompletedBefore = Array("haveSeedJar"), description = "move to the greenhouse (after having seed jar)") )
 
       // Have soil in flower pots
       var cIdx:Int = 1
@@ -235,8 +235,8 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
 
       // Moving to helpful locations
       gSequenceUnordered.append(new GoalMoveToNewLocation(_isOptional = true, unlessInLocation = "", description = "move to a new location") )            // Move to any new location
-      gSequenceUnordered.append(new GoalMoveToLocation("green house", _isOptional = true, key = "move1", description = "move to the green house") )
-      gSequenceUnordered.append(new GoalMoveToLocation("green house", _isOptional = true, key = "move2", keysMustBeCompletedBefore = Array("haveSeedJar"), description = "move to the green house (after having seed jar)") )
+      gSequenceUnordered.append(new GoalMoveToLocation("greenhouse", _isOptional = true, key = "move1", description = "move to the greenhouse") )
+      gSequenceUnordered.append(new GoalMoveToLocation("greenhouse", _isOptional = true, key = "move2", keysMustBeCompletedBefore = Array("haveSeedJar"), description = "move to the greenhouse (after having seed jar)") )
 
       // Have soil in flower pots
       var cIdx:Int = 1
@@ -336,8 +336,8 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
     runAction("pick up seed jar", runner)
 
-    // Go to green house
-    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "green house")
+    // Go to greenhouse
+    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "greenhouse")
     runActionSequence(actionStrs1, runner)
 
     // Look around
@@ -406,8 +406,8 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
           // Pick up dirt
           TaskParametric.runAction("pick up soil", runner)
 
-          // Go back to the green house
-          val (actions3, actionStrs3) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "green house")
+          // Go back to the greenhouse
+          val (actions3, actionStrs3) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "greenhouse")
           runActionSequence(actionStrs3, runner)
 
           // Move soil to flower pot
@@ -569,8 +569,8 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     //runAction("pick up " + PathFinder.getObjUniqueReferent(seedJar, getCurrentAgentLocation(runner)).get, runner)
     runAction("pick up seed jar", runner)
 
-    // Go to green house
-    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "green house")
+    // Go to greenhouse
+    val (actions1, actionStrs1) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "greenhouse")
     runActionSequence(actionStrs1, runner)
 
     // Look around
@@ -634,8 +634,8 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
         // Pick up dirt
         TaskParametric.runAction("pick up soil", runner)
 
-        // Go back to the green house
-        val (actions3, actionStrs3) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "green house")
+        // Go back to the greenhouse
+        val (actions3, actionStrs3) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "greenhouse")
         runActionSequence(actionStrs3, runner)
 
         // Move soil to flower pot

@@ -293,7 +293,7 @@ object RoomMaker {
    */
   def mkGreenhouse(sewer:EnvObject): Room = {
     // House
-    val room = new Room("green house")
+    val room = new Room("greenhouse")
 
 
     // Water jug
@@ -513,7 +513,7 @@ object BuildingMaker {
     val roomWorkshop = RoomMaker.mkWorkshop()
     universe.addObject(roomWorkshop)
 
-    // Green House
+    // Greenhouse
     val roomGreenhouse = RoomMaker.mkGreenhouse(sewer)
     universe.addObject(roomGreenhouse)
 
@@ -536,7 +536,7 @@ object BuildingMaker {
     val foundry = RoomMaker.mkFoundry(sewer)
     universe.addObject(foundry)
 
-    // Randomly put a shoven in either the green house or outside
+    // Randomly put a shoven in either the greenhouse or outside
     // Shovel
     val shovel = new Shovel()
     if (Random.nextInt(2) == 1) {

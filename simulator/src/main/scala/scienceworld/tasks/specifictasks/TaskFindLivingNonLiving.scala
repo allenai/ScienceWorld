@@ -31,7 +31,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
   val livingThings = new ArrayBuffer[ Array[TaskModifier] ]()
   for (i <- 0 until 10) {
     val livingThingsToAdd = TaskFindLivingNonLiving.mkRandomAnimals(location = "outside", numAnimals = 3, variationIdx = i) ++
-                            TaskFindLivingNonLiving.mkRandomPlants(location = "green house", numPlants = 3, variationIdx = i)
+                            TaskFindLivingNonLiving.mkRandomPlants(location = "greenhouse", numPlants = 3, variationIdx = i)
     livingThings.append( livingThingsToAdd )
   }
 
@@ -249,12 +249,12 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
 
     var livingThingLocation = "outside"
     if (mode == MODE_LIVING) {
-      val shuffledLocations = Random.shuffle(List("outside", "green house"))
+      val shuffledLocations = Random.shuffle(List("outside", "greenhouse"))
       livingThingLocation = shuffledLocations(0)
     } else if (mode == MODE_ANIMAL) {
       livingThingLocation = "outside"         // Animals are outside
     } else if (mode == MODE_PLANT) {
-      livingThingLocation = "green house"     // Plants are in the green house
+      livingThingLocation = "greenhouse"     // Plants are in the greenhouse
     }
 
     // Step 1: Move from starting location to a place likely to have animals
