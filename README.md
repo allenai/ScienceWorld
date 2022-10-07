@@ -103,7 +103,13 @@ The subtasks and their associated subtask indices are listed below.  Subtask ind
 
 
 # Baseline Agents
-Coming soon!
+**DRRN:** https://github.com/cognitiveailab/drrn-scienceworld
+
+**KG-A2C:** https://github.com/cognitiveailab/kga2c-scienceworld
+
+**CALM:** https://github.com/cognitiveailab/calm-scienceworld
+
+**Behavior Cloning and Decision Transformer:** https://github.com/cognitiveailab/t5-scienceworld
 
 # Additional Documentation
 Coming soon!
