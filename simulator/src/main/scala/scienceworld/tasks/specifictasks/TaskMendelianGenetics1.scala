@@ -83,7 +83,7 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
 
   // Variation 3: Answer boxes
   val answerBoxes = new ArrayBuffer[ Array[TaskModifier] ]()
-  val answerBoxColors = Array("red", "green, "blue", "orange")
+  val answerBoxColors = Array("red", "green", "blue", "orange")
   for (location <- locations) {
     for (i <- 0 until answerBoxColors.length-1) {
       val colorDom = answerBoxColors(i)
