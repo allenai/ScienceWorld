@@ -92,7 +92,7 @@ object Chemistry {
 
     val peanut = this.getSubstance(container, "peanut")
     val almond = this.getSubstance(container, "almond")
-    val cachew = this.getSubstance(container, "cachew")
+    val cashew = this.getSubstance(container, "cashew")
 
     val apple = this.getSubstance(container, "apple")
     val orange = this.getSubstance(container, "orange")
@@ -368,13 +368,13 @@ object Chemistry {
        */
 
       // Mixed nuts
-      if (peanut.isDefined && almond.isDefined && cachew.isDefined) {
+      if (peanut.isDefined && almond.isDefined && cashew.isDefined) {
         peanut.get.delete()
         almond.get.delete()
-        cachew.get.delete()
+        cashew.get.delete()
 
         container.addObject(new MixedNuts())
-        return (true, "Peanuts, almonds, and cachews mix to produce mixed nuts.")
+        return (true, "Peanuts, almonds, and cashews mix to produce mixed nuts.")
       }
 
       // Fruit salad

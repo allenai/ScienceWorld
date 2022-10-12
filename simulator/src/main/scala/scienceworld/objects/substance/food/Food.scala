@@ -449,17 +449,17 @@ class Peanut extends Food {
 
 }
 
-class Cachew extends Food {
-  this.name = "cachew"
+class Cashew extends Food {
+  this.name = "cashew"
   this.propEdibility = Some(new Edible())
   this.propMaterial = Some(new NutProp())
 
   override def getReferents(): Set[String] = {
-    Set("cachew", this.name, this.getDescriptName())
+    Set("cashew", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    val canonicalName = "cachew"
+    val canonicalName = "cashew"
     return this.getDescriptName(canonicalName)
   }
 

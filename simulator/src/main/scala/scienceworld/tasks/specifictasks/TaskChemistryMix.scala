@@ -6,7 +6,7 @@ import scienceworld.objects.agent.Agent
 import scienceworld.objects.containers.{CeramicCup, Cup, FlowerPot, MetalPot}
 import scienceworld.objects.document.{Paper, Recipe}
 import scienceworld.objects.livingthing.plant.{Plant, Soil}
-import scienceworld.objects.substance.food.{Almond, Apple, Banana, Bread, Cachew, Chocolate, Flour, Jam, Marshmallow, Orange, Peanut}
+import scienceworld.objects.substance.food.{Almond, Apple, Banana, Bread, Cashew, Chocolate, Flour, Jam, Marshmallow, Orange, Peanut}
 import scienceworld.objects.substance.paint.{BluePaint, GreenPaint, RedPaint}
 import scienceworld.objects.substance.{AceticAcid, IronBlock, Soap, SodiumBicarbonate, SodiumChloride, Sugar, Water}
 import scienceworld.processes.PlantReproduction
@@ -43,8 +43,8 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     // Mixed nuts
     val peanut = new Peanut()
     val almond = new Almond()
-    val cachew = new Cachew()
-    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "mixed nuts", inputObjects = Array(peanut, almond, cachew), generateLocation = location, excludeFromAdding = Array("water")))
+    val cashew = new Cashew()
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "mixed nuts", inputObjects = Array(peanut, almond, cashew), generateLocation = location, excludeFromAdding = Array("water")))
 
     // Volcano
     val vinegar = new AceticAcid()
