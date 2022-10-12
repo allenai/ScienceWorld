@@ -56,7 +56,7 @@ class ParamIterator(paramSigList:ParamSigList, objsByType:Map[String, Set[EnvObj
     false
   }
 
-  // Retrive the next pattern
+  // Retrieve the next pattern
   def next():Option[Array[EnvObject]] = {
     if (!this.hasNext()) return None
 
@@ -111,7 +111,7 @@ class ParamIterator(paramSigList:ParamSigList, objsByType:Map[String, Set[EnvObj
     sum
   }
 
-  // Convert from indicies in 'out' to object references in 'outObj'
+  // Convert from indices in 'out' to object references in 'outObj'
   private def convertCountToObjs(): Unit = {
     for (i <- 0 until numParam) {
       outObj(i) = this.possibleFillers(i)(out(i))

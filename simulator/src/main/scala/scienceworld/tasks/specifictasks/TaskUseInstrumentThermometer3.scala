@@ -510,4 +510,3 @@ object TaskUseInstrumentThermometer3 {
   }
 
 }
-

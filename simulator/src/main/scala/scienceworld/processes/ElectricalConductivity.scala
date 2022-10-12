@@ -97,7 +97,7 @@ object ElectricalConductivity {
       }
     }
 
-    // If not dirctly connected, recurse
+    // If not directly connected, recurse
     for (connection <- connections) {
       // Connections should be to terminals on objects
       connection match {
@@ -134,7 +134,7 @@ object ElectricalConductivity {
       }
     }
 
-    // If not dirctly connected, recurse
+    // If not directly connected, recurse
     for (connection <- connections) {
       // Connections should be to terminals on objects
       connection match {

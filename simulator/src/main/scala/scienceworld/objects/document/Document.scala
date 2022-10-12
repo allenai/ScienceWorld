@@ -217,9 +217,8 @@ class BookOriginOfSpecies extends Book {
   this.title = "The Foundations of the Origin of Species"
   this.author = "Charles Darwin"
   this.contents = """I. On Variation under Domestication, and on the Principles of Selection.
-                    |An individual organism placed under new conditions sometimes varies in a small degree and in very trifling respects such as stature, fatness, sometimes colour, health, habits in animals and probably disposition. Also habits of life develope certain parts. Disuse atrophies.
+                    |An individual organism placed under new conditions sometimes varies in a small degree and in very trifling respects such as stature, fatness, sometimes colour, health, habits in animals and probably disposition. Also habits of life develop certain parts. Disuse atrophies.
                     |When the individual is multiplied for long periods by buds the variation is yet small, though greater and occasionally a single bud or individual departs widely from its type and continues steadily to propagate, by buds, such new kind. """.stripMargin
 
   this.name = "book (" + this.title + ")"
 }
-

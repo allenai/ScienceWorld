@@ -62,7 +62,7 @@ class LifeCycle(lifeCycleName:String = "life cycle of the X organism") {
 /*
  * Life stage (prototype)
  */
-// If cannonicalName is empty, then defaults to e.g. 'stageName' + 'animalName' (e.g. 'baby elephant').  Cannonical name is for special cases (e.g. 'baby butterfly' is a caterpillar).
+// If cannonicalName is empty, then defaults to e.g. 'stageName' + 'animalName' (e.g. 'baby elephant').  Canonical name is for special cases (e.g. 'baby butterfly' is a caterpillar).
 class LifeStage(val stageName: String, obj:EnvObject, lifecycle:LifeCycle, cannonicalName:String = "") {
   // Is this life stage completed?
   private var _isCompleted: Boolean = false
@@ -110,5 +110,3 @@ class LifeStage(val stageName: String, obj:EnvObject, lifecycle:LifeCycle, canno
   }
 
 }
-
-

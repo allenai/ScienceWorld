@@ -133,4 +133,3 @@ class WindGenerator extends RenewableOutdoorGenerator {
   this.name = "wind generator"
   this.propDevice = Some(new IsNotActivableDeviceOff())
 }
-

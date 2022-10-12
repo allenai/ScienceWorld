@@ -132,4 +132,3 @@ class GoalIsDifferentStateOfMatter(_isOptional:Boolean = false, description:Stri
   }
 
 }
-

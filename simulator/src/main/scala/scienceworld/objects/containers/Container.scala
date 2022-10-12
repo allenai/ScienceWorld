@@ -53,7 +53,7 @@ class Container extends EnvObject {
 
 
 /*
- * Base class for cannonical containers used to pick up other things
+ * Base class for canonical containers used to pick up other things
  */
 class Cup extends Container {
 

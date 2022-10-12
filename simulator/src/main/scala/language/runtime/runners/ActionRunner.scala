@@ -122,7 +122,7 @@ class ActionRunner(val possibleActions:Array[ActionRequestDef], val taxonomy:Tax
 
       // Verify that the value exists and is a valid object
       if (value.isEmpty) return (false, "ERROR: Could not find assignment for Action (" + action.name + ") parameter (" + param.name + ").", "")
-      if (!value.get.isObject()) return (false, "ERROR: Assignment for Action (" + action.name + ") parameter (" + param.name + ") is a differnt type than expected (expected: " + DynamicValue.TYPE_OBJECT + ", actual: " + value.get.getTypeStr() + ").", "")
+      if (!value.get.isObject()) return (false, "ERROR: Assignment for Action (" + action.name + ") parameter (" + param.name + ") is a different type than expected (expected: " + DynamicValue.TYPE_OBJECT + ", actual: " + value.get.getTypeStr() + ").", "")
       val obj = value.get.getObject().get
 
       // Pop it onto the arguments list (that will be passed to the string hashcode generator)

@@ -570,4 +570,3 @@ object TaskElectricCircuit {
   }
 
 }
-

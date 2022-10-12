@@ -404,4 +404,3 @@ object TaskInclinedPlane3 {
   }
 
 }
-

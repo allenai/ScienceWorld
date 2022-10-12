@@ -47,4 +47,3 @@ case class ConditionElem(condition:Condition) extends ConditionExpr {
   }
 
 }
-

@@ -1,7 +1,7 @@
 package scienceworld.processes
 
 import scienceworld.objects.document.ColoredPaper
-import scienceworld.objects.substance.food.{Dough, FruitSalad, MixedNuts, Sandwhich, Smores}
+import scienceworld.objects.substance.food.{Dough, FruitSalad, MixedNuts, Sandwich, Smores}
 import scienceworld.objects.substance.paint.{BlueVioletPaint, BrownPaint, GreenBluePaint, GreenPaint, OrangePaint, RedOrangePaint, VioletPaint, VioletRedPaint, YellowGreenPaint, YellowOrangePaint}
 import scienceworld.objects.substance.{Rust, SaltWater, SoapyWater, SodiumAcetate, SugarWater}
 import scienceworld.properties.RedOrangePaintProp
@@ -207,26 +207,26 @@ object Chemistry {
       }
 
 
-      // 2-ingredient sandwhiches
+      // 2-ingredient sandwiches
       if (bread.isDefined && peanut.isDefined) {
         bread.get.delete()
         peanut.get.delete()
-        container.addObject(new Sandwhich("peanut butter"))
-        return (true, "Bread and peanuts mix to produce a peanut butter sandwhich.")
+        container.addObject(new Sandwich("peanut butter"))
+        return (true, "Bread and peanuts mix to produce a peanut butter sandwich.")
       }
 
       if (bread.isDefined && jam.isDefined) {
         bread.get.delete()
         jam.get.delete()
-        container.addObject(new Sandwhich("jam"))
-        return (true, "Bread and peanuts mix to produce a jam sandwhich.")
+        container.addObject(new Sandwich("jam"))
+        return (true, "Bread and peanuts mix to produce a jam sandwich.")
       }
 
       if (bread.isDefined && banana.isDefined) {
         bread.get.delete()
         banana.get.delete()
-        container.addObject(new Sandwhich("banana"))
-        return (true, "Bread and peanuts mix to produce a banana sandwhich.")
+        container.addObject(new Sandwich("banana"))
+        return (true, "Bread and peanuts mix to produce a banana sandwich.")
       }
 
 
@@ -387,21 +387,21 @@ object Chemistry {
         return (true, "Apples, oranges, and bananas mix to produce fruit salad.")
       }
 
-      // 3-ingredient sandwhiches
+      // 3-ingredient sandwiches
       if (bread.isDefined && peanut.isDefined && jam.isDefined) {
         bread.get.delete()
         peanut.get.delete()
         jam.get.delete()
-        container.addObject(new Sandwhich("peanut butter with jam"))
-        return (true, "Bread and peanuts and jam mix to produce a peanut butter with jam sandwhich.")
+        container.addObject(new Sandwich("peanut butter with jam"))
+        return (true, "Bread and peanuts and jam mix to produce a peanut butter with jam sandwich.")
       }
 
       if (bread.isDefined && peanut.isDefined && banana.isDefined) {
         bread.get.delete()
         peanut.get.delete()
         banana.get.delete()
-        container.addObject(new Sandwhich("peanut butter with banana"))
-        return (true, "Bread and peanuts and jam mix to produce a peanut butter with banana sandwhich.")
+        container.addObject(new Sandwich("peanut butter with banana"))
+        return (true, "Bread and peanuts and jam mix to produce a peanut butter with banana sandwich.")
       }
 
 

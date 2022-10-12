@@ -19,5 +19,3 @@ class Device extends EnvObject {
   }
 
 }
-
-

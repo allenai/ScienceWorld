@@ -10,6 +10,3 @@ class PollinationProperties {
   var parent2ChromosomePairs:Option[ChromosomePair] = None
 
 }
-
-
-

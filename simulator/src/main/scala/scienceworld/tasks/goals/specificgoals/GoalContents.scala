@@ -280,4 +280,3 @@ class GoalContainerOpen(containerName:String = "", _isOptional:Boolean = false, 
     return GoalReturn.mkSubgoalUnsuccessful()  }
 
 }
-

@@ -51,19 +51,19 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     val bakingsoda = new SodiumBicarbonate()
     baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "sodium acetate", inputObjects = Array(vinegar, bakingsoda), generateLocation = location, excludeFromAdding = Array("water")))
 
-    // banana + bread = banana sandwhich
-    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "banana sandwhich", inputObjects = Array(new Banana(), new Bread()), generateLocation = location))
+    // banana + bread = banana sandwich
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "banana sandwich", inputObjects = Array(new Banana(), new Bread()), generateLocation = location))
 
     // Paper + blue paint = blue paper  (paint should be found in art room)
     val paper1 = new Paper()
     val bluepaint = new BluePaint()
     baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "blue paper", inputObjects = Array(paper1, bluepaint), generateLocation = location, excludeFromAdding = Array(bluepaint.name)))
 
-    // peanut + bread = peanut butter sandwhich
-    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "peanut butter sandwhich", inputObjects = Array(new Peanut(), new Bread()), generateLocation = location))
+    // peanut + bread = peanut butter sandwich
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "peanut butter sandwich", inputObjects = Array(new Peanut(), new Bread()), generateLocation = location))
 
-    // peanut + jam + bread = peanut butter with jam sandwhich
-    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "peanut butter with jam sandwhich", inputObjects = Array(new Peanut(), new Jam(), new Bread()), generateLocation = location))
+    // peanut + jam + bread = peanut butter with jam sandwich
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "peanut butter with jam sandwich", inputObjects = Array(new Peanut(), new Jam(), new Bread()), generateLocation = location))
   }
 
   // Dev
@@ -83,8 +83,8 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     val banana = new Banana()
     baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "fruit salad", inputObjects = Array(apple, orange, banana), generateLocation = location))
 
-    // jam + bread = peanut butter with jam sandwhich
-    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "jam sandwhich", inputObjects = Array(new Jam(), new Bread()), generateLocation = location))
+    // jam + bread = peanut butter with jam sandwich
+    baseChemicals.append(TaskChemistryMix.setupRecipeTask(resultObject = "jam sandwich", inputObjects = Array(new Jam(), new Bread()), generateLocation = location))
   }
 
   // Test
@@ -93,8 +93,8 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
     val sugar = new Sugar()
     baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "sugar water", inputObjects = Array(sugar, new Water()), generateLocation = location, excludeFromAdding = Array("water")) )
 
-    // peanut + banana + bread = banana sandwhich
-    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "peanut butter with banana sandwhich", inputObjects = Array(new Peanut(), new Banana(), new Bread()), generateLocation = location) )
+    // peanut + banana + bread = banana sandwich
+    baseChemicals.append( TaskChemistryMix.setupRecipeTask(resultObject = "peanut butter with banana sandwich", inputObjects = Array(new Peanut(), new Banana(), new Bread()), generateLocation = location) )
 
     // Iron + water = rusty iron
     val ironblock = new IronBlock()

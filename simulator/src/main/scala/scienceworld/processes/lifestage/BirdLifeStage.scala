@@ -224,4 +224,3 @@ object BirdLifeStage {
     lifecycle
   }
 }
-

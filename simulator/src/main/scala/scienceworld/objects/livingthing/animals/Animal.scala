@@ -44,18 +44,18 @@ class Animal extends LivingThing {
     super.tick()
   }
 
-  // Gets the cannonical name of the life form, given it's current life stage (e.g. baby, adult, etc), handling any special overrides that don't follow regular patterns (e.g. baby butterfly = caterpillar)
+  // Gets the canonical name of the life form, given its current life stage (e.g. baby, adult, etc), handling any special overrides that don't follow regular patterns (e.g. baby butterfly = caterpillar)
   def getCannonicalName():String = {
     // Check to make sure that this life form has a defined life cycle.
     if (lifecycle.isEmpty) return this.name
 
-    // Check for cannonical name override
+    // Check for canonical name override
     val curStage = lifecycle.get.getCurStage()
     if (curStage.hasCannonicalName()) {
       return curStage.getCannonicalName()
     }
 
-    // If no cannonical name override, default to <stageName> + <lifeformName> pattern
+    // If no canonical name override, default to <stageName> + <lifeformName> pattern
     if (propLife.isEmpty) {
       if (curStage.stageName != "egg") {
         return curStage.stageName + " " + this.name

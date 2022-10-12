@@ -201,5 +201,3 @@ class AgentInterface(val scriptFilename:String) {
   }
 
 }
-
-

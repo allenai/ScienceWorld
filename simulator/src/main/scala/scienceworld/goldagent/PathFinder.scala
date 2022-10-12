@@ -53,7 +53,7 @@ object PathFinder {
         return (Array.empty[Action], Array.empty[String])
       }
 
-      // Find the appropraite portal
+      // Find the appropriate portal
       val portals = location.get.getPortals()
       for (portal <- portals) {
         if (portal.doesConnectTo(nextLocationName)) {
@@ -118,7 +118,7 @@ object PathFinder {
 
       val segmentActions = new ArrayBuffer[String]
 
-      // Find the appropraite portal
+      // Find the appropriate portal
       val portals = location.get.getPortals()
       for (portal <- portals) {
         if (portal.doesConnectTo(nextLocationName)) {

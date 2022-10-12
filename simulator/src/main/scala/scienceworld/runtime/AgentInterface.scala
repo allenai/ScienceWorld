@@ -44,7 +44,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
   // Run any simplifications that need to be run at initialization
   val (simplifierSuccess, simplifierErrStr) = SimplifierProcessor.parseSimplificationStr(simplificationStr)
   if (!simplifierSuccess) this.setErrorState(simplifierErrStr)
-  println ("Selected simpifications: " + SimplifierProcessor.getSimplificationsUsed())
+  println ("Selected simplifications: " + SimplifierProcessor.getSimplificationsUsed())
   SimplifierProcessor.runSimplificationsInitialization(universe, agent)
 
   // Action handler (must be run after simplifications -- as simplifications can affect action space)

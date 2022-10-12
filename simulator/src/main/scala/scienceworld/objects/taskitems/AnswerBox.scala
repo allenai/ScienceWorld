@@ -24,4 +24,3 @@ class AnswerBox(colourName:String) extends Container {
   }
 
 }
-

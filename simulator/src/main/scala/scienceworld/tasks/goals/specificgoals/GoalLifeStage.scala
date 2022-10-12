@@ -74,7 +74,7 @@ class GoalLifeStageAnywhere(lifeFormType:String = "", lifeStageName:String = "",
               if (x.lifecycle.isDefined) {
                 val curLifeStage = x.lifecycle.get.getCurStageName()
                 if (curLifeStage.toLowerCase == lifeStageName.toLowerCase) {
-                  // If we reach here, we've found an instance of the particular lifeform at the partiular life stage
+                  // If we reach here, we've found an instance of the particular life form at the particular life stage
                   numFound += 1
                 }
               }

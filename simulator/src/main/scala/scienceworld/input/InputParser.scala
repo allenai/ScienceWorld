@@ -607,7 +607,7 @@ object InputParser {
     // Prefilter out any duplicates
     val objReferents = this.filterDuplicateReferents(objReferents1)
 
-    // Array of referent indicies
+    // Array of referent indices
     val indices = Array.fill[Int](objReferents.length)(0)
     var numAttempts:Int = 0
     val MAX_ATTEMPTS = 20
