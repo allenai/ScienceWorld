@@ -9,7 +9,7 @@ import scienceworld.struct.EnvObject
  * Tortoise Life Stages
  */
 // Baby stage
-class TortoiseLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_EGG, obj, lifecycle, cannonicalName = "") {
+class TortoiseLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_EGG, obj, lifecycle, canonicalName = "") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 20
 
@@ -48,7 +48,7 @@ class TortoiseLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(To
 
 }
 
-class TortoiseLifeStageHatchling(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_HATCHLING, obj, lifecycle, cannonicalName = "") {
+class TortoiseLifeStageHatchling(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_HATCHLING, obj, lifecycle, canonicalName = "") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 20
 
@@ -88,7 +88,7 @@ class TortoiseLifeStageHatchling(obj:Animal, lifecycle:LifeCycle) extends LifeSt
 }
 
 
-class TortoiseLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_JUVENILE, obj, lifecycle, cannonicalName = "") {
+class TortoiseLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_JUVENILE, obj, lifecycle, canonicalName = "") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 20
 
@@ -127,7 +127,7 @@ class TortoiseLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeSta
 
 }
 
-class TortoiseLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_ADULT, obj, lifecycle, cannonicalName = "") {
+class TortoiseLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_ADULT, obj, lifecycle, canonicalName = "") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 50
 
@@ -166,7 +166,7 @@ class TortoiseLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(
 
 }
 
-class TortoiseLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_DEATH, obj, lifecycle, cannonicalName = "") {
+class TortoiseLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_DEATH, obj, lifecycle, canonicalName = "") {
   var ticksMeetingCriteria:Int = 0
 
   override def tick(): Unit = {

@@ -10,7 +10,7 @@ import scienceworld.struct.EnvObject
  * Tortoise Life Stages
  */
 // Baby stage
-class BirdLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_EGG, obj, lifecycle, cannonicalName = "") {
+class BirdLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_EGG, obj, lifecycle, canonicalName = "") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 20
 
@@ -49,7 +49,7 @@ class BirdLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLi
 
 }
 
-class BirdLifeStageHatchling(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_HATCHLING, obj, lifecycle, cannonicalName = "") {
+class BirdLifeStageHatchling(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_HATCHLING, obj, lifecycle, canonicalName = "") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 20
 
@@ -89,7 +89,7 @@ class BirdLifeStageHatchling(obj:Animal, lifecycle:LifeCycle) extends LifeStage(
 }
 
 
-class BirdLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_JUVENILE, obj, lifecycle, cannonicalName = "") {
+class BirdLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_JUVENILE, obj, lifecycle, canonicalName = "") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 20
 
@@ -128,7 +128,7 @@ class BirdLifeStageJuvenile(obj:Animal, lifecycle:LifeCycle) extends LifeStage(B
 
 }
 
-class BirdLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_ADULT, obj, lifecycle, cannonicalName = "") {
+class BirdLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_ADULT, obj, lifecycle, canonicalName = "") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 50
 
@@ -167,7 +167,7 @@ class BirdLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(Bird
 
 }
 
-class BirdLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_DEATH, obj, lifecycle, cannonicalName = "") {
+class BirdLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(BirdLifeStage.BIRD_STAGE_DEATH, obj, lifecycle, canonicalName = "") {
   var ticksMeetingCriteria:Int = 0
 
   override def tick(): Unit = {

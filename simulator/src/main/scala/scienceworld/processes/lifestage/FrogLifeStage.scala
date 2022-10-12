@@ -9,7 +9,7 @@ import scienceworld.struct.EnvObject
  * Frog Life Stages
  */
 // Baby stage
-class FrogLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_EGG, obj, lifecycle, cannonicalName = "frog egg") {
+class FrogLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_EGG, obj, lifecycle, canonicalName = "frog egg") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 20
 
@@ -48,7 +48,7 @@ class FrogLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLi
 
 }
 
-class FrogLifeStageTadpole(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_TADPOLE, obj, lifecycle, cannonicalName = "tadpole") {
+class FrogLifeStageTadpole(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_TADPOLE, obj, lifecycle, canonicalName = "tadpole") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 20
 
@@ -88,7 +88,7 @@ class FrogLifeStageTadpole(obj:Animal, lifecycle:LifeCycle) extends LifeStage(Fr
 }
 
 
-class FrogLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_ADULT, obj, lifecycle, cannonicalName = "adult frog") {
+class FrogLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_ADULT, obj, lifecycle, canonicalName = "adult frog") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 50
 
@@ -129,7 +129,7 @@ class FrogLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(Frog
 
 
 
-class FrogLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_DEATH, obj, lifecycle, cannonicalName = "dead frog") {
+class FrogLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(FrogLifeStage.FROG_STAGE_DEATH, obj, lifecycle, canonicalName = "dead frog") {
   var ticksMeetingCriteria:Int = 0
 
   override def tick(): Unit = {
