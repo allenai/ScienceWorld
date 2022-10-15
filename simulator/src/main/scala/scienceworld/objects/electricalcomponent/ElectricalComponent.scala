@@ -324,8 +324,3 @@ class Cathode(parentObject:EnvObject) extends Terminal(parentObject) {
   this.name = "cathode"
 
 }
-
-
-
-
-

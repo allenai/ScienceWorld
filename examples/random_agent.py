@@ -121,16 +121,16 @@ def randomModel(args):
 
     # Show final episode scores to user:
     avg = sum([x for x in finalScores if x >=0]) / len(finalScores)     # Clip negative scores to 0 for average calculation
-    print ("")
-    print ("---------------------------------------------------------------------")
-    print (" Summary (Random Agent)")
-    print (" Task " + str(taskIdx) + ": " + taskName)
-    print (" Simplifications: " + str(simplificationStr))
-    print ("---------------------------------------------------------------------")
-    print (" Epsiode scores: " + str(finalScores))
-    print (" Average episode score: " + str(avg))
-    print ("---------------------------------------------------------------------")
-    print ("")
+    print("")
+    print("---------------------------------------------------------------------")
+    print(" Summary (Random Agent)")
+    print(" Task " + str(taskIdx) + ": " + taskName)
+    print(" Simplifications: " + str(simplificationStr))
+    print("---------------------------------------------------------------------")
+    print(" Episode scores: " + str(finalScores))
+    print(" Average episode score: " + str(avg))
+    print("---------------------------------------------------------------------")
+    print("")
 
     print("Shutting down server...")
     env.shutdown()

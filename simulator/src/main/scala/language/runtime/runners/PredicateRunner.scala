@@ -11,7 +11,7 @@ import scala.util.control.Breaks._
 // MainInterpreter is just passed to populate any println statements for output -- not as the interpreter to run the predicates on.
 class PredicateRunner(val predicates:Array[PredicateDef], val objectTreeRoot:EnvObject, val definesLUT:Map[String, String], val classLUT:Map[String, ClassDef], val taxonomy:Taxonomy, val actionRunner:ActionRunner, val mainInterpreter:Interpreter, val debugOutput:Boolean = false) {
   val objsByType = PredicateRunner.collectObjectsByType(objectTreeRoot, taxonomy)
-  // A LUT of (pred_arg) hashcodes, followed by their evalution results (true/false).  Also includes keys/values from action requests that have been made this timestamp.
+  // A LUT of (pred_arg) hashcodes, followed by their evaluation, results (true/false).  Also includes keys/values from action requests that have been made this timestamp.
   val getterResultLUT = this.runAllPredicates(objsByType) ++ actionRunner.getActionsThisTimestep()     // Key: hashcode for a given predicate+argument set, value: Whether the getter evaluated as true or false given those arguments
 
 
@@ -230,7 +230,7 @@ object PredicateRunner {
       }
       // Step 3: Then, check that the variable passed to this parameter is the correct type
 
-      // Step 3A: Get a list of heirarchical types that are valid for this object (if it's type is in the taxonomy), OR default back to just that single type if the object isn't listed in the taxonomy
+      // Step 3A: Get a list of hierarchical types that are valid for this object (if it's type is in the taxonomy), OR default back to just that single type if the object isn't listed in the taxonomy
       val objType = variableValue.getObject().get.getType()
       val (success, errorStr, validTypes_) = taxonomy.getHypernyms(objType)
       var validTypes = validTypes_

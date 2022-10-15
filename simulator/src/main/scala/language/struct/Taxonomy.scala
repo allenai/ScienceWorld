@@ -104,7 +104,7 @@ class Taxonomy(val rootNodeName:String = "") {
   /*
    * Operators
    */
-  def combine(that:Taxonomy):(Boolean, Array[String]) = {           // (Sucess, errorStrings)
+  def combine(that:Taxonomy):(Boolean, Array[String]) = {           // (Success, errorStrings)
     val errorStrs = new ArrayBuffer[String]()
 
     for (rootName <- that.rootNodeNames) {
@@ -123,7 +123,7 @@ class Taxonomy(val rootNodeName:String = "") {
   }
 
   // Add a branch from 'that' tree to 'this' tree, recursively
-  private def addBranch(nodeName:String, that:Taxonomy):(Boolean, Array[String]) = {           // (Sucess, errorStrings)
+  private def addBranch(nodeName:String, that:Taxonomy):(Boolean, Array[String]) = {           // (Success, errorStrings)
     val errorStrs = new ArrayBuffer[String]()
 
     val children = that.getNode(nodeName).get.children

@@ -97,7 +97,7 @@ class Sink(drainsTo:Option[EnvObject]) extends Device {
  * Bath tub
  */
 class Bathtub(drainsTo:Option[EnvObject]) extends Device {
-  this.name = "bath tub"
+  this.name = "bathtub"
 
   this.propMaterial = Some(new CeramicProp())
   this.propContainer = Some( new IsOpenUnclosableContainer() )
@@ -148,7 +148,7 @@ class Bathtub(drainsTo:Option[EnvObject]) extends Device {
   }
 
   override def getReferents(): Set[String] = {
-    Set("bath tub", this.name, this.getDescriptName())
+    Set("bathtub", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode: Int): String = {

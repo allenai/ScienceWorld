@@ -34,4 +34,3 @@ class HeatSourcePropertiesWoodFire extends HeatSourceProperties(maxTemp = 600.0f
 class HeatSourcePropertiesLighter extends HeatSourceProperties(maxTemp = 2200.0f, curSetTemp = None) {
 
 }
-

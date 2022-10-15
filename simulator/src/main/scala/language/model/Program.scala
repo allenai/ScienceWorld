@@ -159,7 +159,7 @@ class Program (val importList:Option[List[ImportFile]], val defines:Option[List[
       var validPropFunctions = List.empty[PropertyFunction]
 
       // Get the bare class definition
-      if (className != "Any") {     // Do not run on "Any" (the cannonical base class)
+      if (className != "Any") {     // Do not run on "Any" (the canonical base class)
         println("inheritClassPropertiesHelper(): " + className)
         val classDef = classLUT.get(className).get
         // Stage 1: Inheriting default properties

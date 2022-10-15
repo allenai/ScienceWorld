@@ -35,6 +35,3 @@ class LivingThing extends EnvObject {
   }
 
 }
-
-
-

@@ -61,7 +61,7 @@ class GoalTemperatureIncrease(minTempIncreaseC:Double = 1.0, _isOptional:Boolean
       this.initialTemperature = obj.get.propMaterial.get.temperatureC
     }
 
-    // Check if temperature has risen above thresold
+    // Check if temperature has risen above threshold
     val threshTemp = this.initialTemperature + minTempIncreaseC
     if (curTemp >= threshTemp) {
       return GoalReturn.mkSubgoalSuccess()
@@ -92,7 +92,7 @@ class GoalTemperatureDecrease(minTempDecreaseC:Double = 1.0, _isOptional:Boolean
       this.initialTemperature = obj.get.propMaterial.get.temperatureC
     }
 
-    // Check if temperature has risen above thresold
+    // Check if temperature has risen above threshold
     val threshTemp = this.initialTemperature - minTempDecreaseC
     if (curTemp <= threshTemp) {
       return GoalReturn.mkSubgoalSuccess()

@@ -17,7 +17,7 @@ def userConsole(args):
     print("Task Names: " + str(taskNames))
 
     # Choose task
-    taskName = taskNames[taskIdx]    
+    taskName = taskNames[taskIdx]
     env.load(taskName, args['var_num'], simplificationStr, generateGoldPath=True)
     print("Starting Task " + str(taskIdx) + ": " + taskName)
     time.sleep(2)

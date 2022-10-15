@@ -76,7 +76,7 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
     return storedValues(key)
   }
 
-  // Keys that are specialized for subgoal competion
+  // Keys that are specialized for subgoal completion
   def areSubgoalPrerequisitesCompleted(prereqKeys:Array[String]):Boolean = {
     // Case: True if there are no prerequisites
     if (prereqKeys.length == 0) return true
@@ -116,7 +116,7 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
     var scoreTotal = scoreOrdered + scoreUnordered
     if (scoreTotal > MAX_SCORE) scoreTotal = MAX_SCORE
 
-    println("Score: " + scoreTotal.formatted("%3.3f") + "    ordered: " + scoreOrdered.formatted("%3.3f") + "    unorderd: " + scoreUnordered.formatted("%3.3f"))
+    println("Score: " + scoreTotal.formatted("%3.3f") + "    ordered: " + scoreOrdered.formatted("%3.3f") + "    unordered: " + scoreUnordered.formatted("%3.3f"))
 
     return scoreTotal
   }

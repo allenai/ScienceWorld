@@ -705,4 +705,3 @@ object TaskElectricalConductivity {
   }
 
 }
-

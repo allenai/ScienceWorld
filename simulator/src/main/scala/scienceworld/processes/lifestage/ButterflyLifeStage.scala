@@ -9,7 +9,7 @@ import scienceworld.struct.EnvObject
  * Butterfly Life Stages
  */
 // Baby stage
-class ButterflyLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_EGG, obj, lifecycle, cannonicalName = "butterfly egg") {
+class ButterflyLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_EGG, obj, lifecycle, canonicalName = "butterfly egg") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 20
 
@@ -48,7 +48,7 @@ class ButterflyLifeStageEgg(obj:Animal, lifecycle:LifeCycle) extends LifeStage(B
 
 }
 
-class ButterflyLifeStageCaterpillar(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_CATERPILLAR, obj, lifecycle, cannonicalName = "caterpillar") {
+class ButterflyLifeStageCaterpillar(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_CATERPILLAR, obj, lifecycle, canonicalName = "caterpillar") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 20
 
@@ -87,7 +87,7 @@ class ButterflyLifeStageCaterpillar(obj:Animal, lifecycle:LifeCycle) extends Lif
 
 }
 
-class ButterflyLifeStagePupa(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_PUPA, obj, lifecycle, cannonicalName = "butterfly pupa") {
+class ButterflyLifeStagePupa(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_PUPA, obj, lifecycle, canonicalName = "butterfly pupa") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 20
 
@@ -127,7 +127,7 @@ class ButterflyLifeStagePupa(obj:Animal, lifecycle:LifeCycle) extends LifeStage(
 }
 
 
-class ButterflyLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_ADULT, obj, lifecycle, cannonicalName = "adult butterfly") {
+class ButterflyLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_ADULT, obj, lifecycle, canonicalName = "adult butterfly") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 50
 
@@ -169,7 +169,7 @@ class ButterflyLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage
 
 
 // Seed stage
-class ButterflyLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_DEATH, obj, lifecycle, cannonicalName = "dead butterfly") {
+class ButterflyLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(ButterflyLifeStage.BUTTERFLY_STAGE_DEATH, obj, lifecycle, canonicalName = "dead butterfly") {
   var ticksMeetingCriteria:Int = 0
 
   override def tick(): Unit = {

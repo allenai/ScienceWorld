@@ -214,4 +214,3 @@ class BlastFurnace extends HeatSource {
   }
 
 }
-

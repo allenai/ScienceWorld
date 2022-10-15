@@ -21,7 +21,7 @@ for taskIdx in data.keys():
 
     taskData = data[taskIdx]
     taskName = taskData['taskName']
-    
+
     goldSequences = taskData['goldActionSequences']
 
     for goldSequence in goldSequences:
@@ -44,8 +44,8 @@ for taskIdx in data.keys():
             isCompleted = step['isCompleted']
             print("> " + str(action))
             print(obs)
-            print("")        
- 
+            print("")
+
             numMoves +=1
         numSequences += 1
 
@@ -55,4 +55,3 @@ print("Summary Statistics:")
 print("numTasks: " + str(len(data.keys())))
 print("numSequences: " + str(numSequences))
 print("numMoves: " + str(numMoves))
-

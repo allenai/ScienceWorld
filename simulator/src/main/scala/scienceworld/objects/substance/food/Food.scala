@@ -24,13 +24,13 @@ class Apple extends Fruit {
   var color = "red"
 
   override def getReferents(): Set[String] = {
-    val cannonicalName = this.color + " apple"
-    Set("apple", this.color + " apple", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+    val canonicalName = this.color + " apple"
+    Set("apple", this.color + " apple", this.name, this.getDescriptName(), this.getDescriptName(canonicalName))
   }
 
   override def getDescription(mode:Int): String = {
-    val cannonicalName = this.color + " apple"
-    return "a " + this.getDescriptName(cannonicalName)
+    val canonicalName = this.color + " apple"
+    return "a " + this.getDescriptName(canonicalName)
   }
 
 }
@@ -43,13 +43,13 @@ class Apricot extends Fruit {
   var color = "orange"
 
   override def getReferents(): Set[String] = {
-    val cannonicalName = this.color + " apricot"
-    Set("apricot", this.color + " apricot", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+    val canonicalName = this.color + " apricot"
+    Set("apricot", this.color + " apricot", this.name, this.getDescriptName(), this.getDescriptName(canonicalName))
   }
 
   override def getDescription(mode:Int): String = {
-    val cannonicalName = this.color + " apricot"
-    return "a " + this.getDescriptName(cannonicalName)
+    val canonicalName = this.color + " apricot"
+    return "a " + this.getDescriptName(canonicalName)
   }
 
 }
@@ -229,13 +229,13 @@ class Onion extends Food {
   var color = "red"
 
   override def getReferents(): Set[String] = {
-    val cannonicalName = this.color + " onion"
-    Set("onion", this.color + " onion", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+    val canonicalName = this.color + " onion"
+    Set("onion", this.color + " onion", this.name, this.getDescriptName(), this.getDescriptName(canonicalName))
   }
 
   override def getDescription(mode:Int): String = {
-    val cannonicalName = this.color + " onion"
-    return "a " + this.getDescriptName(cannonicalName)
+    val canonicalName = this.color + " onion"
+    return "a " + this.getDescriptName(canonicalName)
   }
 
 }
@@ -344,13 +344,13 @@ class Flour extends Food {
   var color = "white"
 
   override def getReferents(): Set[String] = {
-    val cannonicalName = this.color + " flour"
-    Set("flour", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+    val canonicalName = this.color + " flour"
+    Set("flour", this.name, this.getDescriptName(), this.getDescriptName(canonicalName))
   }
 
   override def getDescription(mode:Int): String = {
-    val cannonicalName = "flour"
-    return this.getDescriptName(cannonicalName)
+    val canonicalName = "flour"
+    return this.getDescriptName(canonicalName)
   }
 
 }
@@ -363,13 +363,13 @@ class Dough extends Food {
   var color = "white"
 
   override def getReferents(): Set[String] = {
-    val cannonicalName = this.color + " dough"
-    Set("dough", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+    val canonicalName = this.color + " dough"
+    Set("dough", this.name, this.getDescriptName(), this.getDescriptName(canonicalName))
   }
 
   override def getDescription(mode:Int): String = {
-    val cannonicalName = "dough"
-    return this.getDescriptName(cannonicalName)
+    val canonicalName = "dough"
+    return this.getDescriptName(canonicalName)
   }
 
 }
@@ -383,13 +383,13 @@ class Bread extends Food {
   var color = "white"
 
   override def getReferents(): Set[String] = {
-    val cannonicalName = this.color + " bread"
-    Set("bread", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+    val canonicalName = this.color + " bread"
+    Set("bread", this.name, this.getDescriptName(), this.getDescriptName(canonicalName))
   }
 
   override def getDescription(mode:Int): String = {
-    val cannonicalName = "bread"
-    return this.getDescriptName(cannonicalName)
+    val canonicalName = "bread"
+    return this.getDescriptName(canonicalName)
   }
 
 }
@@ -403,31 +403,31 @@ class Jam extends Food {
   var color = "red"
 
   override def getReferents(): Set[String] = {
-    val cannonicalName = this.color + " jam"
-    Set("jam", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+    val canonicalName = this.color + " jam"
+    Set("jam", this.name, this.getDescriptName(), this.getDescriptName(canonicalName))
   }
 
   override def getDescription(mode:Int): String = {
-    val cannonicalName = this.color + " jam"
-    return this.getDescriptName(cannonicalName)
+    val canonicalName = this.color + " jam"
+    return this.getDescriptName(canonicalName)
   }
 
 }
 
-class Sandwhich(sandwhichType:String) extends Food {
-  this.name = sandwhichType + " sandwhich"
+class Sandwich(sandwichType:String) extends Food {
+  this.name = sandwichType + " sandwich"
 
   this.propEdibility = Some(new Edible())
   this.propMaterial = Some(new FlourProp())
 
   override def getReferents(): Set[String] = {
-    val cannonicalName = this.sandwhichType + " sandwhich"
-    Set("sandwhich", this.name, this.getDescriptName(), this.getDescriptName(cannonicalName))
+    val canonicalName = this.sandwichType + " sandwich"
+    Set("sandwich", this.name, this.getDescriptName(), this.getDescriptName(canonicalName))
   }
 
   override def getDescription(mode:Int): String = {
-    val cannonicalName = this.sandwhichType + " sandwhich"
-    return this.getDescriptName(cannonicalName)
+    val canonicalName = this.sandwichType + " sandwich"
+    return this.getDescriptName(canonicalName)
   }
 
 }
@@ -443,24 +443,24 @@ class Peanut extends Food {
   }
 
   override def getDescription(mode:Int): String = {
-    val cannonicalName = "peanut"
-    return this.getDescriptName(cannonicalName)
+    val canonicalName = "peanut"
+    return this.getDescriptName(canonicalName)
   }
 
 }
 
-class Cachew extends Food {
-  this.name = "cachew"
+class Cashew extends Food {
+  this.name = "cashew"
   this.propEdibility = Some(new Edible())
   this.propMaterial = Some(new NutProp())
 
   override def getReferents(): Set[String] = {
-    Set("cachew", this.name, this.getDescriptName())
+    Set("cashew", this.name, this.getDescriptName())
   }
 
   override def getDescription(mode:Int): String = {
-    val cannonicalName = "cachew"
-    return this.getDescriptName(cannonicalName)
+    val canonicalName = "cashew"
+    return this.getDescriptName(canonicalName)
   }
 
 }
@@ -475,8 +475,8 @@ class Almond extends Food {
   }
 
   override def getDescription(mode:Int): String = {
-    val cannonicalName = "almond"
-    return this.getDescriptName(cannonicalName)
+    val canonicalName = "almond"
+    return this.getDescriptName(canonicalName)
   }
 
 }

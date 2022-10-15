@@ -218,7 +218,7 @@ object RoomMaker {
     val table = new WoodTable()
     room.addObject( table )
 
-    // Electical
+    // Electrical
     val lightColors = Random.shuffle(List("red", "green", "blue", "yellow", "orange", "violet"))
 
     val lightbulb1 = new LightBulb(lightColors(0))
@@ -264,7 +264,7 @@ object RoomMaker {
     table.addObject(unknownSubstance)
      */
     /*
-    // Add one metalic and one non-metalic object
+    // Add one metallic and one non-metallic object
     room.addObject(new ForkMetal())
     room.addObject(new ForkPlastic())
 

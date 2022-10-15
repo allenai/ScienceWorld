@@ -152,7 +152,7 @@ class Interpreter(val definesLUT:Map[String, String] = Map[String, String](), cl
       case ObjectCreate(objtype, objname, paramlist) => {
         //## TODO: Run parameter lists
         val (success, errStr, newObjInst) = this.mkObjectInstance(objname, objtype, paramlist)
-        if (!success) return (new DynamicValue(), false, "ERROR: Error encounted during object creation (" + objtype + ").\n" + errStr)
+        if (!success) return (new DynamicValue(), false, "ERROR: Error during object creation (" + objtype + ").\n" + errStr)
         // Pack into a DynamicValue
         return (new DynamicValue(newObjInst), true, "")
       }

@@ -67,7 +67,7 @@ object Combustion {
 
         // Create a combustion product (ash)
         val ash = new Ash()
-        ash.propMaterial.get.temperatureC = obj.propMaterial.get.temperatureC       // Inerit temperature
+        ash.propMaterial.get.temperatureC = obj.propMaterial.get.temperatureC       // Inherit temperature
 
         // Add the combustion product to the container
         val container = obj.getContainer()

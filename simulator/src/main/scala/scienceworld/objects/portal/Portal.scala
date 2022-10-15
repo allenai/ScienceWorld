@@ -226,5 +226,3 @@ class LiquidDrain(isOpen:Boolean, connectsFrom:EnvObject, connectsTo:EnvObject) 
   }
 
 }
-
-

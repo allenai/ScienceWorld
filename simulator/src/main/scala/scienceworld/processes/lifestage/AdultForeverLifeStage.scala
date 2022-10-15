@@ -7,7 +7,7 @@ import scienceworld.struct.EnvObject
  * Adult forever (i.e. no modelled life cycle) Life Stages
  */
 
-class AdultForeverLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(AdultForeverLifeStage.ADULTFOREVER_STAGE_ADULT, obj, lifecycle, cannonicalName = "") {
+class AdultForeverLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeStage(AdultForeverLifeStage.ADULTFOREVER_STAGE_ADULT, obj, lifecycle, canonicalName = "") {
   var ticksMeetingCriteria:Int = 0
   val stageDuration:Int = 50
 
@@ -25,7 +25,7 @@ class AdultForeverLifeStageAdult(obj:Animal, lifecycle:LifeCycle) extends LifeSt
 
 }
 
-class AdultForeverLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_DEATH, obj, lifecycle, cannonicalName = "") {
+class AdultForeverLifeStageDeath(obj:Animal, lifecycle:LifeCycle) extends LifeStage(TortoiseLifeStage.TORTOISE_STAGE_DEATH, obj, lifecycle, canonicalName = "") {
   var ticksMeetingCriteria:Int = 0
 
   override def tick(): Unit = {
@@ -73,5 +73,3 @@ object AdultForeverLifeStage {
     lifecycle
   }
 }
-
-

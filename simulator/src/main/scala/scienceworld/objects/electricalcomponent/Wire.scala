@@ -16,5 +16,3 @@ class Wire extends UnpolarizedElectricalComponent {
 
 
 }
-
-
