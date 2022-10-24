@@ -395,8 +395,8 @@ class RunHistory(val taskName:String, val taskIdx:Int, val variationIdx:Int, val
 object RunHistory {
 
   def sanitizeJSON(in:String):String = {
-    var out = in.replace("\"", "\\\"")
-    out = out.replace("\\", "\\\\")
+    var out = in.replace("\\", "\\\\")
+    out = out.replace("\"", "\\\"")
     out = out.replace("\n", "\\n")
     out = out.replace("\r", "\\r")
     out = out.replace("\t", "\\t")
