@@ -260,7 +260,7 @@ class DynamicValue(private var value:String = "", private var valueObj:Option[En
   def booleanOperator(operator:String, that:DynamicValue):(Boolean, Boolean, String) = {      // (Success, evaluation result, errorString)
     // First, check that we're comparing the same types
     if (this.getTypeStr() != that.getTypeStr()) {
-      var errorStr = "ERROR: Comparring expressions of different types (" + this.getTypeStr() + " vs " + that.getTypeStr() + ")."
+      var errorStr = "ERROR: Comparing expressions of different types (" + this.getTypeStr() + " vs " + that.getTypeStr() + ")."
       return (false, false, errorStr)
     }
 

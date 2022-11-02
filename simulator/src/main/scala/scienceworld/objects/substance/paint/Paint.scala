@@ -1,6 +1,6 @@
 package scienceworld.objects.substance.paint
 
-import scienceworld.properties.{BluePaintProp, BlueVioletPaintProp, BrownPaintProp, GenericPaintProp, GreenBluePaintProp, GreenPaintProp, OrangePaintProp, RedOrangePaintProp, RedPaintProp, VioletPaintProp, VoiletRedPaintProp, YellowGreenPaintProp, YellowOrangePaintProp, YellowPaintProp}
+import scienceworld.properties.{BluePaintProp, BlueVioletPaintProp, BrownPaintProp, GenericPaintProp, GreenBluePaintProp, GreenPaintProp, OrangePaintProp, RedOrangePaintProp, RedPaintProp, VioletPaintProp, VioletRedPaintProp, YellowGreenPaintProp, YellowOrangePaintProp, YellowPaintProp}
 import scienceworld.struct.EnvObject
 
 class Paint extends EnvObject {
@@ -72,7 +72,7 @@ class RedOrangePaint extends Paint {
 
 class VioletRedPaint extends Paint {
   this.name = "violet-red paint"
-  propMaterial = Some(new VoiletRedPaintProp())
+  propMaterial = Some(new VioletRedPaintProp())
 }
 
 class BlueVioletPaint extends Paint {

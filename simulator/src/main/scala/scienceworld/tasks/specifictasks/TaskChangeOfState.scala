@@ -209,7 +209,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
       subTask = "boil"
       gSequence.append( new GoalFind(objectName = substanceName, description = "focus on substance") )
       gSequence.append( new GoalChangeStateOfMatter("liquid", description = "substance is in a liquid state") )
-      gSequence.append( new GoalChangeStateOfMatter("gas", combustionAllowed = true, description = "substance is in a gasseous state (or combusting)") )
+      gSequence.append( new GoalChangeStateOfMatter("gas", combustionAllowed = true, description = "substance is in a gaseous state (or combusting)") )
 
       // Unordered
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = substanceName, _isOptional = true, description = "be in same location as " + substanceName))
@@ -388,7 +388,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
           println("*** FIND SUBSTANCE ATTEMPT " + i)
           substances = PathFinder.getAllAccessibleEnvObject(objectName, getCurrentAgentLocation(runner))
           if (substances.size > 0) break // Found at least one substance matching the criteria
-          // If we reach here, we didn't find a subtance -- start opening closed containers
+          // If we reach here, we didn't find a substance -- start opening closed containers
           if (successOpeningContainers) {
             successOpeningContainers = PathFinder.openRandomClosedContainer(currentLocation = getCurrentAgentLocation(runner), runner)
           } else {
@@ -604,7 +604,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
             break()
           }
 
-          if (substance.isDeteted()) {
+          if (substance.isDeleted()) {
             //## runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
             return false
           }
@@ -612,7 +612,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
           runAction("examine " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
           objSOM = substance.propMaterial.get.stateOfMatter
 
-          if (substance.isDeteted()) {
+          if (substance.isDeleted()) {
             //## runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
             return false
           }
@@ -686,7 +686,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
     var objSOM = substance.propMaterial.get.stateOfMatter
     breakable {
       for (i <- 0 until MAX_ITER) {
-        if (substance.isDeteted()) {
+        if (substance.isDeleted()) {
           //## runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
           return false
         }
@@ -695,7 +695,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
         runAction("examine " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
         objSOM = substance.propMaterial.get.stateOfMatter
 
-        if (substance.isDeteted()) {
+        if (substance.isDeleted()) {
           //## runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
           return false
         }
@@ -703,7 +703,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
         val objTempC = substance.propMaterial.get.temperatureC
         runAction("use " + instrumentName + " in inventory on " + PathFinder.getObjUniqueReferent(substance, getCurrentAgentLocation(runner)).get, runner)
 
-        if (substance.isDeteted()) {
+        if (substance.isDeleted()) {
           //## runAction("NOTE: SUBSTANCE HAS BEEN DELETED, LIKELY AS A RESULT OF COMBUSTING", runner)
           return false
         }

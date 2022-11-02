@@ -28,7 +28,7 @@ object HeatTransfer {
             if (math.abs(increment) > MAX_TRANSFER_PER_STEP) increment = MAX_TRANSFER_PER_STEP * increment.signum     // Clip to a maximum of (-MAX_TRANSFER_PER_STEP, +MAX_TRANSFER_PER_STEP)
             heatedObj.propMaterial.get.temperatureC += increment
 
-            //println("Heat transfer: Object (" + heatedObj.name + ") tempererature now " + heatedObj.propMaterial.get.temperatureC)
+            //println("Heat transfer: Object (" + heatedObj.name + ") temperature now " + heatedObj.propMaterial.get.temperatureC)
           }
         }
 
@@ -55,7 +55,7 @@ object HeatTransfer {
             if (math.abs(increment) > MAX_TRANSFER_PER_STEP) increment = MAX_TRANSFER_PER_STEP * increment.signum     // Clip to a maximum of (-MAX_TRANSFER_PER_STEP, +MAX_TRANSFER_PER_STEP)
             cooledObj.propMaterial.get.temperatureC += increment
 
-            //println("Heat transfer: Object (" + cooledObj.name + ") tempererature now " + cooledObj.propMaterial.get.temperatureC)
+            //println("Heat transfer: Object (" + cooledObj.name + ") temperature now " + cooledObj.propMaterial.get.temperatureC)
           }
         }
 

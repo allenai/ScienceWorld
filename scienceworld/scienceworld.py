@@ -104,7 +104,7 @@ class ScienceWorldEnv:
         # Make first move
         observation, score, isCompleted, info = self.step("look around")
 
-        # Return a tuple that looks like the Jericho signiture for reset
+        # Return a tuple that looks like the Jericho signature for reset
         return observation, info
 
     # Ask the simulator to reset an environment back to it's initial state
@@ -117,7 +117,7 @@ class ScienceWorldEnv:
         # Make first move
         observation, score, isCompleted, info = self.step("look around")
 
-        # Return a tuple that looks like the Jericho signiture for reset
+        # Return a tuple that looks like the Jericho signature for reset
         return observation, info
 
 

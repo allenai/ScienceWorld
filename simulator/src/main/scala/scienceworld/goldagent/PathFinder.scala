@@ -435,7 +435,7 @@ object PathFinder {
       val water = cup.get.getContainedAccessibleObjectsOfType[Water]().toArray
 
       if (water.size > 0) {
-        // Sinked worked -- return
+        // Sink worked -- return
         if (useInventoryContainer.isDefined) TaskParametric.runAction("pick up " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get, runner)
         return (true, cup, Some(water(0)))
       }

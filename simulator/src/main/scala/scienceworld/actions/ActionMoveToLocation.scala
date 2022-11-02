@@ -49,7 +49,7 @@ class ActionMoveThroughDoor(action:ActionRequestDef, assignments:Map[String, Env
             val connectsTo = portal.getConnectsTo(perspectiveContainer = agentLocation.get)
             if (connectsTo.isEmpty) break
             val connectsToLocationReferents = connectsTo.get.getReferents()
-            // If one of the referents is the same as the location we're looking for, then try to go through that poral
+            // If one of the referents is the same as the location we're looking for, then try to go through that portal
             if (connectsToLocationReferents.contains(location.name)) {
               // If we reach here, move the agent through the portal
               location.addObject(agent)
@@ -127,7 +127,7 @@ object ActionMoveThroughDoor {
             val connectsTo = portal.getConnectsTo(perspectiveContainer = agentLocation.get)
             if (connectsTo.isEmpty) break
             val connectsToLocationReferents = connectsTo.get.getReferents()
-            // If one of the referents is the same as the location we're looking for, then try to go through that poral
+            // If one of the referents is the same as the location we're looking for, then try to go through that portal
             if (connectsToLocationReferents.contains(location.name)) {
               if (!portal.isCurrentlyPassable()) {
                 // Return a human-readable message for why the door isn't passable

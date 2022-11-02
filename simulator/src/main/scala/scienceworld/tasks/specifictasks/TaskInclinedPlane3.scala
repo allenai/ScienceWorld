@@ -128,7 +128,7 @@ class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
   private def setupGoals(modifiers:Array[TaskModifier], combinationNum:Int): Task = {
     // Step 1: Find seed type
     val steepestAngle = this.getTaskValueStr(modifiers, "steepestAngle")
-    if (steepestAngle.isEmpty) throw new RuntimeException("ERROR: Failed to find name of inclined plane with steepst angle.")
+    if (steepestAngle.isEmpty) throw new RuntimeException("ERROR: Failed to find name of inclined plane with steepest angle.")
     val shallowestAngle = this.getTaskValueStr(modifiers, "shallowestAngle")
     if (shallowestAngle.isEmpty) throw new RuntimeException("ERROR: Failed to find name of inclined plane with shallowest angle.")
     val modeSteepShallow = this.getTaskValueStr(modifiers, "mode")
@@ -297,7 +297,7 @@ object TaskInclinedPlane3 {
 
 
   /*
-   * Helper functinos
+   * Helper functions
    */
 
   // Make a set of inclined planes

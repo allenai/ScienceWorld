@@ -326,7 +326,7 @@ class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNO
           println("*** FIND SUBSTANCE ATTEMPT " + i)
           substances = PathFinder.getAllAccessibleEnvObject(objectName, getCurrentAgentLocation(runner))
           if (substances.size > 0) break // Found at least one substance matching the criteria
-          // If we reach here, we didn't find a subtance -- start opening closed containers
+          // If we reach here, we didn't find a substance -- start opening closed containers
           if (successOpeningContainers) {
             successOpeningContainers = PathFinder.openRandomClosedContainer(currentLocation = getCurrentAgentLocation(runner), runner)
           } else {

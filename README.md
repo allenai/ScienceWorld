@@ -98,8 +98,8 @@ The subtasks and their associated subtask indices are listed below.  Subtask ind
 | 25 | task-8-inclined-plane-determine-angle                     |
 | 26 | task-8-inclined-plane-friction-(named-surfaces)           |
 | 27 | task-8-inclined-plane-friction-(unnamed-surfaces)         |
-| 28 | task-9-mendellian-genetics-(known-plant)                  |
-| 29 | task-9-mendellian-genetics-(unknown-plant)                |
+| 28 | task-9-mendelian-genetics-(known-plant)                   |
+| 29 | task-9-mendelian-genetics-(unknown-plant)                 |
 
 
 # Baseline Agents

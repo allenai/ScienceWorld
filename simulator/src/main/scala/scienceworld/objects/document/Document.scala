@@ -156,7 +156,7 @@ object Book {
       if (randIdx == 0) return new BookMobyDick
       if (randIdx == 1) return new BookFrankenstein
       if (randIdx == 2) return new BookSherlockHolmes
-      if (randIdx == 3) return new BookPrideAndPredjudice
+      if (randIdx == 3) return new BookPrideAndPrejudice
       if (randIdx == 4) return new BookBeowulf
       if (randIdx == 5) return new BookOriginOfSpecies
     }
@@ -192,7 +192,7 @@ class BookSherlockHolmes extends Book {
   this.name = "book (" + this.title + ")"
 }
 
-class BookPrideAndPredjudice extends Book {
+class BookPrideAndPrejudice extends Book {
   this.title = "Pride and Prejudice"
   this.author = "Jane Austen"
   this.contents = """It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.\n\nHowever little known the feelings or views of such a man may be on his first entering a neighbourhood, this truth is so well fixed in the minds of the surrounding families, that he is considered as the rightful property of some one or other of their daughters.\n\n“My dear Mr. Bennet,” said his lady to him one day, “have you heard that Netherfield Park is let at last?” """

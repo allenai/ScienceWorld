@@ -1,4 +1,4 @@
-# exampeLoadGoldPaths.py
+# exampleLoadGoldPaths.py
 #
 # This example illustrates how to traverse the gold (oracle) paths for ScienceWorld.
 #

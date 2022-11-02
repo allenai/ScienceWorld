@@ -46,7 +46,7 @@ class RuleRunner(val rules:Array[RuleDef], val predicateRunner:PredicateRunner, 
         sys.exit(1)
       }
 
-      // Extract parameter signiture list from either predicate or action
+      // Extract parameter signature list from either predicate or action
       var paramSigList = new ParamSigList(List.empty[ParamSig])
       if (predicateLUT.contains(predicateName)) {
         val predicate = predicateLUT(predicateName)

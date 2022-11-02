@@ -322,7 +322,7 @@ class SteelProp extends MetalProp {
 
 class TinProp extends MetalProp {
   substanceName                   = "tin"
-  nameInStateOfMatter             = Map("solid" -> "tin", "liquid" -> "liquid tin", "gas" -> "gasseous tin")
+  nameInStateOfMatter             = Map("solid" -> "tin", "liquid" -> "liquid tin", "gas" -> "gaseous tin")
   color                           = "grey"
   // Thermal
   temperatureC                    = 10.0f
@@ -1169,7 +1169,7 @@ class RedOrangePaintProp extends GenericPaintProp {
   nameInStateOfMatter             = Map("solid" -> solidName, "liquid" -> liquidName, "gas" -> gasName)
 }
 
-class VoiletRedPaintProp extends GenericPaintProp {
+class VioletRedPaintProp extends GenericPaintProp {
   color                           = "violet-red"
   substanceName                   = this.color + "paint"
   // Inferred

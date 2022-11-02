@@ -536,7 +536,7 @@ object BuildingMaker {
     val foundry = RoomMaker.mkFoundry(sewer)
     universe.addObject(foundry)
 
-    // Randomly put a shoven in either the greenhouse or outside
+    // Randomly put a shovel in either the greenhouse or outside
     // Shovel
     val shovel = new Shovel()
     if (Random.nextInt(2) == 1) {

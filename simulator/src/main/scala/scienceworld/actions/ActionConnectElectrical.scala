@@ -116,7 +116,7 @@ object ActionConnectElectrical {
   }
 
   // Check to make sure a terminal reference is valid.
-  // Return signiture is (terminal, errorString, success)
+  // Return signature is (terminal, errorString, success)
   def getTerminal(_terminalIn:EnvObject):(EnvObject, String, Boolean) = {
     var terminalIn = _terminalIn
 
