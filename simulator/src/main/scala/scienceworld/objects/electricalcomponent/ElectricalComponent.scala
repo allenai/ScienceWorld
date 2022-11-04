@@ -168,7 +168,7 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
 
   // Does this terminal connect to a voltage source?
   def connectsToVoltage():Boolean = {
-    // For each connectected object
+    // For each connected object
     for (obj <- propElectricalConnection.get.getConnections()) {
       obj match {
         case co:Terminal => {
@@ -188,7 +188,7 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
   def connectsToGround(maxSteps:Int = 10):Boolean = {
     //println(" * connectsToGround(" + this.name + " / " + this.parentObject.name + " / " + maxSteps + "):")
 
-    // For each connectected object
+    // For each connected object
     for (obj <- propElectricalConnection.get.getConnections()) {
       //println ("\tconnected to object: " + obj.toStringMinimal() + " on " + obj.getContainer().get.name)
       obj match {

@@ -194,7 +194,7 @@ class Toilet(drainsTo:EnvObject) extends Device {
   val drain = new LiquidDrain(isOpen = true, connectsFrom = this, connectsTo = drainsTo)
   this.addPortal(drain)
 
-  // Initiailize toilet
+  // Initialize toilet
   var toiletFlushStage:Int = 0
   this.addObject( new Water() )   // Add water to the bowl
 

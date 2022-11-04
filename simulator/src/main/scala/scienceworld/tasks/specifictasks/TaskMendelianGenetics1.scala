@@ -601,7 +601,7 @@ class TaskMendelianGenetics1(val mode:String = MODE_MENDEL_KNOWN) extends TaskPa
 
 
 object TaskMendelianGenetics1 {
-  val MODE_MENDEL_KNOWN             = "mendellian genetics (known plant)"
+  val MODE_MENDEL_KNOWN             = "mendelian genetics (known plant)"
 
   def registerTasks(taskMaker:TaskMaker1): Unit = {
     taskMaker.addTask( new TaskMendelianGenetics1(mode = MODE_MENDEL_KNOWN) )

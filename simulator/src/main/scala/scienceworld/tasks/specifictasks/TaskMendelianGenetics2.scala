@@ -9,7 +9,7 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.{Task, TaskMaker1, TaskModifier, TaskObject, TaskValueStr}
 import scienceworld.tasks.goals.{Goal, GoalSequence}
 import scienceworld.tasks.goals.specificgoals.{GoalContainerOpen, GoalFind, GoalInRoomWithObject, GoalLifeStageAnywhere, GoalMoveToLocation, GoalMoveToNewLocation, GoalSpecificObjectInDirectContainer}
-import TaskMendelialGenetics2._
+import TaskMendelianGenetics2._
 import scienceworld.actions.Action
 import scienceworld.goldagent.PathFinder
 import scienceworld.objects.containers.furniture.BeeHive
@@ -23,13 +23,8 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 import scala.util.control.Breaks.{break, breakable}
 
-class TaskMendelianGenetics2 {
 
-}
-
-
-
-class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends TaskParametric {
+class TaskMendelianGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends TaskParametric {
   val taskName = "task-9-" + mode.replaceAll(" ", "-")
 
   val locations = Array("greenhouse")
@@ -84,7 +79,7 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
             specificTraitValue = traits.getTrait(traitName).get.valueRecessive
           }
 
-          val seedJar = TaskMendelialGenetics2.mkUnknownPlantSeedJar(plantIdx, traitName)
+          val seedJar = TaskMendelianGenetics2.mkUnknownPlantSeedJar(plantIdx, traitName)
 
           genetics.append(Array(new TaskObject(seedJar.name, Some(seedJar), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = true),
             new TaskValueStr(key = "domOrRec", value = domOrRec),
@@ -107,7 +102,7 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
 
     for (i <- 0 until 5) {      // 5 different variations of pot names
       val out = new ArrayBuffer[TaskModifier]()
-      val pots = TaskMendelialGenetics2.mkFlowerPots(numPots = 6)
+      val pots = TaskMendelianGenetics2.mkFlowerPots(numPots = 6)
       val potNames = new ArrayBuffer[String]
       for (pot <- pots) {
         out.append(new TaskObject(pot.name, Some(pot), roomToGenerateIn = location, Array.empty[String], generateNear = 0, forceAdd = false))
@@ -641,11 +636,11 @@ class TaskMendelialGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
 }
 
 
-object TaskMendelialGenetics2 {
-  val MODE_MENDEL_UNKNOWN             = "mendellian genetics (unknown plant)"
+object TaskMendelianGenetics2 {
+  val MODE_MENDEL_UNKNOWN             = "mendelian genetics (unknown plant)"
 
   def registerTasks(taskMaker:TaskMaker1): Unit = {
-    taskMaker.addTask( new TaskMendelialGenetics2(mode = MODE_MENDEL_UNKNOWN) )
+    taskMaker.addTask( new TaskMendelianGenetics2(mode = MODE_MENDEL_UNKNOWN) )
   }
 
 

@@ -70,7 +70,7 @@ def randomModel(args):
             print("Score: " + str(score))
             print("isCompleted: " + str(isCompleted))
 
-            # The environment will makke isCompleted `True` when a stop condition has happened, or the maximum number of steps is reached.
+            # The environment will make isCompleted `True` when a stop condition has happened, or the maximum number of steps is reached.
             if (isCompleted):
                 break
 
@@ -180,7 +180,7 @@ def parse_args():
     parser.add_argument("--output-path-prefix", default="save-histories",
                         help="Path prefix to use for saving episode transcripts. Default: %(default)s")
     parser.add_argument("--max-episode-per-file", type=int, default=1000,
-                        help="Maximum number of epsiodes per transcript file. Default: %(default)s")
+                        help="Maximum number of episodes per transcript file. Default: %(default)s")
 
     simplification_group = parser.add_argument_group('Game simplifications')
     simplification_group.add_argument("--simplifications-preset", choices=['easy'],

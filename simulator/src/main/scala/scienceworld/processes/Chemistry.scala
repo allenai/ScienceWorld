@@ -280,9 +280,9 @@ object Chemistry {
         paper.get.delete()
         paintViolet.get.delete()
 
-        container.addObject( new ColoredPaper("voilet") )
+        container.addObject( new ColoredPaper("violet") )
 
-        return (true, "Paper and blue paint mix to produce voilet paper.")
+        return (true, "Paper and blue paint mix to produce violet paper.")
       }
 
 

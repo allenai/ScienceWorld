@@ -40,7 +40,7 @@ class PossibleAction(val sequence:Array[ActionExpr], templateID:Int) {
 
   // Export into a TemplateAction storage class
   def toTemplate():TemplateAction = {
-    // Step 1: Get santizied plain-text string
+    // Step 1: Get sanitized plain-text string
     val sanitizedStr = this.mkHumanReadableStr()
 
     // Step 2: Collect objects

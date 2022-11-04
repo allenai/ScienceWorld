@@ -297,7 +297,7 @@ object TaskInclinedPlane1 {
 
 
   /*
-   * Helper functinos
+   * Helper functions
    */
 
   // Make a set of inclined planes

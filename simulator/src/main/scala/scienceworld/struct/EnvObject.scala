@@ -411,7 +411,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     this.deleted = true
   }
 
-  def isDeteted():Boolean = this.deleted
+  def isDeleted():Boolean = this.deleted
 
 
   /*

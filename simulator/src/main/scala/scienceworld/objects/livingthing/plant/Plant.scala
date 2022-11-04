@@ -172,7 +172,7 @@ class Flower(parentPlant:Plant) extends EnvObject {
   this.propContainer = Some(new IsOpenUnclosableContainer())
   this.propMaterial = Some(new FlowerMatterProp())
 
-  // A step refereing to where the flower is in the pollination -> fruiting process.  If the pollenation step is zero, the flower hasn't been pollinated.
+  // A step referring to where the flower is in the pollination -> fruiting process.  If the pollination step is zero, the flower hasn't been pollinated.
   this.propPollination = Some( new PollinationProperties() )
 
 
@@ -196,7 +196,7 @@ class Flower(parentPlant:Plant) extends EnvObject {
     // Step 2: Consume pollen
     pollen.delete()
 
-    //## println ("####* POLLENATION SUCCESSFUL")
+    //## println ("####* POLLINATION SUCCESSFUL")
 
     // Step 3: Get the flower -> fruit conversion going
     this.propPollination.get.pollinationStep = 1
@@ -283,7 +283,7 @@ class Flower(parentPlant:Plant) extends EnvObject {
       }
 
     } else {
-      // If not pollenated:
+      // If not pollinated:
       // Step 2A: Add pollen of this plant, if needed
       this.addPollen()
 

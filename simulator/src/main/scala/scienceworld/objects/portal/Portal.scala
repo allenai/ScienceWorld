@@ -86,7 +86,7 @@ class Portal (val _isOpen:Boolean, val connectsFrom:EnvObject, val connectsTo:En
   }
 
   /*
-   * Rerefents/description (from perspective of one side of the portal)
+   * Referents/description (from perspective of one side of the portal)
    */
 
   override def getReferents():Set[String] = {

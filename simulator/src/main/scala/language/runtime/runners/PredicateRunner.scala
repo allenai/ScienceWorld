@@ -211,7 +211,7 @@ object PredicateRunner {
     return (true, "", assignments)
   }
 
-  // Check that a given set of variable assignments (input) meets the requirements for a parameter signiture list (from a class constructor, predicate signiture, etc).
+  // Check that a given set of variable assignments (input) meets the requirements for a parameter signature list (from a class constructor, predicate signature, etc).
   def checkParamList(paramSigList:ParamSigList, assignments:ScopedVariableLUT, taxonomy:Taxonomy, callNameForErrMsg:String): (Boolean, String) = {
     // Check that the assignments match the predicate signature
     for (parameter <- paramSigList.parameters) {

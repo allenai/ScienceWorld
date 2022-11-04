@@ -406,7 +406,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
           for (i <- 0 to 10) {
             substance = PathFinder.getAllAccessibleEnvObject(inputColor, getCurrentAgentLocation(runner))
             if (substance.size > 0) break // Found at least one substance matching the criteria
-            // If we reach here, we didn't find a subtance -- start opening closed containers
+            // If we reach here, we didn't find a substance -- start opening closed containers
             if (successOpeningContainers) {
               successOpeningContainers = PathFinder.openRandomClosedContainer(currentLocation = getCurrentAgentLocation(runner), runner)
             }

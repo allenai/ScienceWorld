@@ -229,7 +229,7 @@ object TaskIdentifyLifeStages2 {
 
 
   /*
-   * Helper functinos
+   * Helper functions
    */
 
   // Randomly choose a set of N distractor animals to include in the environment
