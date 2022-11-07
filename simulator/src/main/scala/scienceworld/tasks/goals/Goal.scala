@@ -172,7 +172,7 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
   def tickUnorderedSubgoals(objMonitor: ObjMonitor, agent:Agent): Unit = {
     var numCompletedThisCycle = -1
 
-    //println("* tickUndorderedSubgoals(): Started...")
+    //println("* tickUnorderedSubgoals(): Started...")
     while (numCompletedThisCycle != 0) {
       numCompletedThisCycle = 0
 
