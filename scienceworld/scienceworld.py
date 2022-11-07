@@ -79,7 +79,9 @@ class ScienceWorldEnv:
             msg = "Invalid simplification. Task '{}' requires electrical actions but '--no-electrical' was provided."
             raise ValueError(msg.format(taskName))
 
-        self.server.load(self.scriptFilename, variationIdx, simplificationStr, generateGoldPath)
+        errMsg = self.server.load(self.scriptFilename, variationIdx, simplificationStr, generateGoldPath)
+        if errMsg and taskName:  # Do not raise error if intentionally loading empty task
+            raise RuntimeError(errMsg)
 
         # Reset last step score (used to calculate reward from current-previous score)
         self.lastStepScore = 0

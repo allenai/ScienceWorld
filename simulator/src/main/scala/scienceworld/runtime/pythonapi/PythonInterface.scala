@@ -49,7 +49,7 @@ class PythonInterface() {
   /*
    * Load/reset/shutdown server
    */
-  def load(taskStr:String, variationIdx:Int, simplificationStr:String, generateGoldPath:Boolean = false): Unit = {
+  def load(taskStr:String, variationIdx:Int, simplificationStr:String, generateGoldPath:Boolean = false): String = {
     var goldActionSequence = Array.empty[String]
 
     if (generateGoldPath) {
@@ -83,6 +83,8 @@ class PythonInterface() {
     if (generateGoldPath == true) {
       this.goldActionsStr = goldActionSequence
     }
+
+    return this.errorStr
 
   }
 
