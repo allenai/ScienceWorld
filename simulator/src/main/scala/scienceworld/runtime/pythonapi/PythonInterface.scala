@@ -166,8 +166,8 @@ class PythonInterface() {
 
   // Split into train/dev/test sets (using a 50%/25%/25% split).
   // TODO: Make private, so access can only be from functions below?
-  def getSets():(List[Int], List[Int], List[Int]) = {
-    val maxVariations = this.getTaskMaxVariations(taskName = this.taskStr)
+  def getSets(taskName:String):(List[Int], List[Int], List[Int]) = {
+    val maxVariations = this.getTaskMaxVariations(taskName)
     // Special cases with small numbers of variations
     if (maxVariations == 0) return (List.empty[Int], List.empty[Int], List.empty[Int])
     if (maxVariations == 1) return (List(0), List.empty[Int], List(0))
@@ -190,37 +190,65 @@ class PythonInterface() {
     return (train, dev, test)
   }
 
-  def getVariationsTrain():java.util.List[Int] = {
-    val (train, dev, test) = this.getSets()
+  def getSets():(List[Int], List[Int], List[Int]) = {
+    return getSets(taskName = this.taskStr)
+  }
+
+  def getVariationsTrain(taskName:String):java.util.List[Int] = {
+    val (train, dev, test) = this.getSets(taskName)
     return train.asJava
   }
 
-  def getVariationsDev():java.util.List[Int] = {
-    val (train, dev, test) = this.getSets()
+  def getVariationsTrain():java.util.List[Int] = {
+    return getVariationsTrain(taskName = this.taskStr)
+  }
+
+  def getVariationsDev(taskName:String):java.util.List[Int] = {
+    val (train, dev, test) = this.getSets(taskName)
     return dev.asJava
   }
 
-  def getVariationsTest():java.util.List[Int] = {
-    val (train, dev, test) = this.getSets()
+  def getVariationsDev():java.util.List[Int] = {
+    return getVariationsDev(taskName = this.taskStr)
+  }
+
+  def getVariationsTest(taskName:String):java.util.List[Int] = {
+    val (train, dev, test) = this.getSets(taskName)
     return test.asJava
   }
 
-  def getRandomVariationTrain():Int = {
-    val (train, dev, test) = this.getSets()
+  def getVariationsTest():java.util.List[Int] = {
+    return getVariationsTest(taskName = this.taskStr)
+  }
+
+  def getRandomVariationTrain(taskName:String):Int = {
+    val (train, dev, test) = this.getSets(taskName)
     val randIdx = scala.util.Random.nextInt(train.length)
     return train(randIdx)
   }
 
-  def getRandomVariationDev():Int = {
-    val (train, dev, test) = this.getSets()
+  def getRandomVariationTrain():Int = {
+    return getRandomVariationTrain(taskName = this.taskStr)
+  }
+
+  def getRandomVariationDev(taskName:String):Int = {
+    val (train, dev, test) = this.getSets(taskName)
     val randIdx = scala.util.Random.nextInt(dev.length)
     return dev(randIdx)
   }
 
-  def getRandomVariationTest():Int = {
-    val (train, dev, test) = this.getSets()
+  def getRandomVariationDev():Int = {
+    return getRandomVariationDev(taskName = this.taskStr)
+  }
+
+  def getRandomVariationTest(taskName:String):Int = {
+    val (train, dev, test) = this.getSets(taskName)
     val randIdx = scala.util.Random.nextInt(test.length)
     return test(randIdx)
+  }
+
+  def getRandomVariationTest():Int = {
+    return getRandomVariationTest(taskName = this.taskStr)
   }
 
 

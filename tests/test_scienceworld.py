@@ -42,3 +42,16 @@ def test_multiple_instances():
     env2.step("open door to art studio")
     obs2_2, _, _, _ = env2.step("look around")
     assert obs1_2 == obs2_2
+
+
+def test_variation_sets_are_disjoint():
+    env = ScienceWorldEnv()
+
+    for task in env.getTaskNames():
+        env.load(task)
+        train = set(env.getVariationsTrain())
+        dev = set(env.getVariationsDev())
+        test = set(env.getVariationsTest())
+        assert set.isdisjoint(train, dev)
+        assert set.isdisjoint(train, test)
+        assert set.isdisjoint(dev, test)

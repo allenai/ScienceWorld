@@ -1,11 +1,33 @@
+import sys
 import time
 import argparse
 
 from scienceworld import ScienceWorldEnv
 
 
+prompt_toolkit_available = False
+try:
+    # For command line history and autocompletion.
+    from prompt_toolkit import prompt
+    from prompt_toolkit.completion import WordCompleter
+    from prompt_toolkit.history import InMemoryHistory
+    prompt_toolkit_available = sys.stdout.isatty()
+except ImportError:
+    pass
+
+try:
+    # For command line history when prompt_toolkit is not available.
+    import readline  # noqa: F401
+except ImportError:
+    pass
+
+
 def userConsole(args):
     """ Example user input console, to play through a game. """
+    history = None
+    if prompt_toolkit_available:
+        history = InMemoryHistory()
+
     exitCommands = ["quit", "exit"]
 
     taskIdx = args['task_num']
@@ -99,12 +121,22 @@ def userConsole(args):
             print("isCompleted: " + str(isCompleted))
             #print("info: " + str(info))
 
-        print("'help' lists valid action templates, 'objects' lists valid objects, 'valid' lists valid action-object combinations (long!). ")
+        print("'help' lists valid action templates, 'objects' lists valid objects, use <tab> to list valid actions. ")
         print("'goals' lists progress on subgoals.")
         print("type 'exit' to quit.")
 
+        # Select a random action
+        validActions = env.getValidActionObjectCombinations()
+
         # Get user input
-        userInputStr = input('> ')
+        if prompt_toolkit_available:
+            actions_completer = WordCompleter(validActions, ignore_case=True, sentence=True)
+            userInputStr = prompt('> ', completer=actions_completer,
+                                  history=history, enable_history_search=True)
+        else:
+            print("Valid Actions: " + str(validActions))
+            userInputStr = input('> ')
+
         # Sanitize input
         userInputStr = userInputStr.lower().strip()
 

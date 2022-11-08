@@ -1,16 +1,13 @@
-# scienceworld.py
-#
-#   conda create --name scienceworld python=3.8
-#   conda activate scienceworld
-#   pip install py4j                                (for scala-python interface)
-#   pip install -U pywebio                          (for web server)
-
 from py4j.java_gateway import JavaGateway, GatewayParameters, launch_gateway, CallbackServerParameters
 
 import os
 import json
+import numpy as np
+
 import logging
 import scienceworld
+
+
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
 JAR_FILE = 'scienceworld-{version}.jar'.format(version=scienceworld.__version__)
 JAR_PATH = os.path.join(BASEPATH, JAR_FILE)
@@ -22,8 +19,7 @@ class ScienceWorldEnv:
     #
     # Constructor
     #
-    def __init__(self, taskName, serverPath=None, envStepLimit=100):
-        self.taskName = taskName
+    def __init__(self, taskName=None, serverPath=None, envStepLimit=100):
         serverPath = serverPath or JAR_PATH  # Use the builtin jar.
 
         # Launch the server and connect to the JVM.
@@ -49,12 +45,15 @@ class ScienceWorldEnv:
             python_port)
 
         self.server = self._gateway.jvm.scienceworld.runtime.pythonapi.PythonInterface()
+        logger.info("ScienceWorld server running on port", port)
 
         # Keep track of the last step score, to calculate reward from score
         self.lastStepScore = 0
 
         # Load the script
-        self.load(self.taskName, 0, "")
+        self.taskName = taskName
+        if self.taskName:
+            self.load(taskName, 0, "")
 
         # Set the environment step limit
         self.envStepLimit = envStepLimit
@@ -65,32 +64,47 @@ class ScienceWorldEnv:
         # By default, set that the gold path was not generated unless the user asked for it
         self.goldPathGenerated = False
 
-
-    #
-    #   Methods
-    #
-
     # Ask the simulator to load an environment from a script
-    def load(self, taskName, variationIdx, simplificationStr, generateGoldPath=False):
-        self.scriptFilename = taskName
+    def load(self, taskName, variationIdx=0, simplificationStr="", generateGoldPath=False):
+        """ Load a given task and its variation. """
 
-        logger.info("Load: " + self.scriptFilename + " (variation: " + str(variationIdx) + ")" + " (simplifications: " + simplificationStr + ")")
+        # Check loading arguments.
+        if isinstance(taskName, int):
+            # Retrieve task from its id.
+            taskName = self.getTaskNames()[taskName]
+
+        # Validate task name.
+        if taskName not in self.getTaskNames():
+            msg = "Unknown taskName: '{}'. ".format(taskName)
+            msg += "Supported tasks are: {}".format(self.getTaskNames())
+            raise ValueError(msg)
+
+        self.taskName = taskName
+
+        # Validate simplification string.
+        possible_simplifications = ["easy"] + self.getPossibleSimplifications()
+        for simplification in simplificationStr.split(","):
+            if simplification and simplification not in possible_simplifications:
+                msg = "Unknown simplification: '{}'. ".format(simplification)
+                msg += "Supported simplifications are: {}".format(possible_simplifications)
+                raise ValueError(msg)
 
         is_electrical_task = "power-component" in taskName or "conductivity" in taskName
         if is_electrical_task and "noElectricalAction" in simplificationStr:
             msg = "Invalid simplification. Task '{}' requires electrical actions but '--no-electrical' was provided."
             raise ValueError(msg.format(taskName))
 
-        errMsg = self.server.load(self.scriptFilename, variationIdx, simplificationStr, generateGoldPath)
-        if errMsg and taskName:  # Do not raise error if intentionally loading empty task
-            raise RuntimeError(errMsg)
+        self.simplificationStr = simplificationStr
+        self.variationIdx = variationIdx
+
+        logger.info(f"Loading: {self.taskName} (variation: {self.variationIdx}) (simplifications: {self.simplificationStr})")
+        self.server.load(self.taskName, self.variationIdx, self.simplificationStr, generateGoldPath)
 
         # Reset last step score (used to calculate reward from current-previous score)
         self.lastStepScore = 0
 
         # Keep track of whether the gold path was generated, to generate verbose error messages
         self.goldPathGenerated = generateGoldPath
-
 
     # Ask the simulator to reset an environment back to it's initial state
     def reset(self):
@@ -102,29 +116,15 @@ class ScienceWorldEnv:
         # Make first move
         observation, score, isCompleted, info = self.step("look around")
 
-        # Return a tuple that looks like the Jericho signature for reset
+        # Return a tuple that looks like the Jericho signiture for reset
         return observation, info
-
-    # Ask the simulator to reset an environment back to it's initial state
-    def resetWithVariation(self, variationIdx, simplificationStr):
-        self.load(self.scriptFilename, variationIdx, simplificationStr)
-
-        # Reset last step score (used to calculate reward from current-previous score)
-        self.lastStepScore = 0
-
-        # Make first move
-        observation, score, isCompleted, info = self.step("look around")
-
-        # Return a tuple that looks like the Jericho signature for reset
-        return observation, info
-
 
     # Simplifications
     def getSimplificationsUsed(self):
         return self.server.getSimplificationsUsed()
 
     def getPossibleSimplifications(self):
-        return self.server.getPossibleSimplifications()
+        return self.server.getPossibleSimplifications().split(", ")
 
 
     # Get a list of valid tasks/environments
@@ -224,7 +224,6 @@ class ScienceWorldEnv:
     #
     def getRunHistory(self):
         historyStr = self.server.getRunHistoryJSON()
-        #logger.info("historyStr: " + str(historyStr))
         jsonOut = json.loads(historyStr)
         return jsonOut
 
@@ -255,7 +254,6 @@ class ScienceWorldEnv:
         logger.info("* Saving run history (" + str(filenameOut) + ")...")
 
         with open(filenameOut, 'w') as outfile:
-            #logger.info(type(self.runHistories))
             json.dump(self.runHistories, outfile, sort_keys=True, indent=4)
 
     def getRunHistorySize(self):
@@ -319,18 +317,19 @@ class ScienceWorldEnv:
         if (score < 0):
             isCompleted = True
 
-        #logger.info("> " + str(inputStr))
-        #logger.info("score: " + str(score))
-        #logger.info("moves: " + str(numMoves))
-
         # Mirror of Jericho API
-        infos = {'moves': numMoves,
-                 'score': score,
-                 'reward': reward,
-                 'look': self.look(),
-                 'inv': self.inventory(),
-                 'taskDesc': self.taskdescription(),
-                 'valid': self.getValidActionObjectCombinations() }
+        infos = {
+            'moves': numMoves,
+            'score': score,
+            'reward': reward,
+            'look': self.look(),
+            'inv': self.inventory(),
+            'taskDesc': self.taskdescription(),
+            'valid': self.getValidActionObjectCombinations(),
+            'variationIdx': self.variationIdx,
+            'taskName': self.taskName,
+            'simplificationStr': self.simplificationStr,
+        }
 
         return observation, reward, isCompleted, infos
 
@@ -395,7 +394,6 @@ class BufferedHistorySaver:
         logger.info("* Saving run history ( " + str(filenameOut) + ")...")
 
         with open(filenameOut, 'w') as outfile:
-            #logger.info(type(self.runHistories))
             json.dump(self.runHistories, outfile, sort_keys=True, indent=4)
 
     def getRunHistorySize(self):

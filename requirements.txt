@@ -1,1 +1,2 @@
+gymnasium @ git+https://github.com/MarcCote/Gymnasium.git@enh_vector_reset_options
 py4j
