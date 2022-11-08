@@ -1,2 +1,5 @@
+build
 pre-commit
 py4j
+pytest
+twine

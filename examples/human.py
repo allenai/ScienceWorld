@@ -12,7 +12,7 @@ def userConsole(args):
     simplificationStr = args['simplification_str']
 
     # Initialize environment
-    env = ScienceWorldEnv("", args['jar_path'], envStepLimit = args['env_step_limit'] , threadNum = 0)
+    env = ScienceWorldEnv("", args['jar_path'], envStepLimit = args['env_step_limit'])
     taskNames = env.getTaskNames()
     print("Task Names: " + str(taskNames))
 
@@ -119,10 +119,6 @@ def userConsole(args):
 
     # Display subgoal progress
     print(env.getGoalProgressStr())
-
-
-    print("Shutting down server...")
-    env.shutdown()
 
     print("Completed.")
 

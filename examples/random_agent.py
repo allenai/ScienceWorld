@@ -9,6 +9,7 @@ def randomModel(args):
     """ Example random agent -- randomly picks an action at each step. """
     exitCommands = ["quit", "exit"]
 
+
     taskIdx = args['task_num']
     simplificationStr = args['simplification_str']
     numEpisodes = args['num_episodes']
@@ -17,7 +18,8 @@ def randomModel(args):
     finalScores = []
 
     # Initialize environment
-    env = ScienceWorldEnv("", args['jar_path'], envStepLimit = args['env_step_limit'] , threadNum = 0)
+    env = ScienceWorldEnv("", args['jar_path'], envStepLimit = args['env_step_limit'])
+
     taskNames = env.getTaskNames()
     print("Task Names: " + str(taskNames))
 
@@ -132,9 +134,6 @@ def randomModel(args):
     print("---------------------------------------------------------------------")
     print("")
 
-    print("Shutting down server...")
-    env.shutdown()
-
     print("Completed.")
 
 
@@ -203,7 +202,6 @@ def parse_args():
 
 def main():
     print("ScienceWorld 1.0 API Examples - Random Agent")
-
     # Parse command line arguments
     args = parse_args()
     random.seed(args["seed"])
