@@ -9,11 +9,13 @@ from py4j.java_gateway import JavaGateway, GatewayParameters, launch_gateway, Ca
 
 import os
 import json
+import logging
 import scienceworld
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
 JAR_FILE = 'scienceworld-{version}.jar'.format(version=scienceworld.__version__)
 JAR_PATH = os.path.join(BASEPATH, JAR_FILE)
 
+logger = logging.getLogger(__name__)
 
 class ScienceWorldEnv:
 
@@ -72,7 +74,7 @@ class ScienceWorldEnv:
     def load(self, taskName, variationIdx, simplificationStr, generateGoldPath=False):
         self.scriptFilename = taskName
 
-        print("Load: " + self.scriptFilename + " (variation: " + str(variationIdx) + ")" + " (simplifications: " + simplificationStr + ")")
+        logger.info("Load: " + self.scriptFilename + " (variation: " + str(variationIdx) + ")" + " (simplifications: " + simplificationStr + ")")
 
         is_electrical_task = "power-component" in taskName or "conductivity" in taskName
         if is_electrical_task and "noElectricalAction" in simplificationStr:
@@ -222,7 +224,7 @@ class ScienceWorldEnv:
     #
     def getRunHistory(self):
         historyStr = self.server.getRunHistoryJSON()
-        #print("historyStr: " + str(historyStr))
+        #logger.info("historyStr: " + str(historyStr))
         jsonOut = json.loads(historyStr)
         return jsonOut
 
@@ -250,10 +252,10 @@ class ScienceWorldEnv:
 
         filenameOut += ".json"
 
-        print("* Saving run history (" + str(filenameOut) + ")...")
+        logger.info("* Saving run history (" + str(filenameOut) + ")...")
 
         with open(filenameOut, 'w') as outfile:
-            #print(type(self.runHistories))
+            #logger.info(type(self.runHistories))
             json.dump(self.runHistories, outfile, sort_keys=True, indent=4)
 
     def getRunHistorySize(self):
@@ -317,9 +319,9 @@ class ScienceWorldEnv:
         if (score < 0):
             isCompleted = True
 
-        #print("> " + str(inputStr))
-        #print("score: " + str(score))
-        #print("moves: " + str(numMoves))
+        #logger.info("> " + str(inputStr))
+        #logger.info("score: " + str(score))
+        #logger.info("moves: " + str(numMoves))
 
         # Mirror of Jericho API
         infos = {'moves': numMoves,
@@ -390,10 +392,10 @@ class BufferedHistorySaver:
 
         filenameOut += ".json"
 
-        print("* Saving run history ( " + str(filenameOut) + ")...")
+        logger.info("* Saving run history ( " + str(filenameOut) + ")...")
 
         with open(filenameOut, 'w') as outfile:
-            #print(type(self.runHistories))
+            #logger.info(type(self.runHistories))
             json.dump(self.runHistories, outfile, sort_keys=True, indent=4)
 
     def getRunHistorySize(self):
