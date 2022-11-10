@@ -75,7 +75,9 @@ class GoalFindLivingThingStage(livingThingType:String = "", lifeStage:String = "
     if (obj.isEmpty) return GoalReturn.mkSubgoalUnsuccessful()
 
     println("GoalFindLivingThingStage()")
-    println(" -> " + obj.get.propLife.get.lifeformType)
+    if (obj.get.propLife.isDefined) {
+      println(" -> " + obj.get.propLife.get.lifeformType)
+    }
     println(" --> " + livingThingType)
     // Case: The focus is on a living thing of the correct species type
     if ((obj.get.propLife.isDefined) && (obj.get.propLife.get.lifeformType == livingThingType.toLowerCase)) {
