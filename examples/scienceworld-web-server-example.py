@@ -7,6 +7,7 @@
 #   pip install -U pywebio                          (for web server)
 
 import json
+import os.path
 import time
 import argparse
 
@@ -59,6 +60,8 @@ class OutputLog:
 #
 def saveJSONHistory(history:list):
     pathOut = "recordings/"
+    if not os.path.isdir(pathOut):
+        os.mkdir(pathOut)
     taskName = history[-1]['taskName']
     varIdx = history[-1]['variationIdx']
     score = history[-1]['score']
@@ -69,9 +72,9 @@ def saveJSONHistory(history:list):
 
     # timestamp
     dateTimeObj = datetime.now()
-    timestampStr = dateTimeObj.strftime("timestamp%Y-%b-%d-%H-%M-%S")
+    timestampStr = dateTimeObj.strftime("timestamp%Y-%M-%d-%H-%M-%S")
 
-    filenameOut = pathOut + "recording-" + str(taskName) + "-var" + str(varIdx) + "-" + str(result) + str(timestampStr) + ".json"
+    filenameOut = pathOut + "recording-" + str(taskName) + "-var" + str(varIdx) + "-" + str(result) + "-" + str(timestampStr) + ".json"
 
     print ("Exporting " + filenameOut)
 
