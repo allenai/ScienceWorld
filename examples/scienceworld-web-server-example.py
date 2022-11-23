@@ -163,17 +163,6 @@ def app():
         #print("Score: " + str(score))
         #print("isCompleted: " + str(isCompleted))
 
-        # Get user input
-        userInputStr = pywebio.input.input('Enter your action (`help` for list of actions, `objects` for list of object referents) ')
-
-
-        # Sanitize input
-        userInputStr = userInputStr.lower().strip()
-
-        pywebio_out.put_text("> " + userInputStr)
-        htmlLog.addStr("User Input:<br>")
-        htmlLog.addStr("<i> > " + userInputStr + "</i><br>")
-
         # Record history
         packed = {
             'observation': observation,
@@ -193,6 +182,16 @@ def app():
         # If this session is completed, save the recording
         if (isCompleted == True):
             saveJSONHistory(historyRecording)
+
+        # Get user input
+        userInputStr = pywebio.input.input('Enter your action (`help` for list of actions, `objects` for list of object referents) ')
+
+        # Sanitize input
+        userInputStr = userInputStr.lower().strip()
+
+        pywebio_out.put_text("> " + userInputStr)
+        htmlLog.addStr("User Input:<br>")
+        htmlLog.addStr("<i> > " + userInputStr + "</i><br>")
 
         consoleMoveCount += 1
 
