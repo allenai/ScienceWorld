@@ -7,6 +7,7 @@
 #   pip install -U pywebio                          (for web server)
 
 import json
+import os.path
 import time
 import argparse
 
@@ -59,6 +60,8 @@ class OutputLog:
 #
 def saveJSONHistory(history:list):
     pathOut = "recordings/"
+    if not os.path.isdir(pathOut):
+        os.mkdir(pathOut)
     taskName = history[-1]['taskName']
     varIdx = history[-1]['variationIdx']
     score = history[-1]['score']
@@ -69,9 +72,9 @@ def saveJSONHistory(history:list):
 
     # timestamp
     dateTimeObj = datetime.now()
-    timestampStr = dateTimeObj.strftime("timestamp%Y-%b-%d-%H-%M-%S")
+    timestampStr = dateTimeObj.strftime("timestamp%Y-%M-%d-%H-%M-%S")
 
-    filenameOut = pathOut + "recording-" + str(taskName) + "-var" + str(varIdx) + "-" + str(result) + str(timestampStr) + ".json"
+    filenameOut = pathOut + "recording-" + str(taskName) + "-var" + str(varIdx) + "-" + str(result) + "-" + str(timestampStr) + ".json"
 
     print ("Exporting " + filenameOut)
 
@@ -160,17 +163,6 @@ def app():
         #print("Score: " + str(score))
         #print("isCompleted: " + str(isCompleted))
 
-        # Get user input
-        userInputStr = pywebio.input.input('Enter your action (`help` for list of actions, `objects` for list of object referents) ')
-
-
-        # Sanitize input
-        userInputStr = userInputStr.lower().strip()
-
-        pywebio_out.put_text("> " + userInputStr)
-        htmlLog.addStr("User Input:<br>")
-        htmlLog.addStr("<i> > " + userInputStr + "</i><br>")
-
         # Record history
         packed = {
             'observation': observation,
@@ -190,6 +182,16 @@ def app():
         # If this session is completed, save the recording
         if (isCompleted == True):
             saveJSONHistory(historyRecording)
+
+        # Get user input
+        userInputStr = pywebio.input.input('Enter your action (`help` for list of actions, `objects` for list of object referents) ')
+
+        # Sanitize input
+        userInputStr = userInputStr.lower().strip()
+
+        pywebio_out.put_text("> " + userInputStr)
+        htmlLog.addStr("User Input:<br>")
+        htmlLog.addStr("<i> > " + userInputStr + "</i><br>")
 
         consoleMoveCount += 1
 
