@@ -282,8 +282,8 @@ class TaskUseInstrumentThermometer2(val mode:String = MODE_MEASURE_MELTING_KNOWN
       // Description
       description = "Your task is to measure the melting point of " + objectName.get + ", which is located around the " + objectLocation.get + ". "
       description += "First, focus on the thermometer. Next, focus on the " + objectName.get + ". "
-      description += "If the melting point of " + objectName.get + " is above " + tempPoint.get + " degrees, focus on the " + boxAbove.get + ". "
-      description += "If the melting point of " + objectName.get + " is below " + tempPoint.get + " degrees, focus on the " + boxBelow.get + ". "
+      description += "If the melting point of " + objectName.get + " is above " + tempPoint.get + " degrees celsius, focus on the " + boxAbove.get + ". "
+      description += "If the melting point of " + objectName.get + " is below " + tempPoint.get + " degrees celsius, focus on the " + boxBelow.get + ". "
       description += "The boxes are located around the " + boxLocation.get + ". "
 
     } else {
