@@ -28,6 +28,10 @@ repos:
         args: ['--fix', 'lf']
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+  - repo: https://github.com/shellcheck-py/shellcheck-py # Unofficial but maintained by asottile
+    rev: v0.8.0.4
+    hooks:
+      - id: shellcheck
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.1
     hooks:
