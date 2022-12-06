@@ -1,12 +1,29 @@
-# ScienceWorld
+<h1 align="center">
+ScienceWorld
+</h1>
 
-ScienceWorld is a text-based virtual environment centered around accomplishing tasks from the standardized elementary science curriculum.  This code accompanies the paper [ScienceWorld: Is your Textual Agent Smarter than a 5th grader?](ScienceWorld-preprint.pdf).
+<p align="center">
+<!-- Version badge using shields.io -->
+  <a href="https://github.com/allenai/ScienceWorld/releases">
+    <img src="https://img.shields.io/github/v/release/allenai/ScienceWorld">
+  </a>
+<!-- Link to tutorials badge using shields.io -->
+  <a href="https://huggingface.co/spaces/MarcCote/ScienceWorld">
+    <img src="https://img.shields.io/badge/🤗-Demo-yellow">
+  </a>
+<!-- Follow on twitter badge using shields.io -->
+  <a href="https://sciworld.apps.allenai.org">
+    <img src="https://img.shields.io/badge/Website-green">
+  </a>
+</p>
+
+ScienceWorld is a text-based virtual environment centered around accomplishing tasks from the standardized elementary science curriculum.  This code accompanies the paper [ScienceWorld: Is your Textual Agent Smarter than a 5th grader?](https://arxiv.org/abs/2203.07540).
 
 <h3 align="center"><img src="https://github.com/allenai/ScienceWorld/blob/main/media/scienceworld_environment.png" width="75%"/></h3>
 
-### Examples
+### Demo and examples
 
-Read some of the playthrough transcripts available at: https://sciworld.apps.allenai.org/explore
+You can try ScienceWorld yourself via our [HuggingFace Space](https://huggingface.co/spaces/MarcCote/ScienceWorld) or read some of the [playthrough transcripts](https://sciworld.apps.allenai.org/explore).
 
 ### Citation
 ```
