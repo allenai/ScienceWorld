@@ -219,7 +219,7 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
                 return false
               }         // Other terminal doesn't exist or is not connected in a switch, return false
               // Other terminal exists, traverse/recurse
-              if ( otherTerminal.get.connectsToGround(maxSteps-1) == true) {
+              if ( maxSteps > 0 && otherTerminal.get.connectsToGround(maxSteps-1) == true) {
                 //println("true2")
                 return true
               }      // If the recursive case returns true, then that pin connects to ground.  If it doesn't, continue on other connections.
@@ -237,7 +237,7 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
                 return false
               }         // Other terminal doesn't exist or is not connected in a switch, return false
               // Other terminal exists, traverse/recurse
-              if ( otherTerminal.get.connectsToGround(maxSteps-1) == true) {
+              if ( maxSteps > 0 && otherTerminal.get.connectsToGround(maxSteps-1) == true) {
                 //println("true2")
                 return true
               }      // If the recursive case returns true, then that pin connects to ground.  If it doesn't, continue on other connections.
@@ -259,7 +259,7 @@ class Terminal(val parentObject:EnvObject, _name:String = "terminal") extends En
                 return false
               }         // Other terminal doesn't exist or is not connected in a switch, return false
               // Other terminal exists, traverse/recurse
-              if ( otherTerminal.get.connectsToGround(maxSteps-1) == true) {
+              if ( maxSteps > 0 && otherTerminal.get.connectsToGround(maxSteps-1) == true) {
                 //println("true2")
                 return true
               }      // If the recursive case returns true, then that pin connects to ground.  If it doesn't, continue on other connections.
