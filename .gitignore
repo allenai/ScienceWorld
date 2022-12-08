@@ -4,6 +4,7 @@ build/
 
 # Project-specific
 recordings/
+scienceworld/version.py
 scienceworld.egg-info/
 simulator/project/build.properties
 simulator/project/project/

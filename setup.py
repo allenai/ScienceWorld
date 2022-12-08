@@ -1,18 +1,25 @@
 import os.path, sys
+import re
+import zipfile
 
 from setuptools import setup
 
-with open(os.path.join("scienceworld", "version.py")) as f:
-    VERSION = f.readlines()[0].split("=")[-1].strip("' \n")
 
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
-JAR_FILE = 'scienceworld-{version}.jar'.format(version=VERSION)
+JAR_FILE = 'scienceworld.jar'
 JAR_PATH = os.path.join(BASEPATH, 'scienceworld', JAR_FILE)
+# Extract ScienceWorld version from JAR file metadata
+contents = zipfile.ZipFile(JAR_PATH).open('META-INF/MANIFEST.MF').read().decode('utf-8')
+VERSION = re.search(r'\bSpecification-Version: (.*)\b', contents).group(1)
+
 OBJECTS_LUT_FILE = "object_type_ids.tsv"
 
 if not os.path.isfile(JAR_PATH):
     print('ERROR: Unable to find required library:', JAR_PATH)
     sys.exit(1)
+
+with open(os.path.join('scienceworld', 'version.py'), 'w') as f:
+    f.write(f'__version__ = {VERSION!r}\n')
 
 setup(name='scienceworld',
     version=VERSION,

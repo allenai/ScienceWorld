@@ -12,7 +12,7 @@ import json
 import logging
 import scienceworld
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
-JAR_FILE = 'scienceworld-{version}.jar'.format(version=scienceworld.__version__)
+JAR_FILE = 'scienceworld.jar'
 JAR_PATH = os.path.join(BASEPATH, JAR_FILE)
 
 logger = logging.getLogger(__name__)
