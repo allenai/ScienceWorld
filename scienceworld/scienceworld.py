@@ -17,6 +17,25 @@ JAR_PATH = os.path.join(BASEPATH, JAR_FILE)
 
 logger = logging.getLogger(__name__)
 
+def is_in_debug_mode() -> bool:
+    """Determine whether debug mode should be enabled.
+
+    Debug mode sends JAR output to the console and allows the user to attach a debugger at port 5005.
+
+    To enable debug mode, set the environment variable SCIENCEWORLD_DEBUG to "1" or "true".
+    """
+    if "SCIENCEWORLD_DEBUG" not in os.environ:
+        return False
+    env_value = os.environ["SCIENCEWORLD_DEBUG"].lower()
+    if env_value in {"1", "true"}:
+        return True
+    elif env_value in {"", "0", "false"}:
+        return False
+    else:
+        raise ValueError(f'{env_value!r} is not a valid value for "SCIENCEWORLD_DEBUG"')
+
+DEBUG_MODE = is_in_debug_mode()
+
 class ScienceWorldEnv:
 
     #
@@ -30,7 +49,16 @@ class ScienceWorldEnv:
 
         # Launch Java side with dynamic port and get back the port on which the
         # server was bound to.
-        port = launch_gateway(classpath=serverPath, die_on_exit=True, cwd=BASEPATH)
+        if DEBUG_MODE:
+            import sys, time
+            port = launch_gateway(
+                classpath=serverPath, die_on_exit=True, cwd=BASEPATH,
+                javaopts=['-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005,quiet=y'],
+                redirect_stdout=sys.stdout, redirect_stderr=sys.stderr)
+            print("Attach debugger within the next 10 seconds")
+            time.sleep(10)  # Give time for user to attach debugger
+        else:
+            port = launch_gateway(classpath=serverPath, die_on_exit=True, cwd=BASEPATH)
 
         # Connect python side to Java side with Java dynamic port and start python
         # callback server with a dynamic port
