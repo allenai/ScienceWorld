@@ -20,7 +20,7 @@ import scala.util.control.Breaks.{break, breakable}
 
 
 class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametric {
-  val taskName = "task-6-" + mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-")
 
   val locations = Array("outside")
   val animalsLongLivedExamples = Array(new GiantTortoise, new Parrot, new Elephant, new Crocodile, new BrownBear)

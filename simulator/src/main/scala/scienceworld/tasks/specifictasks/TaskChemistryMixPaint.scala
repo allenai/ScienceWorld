@@ -21,7 +21,7 @@ import scala.util.control.Breaks.{break, breakable}
 
 
 class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY) extends TaskParametric {
-  val taskName = "task-5-" + mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-")
 
 
   // Variation 1: Which seeds to grow

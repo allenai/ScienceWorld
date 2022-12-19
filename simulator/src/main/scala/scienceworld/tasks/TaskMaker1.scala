@@ -6,6 +6,7 @@ import scienceworld.struct.EnvObject
 import scienceworld.tasks.specifictasks.{TaskChangeOfState, TaskChemistryMix, TaskChemistryMixPaint, TaskElectricCircuit, TaskElectricalConductivity, TaskElectricalConductivity2, TaskFindLivingNonLiving, TaskGrowPlant, TaskIdentifyLifeStages1, TaskIdentifyLifeStages2, TaskInclinedPlane1, TaskInclinedPlane2, TaskInclinedPlane3, TaskLifeSpan, TaskMendelianGenetics2, TaskMendelianGenetics1, TaskParametric, TaskUseInstrumentThermometer, TaskUseInstrumentThermometer2, TaskUseInstrumentThermometer3}
 
 import scala.collection.mutable
+import scala.util.matching.Regex
 import scala.util.Random
 
 class TaskMaker1 {
@@ -26,6 +27,12 @@ class TaskMaker1 {
     if (this.tasks.contains(taskName)) {
       return Some(this.tasks(taskName))
     }
+
+    val taskNameStripped = taskName.replaceFirst("task-(\\d|a|b)+-", "")
+    if (this.tasks.contains(taskNameStripped)) {
+      return Some(this.tasks(taskNameStripped))
+    }
+
     // Default return
     None
   }

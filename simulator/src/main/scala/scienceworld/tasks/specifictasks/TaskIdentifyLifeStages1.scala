@@ -19,7 +19,7 @@ import scala.util.control.Breaks._
 
 
 class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskParametric {
-  val taskName = "task-7-" + mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-")
 
   val locations = Array("outside")
 
