@@ -25,7 +25,7 @@ import scala.util.control.Breaks.{break, breakable}
 
 
 class TaskMendelianGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends TaskParametric {
-  val taskName = "task-9-" + mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-")
 
   val locations = Array("greenhouse")
 

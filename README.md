@@ -79,41 +79,40 @@ Point your web browser to:
 ScienceWorld is written in Scala (2.12.9), and compiles using `sbt` into a JAR file that is run with `java`.  For convenience, a `python` API is provided, which interfaces using the `py4j` package.
 
 # Tasks
-The subtasks and their associated subtask indices are listed below.  Subtask indices are automatically assigned by sorting task names:
+The tasks are listed in the table below along with their number of variations. Either the task ID or its name can be used to a task with `env.load()`.
 
-| SubTask #  | Task Name                                          |
-|-----|-----------------------------------------------------------|
-| 0  | task-1-boil                                               |
-| 1  | task-1-change-the-state-of-matter-of                      |
-| 2  | task-1-freeze                                             |
-| 3  | task-1-melt                                               |
-| 4  | task-10-measure-melting-point-(known-substance)           |
-| 5  | task-10-measure-melting-point-(unknown-substance)         |
-| 6  | task-10-use-thermometer                                   |
-| 7  | task-2-power-component                                    |
-| 8  | task-2-power-component-(renewable-vs-nonrenewable-energy) |
-| 9  | task-2a-test-conductivity                                 |
-| 10 | task-2a-test-conductivity-of-unknown-substances           |
-| 11 | task-3-find-animal                                        |
-| 12 | task-3-find-living-thing                                  |
-| 13 | task-3-find-non-living-thing                              |
-| 14 | task-3-find-plant                                         |
-| 15 | task-4-grow-fruit                                         |
-| 16 | task-4-grow-plant                                         |
-| 17 | task-5-chemistry-mix                                      |
-| 18 | task-5-chemistry-mix-paint-(secondary-color)              |
-| 19 | task-5-chemistry-mix-paint-(tertiary-color)               |
-| 20 | task-6-lifespan-(longest-lived)                           |
-| 21 | task-6-lifespan-(longest-lived-then-shortest-lived)       |
-| 22 | task-6-lifespan-(shortest-lived)                          |
-| 23 | task-7-identify-life-stages-1 (animal)                    |
-| 24 | task-7-identify-life-stages-2 (plant)                     |
-| 25 | task-8-inclined-plane-determine-angle                     |
-| 26 | task-8-inclined-plane-friction-(named-surfaces)           |
-| 27 | task-8-inclined-plane-friction-(unnamed-surfaces)         |
-| 28 | task-9-mendelian-genetics-(known-plant)                   |
-| 29 | task-9-mendelian-genetics-(unknown-plant)                 |
-
+| Task ID | Task Name                                | # Variations |
+|-------|----------------------------------------------------|------|
+|   1-1 |                                               boil |   30 |
+|   1-2 |                                               melt |   30 |
+|   1-3 |                                             freeze |   30 |
+|   1-4 |                      change-the-state-of-matter-of |   30 |
+|   2-1 |                                    use-thermometer |  540 |
+|   2-2 |            measure-melting-point-(known-substance) |  436 |
+|   2-3 |          measure-melting-point-(unknown-substance) |  300 |
+|   3-1 |                                    power-component |   20 |
+|   3-2 | power-component-(renewable-vs-nonrenewable-energy) |   20 |
+|   3-3 |                                  test-conductivity |  900 |
+|   3-4 |            test-conductivity-of-unknown-substances |  600 |
+|   4-1 |                                  find-living-thing |  300 |
+|   4-2 |                              find-non-living-thing |  300 |
+|   4-3 |                                         find-plant |  300 |
+|   4-4 |                                        find-animal |  300 |
+|   5-1 |                                         grow-plant |  126 |
+|   5-2 |                                         grow-fruit |  126 |
+|   6-1 |                                      chemistry-mix |   32 |
+|   6-2 |              chemistry-mix-paint-(secondary-color) |   36 |
+|   6-3 |               chemistry-mix-paint-(tertiary-color) |   36 |
+|   7-1 |                           lifespan-(longest-lived) |  125 |
+|   7-2 |                          lifespan-(shortest-lived) |  125 |
+|   7-3 |       lifespan-(longest-lived-then-shortest-lived) |  125 |
+|   8-1 |                             identify-life-stages-1 |   14 |
+|   8-2 |                             identify-life-stages-2 |   10 |
+|   9-1 |                     inclined-plane-determine-angle |  168 |
+|   9-2 |           inclined-plane-friction-(named-surfaces) | 1386 |
+|   9-3 |         inclined-plane-friction-(unnamed-surfaces) |  162 |
+|  10-1 |                   mendelian-genetics-(known-plant) |  120 |
+|  10-2 |                 mendelian-genetics-(unknown-plant) |  480 |
 
 # Baseline Agents
 **DRRN:** https://github.com/cognitiveailab/drrn-scienceworld
@@ -123,6 +122,3 @@ The subtasks and their associated subtask indices are listed below.  Subtask ind
 **CALM:** https://github.com/cognitiveailab/calm-scienceworld
 
 **Behavior Cloning and Decision Transformer:** https://github.com/cognitiveailab/t5-scienceworld
-
-# Additional Documentation
-Coming soon!

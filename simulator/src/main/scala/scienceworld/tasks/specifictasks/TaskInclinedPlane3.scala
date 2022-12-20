@@ -21,7 +21,7 @@ import scala.util.control.Breaks.{break, breakable}
 
 
 class TaskInclinedPlane3(val mode:String = MODE_ANGLE) extends TaskParametric {
-  val taskName = "task-8-" + mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-")
 
   val locations = Array("workshop")
 
