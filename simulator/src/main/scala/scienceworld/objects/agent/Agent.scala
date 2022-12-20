@@ -34,10 +34,6 @@ class Agent extends EnvObject {
    */
   def getInventoryContainer():EnvObject = this.inventory
 
-  //## debug
-  this.inventory.addObject( new Orange() )
-
-
   /*
    * Waiting methods
    */
