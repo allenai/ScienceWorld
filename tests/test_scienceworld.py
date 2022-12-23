@@ -120,3 +120,15 @@ def test_consistent_task_names():
     """Verify that Scala and Python code use the same task names."""
     env = ScienceWorldEnv()
     assert sorted(env.task_names) == sorted(env.get_task_names())
+
+
+def test_obj_tree():
+    env = ScienceWorldEnv("1-1")
+    env.reset()
+    obj_tree_json = env.server.getObjectTree("")
+
+    import json
+    obj_tree = json.loads(obj_tree_json)
+
+    print(obj_tree)
+    # from ipdb import set_trace; set_trace()
