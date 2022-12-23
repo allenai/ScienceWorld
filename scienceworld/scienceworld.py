@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+import tempfile
 from collections import OrderedDict
 
 from py4j.java_gateway import JavaGateway, GatewayParameters, launch_gateway, CallbackServerParameters
@@ -71,6 +72,8 @@ class ScienceWorldEnv:
 
         # By default, set that the gold path was not generated unless the user asked for it
         self.goldPathGenerated = False
+
+        self._obj_tree_tempfile = tempfile.NamedTemporaryFile()
 
     # Ask the simulator to load an environment from a script
     def load(self, taskName, variationIdx=0, simplificationStr="", generateGoldPath=False):
@@ -232,6 +235,17 @@ class ScienceWorldEnv:
 
     def getTaskDescription(self):
         return self.server.getTaskDescription()
+
+    # Get the current game's task description
+    def getObjectTree(self):
+        msg = self.server.getObjectTree(self._obj_tree_tempfile.name)
+        if msg:
+            # Game is not initialized.
+            raise RuntimeError(msg)
+
+        self._obj_tree_tempfile.file.seek(0)
+        payload = self._obj_tree_tempfile.file.read()
+        return json.loads(payload)
 
     #
     # History
