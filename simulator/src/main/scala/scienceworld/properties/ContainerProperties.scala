@@ -7,6 +7,17 @@ class ContainerProperties(
   // Add properties for storing different kinds of things?  (e.g. can store solids?  liquids?  gasses? etc)
   ) {
 
+  def toJSON():String = {
+    val os = new StringBuilder()
+    os.append("{")
+    os.append("\"isContainer\":\"" + this.isContainer + "\",")
+    os.append("\"isOpen\":" + this.isOpen + ",")
+    os.append("\"isClosable\":" + this.isClosable)
+    os.append("}")
+
+    return os.toString()
+  }
+
 }
 
 

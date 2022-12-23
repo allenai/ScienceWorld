@@ -16,6 +16,20 @@ class LifeProperties {
   // Typical lifespan (in years) -- note, this does not currently affect the simulation, but is used for question answering.
   var lifespanTypical:Double = 0.0f
 
+  def toJSON():String = {
+    val os = new StringBuilder()
+    os.append("{")
+    os.append("\"lifeformType\": \"" + this.lifeformType + "\",")
+    os.append("\"minTemp\":" + this.minTemp + ",")
+    os.append("\"maxTemp\":" + this.maxTemp + ",")
+    os.append("\"isSickly\":" + this.isSickly + ",")
+    os.append("\"isDead\":" + this.isDead + ",")
+    os.append("\"lifespanTypical\":" + this.lifespanTypical)
+    os.append("}")
+
+    return os.toString()
+  }
+
 }
 
 

@@ -22,6 +22,27 @@ trait MaterialProperties {
   // Friction
   var frictionCoefficient:Double      = 0.50      // 0 is no friction, 1 is complete friction
 
+
+  def toJSON():String = {
+    val os = new StringBuilder()
+    os.append("{")
+    os.append("\"substanceName\":\"" + this.substanceName + "\",")
+    // os.append("\"nameInStateOfMatter\":\"" + this.nameInStateOfMatter + "\",")
+    os.append("\"color\":\"" + this.color + "\",")
+    os.append("\"temperatureC\":" + this.temperatureC + ",")
+    os.append("\"thermalConductivity\":" + this.thermalConductivity + ",")
+    os.append("\"stateOfMatter\":\"" + this.stateOfMatter + "\",")
+    os.append("\"boilingPoint\":" + this.boilingPoint + ",")
+    os.append("\"meltingPoint\":" + this.meltingPoint + ",")
+    os.append("\"isCombusting\":" + this.isCombusting + ",")
+    os.append("\"hasCombusted\":" + this.hasCombusted + ",")
+    os.append("\"combustionTicks\":" + this.combustionTicks + ",")
+    os.append("\"electricallyConductive\":" + this.electricallyConductive + ",")
+    os.append("\"frictionCoefficient\":" + this.frictionCoefficient)
+    os.append("}")
+
+    return os.toString()
+  }
 }
 
 

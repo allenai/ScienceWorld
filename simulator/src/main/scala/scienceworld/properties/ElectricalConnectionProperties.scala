@@ -4,6 +4,7 @@ import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 // A storage class for an electrical connection point (e.g. anode, cathode)
 class ElectricalConnectionProperties {
@@ -54,6 +55,23 @@ class ElectricalConnectionProperties {
     if (this.connectedTo.size == 0) return "nothing"
     // Case: connected to one or more objects
     this.connectedTo.map(_.getDescription(MODE_CURSORY_DETAIL)).mkString(", ")
+  }
+
+
+  def toJSON():String = {
+    val os = new StringBuilder()
+    os.append("{")
+
+    // Connected objects
+    val connection_json = new ArrayBuffer[String]()
+    for (obj <- this.connectedTo.toArray.sortBy(_.uuid)) {
+      connection_json.append("\"" + obj.uuid + "\"")
+    }
+
+    os.append("\"connectedTo\": " + connection_json.mkString("[", ",", "]"))
+    os.append("}")
+
+    return os.toString()
   }
 
 }

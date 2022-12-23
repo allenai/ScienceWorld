@@ -658,8 +658,42 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     os.toString()
   }
 
-}
+  def toJSON():String = {
+    val os = new StringBuilder()
+    os.append("{")
+    os.append("\"uuid\":\"" + this.uuid + "\",")
+    os.append("\"name\":\"" + this.name + "\",")
+    os.append("\"type\":\"" + this.objType + "\",")
+    os.append("\"isDeleted\":" + this.isDeleted + ",")
 
+    // Properties
+    os.append("\"propMaterial\":" + (if (this.propMaterial.isEmpty) "null" else this.propMaterial.get.toJSON()) + ",")
+    os.append("\"propEdibility\":" + (if (this.propEdibility.isEmpty) "null" else this.propEdibility.get.toJSON()) + ",")
+    os.append("\"propContainer\":" + (if (this.propContainer.isEmpty) "null" else this.propContainer.get.toJSON()) + ",")
+    os.append("\"propDevice\":" + (if (this.propDevice.isEmpty) "null" else this.propDevice.get.toJSON()) + ",")
+    os.append("\"propHeatSource\":" + (if (this.propHeatSource.isEmpty) "null" else this.propHeatSource.get.toJSON()) + ",")
+    os.append("\"propCoolingSource\":" + (if (this.propCoolingSource.isEmpty) "null" else this.propCoolingSource.get.toJSON()) + ",")
+
+    os.append("\"propPortal\":" + (if (this.propPortal.isEmpty) "null" else this.propPortal.get.toJSON()) + ",")
+    os.append("\"propMoveable\":" + (if (this.propMoveable.isEmpty) "null" else this.propMoveable.get.toJSON()) + ",")
+    os.append("\"propElectricalConnection\":" + (if (this.propElectricalConnection.isEmpty) "null" else this.propElectricalConnection.get.toJSON()) + ",")
+    os.append("\"propLife\":" + (if (this.propLife.isEmpty) "null" else this.propLife.get.toJSON()) + ",")
+
+    // os.append("\"propChromosomePairs\":" + (if (this.propChromosomePairs.isEmpty) "null" else this.propChromosomePairs.get.toJSON()) + ",")
+    // os.append("\"propPollination\":" + (if (this.propPollination.isEmpty) "null" else this.propPollination.get.toJSON()) + ",")
+
+    // Contents
+    val contents_json = new ArrayBuffer[String]()
+    for (obj <- this.getContainedObjects()) {
+      contents_json.append("\"" + obj.name + "-" + obj.uuid + "\": " + obj.toJSON())
+    }
+
+    os.append("\"contents\": " + contents_json.mkString("{", ",", "}"))
+    os.append("}")
+    return os.toString()
+  }
+
+}
 
 object EnvObject {
   val MODE_CURSORY_DETAIL  =   0

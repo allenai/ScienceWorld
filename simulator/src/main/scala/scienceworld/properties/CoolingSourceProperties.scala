@@ -11,6 +11,16 @@ class CoolingSourceProperties(var minTemp:Double, var curSetTemp:Option[Double])
     curSetTemp = None
   }
 
+
+  def toJSON():String = {
+    val os = new StringBuilder()
+    os.append("{")
+    os.append("\"minTemp\":" + this.minTemp + ",")
+    os.append("\"curSetTemp\":" + (if (this.curSetTemp.isEmpty) "null" else this.curSetTemp.get))
+    os.append("}")
+
+    return os.toString()
+  }
 }
 
 

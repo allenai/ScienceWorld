@@ -114,3 +114,15 @@ def test_load():
         obs2, info2 = env.reset()
         assert obs1 == obs2, f"{task_id} is not the same as {task_name}"
         assert info1 == info2, f"{task_id} is not the same as {task_name}"
+
+
+def test_obj_tree():
+    env = ScienceWorldEnv("1-1")
+    env.reset()
+    obj_tree_json = env.server.getObjectTree("")
+
+    import json
+    obj_tree = json.loads(obj_tree_json)
+
+    print(obj_tree)
+    # from ipdb import set_trace; set_trace()

@@ -3,6 +3,17 @@ package scienceworld.properties
 trait EdibilityProperties {
   var isEdible:Boolean            = true
   var isPoisonous:Boolean         = false
+
+  def toJSON():String = {
+    val os = new StringBuilder()
+    os.append("{")
+    os.append("\"isEdible\":" + this.isEdible + ",")
+    os.append("\"isPoisonous\":" + this.isPoisonous)
+    os.append("}")
+
+    return os.toString()
+  }
+
 }
 
 

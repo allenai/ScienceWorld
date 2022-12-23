@@ -323,6 +323,22 @@ class PythonInterface() {
     agentInterface.get.getTaskDescription()
   }
 
+  def getObjectTree(path:String = ""):String = {
+    if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
+    //if (this.game == null) return "Object tree unavailable -- game is not initialized. Call env.reset first."
+
+    return agentInterface.get.universe.toJSON()
+    //TODO: use collectObjects?
+
+    //val objTree = this.game.getObjectTree()
+    // if (path == "") return objTree
+
+    // val pw = new PrintWriter(path)
+    // pw.print(objTree)
+    // pw.close()
+    // return ""
+  }
+
   /*
    * Take action steps and get observations/scores
    */
