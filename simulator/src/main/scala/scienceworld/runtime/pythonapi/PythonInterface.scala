@@ -1,5 +1,7 @@
 package scienceworld.runtime.pythonapi
 
+import java.io.PrintWriter
+
 import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.environments.EnvironmentMaker
 import scienceworld.goldagent.RunHistory
@@ -325,18 +327,14 @@ class PythonInterface() {
 
   def getObjectTree(path:String = ""):String = {
     if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
-    //if (this.game == null) return "Object tree unavailable -- game is not initialized. Call env.reset first."
 
-    return agentInterface.get.universe.toJSON()
-    //TODO: use collectObjects?
+    val objTree = agentInterface.get.universe.toJSON()
+    if (path == "") return objTree
 
-    //val objTree = this.game.getObjectTree()
-    // if (path == "") return objTree
-
-    // val pw = new PrintWriter(path)
-    // pw.print(objTree)
-    // pw.close()
-    // return ""
+    val pw = new PrintWriter(path)
+    pw.print(objTree)
+    pw.close()
+    return ""
   }
 
   /*
