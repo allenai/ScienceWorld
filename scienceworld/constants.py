@@ -56,7 +56,8 @@ ID2TASK = OrderedDict([
 
 NAME2ID = {
     # Names used in the paper.
-    "Matter Changes of State (Melting)": "1-1",
+    "Matter Changes of State (Boiling)": "1-1",
+    "Matter Changes of State (Melting)": "1-2",
     "Matter Changes of State (Freezing)": "1-3",
     "Matter Changes of State (Any)": "1-4",
     "Measurement Use Thermometer": "2-1",
