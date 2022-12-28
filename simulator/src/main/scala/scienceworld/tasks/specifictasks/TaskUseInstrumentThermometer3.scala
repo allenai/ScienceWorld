@@ -22,7 +22,7 @@ import scala.util.control.Breaks.{break, breakable}
 
 
 class TaskUseInstrumentThermometer3(val mode:String = MODE_MEASURE_MELTING_UNKNOWN) extends TaskParametric {
-  val taskName = mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-").replaceAll("[()]", "")
 
   val locations = Array("kitchen")
 

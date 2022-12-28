@@ -53,6 +53,9 @@ ID2TASK = OrderedDict([
     ("10-1", "mendelian-genetics-(known-plant)"),
     ("10-2", "mendelian-genetics-(unknown-plant)"),
 ])
+REMOVE_PARENS = str.maketrans({'(': None, ')': None})
+for task_id in ID2TASK:
+    ID2TASK[task_id] = ID2TASK[task_id].translate(REMOVE_PARENS)
 
 NAME2ID = {
     # Names used in the paper.

@@ -24,7 +24,7 @@ import scala.util.control.Breaks._
 
 
 class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) extends TaskParametric {
-  val taskName = mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-").replaceAll("[()]", "")
 
   val locations = Array("workshop")
   val substanceLocations = Array("workshop", "kitchen", "living room")

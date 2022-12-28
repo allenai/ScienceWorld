@@ -19,7 +19,7 @@ import scala.util.Random
 import scala.util.control.Breaks.{break, breakable}
 
 class TaskElectricalConductivity2(val mode:String = MODE_TEST_CONDUCTIVITY_UNKNOWN) extends TaskParametric {
-  val taskName = mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-").replaceAll("[()]", "")
 
   val locations = Array("workshop")
   val substanceLocations = Array("workshop", "kitchen", "living room")

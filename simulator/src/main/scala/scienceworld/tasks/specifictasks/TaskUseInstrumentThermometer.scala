@@ -26,7 +26,7 @@ import scala.util.control.Breaks.{break, breakable}
 
 
 class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) extends TaskParametric {
-  val taskName = mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-").replaceAll("[()]", "")
 
   val locations = Array("living room", "bedroom", "bathroom")
 

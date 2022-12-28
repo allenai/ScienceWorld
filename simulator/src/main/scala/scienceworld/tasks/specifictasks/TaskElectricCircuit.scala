@@ -22,7 +22,7 @@ import scala.util.control.Breaks.{break, breakable}
 
 
 class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskParametric {
-  val taskName = mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-").replaceAll("[()]", "")
 
   val locations = Array("workshop")
 

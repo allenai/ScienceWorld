@@ -22,7 +22,7 @@ import scala.util.control.Breaks.{break, breakable}
 
 
 class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametric {
-  val taskName = mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-").replaceAll("[()]", "")
 
   val substancePossibilities = new ArrayBuffer[ Array[TaskModifier] ]()
   // Example of water (found in the environment)
