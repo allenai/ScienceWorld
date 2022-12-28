@@ -139,11 +139,11 @@ class ScienceWorldEnv:
     @property
     def task_names(self):
         """ Get the name for the supported tasks in ScienceWorld. """
-        return list(ID2TASK.values())
+        return sorted(ID2TASK.values())
 
     def getTaskNames(self):
         """ Get the name for the supported tasks in ScienceWorld. """
-        return self.server.getTaskNames()
+        return sorted(self.server.getTaskNames())
 
     # Get the maximum number of variations for this task
     def getMaxVariations(self, taskName):

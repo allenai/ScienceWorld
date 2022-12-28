@@ -114,3 +114,8 @@ def test_load():
         obs2, info2 = env.reset()
         assert obs1 == obs2, f"{task_id} is not the same as {task_name}"
         assert info1 == info2, f"{task_id} is not the same as {task_name}"
+
+def test_consistent_task_names():
+    """Verify that Scala and Python code use the same task names."""
+    env = ScienceWorldEnv()
+    assert env.task_names == env.getTaskNames()
