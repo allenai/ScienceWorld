@@ -13,6 +13,7 @@ contents = zipfile.ZipFile(JAR_PATH).open('META-INF/MANIFEST.MF').read().decode(
 VERSION = re.search(r'\bSpecification-Version: (.*)\b', contents).group(1)
 
 OBJECTS_LUT_FILE = "object_type_ids.tsv"
+TASKS_JSON_FILE = "tasks.json"
 
 if not os.path.isfile(JAR_PATH):
     print('ERROR: Unable to find required library:', JAR_PATH)
@@ -28,7 +29,7 @@ setup(name='scienceworld',
     packages=['scienceworld'],
     include_package_data=True,
     package_dir={'scienceworld': 'scienceworld'},
-    package_data={'scienceworld': [JAR_FILE, OBJECTS_LUT_FILE]},
+    package_data={'scienceworld': [JAR_FILE, OBJECTS_LUT_FILE, TASKS_JSON_FILE]},
     url="https://scienceworld.github.io",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
