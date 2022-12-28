@@ -32,6 +32,7 @@ setup(name='scienceworld',
     url="https://scienceworld.github.io",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
+    python_requires='>=3.7',
     install_requires=open('requirements.txt').readlines(),
     extras_require={
         'webserver': open('requirements.txt').readlines() + ['pywebio'],
