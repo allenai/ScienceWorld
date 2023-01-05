@@ -88,8 +88,8 @@ def test_load():
         "9-1": "task-8-inclined-plane-determine-angle",
         "9-2": "task-8-inclined-plane-friction-(named-surfaces)",
         "9-3": "task-8-inclined-plane-friction-(unnamed-surfaces)",
-        "10-1": "task-9-mendelian-genetics-(known-plant)",
-        "10-2": "task-9-mendelian-genetics-(unknown-plant)"
+        "10-1": "task-9-mendellian-genetics-(known-plant)",
+        "10-2": "task-9-mendellian-genetics-(unknown-plant)"
     }
 
     env = ScienceWorldEnv()
