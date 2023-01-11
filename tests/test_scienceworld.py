@@ -118,4 +118,4 @@ def test_load():
 def test_consistent_task_names():
     """Verify that Scala and Python code use the same task names."""
     env = ScienceWorldEnv()
-    assert env.task_names == env.getTaskNames()
+    assert sorted(env.task_names) == sorted(env.getTaskNames())
