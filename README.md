@@ -76,7 +76,7 @@ Point your web browser to:
 
 
 # ScienceWorld Design
-ScienceWorld is written in Scala (2.12.9), and compiles using `sbt` into a JAR file that is run with `java`.  For convenience, a `python` API is provided, which interfaces using the `py4j` package.
+ScienceWorld is written in Scala (2.12.9), and compiles using `sbt` into a JAR file that is run with Java.  For convenience, a Python API is provided (Python >= 3.7), which interfaces using the `py4j` package.
 
 # Tasks
 The tasks are listed in the table below along with their number of variations. Either the task ID or its name can be used to a task with `env.load()`.

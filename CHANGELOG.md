@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.3] - 2023-01-19
+ - Improving how task name are handled (backward compatible). @aphedges ([#46](https://github.com/allenai/ScienceWorld/pull/46))
+ - Set minimum supported Python version to 3.7. @aphedges ([#46](https://github.com/allenai/ScienceWorld/pull/46))
+
 ## [1.1.2] - 2022-12-20
  - Parity release. Task IDs from the paper (e.g., "2-3") are now accepted and the preferred way to load task. ([#44](https://github.com/allenai/ScienceWorld/pull/44))
  - Adding script to list all supported tasks in ScienceWorld. ([#44](https://github.com/allenai/ScienceWorld/pull/44))
