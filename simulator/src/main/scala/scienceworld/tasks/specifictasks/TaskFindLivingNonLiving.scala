@@ -25,7 +25,7 @@ import scala.util.control.Breaks.{break, breakable}
 
 
 class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParametric {
-  val taskName = mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-").replaceAll("[()]", "")
 
   // Variation 1: Animals
   val livingThings = new ArrayBuffer[ Array[TaskModifier] ]()

@@ -88,8 +88,8 @@ def test_load():
         "9-1": "task-8-inclined-plane-determine-angle",
         "9-2": "task-8-inclined-plane-friction-(named-surfaces)",
         "9-3": "task-8-inclined-plane-friction-(unnamed-surfaces)",
-        "10-1": "task-9-mendelian-genetics-(known-plant)",
-        "10-2": "task-9-mendelian-genetics-(unknown-plant)"
+        "10-1": "task-9-mendellian-genetics-(known-plant)",
+        "10-2": "task-9-mendellian-genetics-(unknown-plant)"
     }
 
     env = ScienceWorldEnv()
@@ -114,3 +114,8 @@ def test_load():
         obs2, info2 = env.reset()
         assert obs1 == obs2, f"{task_id} is not the same as {task_name}"
         assert info1 == info2, f"{task_id} is not the same as {task_name}"
+
+def test_consistent_task_names():
+    """Verify that Scala and Python code use the same task names."""
+    env = ScienceWorldEnv()
+    assert sorted(env.task_names) == sorted(env.getTaskNames())

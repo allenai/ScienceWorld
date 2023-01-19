@@ -28,7 +28,7 @@ class TaskMaker1 {
       return Some(this.tasks(taskName))
     }
 
-    val taskNameStripped = taskName.replaceFirst("task-(\\d|a|b)+-", "")
+    val taskNameStripped = taskName.replaceFirst("mendellian", "mendelian").replaceFirst("task-(\\d|a|b)+-", "").replaceAll("[()]", "")
     if (this.tasks.contains(taskNameStripped)) {
       return Some(this.tasks(taskNameStripped))
     }

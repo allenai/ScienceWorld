@@ -24,7 +24,7 @@ import scala.util.Random
 
 
 class TaskInclinedPlane1(val mode:String = MODE_FRICTION_NAMED) extends TaskParametric {
-  val taskName = mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-").replaceAll("[()]", "")
 
   val locations = Array("workshop")
 

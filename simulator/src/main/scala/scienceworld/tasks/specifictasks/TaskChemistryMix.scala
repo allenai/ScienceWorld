@@ -23,7 +23,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks.{break, breakable}
 
 class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
-  val taskName = mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-").replaceAll("[()]", "")
 
 
   // Variation 1: Which seeds to grow

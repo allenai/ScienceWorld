@@ -5,13 +5,8 @@ from collections import OrderedDict
 
 from py4j.java_gateway import JavaGateway, GatewayParameters, launch_gateway, CallbackServerParameters
 
-from scienceworld.constants import DEBUG_MODE, ID2TASK, NAME2ID
+from scienceworld.constants import BASEPATH, DEBUG_MODE, ID2TASK, JAR_PATH, NAME2ID
 from scienceworld.utils import infer_task
-
-
-BASEPATH = os.path.dirname(os.path.abspath(__file__))
-JAR_FILE = 'scienceworld.jar'
-JAR_PATH = os.path.join(BASEPATH, JAR_FILE)
 
 logger = logging.getLogger(__name__)
 
@@ -143,7 +138,7 @@ class ScienceWorldEnv:
 
     def getTaskNames(self):
         """ Get the name for the supported tasks in ScienceWorld. """
-        return self.server.getTaskNames()
+        return list(self.server.getTaskNames())
 
     # Get the maximum number of variations for this task
     def getMaxVariations(self, taskName):

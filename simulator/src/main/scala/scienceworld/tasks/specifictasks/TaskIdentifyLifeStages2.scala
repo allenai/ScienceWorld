@@ -21,7 +21,7 @@ import scala.util.Random
 
 // TODO: CHANGE TO PLANTS INSTEAD OF ANIMALS?
 class TaskIdentifyLifeStages2(val mode:String = MODE_LIFESTAGES) extends TaskParametric {
-  val taskName = mode.replaceAll(" ", "-")
+  val taskName = mode.replaceAll(" ", "-").replaceAll("[()]", "")
 
   val locations = Array("outside")
 
