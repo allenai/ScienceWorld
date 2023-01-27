@@ -26,7 +26,7 @@ class ScienceWorldEnv:
                 classpath=serverPath, die_on_exit=True, cwd=BASEPATH,
                 javaopts=['-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005,quiet=y'],
                 redirect_stdout=sys.stdout, redirect_stderr=sys.stderr)
-            print("Attach debugger within the next 10 seconds")
+            logger.debug("Attach debugger within the next 10 seconds")
             time.sleep(10)  # Give time for user to attach debugger
         else:
             port = launch_gateway(classpath=serverPath, die_on_exit=True, cwd=BASEPATH)
@@ -48,7 +48,7 @@ class ScienceWorldEnv:
             python_port)
 
         self.server = self._gateway.jvm.scienceworld.runtime.pythonapi.PythonInterface()
-        logger.info("ScienceWorld server running on port", port)
+        logger.info("ScienceWorld server running on port %d", port)
 
         # Keep track of the last step score, to calculate reward from score
         self.lastStepScore = 0
