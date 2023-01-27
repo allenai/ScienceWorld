@@ -48,7 +48,7 @@ class ScienceWorldEnv:
             python_port)
 
         self.server = self._gateway.jvm.scienceworld.runtime.pythonapi.PythonInterface()
-        logger.info("ScienceWorld server running on port", port)
+        logger.info("ScienceWorld server running on port %d", port)
 
         # Keep track of the last step score, to calculate reward from score
         self.lastStepScore = 0
