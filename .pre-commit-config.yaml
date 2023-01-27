@@ -8,7 +8,7 @@ repos:
     hooks:
       - id: check-useless-excludes
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0
+    rev: v4.4.0
     hooks:
       - id: check-ast
       - id: check-case-conflict
@@ -23,17 +23,17 @@ repos:
       - id: fix-byte-order-marker
       - id: fix-encoding-pragma
         args: [--remove]
-      - id: forbid-new-submodules
+      - id: forbid-submodules
       - id: mixed-line-ending
         args: ['--fix', 'lf']
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/shellcheck-py/shellcheck-py # Unofficial but maintained by asottile
-    rev: v0.8.0.4
+    rev: v0.9.0.2
     hooks:
       - id: shellcheck
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.1
+    rev: v2.2.2
     hooks:
       - id: codespell
         args: [
