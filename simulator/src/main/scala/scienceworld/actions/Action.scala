@@ -1,6 +1,7 @@
 package scienceworld.actions
 
 import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionExprObject, ActionRequestDef, ActionTrigger}
+import main.scala.util.CombinationIterator
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.ActionHandler
 import scienceworld.runtime.pythonapi.TemplateAction
@@ -38,10 +39,39 @@ class PossibleAction(val sequence:Array[ActionExpr], templateID:Int) {
     return sequence.map(_.mkHumanReadableExample()).mkString(" ")
   }
 
+  def mkAllPossibleHumanReadableStr(perspectiveContainer:EnvObject):Array[String] = {
+    val out = new ArrayBuffer[String]
+
+    // Get the possibilities for each sequence element
+    val possibilities = new Array[Array[String]](sequence.length)
+    val numPossibilities = Array.fill[Int](sequence.length)(0)
+    for (i <- 0 until sequence.length) {
+      possibilities(i) = sequence(i).mkAllHumanReadableExamples(perspectiveContainer: EnvObject)
+      numPossibilities(i) = possibilities(i).length
+    }
+
+    // Then, enumerate all
+    val iter = new CombinationIterator(numPossibilities)
+    while (iter.hasNext()) {
+      val combination = iter.next()
+      val assembledStr = new StringBuilder
+
+      for (i <- 0 until sequence.length) {
+        assembledStr.append( possibilities(i)(combination(i)) + " ")
+      }
+
+      out.append( assembledStr.toString().trim )
+    }
+
+    // Convert to set (to get unique set)
+    return out.toSet.toArray
+  }
+
   // Export into a TemplateAction storage class
-  def toTemplate():TemplateAction = {
+  def toTemplate(perspectiveContainer:EnvObject):Array[TemplateAction] = {
     // Step 1: Get sanitized plain-text string
-    val sanitizedStr = this.mkHumanReadableStr()
+    //val sanitizedStr = this.mkHumanReadableStr()              // OLD: Single string
+    val sanitizedStrs = this.mkAllPossibleHumanReadableStr(perspectiveContainer)  // NEW: All possible strings
 
     // Step 2: Collect objects
     val objects = new ArrayBuffer[EnvObject]
@@ -63,7 +93,12 @@ class PossibleAction(val sequence:Array[ActionExpr], templateID:Int) {
     val objectTypes = objects.map(_.typeID.toInt).toList
 
     // Return
-    new TemplateAction(sanitizedStr, templateID, objectIDs, objectTypes)
+    val out = new ArrayBuffer[TemplateAction]()
+    //println("toTemplate: " + sanitizedStrs.mkString(", "))
+    for (sanitizedStr <- sanitizedStrs) {
+      out.append( new TemplateAction(sanitizedStr, templateID, objectIDs, objectTypes) )
+    }
+    return out.toArray
   }
 
 

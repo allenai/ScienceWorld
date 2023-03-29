@@ -76,6 +76,8 @@ case class ActionTrigger(val pattern:List[ActionExpr]) extends Positional {
 class ActionExpr() extends Positional {
   def mkHumanReadableExample():String = return ""
 
+  def mkAllHumanReadableExamples(perspectiveContainer:EnvObject):Array[String] = Array.empty[String]
+
   def mkHumanReadableInstance(varLUT:mutable.Map[String, EnvObject], agentContainer:EnvObject):String = return ""
 }
 
@@ -84,6 +86,8 @@ case class ActionExprOR(val orElements:List[String]) extends ActionExpr {
     if (orElements.length == 0) return ""
     return orElements(0)      // Return first element
   }
+
+  override def mkAllHumanReadableExamples(perspectiveContainer:EnvObject):Array[String] = orElements.toArray
 
   override def mkHumanReadableInstance(varLUT:mutable.Map[String, EnvObject], agentContainer:EnvObject):String = this.mkHumanReadableExample()
 
@@ -94,6 +98,8 @@ case class ActionExprIdentifier(val identifier:String) extends ActionExpr {
   override def mkHumanReadableExample():String = {
     return "OBJ"
   }
+
+  override def mkAllHumanReadableExamples(perspectiveContainer:EnvObject):Array[String] = Array[String](identifier)
 
   override def mkHumanReadableInstance(varLUT:mutable.Map[String, EnvObject], agentContainer:EnvObject):String = {
     // Look up EnvObject for this identifier
@@ -141,6 +147,12 @@ case class ActionExprObject(val obj:EnvObject, val referent:String) extends Acti
     //return obj.name
     return referent //+ " (" + obj.getDescriptName() + ")"
   }
+
+  // Enumerate all possible referents
+  override def mkAllHumanReadableExamples(perspectiveContainer:EnvObject):Array[String] = {
+    obj.getReferentsWithContainers(perspectiveContainer).toArray
+  }
+
 }
 
 // Storage class for holding specific text in PossibleAction
@@ -148,4 +160,6 @@ case class ActionExprText(val text:String) extends ActionExpr {
   override def mkHumanReadableExample(): String = {
     return text
   }
+
+  override def mkAllHumanReadableExamples(perspectiveContainer:EnvObject):Array[String] = Array[String](text)
 }

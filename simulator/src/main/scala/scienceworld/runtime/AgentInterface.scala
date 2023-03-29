@@ -211,6 +211,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
 
   // Returns a list of only the valid action-agent combinations
   def getValidActionObjectCombinations(): Array[String] = {
+    /*
     // Special case: Check for parser being in ambiguity resolution state
     if (this.inputParser.isInAmbiguousState()) return this.getValidActionsAmbiguousState()
 
@@ -232,6 +233,38 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects, allObjects, uuid2referentLUT, uuid2referentLUTAll)
 
     return validActions.map(_.mkHumanReadableStr())
+     */
+
+    // PJ Note March 28/2023: Standardized to look like the template creation code -- but ideally should be refactored to use a common function for both.
+
+    // Special case: Check for parser being in ambiguity resolution state
+    if (this.inputParser.isInAmbiguousState()) return this.getValidActionsAmbiguousState()
+
+    // Collect all objects visible to the agent
+    val visibleObjTreeRoot = this.getAgentVisibleObjects()._2
+    val agentInventory = agent.getInventoryContainer()
+    val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toArray
+
+    // Collect UUID -> Unique Referent LUT
+    //val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(universe, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
+    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUTObjList(allVisibleObjects, visibleObjTreeRoot, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
+
+    // For oracle actions
+    val allObjects = InputParser.collectObjects(universe, includeHidden = true).toArray
+    val uuid2referentLUTAll = inputParser.getAllUniqueReferentsLUTObjList(allObjects, visibleObjTreeRoot, includeHidden = true, recursive = true)
+
+    // Generate all possible valid actions
+    val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects, allObjects, uuid2referentLUT, uuid2referentLUTAll)
+
+    // To templates
+    // Get the agent's container
+    val perspectiveContainer = this.agent.getContainer().getOrElse(new EnvObject())
+    val validActionsTemplates = validActions.map(_.toTemplate(perspectiveContainer = perspectiveContainer)).flatten   // NOW: Makes exhaustively, using perspective containers
+
+    // Create a list of unique actions
+    val validActionStrs = validActionsTemplates.map(_.actionString).toSet.toList.sorted.toArray
+    return validActionStrs
+
   }
 
   def getValidActionObjectCombinationsJSON(): String = {
@@ -265,12 +298,13 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     val allObjects = InputParser.collectObjects(universe, includeHidden = true).toArray
     val uuid2referentLUTAll = inputParser.getAllUniqueReferentsLUTObjList(allObjects, visibleObjTreeRoot, includeHidden = true, recursive = true)
 
-
     // Generate all possible valid actions
     val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects, allObjects, uuid2referentLUT, uuid2referentLUTAll)
 
     // To templates
-    val validActionsTemplates = validActions.map(_.toTemplate())
+    // Get the agent's container
+    val perspectiveContainer = this.agent.getContainer().getOrElse(new EnvObject())
+    val validActionsTemplates = validActions.map(_.toTemplate(perspectiveContainer = perspectiveContainer)).flatten   // NOW: Makes exhaustively, using perspective containers
     val validActionTemplatesJSON = validActionsTemplates.map(_.toJSON())
 
     // To JSON
