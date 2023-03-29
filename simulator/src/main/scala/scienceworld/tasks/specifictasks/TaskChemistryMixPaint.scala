@@ -241,7 +241,7 @@ class TaskChemistryMixPaint(val mode:String = MODE_CHEMISTRY_MIX_PAINT_SECONDARY
       gSequenceUnordered.append(new GoalInRoomWithObject(objectName = tertiaryColor.get, _isOptional = true, description = "be in same location as " + tertiaryColor.get))
 
 
-      description = "Your task is to use chemistry to create " + tertiaryColor.get + ". When you are part-way done, focus on the intermediate (secondary color) paint you created.  When you are completely done, focus on the " + secondaryColor.get + "."
+      description = "Your task is to use chemistry to create " + tertiaryColor.get + ". When you are part-way done, focus on the intermediate (secondary color) paint you created.  When you are completely done, focus on the " + tertiaryColor.get + "."
 
     } else {
       throw new RuntimeException("ERROR: Unrecognized task mode: " + mode)
