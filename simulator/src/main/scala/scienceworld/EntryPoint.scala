@@ -1,5 +1,7 @@
 package scienceworld
 
+import java.io.PrintWriter
+
 import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.environments.EnvironmentMaker
 import scienceworld.goldagent.{PathFinder, RunHistory}
@@ -62,7 +64,7 @@ object EntryPoint {
 
     //val taskName = taskMaker.getTaskList()(5)
     //val taskName = taskMaker.getTaskList()(13)
-    val taskName = interface.getTaskNames().asScala(6)
+    val taskName = interface.getTaskNames().asScala(4)
 
     //val simplificationStr = "teleportAction,noElectricalAction,openDoors,selfWateringFlowerPots"
     //val simplificationStr = "teleportAction,openDoors,selfWateringFlowerPots"   // with Electrical actions
@@ -71,7 +73,7 @@ object EntryPoint {
     //val simplificationStr = ""
 
     // Load task
-    interface.load(taskName, variationIdx = 0, simplificationStr)
+    interface.load(taskName, variationIdx = 4, simplificationStr)
 
     println ("Task: " + interface.getTaskDescription() )
 
@@ -123,6 +125,24 @@ object EntryPoint {
         println("Goal sequence progress: \n" + interface.agentInterface.get.getGoalProgressStr() )
 
         println("Referents: " + interface.agentInterface.get.getAllObjectIdsTypesReferentsLUTJSON() )
+
+        //## Write debug output to file, since it's so large now
+        val pw = new PrintWriter("debugout.txt")
+        pw.println("Visible Objects:")
+        val visibleObjs = interface.agentInterface.get.getAgentVisibleObjects()._2
+
+        pw.println("Possible referents: " + referents.mkString("\n"))
+        pw.println("\n------------------------------------------------------------------------------------------\n")
+        pw.println("Possible actions: " + validActions.mkString("\n"))
+        pw.println("\n------------------------------------------------------------------------------------------\n")
+        pw.println("Possible actions: " + interface.agentInterface.get.getPossibleActionsWithIDsJSON() )
+        pw.println("\n------------------------------------------------------------------------------------------\n")
+        pw.println("Valid actions: " + interface.agentInterface.get.getValidActionObjectCombinationsJSON().split("}").mkString("\n") )
+        pw.println("Goal sequence progress: \n" + interface.agentInterface.get.getGoalProgressStr() )
+        pw.println("Referents: " + interface.agentInterface.get.getAllObjectIdsTypesReferentsLUTJSON() )
+        pw.flush()
+        pw.close()
+
 
         //println("Locations: " + PathFinder.buildLocationGraph(universe) )
 

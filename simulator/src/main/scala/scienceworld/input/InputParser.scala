@@ -380,7 +380,9 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
       for (referent <- referents) {
         if (inStr.startsWith(referent)) {
           val restOfStr = inStr.substring(referent.length).trim()
+          //println("\t\t*** MATCH     (restOfStr: " + restOfStr + ")")
           out.append((restOfStr, obj))
+
         }
       }
     }

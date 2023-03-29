@@ -243,7 +243,8 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     // Collect all objects visible to the agent
     val visibleObjTreeRoot = this.getAgentVisibleObjects()._2
     val agentInventory = agent.getInventoryContainer()
-    val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toArray
+    //val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toArray
+    val allVisibleObjects = InputParser.collectAccessibleObjects(visibleObjTreeRoot, includeHidden = false).toArray   // Changed 03/29/2023, so objects in closed containers are no longer enumerated
 
     // Collect UUID -> Unique Referent LUT
     //val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(universe, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
@@ -288,7 +289,8 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     // Collect all objects visible to the agent
     val visibleObjTreeRoot = this.getAgentVisibleObjects()._2
     val agentInventory = agent.getInventoryContainer()
-    val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toArray
+    //val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toArray
+    val allVisibleObjects = InputParser.collectAccessibleObjects(visibleObjTreeRoot, includeHidden = false).toArray   // Changed 03/29/2023, so objects in closed containers are no longer enumerated
 
     // Collect UUID -> Unique Referent LUT
     //val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(universe, includeHidden=true, recursive = true)   // Generate UUID LUT using *all* objects in the environment, instead of just visible
