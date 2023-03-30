@@ -429,6 +429,9 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     return this.task.goalSequence.getProgressString()
   }
 
+  def getGoalProgressJSON():String = {
+    return this.task.goalSequence.getProgressStringJSON()
+  }
 
   /*
    * Error Handling

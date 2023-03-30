@@ -331,6 +331,8 @@ class PythonInterface() {
 
   def getGoalProgressStr():String = agentInterface.get.getGoalProgressStr()
 
+  def getGoalProgressJSON():String = agentInterface.get.getGoalProgressJSON()
+
   def getCompleted():Boolean = this.isComplete
 
   // Normal

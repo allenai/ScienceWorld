@@ -4,6 +4,7 @@ import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks._
 
 // Storage class for a single goal
@@ -330,6 +331,43 @@ class GoalSequence(val subgoals:Array[Goal], optionalUnorderedSubgoals:Array[Goa
     // Return
     os.toString()
   }
+
+  def getProgressStringJSON():String = {
+    val os = new StringBuilder()
+
+    //os.append("Completed keys: " + this.completedKeys.mkString(", ") + "\n")
+    os.append("{ \"completedKeys\": [\"" + this.completedKeys.mkString("\", \"") + "\"], ")
+
+    //os.append("Sequential Subgoals:\n")
+    val subgoalStrs = new ArrayBuffer[String]
+    for (i <- 0 until this.subgoals.length) {
+      val subgoalDesc = this.subgoals(i).description
+      val subgoalClass = this.subgoals(i).getClass.toString.split("\\.").last
+      val passed = if (i<this.curSubgoalIdx) "true" else "false"
+
+      subgoalStrs.append("{\"desc\": \"" + subgoalDesc + "\", \"class\": \"" + subgoalClass + "\", \"passed\": " + passed + " }")
+      //os.append(i + "\t" + passed + "\t" + subgoalClass.formatted("%40s") + "\t" + subgoalDesc + "\n")
+    }
+    os.append("\"sequentialSubgoals\": [" + subgoalStrs.mkString(", ") + "], ")
+
+    //os.append("Unordered and Optional Subgoals:\n")
+    val unorderedSubgoalStrs = new ArrayBuffer[String]
+    for (i <- 0 until this.optionalUnorderedSubgoalsCompleted.length) {
+      val subgoalDesc = this.optionalUnorderedSubgoals(i).description
+      val subgoalClass = this.optionalUnorderedSubgoals(i).getClass.toString.split("\\.").last
+      val passed = if (this.optionalUnorderedSubgoalsCompleted(i)) "true" else "false"
+      val isOptional = if (this.optionalUnorderedSubgoals(i).isOptional) "true" else "false"
+      unorderedSubgoalStrs.append("{\"desc\": \"" + subgoalDesc + "\", \"class\": \"" + subgoalClass + "\", \"passed\": " + passed + ", \"isOptional\": " + isOptional + "}")
+      //os.append(i + "\t" + passed + "\t" + subgoalClass.formatted("%40s") + "\t" + subgoalDesc + "\n")
+    }
+    os.append("\"unorderedSubgoals\": [" + unorderedSubgoalStrs.mkString(", ") + "]")
+
+    os.append(" }")
+
+    // Return
+    os.toString()
+  }
+
 
 
 }

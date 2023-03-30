@@ -109,6 +109,8 @@ def userConsole(args):
         userInputStr = userInputStr.lower().strip()
 
 
+
+
     # Display run history
     runHistory = env.getRunHistory()
     print("Run History:")
@@ -119,6 +121,8 @@ def userConsole(args):
 
     # Display subgoal progress
     print(env.getGoalProgressStr())
+    print(env.getGoalProgressJSON())
+    
 
     print("Completed.")
 
