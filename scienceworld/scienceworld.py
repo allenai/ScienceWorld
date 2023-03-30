@@ -362,8 +362,7 @@ class ScienceWorldEnv:
         return goalStr
 
     def getGoalProgressJSON(self):
-        goalJsonStr = self.server.getGoalProgressJSON()
-        print("JSON:")
+        goalJsonStr = self.server.getGoalProgressJSON()        
         print(goalJsonStr)
         jsonOut = json.loads(goalJsonStr)
         return jsonOut
