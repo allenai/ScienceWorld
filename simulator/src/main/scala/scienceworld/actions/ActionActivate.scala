@@ -41,10 +41,11 @@ object ActionActivate {
   val ACTION_NAME = "activate"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_ACTIVATE
   val isOracleAction = false
+  val actionAliases = List("activate", "turn on")
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("activate", "turn on")),
+      new ActionExprOR(actionAliases),
       new ActionExprIdentifier("device")
     ))
 
@@ -91,7 +92,8 @@ object ActionActivate {
       if (this.isValidAction(assignments)._2 == true) {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
-          new ActionExprText("activate"),
+          //new ActionExprText("activate"),
+          new ActionExprOR(actionAliases),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
         ), this.ACTION_ID)
         out.append(pa)
@@ -137,10 +139,11 @@ object ActionDeactivate {
   val ACTION_NAME = "deactivate"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_DEACTIVATE
   val isOracleAction = false
+  val actionAliases = List("deactivate", "turn off")
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("deactivate", "turn off")),
+      new ActionExprOR(actionAliases),
       new ActionExprIdentifier("device")
     ))
 
@@ -187,7 +190,8 @@ object ActionDeactivate {
       if (this.isValidAction(assignments)._2 == true) {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
-          new ActionExprText("deactivate"),
+          //new ActionExprText("deactivate"),
+          new ActionExprOR(actionAliases),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
         ), this.ACTION_ID)
         out.append(pa)

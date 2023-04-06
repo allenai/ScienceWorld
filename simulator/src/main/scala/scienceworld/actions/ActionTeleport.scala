@@ -1,6 +1,7 @@
 package main.scala.scienceworld.actions
 
 import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionExprObject, ActionExprText, ActionRequestDef, ActionTrigger}
+import scienceworld.actions.ActionMoveThroughDoor.actionAliases
 import scienceworld.actions.{Action, PossibleAction}
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
@@ -46,11 +47,11 @@ object ActionTeleport {
   val ACTION_NAME = "teleport to location"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_MOVETHRUDOOR
   val isOracleAction = true
-
+  val actionAliases = List("teleport", "teleport to", "teleport into")
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move through door
     val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("teleport", "teleport to", "teleport into")),
+      new ActionExprOR(actionAliases),
       new ActionExprIdentifier("location")
     ))
     val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
@@ -97,7 +98,7 @@ object ActionTeleport {
       if (this.isValidAction(assignments)._2 == true) {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
-          new ActionExprText("teleport to"),
+          new ActionExprOR(actionAliases),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))      // TODO: Should only be valid locations
         ), this.ACTION_ID)
         out.append(pa)

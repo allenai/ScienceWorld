@@ -63,6 +63,18 @@ class PossibleAction(val sequence:Array[ActionExpr], templateID:Int) {
       out.append( assembledStr.toString().trim )
     }
 
+    /*
+    // DEBUG
+    if ((out.length > 0) && (out(0).startsWith("activate") || out(0).startsWith("turn on"))) {
+      println("!!!!! ")
+      println ("Possibilities length: " + possibilities.length)
+      for (i <- 0 until possibilities.length) {
+        println(i + "\t" + sequence(i).getClass.toString + "\t" + possibilities(i).mkString(", "))
+      }
+      println(out.mkString(", "))
+    }
+     */
+
     // Convert to set (to get unique set)
     return out.toSet.toArray
   }

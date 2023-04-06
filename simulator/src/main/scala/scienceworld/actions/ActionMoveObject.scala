@@ -2,7 +2,8 @@ package scienceworld.actions
 
 import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionExprObject, ActionExprText, ActionRequestDef, ActionTrigger}
 import scienceworld.actions.ActionDunkObject.getMoveableLiquids
-import scienceworld.actions.ActionPickUpObjectIntoInventory.remap
+import scienceworld.actions.ActionMoveObject.actionAliases
+import scienceworld.actions.ActionPickUpObjectIntoInventory.{actionAliases, remap}
 import scienceworld.actions.ActionPutDownObjectIntoInventory.remap
 import scienceworld.objects.portal.Door
 import scienceworld.input.ActionDefinitions.mkActionRequest
@@ -47,11 +48,12 @@ object ActionMoveObject {
   val ACTION_NAME = "move object"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_MOVEOBJECT
   val isOracleAction = false
+  val actionAliases = List("move", "put")
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
     val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("move", "put")),
+      new ActionExprOR(actionAliases),
       new ActionExprIdentifier("obj"),
       new ActionExprOR(List("to", "in", "into", "on")),
       new ActionExprIdentifier("moveTo")
@@ -121,7 +123,7 @@ object ActionMoveObject {
         if (this.isValidAction(assignments)._2 == true) {
           // Pack and store
           val pa = new PossibleAction(Array[ActionExpr](
-            new ActionExprText("move"),
+            new ActionExprOR(actionAliases),
             new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid)),
             new ActionExprText("to"),
             new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid))
@@ -143,11 +145,12 @@ object ActionPickUpObjectIntoInventory {
   val ACTION_NAME = "pick up"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_PICKUP
   val isOracleAction = false
+  val actionAliases = List("pick up", "get", "take")
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
     val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("pick up", "get", "take")),
+      new ActionExprOR(actionAliases),
       new ActionExprIdentifier("obj"),
     ))
     val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
@@ -202,7 +205,7 @@ object ActionPickUpObjectIntoInventory {
       if (this.isValidAction(assignments, agent)._2 == true) {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
-          new ActionExprText("pick up"),
+          new ActionExprOR(actionAliases),
           new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid))
         ), this.ACTION_ID)
         out.append(pa)
@@ -222,11 +225,12 @@ object ActionPutDownObjectIntoInventory {
   val ACTION_NAME = "put down"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_PUTDOWN
   val isOracleAction = false
+  val actionAliases = List("put down", "drop")
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move
     val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("put down", "drop")),
+      new ActionExprOR(actionAliases),
       new ActionExprIdentifier("obj"),
     ))
     val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
@@ -286,7 +290,7 @@ object ActionPutDownObjectIntoInventory {
       if (this.isValidAction(assignments, agent)._2 == true) {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
-          new ActionExprText("put down"),
+          new ActionExprOR(actionAliases),
           new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid))
         ), this.ACTION_ID)
         out.append(pa)

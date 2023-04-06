@@ -41,10 +41,11 @@ object ActionEat {
   val ACTION_NAME = "eat"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_EAT
   val isOracleAction = false
+  val actionAliases = List("eat", "consume")
 
   def registerAction(actionHandler:ActionHandler) {
     val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("eat", "consume")),
+      new ActionExprOR(actionAliases),
       new ActionExprIdentifier("food")
     ))
 
@@ -86,7 +87,7 @@ object ActionEat {
       if (this.isValidAction(assignments)._2 == true) {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
-          new ActionExprText("eat"),
+          new ActionExprOR(actionAliases),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
         ), this.ACTION_ID)
         out.append(pa)

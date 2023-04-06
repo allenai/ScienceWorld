@@ -1,6 +1,7 @@
 package scienceworld.actions
 
 import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionExprObject, ActionExprText, ActionRequestDef, ActionTrigger}
+import scienceworld.actions.ActionPickUpObjectIntoInventory.actionAliases
 import scienceworld.objects.portal.Door
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
@@ -72,11 +73,12 @@ object ActionMoveThroughDoor {
   val ACTION_NAME = "move through door"
   val ACTION_ID   = ActionDefinitions.ACTION_ID_MOVETHRUDOOR
   val isOracleAction = false
+  val actionAliases = List("go", "go through", "walk through", "move through", "go to", "walk to", "move to", "go into", "move into")
 
   def registerAction(actionHandler:ActionHandler) {
     // Action: Move through door
     val triggerPhrase = new ActionTrigger(List(
-      new ActionExprOR(List("go", "go through", "walk through", "move through", "go to", "walk to", "move to", "go into", "move into")),
+      new ActionExprOR(actionAliases),
       new ActionExprIdentifier("doorOrLocation")
     ))
     val action = mkActionRequest(ACTION_NAME, triggerPhrase, ACTION_ID, isOracleAction = isOracleAction)
@@ -164,7 +166,7 @@ object ActionMoveThroughDoor {
       if (this.isValidAction(assignments)._2 == true) {
         // Pack and store
         val pa = new PossibleAction(Array[ActionExpr](
-          new ActionExprText("go to"),
+          new ActionExprOR(actionAliases),
           new ActionExprObject(obj, referent = uuid2referentLUT(obj.uuid))
         ), this.ACTION_ID)
         out.append(pa)
