@@ -36,7 +36,7 @@ object ExampleGoldAgent {
     //val specificTasks = Array(23,24)           // Do specific tasks
     //val specificTasks = Array(25,26,27)        // Do specific tasks
     //val specificTasks = Array(28,29)           // Do specific tasks
-    //val specificTasks = Array(17)           // Do specific tasks
+    //val specificTasks = Array(21)           // Do specific tasks
 
     //val specificTasks = Array.empty[Int]      // Do all
 
@@ -64,6 +64,8 @@ object ExampleGoldAgent {
       val numVariations = interface.taskMaker.getMaxVariations(taskName)
       println( i.formatted("%5s") + ": \t" + taskName.formatted("%60s") + "  (" + numVariations + " variations)")
     }
+
+    //sys.exit(1)
 
     val taskScores = new ArrayBuffer[ Array[Double] ]()
     for (taskIdx <- 0 until taskNames.length) {
