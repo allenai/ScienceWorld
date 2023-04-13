@@ -15,6 +15,7 @@ class Agent extends EnvObject {
   this.name = "agent"
 
   this.propMoveable = Some( new MoveableProperties(isMovable = false) )
+  this.propContainer = Some( new IsOpenUnclosableContainer )              // Added to enumerate inventories when searching containers (e.g. rooms the agent is in) for accessible objects for valid action generation.
 
   // Waiting (e.g. from wait command)
   var waitingCounter:Int = 0
