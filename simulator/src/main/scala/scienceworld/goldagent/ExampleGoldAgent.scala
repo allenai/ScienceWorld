@@ -101,7 +101,7 @@ object ExampleGoldAgent {
             println("---------------------------")
 
             // Load the task/variation
-            interface.load(taskName, variationIdx, simplificationStr, generateGoldPath = true)
+            interface.load(taskName, variationIdx, simplificationStr, numAgents = 1, generateGoldPath = true)
 
             // Get reference to AgentInterface
             val agentInterface = interface.agentInterface

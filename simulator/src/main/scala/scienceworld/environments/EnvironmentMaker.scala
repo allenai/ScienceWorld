@@ -20,7 +20,7 @@ class EnvironmentMaker {
 object EnvironmentMaker {
 
 
-  def mkKitchenEnvironment(seed:Long, numAgents:Int = 1): (EnvObject, Array[Agent]) = {
+  def mkKitchenEnvironment(seed:Long, numAgents:Int): (EnvObject, Array[Agent]) = {
     Random.setSeed(seed)
 
     // Universe (object tree root)

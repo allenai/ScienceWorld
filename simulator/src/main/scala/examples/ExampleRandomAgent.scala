@@ -54,7 +54,7 @@ object ExampleRandomAgent {
         val episodeScores = new ArrayBuffer[Double]
 
         // Initialize one variation (that won't be used), so that the interface knows what task we're using and will be able to populate the getRandomVariation functions.
-        interface.load(taskName, 0, simplificationStr, generateGoldPath = false)
+        interface.load(taskName, 0, simplificationStr, numAgents=1, generateGoldPath = false)
 
         while (curEpisode < maxEpisodes) {
 
@@ -66,7 +66,7 @@ object ExampleRandomAgent {
           val variationIdx = interface.getRandomVariationTest()
 
           // Load the task/variation
-          interface.load(taskName, variationIdx, simplificationStr, generateGoldPath = false)
+          interface.load(taskName, variationIdx, simplificationStr, numAgents=1, generateGoldPath = false)
 
           // Get reference to AgentInterface
           val agentInterface = interface.agentInterface

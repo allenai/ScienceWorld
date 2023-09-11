@@ -28,6 +28,7 @@ class PythonInterface() {
   var agents:Option[Array[Agent]] = None
   var primeAgent:Option[Agent] = None
   val primeAgentIdx:Int = 0
+  var numAgents:Int = 0
   val actionHandler = ActionDefinitions.mkActionDefinitions()
 
   var taskStr:String = ""                // Environment/task name
@@ -51,12 +52,14 @@ class PythonInterface() {
   /*
    * Load/reset/shutdown server
    */
-  def load(taskStr:String, variationIdx:Int, simplificationStr:String, generateGoldPath:Boolean = false): String = {
+  def load(taskStr:String, variationIdx:Int, simplificationStr:String, numAgents:Int, generateGoldPath:Boolean = false): String = {
     var goldActionSequence = Array.empty[String]
+
+    this.numAgents = numAgents
 
     if (generateGoldPath) {
       // First, reset environment to new specifications
-      doLoad(taskStr, variationIdx, simplificationStr)
+      doLoad(taskStr, variationIdx, simplificationStr, this.numAgents)
 
       println("* Generating Gold Path")
       // Then, compute gold path
@@ -79,7 +82,7 @@ class PythonInterface() {
     }
 
     // Then, reset environment again
-    doLoad(taskStr, variationIdx, simplificationStr)
+    doLoad(taskStr, variationIdx, simplificationStr, this.numAgents)
 
     // Store gold action sequence, since 'doLoad' clears it
     if (generateGoldPath == true) {
@@ -91,11 +94,11 @@ class PythonInterface() {
   }
 
   def reset() = {
-    this.load(this.taskStr, this.taskVariationIdx, this.simplificationStr, generateGoldPath = this.goldPathGenerationEnabled)
+    this.load(this.taskStr, this.taskVariationIdx, this.simplificationStr, this.numAgents, generateGoldPath = this.goldPathGenerationEnabled)
   }
 
 
-  private def doLoad(taskStr:String, variationIdx:Int, simplificationStr:String): Unit = {
+  private def doLoad(taskStr:String, variationIdx:Int, simplificationStr:String, numAgents:Int): Unit = {
     this.taskStr = taskStr
     this.taskVariationIdx = variationIdx
     this.simplificationStr = simplificationStr
@@ -112,7 +115,7 @@ class PythonInterface() {
 
     // Make environment and agent
     Random.setSeed(variationIdx)
-    val (universe, agent_) = EnvironmentMaker.mkKitchenEnvironment(seed = variationIdx)
+    val (universe, agent_) = EnvironmentMaker.mkKitchenEnvironment(seed = variationIdx, numAgents)
 
     // Set up task
     val (task_, taskErrStr) = taskMaker.doTaskSetup(taskStr, this.taskVariationIdx, universe, agent_)

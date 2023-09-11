@@ -73,7 +73,7 @@ object EntryPoint {
     //val simplificationStr = ""
 
     // Load task
-    interface.load(taskName, variationIdx = 1, simplificationStr)
+    interface.load(taskName, variationIdx = 1, simplificationStr, numAgents = 1)
 
     println ("Task: " + interface.getTaskDescription() )
 
