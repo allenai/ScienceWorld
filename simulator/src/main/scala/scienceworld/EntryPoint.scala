@@ -73,7 +73,7 @@ object EntryPoint {
     //val simplificationStr = ""
 
     // Load task
-    interface.load(taskName, variationIdx = 1, simplificationStr, numAgents = 1)
+    interface.load(taskName, variationIdx = 1, simplificationStr, numAgents = 20)
 
     println ("Task: " + interface.getTaskDescription() )
 
@@ -82,7 +82,7 @@ object EntryPoint {
 
     // DEBUG: Set the task/goals
     var curIter:Int = 0
-    val agentIdx:Int = 0
+    var agentIdx:Int = 0
 
     breakable {
       var userInputString:String = "look around"
@@ -192,6 +192,21 @@ object EntryPoint {
           } else if (userInputString == "history") {
             println("History:")
             println(interface.currentHistory.historyActions.mkString("\n"))
+          } else if (userInputString.startsWith("agent")) {
+            val fields = userInputString.split(" ")
+            try {
+              val newAgentIdx = fields(1).toInt - 1
+              if (newAgentIdx < 0) {
+                println("ERROR: Agent index must be >= 1.")
+              } else if (newAgentIdx >= interface.numAgents) {
+                println("ERROR: Agent index must be less than the number of agents (" + interface.numAgents + ")")
+              } else {
+                agentIdx = newAgentIdx
+                println("Switched to Agent " + (agentIdx + 1).toString)
+              }
+            } catch {
+              case e:Throwable => println("Error parsing agent switch command.  Continuing as Agent + " + (agentIdx + 1).toString + ".")
+            }
           } else {
             validInput = true
           }
