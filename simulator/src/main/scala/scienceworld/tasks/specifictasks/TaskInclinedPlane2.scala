@@ -206,7 +206,7 @@ class TaskInclinedPlane2(val mode:String = MODE_FRICTION_UNNAMED) extends TaskPa
    */
   def mkGoldActionSequenceLifeStages(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val agent = runner.agentInterface.get.primeAgent
 
     // Task variables
     // Step 1: Find seed type

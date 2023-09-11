@@ -244,7 +244,7 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
    */
   def mkGoldActionSequencePowerComponent(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val agent = runner.agentInterface.get.primeAgent
 
     // Task variables
     val partToPower = this.getTaskValueStr(modifiers, key = "componentToPower")
@@ -323,7 +323,7 @@ class TaskElectricCircuit(val mode:String = MODE_POWER_COMPONENT) extends TaskPa
 
   def mkGoldActionSequencePowerComponentRenewable(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val agent = runner.agentInterface.get.primeAgent
 
     // Task variables
     val partToPower = this.getTaskValueStr(modifiers, key = "componentToPower")

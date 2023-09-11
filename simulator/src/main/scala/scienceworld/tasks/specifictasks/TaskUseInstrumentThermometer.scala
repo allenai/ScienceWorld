@@ -241,7 +241,7 @@ class TaskUseInstrumentThermometer(val mode:String = MODE_USE_THERMOMETER) exten
    */
   def mkGoldActionSequenceThermometer(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val agent = runner.agentInterface.get.primeAgent
 
     // Task variables
     val objectName = this.getTaskValueStr(modifiers, "objectName").get

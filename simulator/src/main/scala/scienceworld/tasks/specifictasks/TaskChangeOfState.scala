@@ -294,7 +294,7 @@ class TaskChangeOfState(val mode:String = MODE_CHANGESTATE) extends TaskParametr
 
   def mkGoldActionSequenceChangeState(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val agent = runner.agentInterface.get.primeAgent
 
     // Task variables
     val objectName = this.getTaskValueStr(modifiers, "objectName").get

@@ -178,7 +178,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     val answerBoxLocation = this.getTaskValueStr(modifiers, "location").get
 
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val agent = runner.agentInterface.get.primeAgent
 
 
     // Step 1: Move from starting location to answer box location
@@ -244,7 +244,7 @@ class TaskFindLivingNonLiving(val mode:String = MODE_LIVING) extends TaskParamet
     val answerBoxLocation = this.getTaskValueStr(modifiers, "location").get
 
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val agent = runner.agentInterface.get.primeAgent
 
 
     var livingThingLocation = "outside"

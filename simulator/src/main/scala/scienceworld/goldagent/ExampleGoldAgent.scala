@@ -118,9 +118,9 @@ object ExampleGoldAgent {
             val history = new RunHistory(taskName, taskIdx, variationIdx, taskDescription = agentInterface.get.getTaskDescription(), simplificationStr = simplificationStr, foldDesc = foldDesc)
 
             // Run a free initial 'look' action, and add it to the history?
-            val initialFl = interface.freeActionLook()
-            val initialInv = interface.freeActionInventory()
-            val initialObs = agentInterface.get.step("look around")
+            val initialFl = interface.freeActionLook(agentInterface.get.primeAgentIdx)
+            val initialInv = interface.freeActionInventory(agentInterface.get.primeAgentIdx)
+            val initialObs = agentInterface.get.step("look around", agentInterface.get.primeAgentIdx)
             history.addStep("look around", initialObs, initialFl, initialInv)
 
 
@@ -130,12 +130,12 @@ object ExampleGoldAgent {
               userInput = goldActionSeq(actionIdx)
 
               // Record free look and inventory before step is taken
-              val freelookStr = interface.freeActionLook()
-              val inventoryStr = interface.freeActionInventory()
+              val freelookStr = interface.freeActionLook(agentInterface.get.primeAgentIdx)
+              val inventoryStr = interface.freeActionInventory(agentInterface.get.primeAgentIdx)
 
               // Supply action to environment, get next environment observation
               println(">> " + userInput)
-              val observation = agentInterface.get.step(userInput)
+              val observation = agentInterface.get.step(userInput, agentInterface.get.primeAgentIdx)
               curScore = observation._2
               println("Observation: ")
               println(observation)

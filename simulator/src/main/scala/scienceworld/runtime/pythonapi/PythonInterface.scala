@@ -26,6 +26,8 @@ class PythonInterface() {
 
   var agentInterface:Option[AgentInterface] = None
   var agents:Option[Array[Agent]] = None
+  var primeAgent:Option[Agent] = None
+  val primeAgentIdx:Int = 0
   val actionHandler = ActionDefinitions.mkActionDefinitions()
 
   var taskStr:String = ""                // Environment/task name
@@ -128,6 +130,7 @@ class PythonInterface() {
     if (task.isDefined) {
       this.errorUnknownEnvironment = false
       agents = Some(agent_)
+      primeAgent = Some(agents.get(this.primeAgentIdx))
       agentInterface = Some(new AgentInterface(universe, agents.get, task.get, simplificationStr))
 
       // Reset run history
@@ -354,15 +357,15 @@ class PythonInterface() {
       return "Possible actions: \n\t" + this.getPossibleActions().toArray().mkString("\n\t")
     }
     if (userInputString.trim.toLowerCase == "objects") {
-      return "Possible object references: \n\t" + this.getPossibleObjects().toArray().mkString("\n\t")
+      return "Possible object references: \n\t" + this.getPossibleObjects(agentIdx).toArray().mkString("\n\t")
     }
     if (userInputString.trim.toLowerCase == "task") {
       return "Task description:\n" + agentInterface.get.getTaskDescription()
     }
 
     // For history: record free look and inventory before step is taken
-    val freelookStr = this.freeActionLook()
-    val inventoryStr = this.freeActionInventory()
+    val freelookStr = this.freeActionLook(agentIdx)
+    val inventoryStr = this.freeActionInventory(agentIdx)
 
     // Process step in environment
     val (description, score_, isCompleted_) = agentInterface.get.step(userInputString, agentIdx)
@@ -376,7 +379,7 @@ class PythonInterface() {
     println(description)
 
     // DEBUG
-    val referents = InputParser.getPossibleReferents(agentInterface.get.getAgentVisibleObjects()._2, agentContainer)
+    val referents = InputParser.getPossibleReferents(agentInterface.get.getAgentVisibleObjects(agentIdx)._2, agentContainer)
     println("Possible referents: " + referents.mkString(", "))
 
     if (description.length > 0) {

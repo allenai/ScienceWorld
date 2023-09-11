@@ -18,7 +18,8 @@ import scala.io.StdIn.readLine
 import scala.util.control.Breaks._
 
 class AgentInterface(val universe:EnvObject, val agents:Array[Agent], val task:Task, var simplificationStr:String = "") {
-  val primeAgent = agents(0)
+  val primeAgentIdx:Int = 0
+  val primeAgent = agents(primeAgentIdx)
 
   val objMonitor = new ObjMonitor()
   // Store whether the environment is in an unexpected error state

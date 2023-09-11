@@ -298,7 +298,7 @@ class TaskMendelianGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
    */
   def mkGoldActionSequenceMendel(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val agent = runner.agentInterface.get.primeAgent
 
     // Task variables
     val traitName = this.getTaskValueStr(modifiers, "traitName").get
@@ -368,7 +368,7 @@ class TaskMendelianGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
         if (soilInRoom.size > 0) {
           val pot = flowerPotsWithoutSoil(0)
           // Move soil to flower pot
-          TaskParametric.runAction("move " + PathFinder.getObjUniqueReferent(soilInRoom(0), getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(pot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+          TaskParametric.runAction("move " + PathFinder.getObjUniqueReferent(soilInRoom(0), getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(pot, TaskParametric.getCurrentAgentLocation(runner, runner.primeAgentIdx)).get, runner, runner.primeAgentIdx)
           // Move pot reference to list of pots with soil
           flowerPotsWithoutSoil.remove(0)
           flowerPotsWithSoil.append(pot)
@@ -379,7 +379,7 @@ class TaskMendelianGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
           // Take shovel (if it's in this location)
           var agentHasShovel: Boolean = false
           if (getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[Shovel]().size > 0) {
-            TaskParametric.runAction("pick up shovel", runner)
+            TaskParametric.runAction("pick up shovel", runner, runner.primeAgentIdx)
             agentHasShovel = true
           }
 
@@ -389,21 +389,21 @@ class TaskMendelianGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
 
           // Take shovel (if it's in this location)
           if ((!agentHasShovel) && (getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[Shovel]().size > 0)) {
-            TaskParametric.runAction("pick up shovel", runner)
+            TaskParametric.runAction("pick up shovel", runner, runner.primeAgentIdx)
           }
 
           // Use shovel on ground
-          TaskParametric.runAction("use shovel in inventory on ground", runner)
+          TaskParametric.runAction("use shovel in inventory on ground", runner, runner.primeAgentIdx)
 
           // Pick up dirt
-          TaskParametric.runAction("pick up soil", runner)
+          TaskParametric.runAction("pick up soil", runner, runner.primeAgentIdx)
 
           // Go back to the greenhouse
           val (actions3, actionStrs3) = PathFinder.createActionSequence(universe, agent, startLocation = getCurrentAgentLocation(runner).name, endLocation = "greenhouse")
           runActionSequence(actionStrs3, runner)
 
           // Move soil to flower pot
-          TaskParametric.runAction("move soil in inventory to " + PathFinder.getObjUniqueReferent(pot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+          TaskParametric.runAction("move soil in inventory to " + PathFinder.getObjUniqueReferent(pot, TaskParametric.getCurrentAgentLocation(runner, runner.primeAgentIdx)).get, runner, runner.primeAgentIdx)
 
           // Move pot reference to list of pots with soil
           flowerPotsWithoutSoil.remove(0)
@@ -429,7 +429,7 @@ class TaskMendelianGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
 
       // Move seed to flower pot
       val seedName = seedType + " seed in seed jar"
-      TaskParametric.runAction("move " + seedName + " to " + PathFinder.getObjUniqueReferent(flowerpot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+      TaskParametric.runAction("move " + seedName + " to " + PathFinder.getObjUniqueReferent(flowerpot, TaskParametric.getCurrentAgentLocation(runner, runner.primeAgentIdx)).get, runner, runner.primeAgentIdx)
       //TaskParametric.runAction("0", runner) // Ambiguity resolution
 
       flowerPotsWithSeeds.append(flowerpot)
@@ -544,7 +544,7 @@ class TaskMendelianGenetics2(val mode:String = MODE_MENDEL_UNKNOWN) extends Task
 
       // Move seed to flower pot
       val seedName = seedType + " seed in seed jar"
-      TaskParametric.runAction("move " + seedName + " to " + PathFinder.getObjUniqueReferent(flowerpot, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+      TaskParametric.runAction("move " + seedName + " to " + PathFinder.getObjUniqueReferent(flowerpot, TaskParametric.getCurrentAgentLocation(runner, runner.primeAgentIdx)).get, runner, runner.primeAgentIdx)
       //TaskParametric.runAction("0", runner) // Ambiguity resolution
 
       flowerPotsWithSeeds.append(flowerpot)

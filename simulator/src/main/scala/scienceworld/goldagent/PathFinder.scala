@@ -383,7 +383,7 @@ object PathFinder {
     for (obj <- Random.shuffle(allObjs.toList)) {
       if ((obj.propContainer.isDefined) && (obj.propContainer.get.isContainer) && (obj.propContainer.get.isOpen == false) && (obj.propContainer.get.isClosable)) {
         // Try to open this container
-        TaskParametric.runAction("open " + PathFinder.getObjUniqueReferent(obj, currentLocation).get, runner)
+        TaskParametric.runAction("open " + PathFinder.getObjUniqueReferent(obj, currentLocation).get, runner, runner.primeAgentIdx)
         //TaskParametric.runAction("open " + obj.getReferents().mkString(", "), runner)
         return true
       }
@@ -397,7 +397,7 @@ object PathFinder {
   // Returns (success, container reference, water reference)
   def getWaterInContainer(runner:PythonInterface, useInventoryContainer:Option[EnvObject] = None):(Boolean, Option[EnvObject], Option[EnvObject]) = {
     // Get current agent location
-    val curLocation = TaskParametric.getCurrentAgentLocation(runner)
+    val curLocation = TaskParametric.getCurrentAgentLocation(runner, runner.primeAgentIdx)
 
     // Look for a container (cup-like)
     // TODO: Add parameter for preferred container?
@@ -426,17 +426,17 @@ object PathFinder {
     if (sinks.size > 0) {
       val sink = sinks(0)
       // Put container in sink
-      TaskParametric.runAction("move " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get + " to " + PathFinder.getObjUniqueReferent(sink, curLocation).get, runner)
+      TaskParametric.runAction("move " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get + " to " + PathFinder.getObjUniqueReferent(sink, curLocation).get, runner, runner.primeAgentIdx)
       // Turn on sink
-      TaskParametric.runAction("activate " + PathFinder.getObjUniqueReferent(sink, curLocation).get, runner)
+      TaskParametric.runAction("activate " + PathFinder.getObjUniqueReferent(sink, curLocation).get, runner, runner.primeAgentIdx)
       // Turn off sink
-      TaskParametric.runAction("deactivate " + PathFinder.getObjUniqueReferent(sink, curLocation).get, runner)
+      TaskParametric.runAction("deactivate " + PathFinder.getObjUniqueReferent(sink, curLocation).get, runner, runner.primeAgentIdx)
 
       val water = cup.get.getContainedAccessibleObjectsOfType[Water]().toArray
 
       if (water.size > 0) {
         // Sink worked -- return
-        if (useInventoryContainer.isDefined) TaskParametric.runAction("pick up " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get, runner)
+        if (useInventoryContainer.isDefined) TaskParametric.runAction("pick up " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get, runner, runner.primeAgentIdx)
         return (true, cup, Some(water(0)))
       }
     }
@@ -446,18 +446,18 @@ object PathFinder {
     if (accessibleWater.size > 0) {
       for (water <- accessibleWater) {
         val waterContainer = water.getContainer().get
-        TaskParametric.runAction("dunk " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get + " into " + PathFinder.getObjUniqueReferent(waterContainer, curLocation).get, runner)
+        TaskParametric.runAction("dunk " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get + " into " + PathFinder.getObjUniqueReferent(waterContainer, curLocation).get, runner, runner.primeAgentIdx)
 
         if (cup.get.getContainedAccessibleObjectsOfType[Water]().size > 0) {
           // If the transfer was successful, return
-          if (useInventoryContainer.isDefined) TaskParametric.runAction("pick up " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get, runner)
+          if (useInventoryContainer.isDefined) TaskParametric.runAction("pick up " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get, runner, runner.primeAgentIdx)
           return (true, cup, Some(water))
         }
       }
     }
 
 
-    if (useInventoryContainer.isDefined) TaskParametric.runAction("pick up " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get, runner)
+    if (useInventoryContainer.isDefined) TaskParametric.runAction("pick up " + PathFinder.getObjUniqueReferent(cup.get, curLocation).get, runner, runner.primeAgentIdx)
 
     // If we reach here, the agent was not able to find any accessible water
     return (false, None, None)

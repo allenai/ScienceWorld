@@ -83,7 +83,7 @@ object ExampleRandomAgent {
             println("---------------------------")
 
             println(">> " + userInput)
-            val observation = agentInterface.get.step(userInput)
+            val observation = agentInterface.get.step(userInput, agentIdx = 0)
             curScore = observation._2
             println("Observation: ")
             println(observation)
@@ -101,7 +101,7 @@ object ExampleRandomAgent {
          */
 
             // Mode 2: Use getValidActions
-            val validActions = agentInterface.get.getValidActionObjectCombinations()
+            val validActions = agentInterface.get.getValidActionObjectCombinations(agentIdx = 0)
             val randIdx = r.nextInt(validActions.length)
             val randAction = validActions(randIdx)
             //println (">>>>>>>>>>>> " + randTemplate.actionString )

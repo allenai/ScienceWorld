@@ -213,7 +213,7 @@ class TaskChemistryMix(val mode:String = MODE_LIVING) extends TaskParametric {
 
   def mkGoldActionSequenceChemistryMix(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val agent = runner.agentInterface.get.primeAgent
 
     // Task variables
     val resultChemical = this.getTaskValueStr(modifiers, key = "result").get

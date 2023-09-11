@@ -190,7 +190,7 @@ class TaskLifeSpan(val mode:String = MODE_LIFESPAN_LONGEST) extends TaskParametr
    */
   def mkGoldActionSequenceLifeSpan(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val agent = runner.agentInterface.get.primeAgent
 
     // Task variables
     val animalLong = this.getTaskValueStr(modifiers, "long").get

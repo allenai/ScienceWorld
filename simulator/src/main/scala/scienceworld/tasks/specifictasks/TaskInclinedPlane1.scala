@@ -207,7 +207,7 @@ class TaskInclinedPlane1(val mode:String = MODE_FRICTION_NAMED) extends TaskPara
    */
   def mkGoldActionSequenceLifeStages(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val agent = runner.agentInterface.get.primeAgent
 
     // Task variables
     // Step 1: Find seed type
@@ -427,15 +427,15 @@ object TaskInclinedPlane1 {
 
   def actionSequenceMeasureBlockFallTime(block:EnvObject, timeTool:EnvObject, inclinedPlane:EnvObject, runner:PythonInterface): (Boolean, Int) = {
     // Slide block down plane 1
-    TaskParametric.runAction("move " + PathFinder.getObjUniqueReferent(block, TaskParametric.getCurrentAgentLocation(runner)).get + " to " + PathFinder.getObjUniqueReferent(inclinedPlane, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+    TaskParametric.runAction("move " + PathFinder.getObjUniqueReferent(block, TaskParametric.getCurrentAgentLocation(runner, runner.primeAgentIdx)).get + " to " + PathFinder.getObjUniqueReferent(inclinedPlane, TaskParametric.getCurrentAgentLocation(runner, runner.primeAgentIdx)).get, runner, runner.primeAgentIdx)
     // Start stopwatch
-    TaskParametric.runAction("activate " + timeTool.name + " in inventory", runner)
+    TaskParametric.runAction("activate " + timeTool.name + " in inventory", runner, runner.primeAgentIdx)
 
     // Wait for block to reach the bottom
     var position:Option[Double] = None
     while (position.isEmpty || (position.isDefined && position.get != 0.0)) {     // Wait for block to be at the bottom (0.0)
       // Look at plane
-      TaskParametric.runAction("look at " + PathFinder.getObjUniqueReferent(inclinedPlane, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+      TaskParametric.runAction("look at " + PathFinder.getObjUniqueReferent(inclinedPlane, TaskParametric.getCurrentAgentLocation(runner, runner.primeAgentIdx)).get, runner, runner.primeAgentIdx)
       // Check blocks position
       inclinedPlane match {
         case ip:InclinedPlane => {
@@ -446,13 +446,13 @@ object TaskInclinedPlane1 {
       if (position.isEmpty) return (false, -1)
     }
     // Add a final look -- since the position updates after the look, we might not see it at the bottom (but only at the last position before the bottom)
-    TaskParametric.runAction("look at " + PathFinder.getObjUniqueReferent(inclinedPlane, TaskParametric.getCurrentAgentLocation(runner)).get, runner)
+    TaskParametric.runAction("look at " + PathFinder.getObjUniqueReferent(inclinedPlane, TaskParametric.getCurrentAgentLocation(runner, runner.primeAgentIdx)).get, runner, runner.primeAgentIdx)
 
     // Stop stopwatch
-    TaskParametric.runAction("deactivate " + timeTool.name + " in inventory", runner)
+    TaskParametric.runAction("deactivate " + timeTool.name + " in inventory", runner, runner.primeAgentIdx)
 
     // Read time on stopwatch
-    TaskParametric.runAction("examine " + timeTool.name + " in inventory", runner)
+    TaskParametric.runAction("examine " + timeTool.name + " in inventory", runner, runner.primeAgentIdx)
     var timePlane:Option[Int] = None
     timeTool match {
       case sw:StopWatch => {

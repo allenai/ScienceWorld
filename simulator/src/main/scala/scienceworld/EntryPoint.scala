@@ -82,6 +82,7 @@ object EntryPoint {
 
     // DEBUG: Set the task/goals
     var curIter:Int = 0
+    val agentIdx:Int = 0
 
     breakable {
       var userInputString:String = "look around"
@@ -95,7 +96,7 @@ object EntryPoint {
 
         // Process step in environment
         //val (description, score, isCompleted) = agentInterface.step(userInputString)
-        val description = interface.step(userInputString)
+        val description = interface.step(userInputString, agentIdx)
         val score = interface.getScore()
         val isCompleted = interface.isComplete
 
@@ -114,13 +115,13 @@ object EntryPoint {
         // DEBUG
         //val referents = agentInterface.inputParser.getAllReferents(agentInterface.getAgentVisibleObjects()._2)
 
-        val referents = InputParser.getAllUniqueReferents(interface.agentInterface.get.getAgentVisibleObjects()._2, includeHidden = true).map(_._1)
+        val referents = InputParser.getAllUniqueReferents(interface.agentInterface.get.getAgentVisibleObjects(agentIdx)._2, includeHidden = true).map(_._1)
         println("Possible referents: " + referents.mkString(", "))
 
-        val validActions = interface.agentInterface.get.getValidActionObjectCombinations().sorted.toList
+        val validActions = interface.agentInterface.get.getValidActionObjectCombinations(agentIdx).sorted.toList
         println("Possible actions: " + validActions.mkString(", "))
         println("Possible actions: " + interface.agentInterface.get.getPossibleActionsWithIDsJSON() )
-        println("Valid actions: " + interface.agentInterface.get.getValidActionObjectCombinationsJSON() )
+        println("Valid actions: " + interface.agentInterface.get.getValidActionObjectCombinationsJSON(agentIdx) )
 
         println("Goal sequence progress: \n" + interface.agentInterface.get.getGoalProgressStr() )
 
@@ -129,7 +130,7 @@ object EntryPoint {
         //## Write debug output to file, since it's so large now
         val pw = new PrintWriter("debugout.txt")
         pw.println("Visible Objects:")
-        val visibleObjs = interface.agentInterface.get.getAgentVisibleObjects()._2
+        val visibleObjs = interface.agentInterface.get.getAgentVisibleObjects(agentIdx)._2
 
         pw.println("Possible referents: " + referents.mkString("\n"))
         pw.println("\n------------------------------------------------------------------------------------------\n")
@@ -137,7 +138,7 @@ object EntryPoint {
         pw.println("\n------------------------------------------------------------------------------------------\n")
         pw.println("Possible actions: " + interface.agentInterface.get.getPossibleActionsWithIDsJSON() )
         pw.println("\n------------------------------------------------------------------------------------------\n")
-        pw.println("Valid actions: " + interface.agentInterface.get.getValidActionObjectCombinationsJSON().split("}").mkString("\n") )
+        pw.println("Valid actions: " + interface.agentInterface.get.getValidActionObjectCombinationsJSON(agentIdx).split("}").mkString("\n") )
         pw.println("Goal sequence progress: \n" + interface.agentInterface.get.getGoalProgressStr() )
         pw.println("Referents: " + interface.agentInterface.get.getAllObjectIdsTypesReferentsLUTJSON() )
         pw.flush()
@@ -175,14 +176,14 @@ object EntryPoint {
             println("Possible Actions: \n" + interface.agentInterface.get.getPossibleActions().mkString("\n"))
           } else if (userInputString == "validactions") {
             // Collect all objects visible to the agent
-            val visibleObjTreeRoot = interface.agentInterface.get.getAgentVisibleObjects()._2
-            val agentInventory = interface.agentInterface.get.agent.getInventoryContainer()
+            val visibleObjTreeRoot = interface.agentInterface.get.getAgentVisibleObjects(agentIdx)._2
+            val agentInventory = interface.agentInterface.get.agents(agentIdx).getInventoryContainer()
             val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toList ++ InputParser.collectObjects(agentInventory, includeHidden = false).toList
             // Collect UUID -> Unique Referent LUT
             val uuid2referentLUT = interface.agentInterface.get.inputParser.getAllUniqueReferentsLUT(visibleObjTreeRoot, includeHidden = false)
 
             // Generate all possible valid actions
-            val validActions = interface.agentInterface.get.getValidActionObjectCombinations() // ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
+            val validActions = interface.agentInterface.get.getValidActionObjectCombinations(agentIdx) // ActionDefinitions.mkPossibleActions(agent, allVisibleObjects.toArray, uuid2referentLUT)
 
             println("Valid actions (length = " + validActions.length + ")")
             for (i <- 0 until validActions.length) {

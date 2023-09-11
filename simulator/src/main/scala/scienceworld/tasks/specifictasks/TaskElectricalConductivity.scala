@@ -324,7 +324,7 @@ class TaskElectricalConductivity(val mode:String = MODE_TEST_CONDUCTIVITY) exten
    */
   def mkGoldActionSequenceTestComponent(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val agent = runner.agentInterface.get.primeAgent
 
     // Task variables
     val boxNameConductive = this.getTaskValueStr(modifiers, "conductive")

@@ -94,7 +94,7 @@ trait TaskParametric {
   }
 
   def runAction(actionStr:String, runner:PythonInterface): Unit = {
-    TaskParametric.runAction(actionStr, runner)
+    TaskParametric.runAction(actionStr, runner, runner.primeAgentIdx)
   }
 
   def getActionHistory(runner:PythonInterface):Array[String] = {
@@ -102,7 +102,7 @@ trait TaskParametric {
   }
 
   def getCurrentAgentLocation(runner:PythonInterface):EnvObject = {
-    TaskParametric.getCurrentAgentLocation(runner)
+    TaskParametric.getCurrentAgentLocation(runner, runner.primeAgentIdx)
   }
 
 }
@@ -113,16 +113,16 @@ object TaskParametric {
   /*
    * Helper functions (runner for gold action sequences)
    */
-  def runAction(actionStr:String, runner:PythonInterface): Unit = {
+  def runAction(actionStr:String, runner:PythonInterface, agentIdx:Int): Unit = {
     println(">>> " + actionStr)
-    val observation = runner.step(actionStr)
+    val observation = runner.step(actionStr, agentIdx)
     println("OBS: " + observation)
     println("")
 
     // Check for ambiguous state -- if it happens, automatically pick the first possible resolution.
     if (runner.agentInterface.get.inputParser.isInAmbiguousState()) {
       // If in an ambiguous state, then select the first option
-      this.runAction("0", runner)
+      this.runAction("0", runner, agentIdx)
     } /*else {
       if (observation.contains("Ambiguous")) {
         runner.currentHistory.addStep("not in ambiguous state BUT OBSERVATION CONTAINS AMBIGUOUS", ("", 0, false))
@@ -137,8 +137,8 @@ object TaskParametric {
     return runner.getActionHistory().asScala.toArray
   }
 
-  def getCurrentAgentLocation(runner:PythonInterface):EnvObject = {
-    return runner.agentInterface.get.agent.getContainer().get
+  def getCurrentAgentLocation(runner:PythonInterface, agentIdx:Int):EnvObject = {
+    return runner.agentInterface.get.agents(agentIdx).getContainer().get
   }
 
 }

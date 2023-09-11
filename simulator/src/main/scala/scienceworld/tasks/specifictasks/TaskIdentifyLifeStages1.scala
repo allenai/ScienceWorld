@@ -169,7 +169,7 @@ class TaskIdentifyLifeStages1(val mode:String = MODE_LIFESTAGES) extends TaskPar
    */
   def mkGoldActionSequenceLifeStages(modifiers:Array[TaskModifier], runner:PythonInterface): (Boolean, Array[String]) = {
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val agent = runner.agentInterface.get.primeAgent
 
     // Task variables
     val animalName = this.getTaskValueStr(modifiers, "animal").get
@@ -281,7 +281,7 @@ object TaskIdentifyLifeStages1 {
 
 
   def mkActionSequenceWaitForLivingThingInStage(stageName:String, livingThingName:String, runner:PythonInterface, MAX_WAIT_TIME:Int = 20): Boolean = {
-    val agentLocation = TaskParametric.getCurrentAgentLocation(runner)
+    val agentLocation = TaskParametric.getCurrentAgentLocation(runner, runner.primeAgentIdx)
     val livingThings = agentLocation.getContainedAccessibleObjectsOfType[LivingThing](includeHidden = false, includePortals = false).toArray
     var found: Option[LivingThing] = None
     breakable {
@@ -301,7 +301,7 @@ object TaskIdentifyLifeStages1 {
           }
         }
         // Not found -- wait one step, and check again
-        TaskParametric.runAction("wait1", runner)
+        TaskParametric.runAction("wait1", runner, runner.primeAgentIdx)
       }
     }
 
@@ -312,13 +312,13 @@ object TaskIdentifyLifeStages1 {
     val container = found.get.getContainer().get
     if (found.get.isInstanceOf[Plant]) {
       val referent = found.get.name + " in the " + stageName + " stage"
-      TaskParametric.runAction("focus on " + referent + " in " + container.name, runner)
+      TaskParametric.runAction("focus on " + referent + " in " + container.name, runner, runner.primeAgentIdx)
     } else {
       val referent = stageName + " " + found.get.name
-      TaskParametric.runAction("focus on " + referent + " in " + container.name, runner)
+      TaskParametric.runAction("focus on " + referent + " in " + container.name, runner, runner.primeAgentIdx)
     }
 
-    TaskParametric.runAction("look around", runner)
+    TaskParametric.runAction("look around", runner, runner.primeAgentIdx)
 
     // Success
     return true

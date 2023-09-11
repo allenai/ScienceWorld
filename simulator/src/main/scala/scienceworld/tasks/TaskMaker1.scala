@@ -59,7 +59,9 @@ class TaskMaker1 {
 
     // First, setup environment
     Random.setSeed(variationIdx)
-    val (success, errStr) = tp.get.setupCombination(variationIdx, universe, agent)
+    //## NOTE: Only performing task setup with the prime agent
+    val primeAgent = agents(0)
+    val (success, errStr) = tp.get.setupCombination(variationIdx, universe, primeAgent)
     if (!success) return (None, errStr)
 
     // Then, get task
@@ -79,7 +81,7 @@ class TaskMaker1 {
 
     // Create gold action sequence
     val universe = runner.agentInterface.get.universe
-    val agent = runner.agentInterface.get.agent
+    val primeAgent = runner.agentInterface.get.agents(0)
 
     val (goldSuccess, goldActionStr) = tp.get.mkGoldActionSequence(modifiers = task.taskModifiers, runner)
 
