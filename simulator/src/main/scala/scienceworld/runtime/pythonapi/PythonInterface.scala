@@ -398,6 +398,25 @@ class PythonInterface() {
     return outStr.toString()
   }
 
+  def stepMultiAgent(userInputStrings:Array[String]): java.util.List[String] = {
+    val outStr = new StringBuilder
+    // Error checking
+    if (this.errorStr != "") return List(this.errorStr).asJava
+    if (this.errorUnknownEnvironment) return List("ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ").").asJava
+    if (agentInterface.isEmpty) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
+    if (agents.isEmpty) return List("ERROR: No agents exist.").asJava
+    if (userInputStrings.length != this.numAgents) return List("ERROR: The number of actions sent (" + userInputStrings.length + ") is not the same as the number of agents (" + this.numAgents + ").").asJava
+    //if (agents(agentIdx).get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
+
+    val (agentOutStrings, score_, isCompleted_) = agentInterface.get.stepMultiAgent(userInputStrings)
+
+    this.score = score_
+    this.isComplete = isCompleted_
+
+    // Return
+    return agentOutStrings.toList.asJava
+  }
+
   // Free actions
   def freeActionLook(agentIdx:Int):String = {
     // Error checking

@@ -658,12 +658,22 @@ class AgentInterface(val universe:EnvObject, val agents:Array[Agent], val task:T
       return (Array("ERROR: For stepMultiAgent(), The number of actions should equal the number of agents."), -1, false)
     }
 
+    // Before we start processing each agent's actions, set all their inventories to be closed
+    // This is largely to prevent conflicting actions (e.g. multiple agents trying to pick up one object) from succeeding by the agents just taking the object from each others inventories.
+    for (agent <- this.agents) {
+      agent.setInventoryClosed()
+    }
 
     val agentOutStrs = Array.fill[String](this.numAgents)("")
+
+    var objectsInUse = mutable.Set[EnvObject]()
 
     // For each agent, calculate the result of their actions
     for (agentIdx <- 0 until this.numAgents) {
       val userOutStr = new StringBuilder()
+
+      // Set inventory open
+      this.agents(agentIdx).setInventoryOpen()
 
       // Parse user input
       val (success, statusStr) = this.processUserInput(userInputStrs(agentIdx), universe, agentIdx: Int)
@@ -695,22 +705,44 @@ class AgentInterface(val universe:EnvObject, val agents:Array[Agent], val task:T
           userOutStr.append(statusStr)
         } else {
 
+
           try {
             breakable {
-              while (true) {
+//              while (true) {
                 val willActionsTakeTime: Boolean = actionHandler.doQueuedActionsTakeTime()
 
-                // Run queued actions
-                val actionOutStr = actionHandler.runQueuedActions()
-                userOutStr.append(actionOutStr)
+                // Check if the queued actions reference any objects that have already been used
+                val intersection = actionHandler.getObjectsReferencedInQueue().intersect(objectsInUse)
+                println("Intersection: " + intersection.map(_.name).toList)
+                if (intersection.size > 0) {
+                  var errorStr = "Object(s) in use: One or more of the objects referenced is already in use by another agent this turn (" + intersection.map(_.name).toList.sorted.mkString(", ") + ")."
+                  userOutStr.append(errorStr)
+                } else {
+                  // Run queued actions
+                  println("Running queued actions for Agent " + agentIdx)
 
+                  // First, mark that the objects used by this agent's actions are "in use"
+                  for (referencedObject <- actionHandler.getObjectsReferencedInQueue()) {
+                    println("Object in use by agent: " + referencedObject.name)
+                    objectsInUse.add(referencedObject)
+                  }
+
+                  // Then, run the actions (and record the result)
+                  val actionOutStr = actionHandler.runQueuedActions()
+                  userOutStr.append(actionOutStr)
+
+
+                }
+
+/*
                 // If the agent is not waiting, then break.  But if the agent is waiting, continue cycling through until the agent is finished waiting X number of ticks.
                 if (agents(agentIdx).isWaiting()) {
                   agents(agentIdx).decrementWait()
                 } else {
                   break
                 }
-              }
+ */
+//              }
             }
             //## Uncomment when debugging in IntelliJ
           } catch {
@@ -721,8 +753,16 @@ class AgentInterface(val universe:EnvObject, val agents:Array[Agent], val task:T
         }
       }
 
+      // Set inventory closed
+      this.agents(agentIdx).setInventoryOpen()
+
       // Add this agent's observation to the array of observations for each agent
       agentOutStrs(agentIdx) = userOutStr.toString().trim.replaceAll(" +", " ")
+    }
+
+    // Set all inventories open before world tick
+    for (agent <- this.agents) {
+      agent.setInventoryOpen()
     }
 
     // Update world, update task scorer

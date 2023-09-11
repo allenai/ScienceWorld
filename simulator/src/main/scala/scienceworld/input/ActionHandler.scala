@@ -3,6 +3,7 @@ package scienceworld.input
 import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
 import scienceworld.actions.{Action, ActionFocus, ActionInventory, ActionLookAround, ActionTaskDesc}
 import scienceworld.objects.agent.Agent
+import scienceworld.struct.EnvObject
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -31,6 +32,20 @@ class ActionHandler {
     this.actions(actionName).uniqueActionID
   }
 
+  // Get lists of objects referenced in the queue
+  def getObjectsReferencedInQueue():Set[EnvObject] = {
+    val out = mutable.Set[EnvObject]()
+
+    for (queuedAction <- queuedActions) {
+      for (assignedObject <- queuedAction.assignments.values) {
+        out.add(assignedObject)
+      }
+    }
+
+    // Return
+    out.toSet
+  }
+
 
   /*
    * Queueing actions
@@ -39,6 +54,9 @@ class ActionHandler {
     queuedActions.append(action)
   }
 
+  def clearQueue(): Unit = {
+    this.queuedActions.clear()
+  }
 
   /*
    * Running actions
@@ -48,7 +66,7 @@ class ActionHandler {
 
     // First, transfer queued actions to action history
     actionHistory.append( queuedActions.toArray )
-    queuedActions.clear()
+    this.clearQueue()
     val actionsToRun = actionHistory.last
 
     // Then, run actions

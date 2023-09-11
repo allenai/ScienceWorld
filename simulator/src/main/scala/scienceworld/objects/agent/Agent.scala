@@ -39,6 +39,14 @@ class Agent(val id:Int) extends EnvObject {
   //## debug
   this.inventory.addObject( new Orange() )
 
+  // Multi-agent methods to make the inventory accessible/inaccessible to other agents
+  def setInventoryOpen() = {
+    this.propContainer.get.isOpen = true
+  }
+
+  def setInventoryClosed() = {
+    this.propContainer.get.isOpen = false
+  }
 
   /*
    * Waiting methods
