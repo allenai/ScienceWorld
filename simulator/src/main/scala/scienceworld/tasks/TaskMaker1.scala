@@ -53,7 +53,7 @@ class TaskMaker1 {
   /*
    * Setup
    */
-  def doTaskSetup(taskName:String, variationIdx:Int, universe:EnvObject, agent:Agent):(Option[Task], String) = {
+  def doTaskSetup(taskName:String, variationIdx:Int, universe:EnvObject, agents:Array[Agent]):(Option[Task], String) = {
     val tp = this.getTask(taskName)
     if (tp.isEmpty) return (None, "ERROR: Unknown task (" + taskName + ").")
 

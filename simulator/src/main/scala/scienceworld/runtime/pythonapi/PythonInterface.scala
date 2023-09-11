@@ -25,7 +25,7 @@ class PythonInterface() {
   val ERROR_MESSAGE_UNINITIALIZED = "ERROR: Interface is not initialized -- call reset() before beginning."
 
   var agentInterface:Option[AgentInterface] = None
-  var agent:Option[Agent] = None
+  var agents:Option[Array[Agent]] = None
   val actionHandler = ActionDefinitions.mkActionDefinitions()
 
   var taskStr:String = ""                // Environment/task name
@@ -127,8 +127,8 @@ class PythonInterface() {
 
     if (task.isDefined) {
       this.errorUnknownEnvironment = false
-      agent = Some(agent_)
-      agentInterface = Some(new AgentInterface(universe, agent.get, task.get, simplificationStr))
+      agents = Some(agent_)
+      agentInterface = Some(new AgentInterface(universe, agents.get, task.get, simplificationStr))
 
       // Reset run history
       val taskIdx = this.getTaskNames().indexOf(taskStr)
@@ -269,34 +269,34 @@ class PythonInterface() {
     agentInterface.get.getPossibleActionsWithIDsJSON()
   }
 
-  def getPossibleObjects(): java.util.List[String] = {
+  def getPossibleObjects(agentIdx:Int): java.util.List[String] = {
     if (!agentInterface.isDefined) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
-    agentInterface.get.getPossibleObjects().toList.asJava
+    agentInterface.get.getPossibleObjects(agentIdx).toList.asJava
   }
 
-  def getPossibleObjectReferentLUTJSON():String = {
+  def getPossibleObjectReferentLUTJSON(agentIdx:Int):String = {
     if (!agentInterface.isDefined) return ERROR_MESSAGE_UNINITIALIZED
-    agentInterface.get.getPossibleObjectReferentLUTJSON()
+    agentInterface.get.getPossibleObjectReferentLUTJSON(agentIdx)
   }
 
-  def getPossibleObjectReferentTypesLUTJSON():String = {
+  def getPossibleObjectReferentTypesLUTJSON(agentIdx:Int):String = {
     if (!agentInterface.isDefined) return ERROR_MESSAGE_UNINITIALIZED
-    agentInterface.get.getPossibleObjectReferentTypesLUTJSON()
+    agentInterface.get.getPossibleObjectReferentTypesLUTJSON(agentIdx)
   }
 
-  def getValidActionObjectCombinations():java.util.List[String] = {
+  def getValidActionObjectCombinations(agentIdx:Int):java.util.List[String] = {
     if (!agentInterface.isDefined) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
-    agentInterface.get.getValidActionObjectCombinations().toList.sorted.asJava
+    agentInterface.get.getValidActionObjectCombinations(agentIdx).toList.sorted.asJava
   }
 
-  def getValidActionObjectCombinationsJSON():String = {
+  def getValidActionObjectCombinationsJSON(agentIdx:Int):String = {
     if (!agentInterface.isDefined) return ERROR_MESSAGE_UNINITIALIZED
-    agentInterface.get.getValidActionObjectCombinationsJSON()
+    agentInterface.get.getValidActionObjectCombinationsJSON(agentIdx)
   }
 
-  def getPossibleActionObjectCombinationsJSON(): String = {
+  def getPossibleActionObjectCombinationsJSON(agentIdx:Int): String = {
     if (!agentInterface.isDefined) return ERROR_MESSAGE_UNINITIALIZED
-    agentInterface.get.getPossibleActionObjectCombinationsJSON()
+    agentInterface.get.getPossibleActionObjectCombinationsJSON(agentIdx)
   }
 
   def getObjectTypesLUTJSON(): String = {
@@ -336,17 +336,18 @@ class PythonInterface() {
   def getCompleted():Boolean = this.isComplete
 
   // Normal
-  def step(userInputString:String): String = {
+  def step(userInputString:String, agentIdx:Int): String = {
     val outStr = new StringBuilder
     // Error checking
     if (this.errorStr != "") return this.errorStr
     if (this.errorUnknownEnvironment) return "ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ")."
     if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
-    if (agent.isEmpty) return "ERROR: No agent is marked as main."
-    if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
+    if (agents.isEmpty) return "ERROR: No agents exist."
+    //if (agents(agentIdx).get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
 
     // Get agent's container (to render agent's perspective)
-    val agentContainer = agent.get.getContainer().get
+    val agentContainer = agents.get(agentIdx).getContainer().get
+
 
     // Process special input commands (help, objects)
     if (userInputString.trim.toLowerCase == "help") {
@@ -364,7 +365,7 @@ class PythonInterface() {
     val inventoryStr = this.freeActionInventory()
 
     // Process step in environment
-    val (description, score_, isCompleted_) = agentInterface.get.step(userInputString)
+    val (description, score_, isCompleted_) = agentInterface.get.step(userInputString, agentIdx)
     this.score = score_
     this.isComplete = isCompleted_
 
@@ -392,37 +393,37 @@ class PythonInterface() {
   }
 
   // Free actions
-  def freeActionLook():String = {
+  def freeActionLook(agentIdx:Int):String = {
     // Error checking
     if (this.errorStr != "") return this.errorStr
     if (this.errorUnknownEnvironment) return "ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ")."
     if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
-    if (agent.isEmpty) return "ERROR: No agent is marked as main."
-    if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
+    if (agents.isEmpty) return "ERROR: No agent is marked as main."
+    //if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
 
-    return agentInterface.get.freeActionLook()
+    return agentInterface.get.freeActionLook(agentIdx)
   }
 
-  def freeActionInventory():String = {
+  def freeActionInventory(agentIdx:Int):String = {
     // Error checking
     if (this.errorStr != "") return this.errorStr
     if (this.errorUnknownEnvironment) return "ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ")."
     if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
-    if (agent.isEmpty) return "ERROR: No agent is marked as main."
-    if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
+    if (agents.isEmpty) return "ERROR: No agents exist."
+    //if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
 
-    return agentInterface.get.freeActionInventory()
+    return agentInterface.get.freeActionInventory(agentIdx)
   }
 
-  def freeActionTaskDesc():String = {
+  def freeActionTaskDesc(agentIdx:Int):String = {
     // Error checking
     if (this.errorStr != "") return this.errorStr
     if (this.errorUnknownEnvironment) return "ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ")."
     if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
-    if (agent.isEmpty) return "ERROR: No agent is marked as main."
-    if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
+    if (agents.isEmpty) return "ERROR: No agents exist."
+    //if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
 
-    return agentInterface.get.freeActionTaskDesc()
+    return agentInterface.get.freeActionTaskDesc(agentIdx)
   }
 
 

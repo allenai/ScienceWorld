@@ -10,6 +10,7 @@ import scienceworld.objects.misc.Picture
 import scienceworld.objects.portal.Door
 import scienceworld.struct.EnvObject
 
+import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
 class EnvironmentMaker {
@@ -19,7 +20,7 @@ class EnvironmentMaker {
 object EnvironmentMaker {
 
 
-  def mkKitchenEnvironment(seed:Long): (EnvObject, Agent) = {
+  def mkKitchenEnvironment(seed:Long, numAgents:Int = 1): (EnvObject, Array[Agent]) = {
     Random.setSeed(seed)
 
     // Universe (object tree root)
@@ -33,14 +34,22 @@ object EnvironmentMaker {
     BuildingMaker.mkRandomHouse(universe, sewer)
 
     // Agent
-    val agent = new Agent()
+    val agents = new ArrayBuffer[Agent]()
 
-    // Place in a random location
-    val locations = universe.getContainedObjectsOfType[Location]().toArray.sortBy(_.name)
-    val randomLocation = locations( Random.nextInt(locations.length) )
+    for (i <- 0 until numAgents) {
+      // Generate agent
+      val agent = new Agent(id = i + 1)
 
-    // Normal: Random location
-    randomLocation.addObject(agent)
+      // Place in a random location
+      val locations = universe.getContainedObjectsOfType[Location]().toArray.sortBy(_.name)
+      val randomLocation = locations( Random.nextInt(locations.length) )
+
+      // Normal: Random location
+      randomLocation.addObject(agent)
+
+      // Add to agents list
+      agents.append(agent)
+    }
 
     //## DEBUG
     //## Specific start point in environment
@@ -53,7 +62,7 @@ object EnvironmentMaker {
 
 
     // Return
-    return (universe, agent)
+    return (universe, agents.toArray)
   }
 
 }

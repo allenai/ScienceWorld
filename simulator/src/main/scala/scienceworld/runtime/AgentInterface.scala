@@ -10,13 +10,15 @@ import scienceworld.runtime.pythonapi.TemplateAction
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.Task
 import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
+import sun.management.resources.agent
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.io.StdIn.readLine
 import scala.util.control.Breaks._
 
-class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var simplificationStr:String = "") {
+class AgentInterface(val universe:EnvObject, val agents:Array[Agent], val task:Task, var simplificationStr:String = "") {
+  val primeAgent = agents(0)
 
   val objMonitor = new ObjMonitor()
   // Store whether the environment is in an unexpected error state
@@ -26,11 +28,13 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
   // Add any task-specific objects to the agent's inventory
   // TODO: Currently places task objects in agents inventory
   for (taskObject <- task.taskObjects) {
-    agent.getInventoryContainer().addObject(taskObject)
+    primeAgent.getInventoryContainer().addObject(taskObject)
   }
 
   // Store a copy of the task description in the agent, for easy access through the action space
-  agent.setTaskDescription(this.getTaskDescription())
+  for (agent <- agents) {
+    agent.setTaskDescription(this.getTaskDescription())
+  }
 
   // Simplifications -- Interpret 'easy' to mean a specific set of settings
   if (simplificationStr == "easy") {
@@ -45,7 +49,9 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
   val (simplifierSuccess, simplifierErrStr) = SimplifierProcessor.parseSimplificationStr(simplificationStr)
   if (!simplifierSuccess) this.setErrorState(simplifierErrStr)
   println ("Selected simplifications: " + SimplifierProcessor.getSimplificationsUsed())
-  SimplifierProcessor.runSimplificationsInitialization(universe, agent)
+
+  // NOTE: Currently, the simplifications don't require the agent -- so here, only calling with the Prime Agent
+  SimplifierProcessor.runSimplificationsInitialization(universe, primeAgent)
 
   // Action handler (must be run after simplifications -- as simplifications can affect action space)
   val actionHandler = ActionDefinitions.mkActionDefinitions()
@@ -61,8 +67,8 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
    */
 
   // TODO: Currently just returns the current room, rather than a list of all visible objects
-  def getAgentVisibleObjects(includeHidden:Boolean = false):(Boolean, EnvObject)  = {
-    val agentContainer = agent.getContainer()
+  def getAgentVisibleObjects(agentIdx:Int, includeHidden:Boolean = false):(Boolean, EnvObject)  = {
+    val agentContainer = agents(agentIdx).getContainer()
     if (agentContainer.isEmpty) {
       val errStr = "ERROR: Agent is not in container."
       return (false, new EnvObject)
@@ -113,22 +119,22 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
   }
 
 
-  def getPossibleObjects(): Array[String] = {
-    val referents = InputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2, includeHidden = false).map(_._1)
+  def getPossibleObjects(agentIdx:Int): Array[String] = {
+    val referents = InputParser.getAllUniqueReferents(this.getAgentVisibleObjects(agentIdx)._2, includeHidden = false).map(_._1)
     return referents
   }
 
-  def getPossibleObjectReferentLUT():Map[Long, String] = {
-    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(this.getAgentVisibleObjects()._2, includeHidden = false)
+  def getPossibleObjectReferentLUT(agentIdx:Int):Map[Long, String] = {
+    val uuid2referentLUT = inputParser.getAllUniqueReferentsLUT(this.getAgentVisibleObjects(agentIdx)._2, includeHidden = false)
     return uuid2referentLUT
   }
 
-  def getPossibleObjectReferentTypesLUTJSON():String = {
-    return inputParser.getAllUniqueReferentsWithTypeLUTJSON(this.getAgentVisibleObjects()._2, includeHidden = false)
+  def getPossibleObjectReferentTypesLUTJSON(agentIdx:Int):String = {
+    return inputParser.getAllUniqueReferentsWithTypeLUTJSON(this.getAgentVisibleObjects(agentIdx)._2, includeHidden = false)
   }
 
-  def getPossibleObjectReferentLUTJSON():String = {
-    val uuid2referentLUT = this.getPossibleObjectReferentLUT()
+  def getPossibleObjectReferentLUTJSON(agentIdx:Int):String = {
+    val uuid2referentLUT = this.getPossibleObjectReferentLUT(agentIdx)
 
     val elems = new ArrayBuffer[String]
     for (key <- uuid2referentLUT.keySet) {
@@ -210,7 +216,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
   }
 
   // Returns a list of only the valid action-agent combinations
-  def getValidActionObjectCombinations(): Array[String] = {
+  def getValidActionObjectCombinations(agentIdx:Int): Array[String] = {
     /*
     // Special case: Check for parser being in ambiguity resolution state
     if (this.inputParser.isInAmbiguousState()) return this.getValidActionsAmbiguousState()
@@ -241,8 +247,8 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     if (this.inputParser.isInAmbiguousState()) return this.getValidActionsAmbiguousState()
 
     // Collect all objects visible to the agent
-    val visibleObjTreeRoot = this.getAgentVisibleObjects()._2
-    val agentInventory = agent.getInventoryContainer()
+    val visibleObjTreeRoot = this.getAgentVisibleObjects(agentIdx)._2
+    val agentInventory = agents(agentIdx).getInventoryContainer()
     //val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toArray
     val allVisibleObjects = InputParser.collectAccessibleObjects(visibleObjTreeRoot, includeHidden = false).toArray   // Changed 03/29/2023, so objects in closed containers are no longer enumerated
 
@@ -255,11 +261,11 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     val uuid2referentLUTAll = inputParser.getAllUniqueReferentsLUTObjList(allObjects, visibleObjTreeRoot, includeHidden = true, recursive = true)
 
     // Generate all possible valid actions
-    val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects, allObjects, uuid2referentLUT, uuid2referentLUTAll)
+    val validActions = ActionDefinitions.mkPossibleActions(agents(agentIdx), allVisibleObjects, allObjects, uuid2referentLUT, uuid2referentLUTAll)
 
     // To templates
     // Get the agent's container
-    val perspectiveContainer = this.agent.getContainer().getOrElse(new EnvObject())
+    val perspectiveContainer = this.agents(agentIdx).getContainer().getOrElse(new EnvObject())
     val validActionsTemplates = validActions.map(_.toTemplate(perspectiveContainer = perspectiveContainer)).flatten   // NOW: Makes exhaustively, using perspective containers
 
     // Create a list of unique actions
@@ -268,7 +274,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
 
   }
 
-  def getValidActionObjectCombinationsJSON(): String = {
+  def getValidActionObjectCombinationsJSON(agentIdx:Int): String = {
     // Special case: Check for parser being in ambiguity resolution state
     if (this.inputParser.isInAmbiguousState()) {
       val AMBIGUOUS_BASE_TEMPLATE_ID    = 100
@@ -287,8 +293,8 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     }
 
     // Collect all objects visible to the agent
-    val visibleObjTreeRoot = this.getAgentVisibleObjects()._2
-    val agentInventory = agent.getInventoryContainer()
+    val visibleObjTreeRoot = this.getAgentVisibleObjects(agentIdx)._2
+    val agentInventory = agents(agentIdx).getInventoryContainer()
     //val allVisibleObjects = InputParser.collectObjects(visibleObjTreeRoot, includeHidden = false).toArray
     val allVisibleObjects = InputParser.collectAccessibleObjects(visibleObjTreeRoot, includeHidden = false).toArray   // Changed 03/29/2023, so objects in closed containers are no longer enumerated
 
@@ -301,11 +307,11 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     val uuid2referentLUTAll = inputParser.getAllUniqueReferentsLUTObjList(allObjects, visibleObjTreeRoot, includeHidden = true, recursive = true)
 
     // Generate all possible valid actions
-    val validActions = ActionDefinitions.mkPossibleActions(agent, allVisibleObjects, allObjects, uuid2referentLUT, uuid2referentLUTAll)
+    val validActions = ActionDefinitions.mkPossibleActions(agents(agentIdx), allVisibleObjects, allObjects, uuid2referentLUT, uuid2referentLUTAll)
 
     // To templates
     // Get the agent's container
-    val perspectiveContainer = this.agent.getContainer().getOrElse(new EnvObject())
+    val perspectiveContainer = this.agents(agentIdx).getContainer().getOrElse(new EnvObject())
     val validActionsTemplates = validActions.map(_.toTemplate(perspectiveContainer = perspectiveContainer)).flatten   // NOW: Makes exhaustively, using perspective containers
     val validActionTemplatesJSON = validActionsTemplates.map(_.toJSON())
 
@@ -317,7 +323,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
 
 
 
-  def getPossibleActionObjectCombinations(): (Array[TemplateAction], Map[Int, String]) = {
+  def getPossibleActionObjectCombinations(agentIdx:Int): (Array[TemplateAction], Map[Int, String]) = {
     val OBJ_PLACEHOLDER_TOKEN = "OBJ"
     val START_TOKEN = "START "
     val END_TOKEN = " END"
@@ -325,7 +331,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     val outTemplates = new ArrayBuffer[TemplateAction]
     val outObjectIdxLUT = mutable.Map[Int, String]()
 
-    val objects = InputParser.getAllUniqueReferents(this.getAgentVisibleObjects()._2, includeHidden = false)
+    val objects = InputParser.getAllUniqueReferents(this.getAgentVisibleObjects(agentIdx)._2, includeHidden = false)
 
     // Special case: Check for parser being in ambiguity resolution state
     if (this.inputParser.isInAmbiguousState()) {
@@ -392,9 +398,9 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     (outTemplates.toArray, outObjectIdxLUT.toMap)
   }
 
-  def getPossibleActionObjectCombinationsJSON():String = {
+  def getPossibleActionObjectCombinationsJSON(agentIdx:Int):String = {
     // Step 1: Get templates
-    val (templates, uuidToRefLUT) = this.getPossibleActionObjectCombinations()
+    val (templates, uuidToRefLUT) = this.getPossibleActionObjectCombinations(agentIdx)
 
     // Step 2: Serialize templates to JSON
     val templatesJSON = templates.map(_.toJSON())
@@ -458,20 +464,20 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     return inputStr
   }
 
-  def processUserInput(inputStr:String, universe:EnvObject):(Boolean, String) = {   // (Success, statusString)
-    val (successVisible, visibleObjects) = this.getAgentVisibleObjects()      // TODO: Currently just a reference to the container (current room), rather than a list
+  def processUserInput(inputStr:String, universe:EnvObject, agentIdx:Int):(Boolean, String) = {   // (Success, statusString)
+    val (successVisible, visibleObjects) = this.getAgentVisibleObjects(agentIdx)      // TODO: Currently just a reference to the container (current room), rather than a list
 
     if (!successVisible) throw new RuntimeException("ERROR: Agent is not in container.")
 
     // The agent's container (to render the agent's perspective)
-    val agentContainer = agent.getContainer().get
+    val agentContainer = agents(agentIdx).getContainer().get
 
 
     if (!this.inputParser.isInAmbiguousState()) {
       // Case 1: Normal case
 
       //val (successUserInput, errStr, userStr) = userInputParser.parse(inputStr, interpreter.objectTreeRoot, agent)
-      val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, universe, agent, objMonitor, task.goalSequence, agentContainer)
+      val (successUserInput, errStr, userStr, action) = inputParser.parse(inputStr, visibleObjects, universe, agents(agentIdx), objMonitor, task.goalSequence, agentContainer)
       if (!successUserInput) {
         println("ERROR: " + errStr)
       } else {
@@ -484,7 +490,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
       // Case 2: Waiting to resolve an ambiguity
 
       // NOTE: Whether or not the ambiguity is resolved successfully, this will handle it and generate an appropriate user message.
-      val (userStr, action) = inputParser.resolveAmbiguity(inputStr, agent, objMonitor, task.goalSequence)
+      val (userStr, action) = inputParser.resolveAmbiguity(inputStr, agents(agentIdx), objMonitor, task.goalSequence)
       if (action.isDefined) {
         actionHandler.queueAction(action.get)
       }
@@ -512,23 +518,23 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     return actionOutStr
   }
 
-  def freeActionLook():String = {
+  def freeActionLook(agentIdx:Int):String = {
     val actionRequest = new ActionRequestDef(name = ActionLookAround.ACTION_NAME, paramSigList = new ParamSigList(List.empty[ParamSig]), triggers = List.empty[ActionTrigger], uniqueActionID = ActionLookAround.ACTION_ID)
-    val lut = Map[String, EnvObject]("agent" -> this.agent)
+    val lut = Map[String, EnvObject]("agent" -> this.agents(agentIdx))
     val action = new ActionLookAround(actionRequest, lut)
     this.runFreeAction( action )
   }
 
-  def freeActionInventory():String = {
+  def freeActionInventory(agentIdx:Int):String = {
     val actionRequest = new ActionRequestDef(name = ActionInventory.ACTION_NAME, paramSigList = new ParamSigList(List.empty[ParamSig]), triggers = List.empty[ActionTrigger], uniqueActionID = ActionInventory.ACTION_ID)
-    val lut = Map[String, EnvObject]("agent" -> this.agent)
+    val lut = Map[String, EnvObject]("agent" -> this.agents(agentIdx))
     val action = new ActionInventory(actionRequest, lut)
     this.runFreeAction( action )
   }
 
-  def freeActionTaskDesc():String = {
+  def freeActionTaskDesc(agentIdx:Int):String = {
     val actionRequest = new ActionRequestDef(name = ActionTaskDesc.ACTION_NAME, paramSigList = new ParamSigList(List.empty[ParamSig]), triggers = List.empty[ActionTrigger], uniqueActionID = ActionTaskDesc.ACTION_ID)
-    val lut = Map[String, EnvObject]("agent" -> this.agent)
+    val lut = Map[String, EnvObject]("agent" -> this.agents(agentIdx))
     val action = new ActionTaskDesc(actionRequest, lut)
     this.runFreeAction( action )
   }
@@ -540,7 +546,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
 
 
   // Returns (observation, score, isCompleted)
-  def step(userInputStr: String): (String, Double, Boolean) = {
+  def step(userInputStr: String, agentIdx:Int): (String, Double, Boolean) = {
     val userOutStr = new StringBuilder()
 
 
@@ -550,7 +556,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     }
 
     // Parse user input
-    val (success, statusStr) = this.processUserInput(userInputStr, universe)
+    val (success, statusStr) = this.processUserInput(userInputStr, universe, agentIdx:Int)
 
     /*
     // Uncomment to include the user input parse success/failure in the string (e.g. "successfully parsed action (look around)")
@@ -590,7 +596,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
           // TODO: Also added this check for goal conditions being met BEFORE processing the tick, for cases where the tick can modify the goal state (e.g. trees growing past the desired life stage in one tick)
           //## NOTE: This might break some other things, so let's keep an eye on it for a bit with the gold agents.
           // Check whether the goal conditions are met
-          task.goalSequence.tick(objMonitor, agent)
+          task.goalSequence.tick(objMonitor, agents(agentIdx))
 
           // Run universe tick
           if (willActionsTakeTime) {
@@ -598,7 +604,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
             universe.tick()
 
             // Run any simplifications that need to be run
-            SimplifierProcessor.runSimplificationsEachTick(universe, agent)
+            SimplifierProcessor.runSimplificationsEachTick(universe, agents(agentIdx))
 
             // Increment the number of iterations
             this.curIter += 1
@@ -606,11 +612,11 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
           }
 
           // Check whether the goal conditions are met
-          task.goalSequence.tick(objMonitor, agent)
+          task.goalSequence.tick(objMonitor, agents(agentIdx))
 
           // If the agent is not waiting, then break.  But if the agent is waiting, continue cycling through until the agent is finished waiting X number of ticks.
-          if (agent.isWaiting()) {
-            agent.decrementWait()
+          if (agents(agentIdx).isWaiting()) {
+            agents(agentIdx).decrementWait()
           } else {
             break
           }

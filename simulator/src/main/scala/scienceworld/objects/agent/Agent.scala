@@ -11,8 +11,9 @@ import scala.collection.mutable.ArrayBuffer
 
 
 
-class Agent extends EnvObject {
-  this.name = "agent"
+class Agent(val id:Int) extends EnvObject {
+  this.name = "agent " + id.toString
+
 
   this.propMoveable = Some( new MoveableProperties(isMovable = false) )
   this.propContainer = Some( new IsOpenUnclosableContainer )              // Added to enumerate inventories when searching containers (e.g. rooms the agent is in) for accessible objects for valid action generation.
@@ -103,11 +104,12 @@ class Agent extends EnvObject {
   }
 
   override def getReferents(): Set[String] = {
-    Set("agent", "self")
+    Set("agent", "self", "agent " + id.toString, this.name)
   }
 
   override def getDescription(mode:Int): String = {
-    return ("the agent")
+    //return ("the agent")
+    return ("agent " + id.toString)
   }
 
 }
