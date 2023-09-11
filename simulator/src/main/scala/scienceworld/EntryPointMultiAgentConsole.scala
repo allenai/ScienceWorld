@@ -97,8 +97,9 @@ object EntryPointMultiAgentConsole {
         // Process step in environment
         //val (description, score, isCompleted) = agentInterface.step(userInputString)
         val agentActionStrs = Array.fill[String](interface.numAgents)(userInputString)
+        val agentActionStrsJava = agentActionStrs.toList.asJava
 
-        val observations = interface.stepMultiAgent(agentActionStrs).asScala
+        val observations = interface.stepMultiAgent(agentActionStrsJava).asScala
         val score = interface.getScore()
         val isCompleted = interface.isComplete
 

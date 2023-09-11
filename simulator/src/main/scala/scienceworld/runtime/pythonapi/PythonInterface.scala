@@ -398,8 +398,10 @@ class PythonInterface() {
     return outStr.toString()
   }
 
-  def stepMultiAgent(userInputStrings:Array[String]): java.util.List[String] = {
+  def stepMultiAgent(_userInputStrings:java.util.List[String]): java.util.List[String] = {
+    val userInputStrings = _userInputStrings.asScala.toArray
     val outStr = new StringBuilder
+
     // Error checking
     if (this.errorStr != "") return List(this.errorStr).asJava
     if (this.errorUnknownEnvironment) return List("ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ").").asJava
@@ -455,7 +457,7 @@ class PythonInterface() {
     return agentInterface.get.freeActionInventory(agentIdx)
   }
 
-  def freeActionInventories(agentIdx:Int):java.util.List[String] = {
+  def freeActionInventories():java.util.List[String] = {
     // Error checking
     if (this.errorStr != "") return List(this.errorStr).asJava
     if (this.errorUnknownEnvironment) return List("ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ").").asJava
@@ -482,7 +484,7 @@ class PythonInterface() {
     return agentInterface.get.freeActionTaskDesc(agentIdx)
   }
 
-  def freeActionTaskDescs(agentIdx:Int):java.util.List[String] = {
+  def freeActionTaskDescs():java.util.List[String] = {
     // Error checking
     if (this.errorStr != "") return List(this.errorStr).asJava
     if (this.errorUnknownEnvironment) return List("ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ").").asJava

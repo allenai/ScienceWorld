@@ -4,6 +4,7 @@ import logging
 from collections import OrderedDict
 
 from py4j.java_gateway import JavaGateway, GatewayParameters, launch_gateway, CallbackServerParameters
+from py4j.java_collections import SetConverter, MapConverter, ListConverter
 
 from scienceworld.constants import BASEPATH, DEBUG_MODE, ID2TASK, JAR_PATH, NAME2ID
 from scienceworld.utils import infer_task
@@ -68,7 +69,7 @@ class ScienceWorldEnv:
         self.goldPathGenerated = False
 
     # Ask the simulator to load an environment from a script
-    def load(self, taskName, variationIdx=0, simplificationStr="", generateGoldPath=False):
+    def load(self, taskName, variationIdx=0, simplificationStr="", numAgents=1, generateGoldPath=False):
         """ Load a given task and its variation. """
 
         # Check loading arguments.
@@ -98,7 +99,7 @@ class ScienceWorldEnv:
         self.variationIdx = variationIdx
 
         logger.info(f"Loading: {self.taskName} (variation: {self.variationIdx}) (simplifications: {self.simplificationStr})")
-        self.server.load(self.taskName, self.variationIdx, self.simplificationStr, generateGoldPath)
+        self.server.load(self.taskName, self.variationIdx, self.simplificationStr, numAgents, generateGoldPath)
 
         # Reset last step score (used to calculate reward from current-previous score)
         self.lastStepScore = 0
@@ -155,27 +156,27 @@ class ScienceWorldEnv:
         return data
 
     # Get possible objects
-    def getPossibleObjects(self):
-        return list(self.server.getPossibleObjects())
+    def getPossibleObjects(self, agentIdx:int=0):
+        return list(self.server.getPossibleObjects(agentIdx))
 
     # Get a list of object_ids to unique referents
-    def getPossibleObjectReferentLUT(self):
-        jsonStr = self.server.getPossibleObjectReferentLUTJSON()
+    def getPossibleObjectReferentLUT(self, agentIdx:int=0):
+        jsonStr = self.server.getPossibleObjectReferentLUTJSON(agentIdx)
         data = json.loads(jsonStr)
         return data
 
     # As above, but dictionary is referenced by object type ID
-    def getPossibleObjectReferentTypesLUT(self):
-        jsonStr = self.server.getPossibleObjectReferentTypesLUTJSON()
+    def getPossibleObjectReferentTypesLUT(self, agentIdx:int=0):
+        jsonStr = self.server.getPossibleObjectReferentTypesLUTJSON(agentIdx)
         data = json.loads(jsonStr)
         return data
 
     # Get a list of *valid* agent-object combinations
-    def getValidActionObjectCombinations(self):
-        return list(self.server.getValidActionObjectCombinations())
+    def getValidActionObjectCombinations(self, agentIdx:int=0):
+        return list(self.server.getValidActionObjectCombinations(agentIdx))
 
-    def getValidActionObjectCombinationsWithTemplates(self):
-        jsonStr = self.server.getValidActionObjectCombinationsJSON()
+    def getValidActionObjectCombinationsWithTemplates(self, agentIdx:int=0):
+        jsonStr = self.server.getValidActionObjectCombinationsJSON(agentIdx)
         data = json.loads(jsonStr)
         return data['validActions']
 
@@ -192,8 +193,8 @@ class ScienceWorldEnv:
         return data
 
     # Get possible action/object combinations
-    def getPossibleActionObjectCombinations(self):
-        combinedJSON = self.server.getPossibleActionObjectCombinationsJSON()
+    def getPossibleActionObjectCombinations(self, agentIdx:int=0):
+        combinedJSON = self.server.getPossibleActionObjectCombinationsJSON(agentIdx)
         data = json.loads(combinedJSON)
         templates = data['templates']
         lookUpTable = data['lookUpTable']
@@ -307,8 +308,8 @@ class ScienceWorldEnv:
             return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]
 
     # Step
-    def step(self, inputStr:str):
-        observation = self.server.step(inputStr)
+    def step(self, inputStr:str, agentIdx:int=0):
+        observation = self.server.step(inputStr, agentIdx)
         score = int(round(100 * self.server.getScore()))        # Convert from 0-1 to 0-100
         isCompleted = self.server.getCompleted()
         numMoves = self.getNumMoves()
@@ -344,16 +345,16 @@ class ScienceWorldEnv:
 
 
     # Special actions that are "free" (consume zero time)
-    def look(self):
-        observation = self.server.freeActionLook()
+    def look(self, agentIdx:int=0):
+        observation = self.server.freeActionLook(agentIdx)
         return observation
 
-    def inventory(self):
-        observation = self.server.freeActionInventory()
+    def inventory(self, agentIdx:int=0):
+        observation = self.server.freeActionInventory(agentIdx)
         return observation
 
-    def taskdescription(self):
-        observation = self.server.freeActionTaskDesc()
+    def taskdescription(self, agentIdx:int=0):
+        observation = self.server.freeActionTaskDesc(agentIdx)
         return observation
 
     # Goal progress
@@ -367,6 +368,52 @@ class ScienceWorldEnv:
         jsonOut = json.loads(goalJsonStr)
         return jsonOut
 
+
+
+    #
+    #   Multi-agent
+    #
+    # Step
+    def stepMultiAgent(self, inputStrs:list):
+        inputStrsJava = ListConverter().convert(inputStrs, self._gateway._gateway_client)        
+        observations = list(self.server.stepMultiAgent(inputStrsJava))
+        looks = list(self.server.freeActionLooks())
+        invs = list(self.server.freeActionInventories())
+        taskDescs = list(self.server.freeActionTaskDescs())
+
+        score = int(round(100 * self.server.getScore()))        # Convert from 0-1 to 0-100
+        isCompleted = self.server.getCompleted()
+        numMoves = self.getNumMoves()
+
+        # Calculate reward
+        reward = score - self.lastStepScore         # Calculate reward (delta score) for this step
+        self.lastStepScore = score                  # Store current score for reward calculation on the next step
+
+
+        # If the number of moves exceeds the environment step limit, then set isCompleted to be true
+        if (numMoves > self.envStepLimit):
+            isCompleted = True
+
+        # New: Handle this in the API rather than the agent -- if the score is less than zero, then set the isCompleted flag to true.
+        if (score < 0):
+            isCompleted = True
+
+        # Mirror of Jericho API
+        infos = {
+            'moves': numMoves,
+            'score': score,
+            'reward': reward,
+            'observations': observations,
+            'looks': looks,
+            'invs': invs,
+            'taskDesc': taskDescs,
+            'valid': [], # self.getValidActionObjectCombinations(),
+            'variationIdx': self.variationIdx,
+            'taskName': self.taskName,
+            'simplificationStr': self.simplificationStr,
+        }
+
+        return observations, reward, isCompleted, infos
 
 
 class BufferedHistorySaver:
