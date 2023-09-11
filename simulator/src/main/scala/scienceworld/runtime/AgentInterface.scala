@@ -20,6 +20,7 @@ import scala.util.control.Breaks._
 class AgentInterface(val universe:EnvObject, val agents:Array[Agent], val task:Task, var simplificationStr:String = "") {
   val primeAgentIdx:Int = 0
   val primeAgent = agents(primeAgentIdx)
+  val numAgents = this.agents.length
 
   val objMonitor = new ObjMonitor()
   // Store whether the environment is in an unexpected error state
@@ -545,7 +546,6 @@ class AgentInterface(val universe:EnvObject, val agents:Array[Agent], val task:T
    * Step
    */
 
-
   // Returns (observation, score, isCompleted)
   def step(userInputStr: String, agentIdx:Int): (String, Double, Boolean) = {
     val userOutStr = new StringBuilder()
@@ -637,6 +637,121 @@ class AgentInterface(val universe:EnvObject, val agents:Array[Agent], val task:T
     // Return action string
     val outStr = userOutStr.toString().trim.replaceAll(" +", " ")
     return (outStr, score, isCompleted)
+  }
+
+
+  /*
+   * Step (Multi-agent)
+   */
+
+  // Returns (observation, score, isCompleted)
+  def stepMultiAgent(userInputStrs:Array[String]): (Array[String], Double, Boolean) = {
+
+    // Check whether the simulator is in an error state (if so, return the error message)
+    if (this.isInErrorState()) {
+      return (Array(this.getErrorStateMessage()), -1, true)
+    }
+
+    // Ensure that there are the same number of userInputStrs as there are agents
+    if (userInputStrs.length != this.numAgents) {
+      // TODO: ERROR
+      return (Array("ERROR: For stepMultiAgent(), The number of actions should equal the number of agents."), -1, false)
+    }
+
+
+    val agentOutStrs = Array.fill[String](this.numAgents)("")
+
+    // For each agent, calculate the result of their actions
+    for (agentIdx <- 0 until this.numAgents) {
+      val userOutStr = new StringBuilder()
+
+      // Parse user input
+      val (success, statusStr) = this.processUserInput(userInputStrs(agentIdx), universe, agentIdx: Int)
+
+      /*
+    // Uncomment to include the user input parse success/failure in the string (e.g. "successfully parsed action (look around)")
+    if (statusStr.length > 0) {
+      userOutStr.append("Input: " + statusStr + "\n\n")
+    }
+     */
+
+      if (!success) {
+        // If input was not successfully matched to an action, then do not continue/do a tick/etc:
+        //println("### ERROR PARSING INPUT: " + statusStr)
+        val score = task.goalSequence.score()
+        val isCompleted = task.goalSequence.isCompleted()
+        userOutStr.append(statusStr)
+        //## return (userOutStr.toString(), score, isCompleted)
+      } else {
+
+        // Check for ambiguity resolution case after parsing new input
+        if (this.inputParser.isInAmbiguousState()) {
+          // TODO: I think this is now handled by the generic error case above
+          // Request clarification from user to resolve ambiguity -- do not run tick(), etc.
+          //println("### AMBIGUITY RESOLUTION CASE: " + statusStr)
+          val score = task.goalSequence.score()
+          val isCompleted = task.goalSequence.isCompleted()
+          //return (statusStr, score, isCompleted)
+          userOutStr.append(statusStr)
+        } else {
+
+          try {
+            breakable {
+              while (true) {
+                val willActionsTakeTime: Boolean = actionHandler.doQueuedActionsTakeTime()
+
+                // Run queued actions
+                val actionOutStr = actionHandler.runQueuedActions()
+                userOutStr.append(actionOutStr)
+
+                // If the agent is not waiting, then break.  But if the agent is waiting, continue cycling through until the agent is finished waiting X number of ticks.
+                if (agents(agentIdx).isWaiting()) {
+                  agents(agentIdx).decrementWait()
+                } else {
+                  break
+                }
+              }
+            }
+            //## Uncomment when debugging in IntelliJ
+          } catch {
+            case e: Throwable => {
+              this.setErrorState(e.toString)
+            }
+          }
+        }
+      }
+
+      // Add this agent's observation to the array of observations for each agent
+      agentOutStrs(agentIdx) = userOutStr.toString().trim.replaceAll(" +", " ")
+    }
+
+    // Update world, update task scorer
+    // TODO: Also added this check for goal conditions being met BEFORE processing the tick, for cases where the tick can modify the goal state (e.g. trees growing past the desired life stage in one tick)
+    //## NOTE: This might break some other things, so let's keep an eye on it for a bit with the gold agents.
+    // Check whether the goal conditions are met
+    task.goalSequence.tick(objMonitor, this.primeAgent)
+
+    // Run universe tick
+    universe.clearTickProcessedRecursive()
+    universe.tick()
+
+    // Run any simplifications that need to be run
+    SimplifierProcessor.runSimplificationsEachTick(universe, this.primeAgent)
+
+    // Increment the number of iterations
+    this.curIter += 1
+
+    // Check whether the goal conditions are met
+    task.goalSequence.tick(objMonitor, this.primeAgent)
+
+
+
+    val score = task.goalSequence.score()
+    val isCompleted = task.goalSequence.isCompleted()
+
+    // Return action string
+    //val outStr = userOutStr.toString().trim.replaceAll(" +", " ")
+    return (agentOutStrs, score, isCompleted)
   }
 
 }
