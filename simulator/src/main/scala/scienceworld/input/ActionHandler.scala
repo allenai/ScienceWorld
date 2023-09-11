@@ -1,7 +1,7 @@
 package scienceworld.input
 
 import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionRequestDef, ActionTrigger, ParamSig, ParamSigList}
-import scienceworld.actions.{Action, ActionFocus, ActionInventory, ActionLookAround, ActionTaskDesc}
+import scienceworld.actions.{Action, ActionFocus, ActionInventory, ActionLookAround, ActionLookAt, ActionMoveThroughDoor, ActionTaskDesc}
 import scienceworld.objects.agent.Agent
 import scienceworld.struct.EnvObject
 
@@ -33,12 +33,16 @@ class ActionHandler {
   }
 
   // Get lists of objects referenced in the queue
+  // Only returns objects from actions that are ACTIVE -- e.g. change states.  INACTIVE (e.g. move, examine, etc) are not returned.
   def getObjectsReferencedInQueue():Set[EnvObject] = {
     val out = mutable.Set[EnvObject]()
+    val filteredActions = Array(ActionMoveThroughDoor.ACTION_NAME, ActionLookAt.ACTION_NAME)
 
     for (queuedAction <- queuedActions) {
-      for (assignedObject <- queuedAction.assignments.values) {
-        out.add(assignedObject)
+      if (!filteredActions.contains(queuedAction.name)) {
+        for (assignedObject <- queuedAction.assignments.values) {
+          out.add(assignedObject)
+        }
       }
     }
 

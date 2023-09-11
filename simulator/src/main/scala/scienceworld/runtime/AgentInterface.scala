@@ -717,6 +717,8 @@ class AgentInterface(val universe:EnvObject, val agents:Array[Agent], val task:T
                 if (intersection.size > 0) {
                   var errorStr = "Object(s) in use: One or more of the objects referenced is already in use by another agent this turn (" + intersection.map(_.name).toList.sorted.mkString(", ") + ")."
                   userOutStr.append(errorStr)
+                  // Clear the queue of any actions this agent was supposed to perform
+                  actionHandler.clearQueue()
                 } else {
                   // Run queued actions
                   println("Running queued actions for Agent " + agentIdx)

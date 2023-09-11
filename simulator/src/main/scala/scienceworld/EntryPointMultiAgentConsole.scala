@@ -64,7 +64,7 @@ object EntryPointMultiAgentConsole {
 
     //val taskName = taskMaker.getTaskList()(5)
     //val taskName = taskMaker.getTaskList()(13)
-    val taskName = interface.getTaskNames().asScala(8)
+    val taskName = interface.getTaskNames().asScala(0)
 
     //val simplificationStr = "teleportAction,noElectricalAction,openDoors,selfWateringFlowerPots"
     //val simplificationStr = "teleportAction,openDoors,selfWateringFlowerPots"   // with Electrical actions
@@ -181,7 +181,7 @@ object EntryPointMultiAgentConsole {
           userInputString = interface.agentInterface.get.getUserInput()
 
           if (userInputString == "debug") {
-            //agentInterface.printDebugDisplay()
+            println(interface.agentInterface.get.task.goalSequence.getProgressString())
           } else if (userInputString == "help") {
             println("Possible Actions: \n" + interface.agentInterface.get.getPossibleActions().mkString("\n"))
           } else if (userInputString == "validactions") {
