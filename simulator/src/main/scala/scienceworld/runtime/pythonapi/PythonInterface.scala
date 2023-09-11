@@ -429,6 +429,21 @@ class PythonInterface() {
     return agentInterface.get.freeActionLook(agentIdx)
   }
 
+  def freeActionLooks():java.util.List[String] = {
+    // Error checking
+    if (this.errorStr != "") return List(this.errorStr).asJava
+    if (this.errorUnknownEnvironment) return List("ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ").").asJava
+    if (agentInterface.isEmpty) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
+    if (agents.isEmpty) return List("ERROR: No agent is marked as main.").asJava
+    //if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
+
+    val outLooksStrs = new Array[String](this.numAgents)
+    for (agentIdx <- 0 until this.numAgents) {
+      outLooksStrs(agentIdx) = agentInterface.get.freeActionLook(agentIdx)
+    }
+    return outLooksStrs.toList.asJava
+  }
+
   def freeActionInventory(agentIdx:Int):String = {
     // Error checking
     if (this.errorStr != "") return this.errorStr
@@ -440,6 +455,22 @@ class PythonInterface() {
     return agentInterface.get.freeActionInventory(agentIdx)
   }
 
+  def freeActionInventories(agentIdx:Int):java.util.List[String] = {
+    // Error checking
+    if (this.errorStr != "") return List(this.errorStr).asJava
+    if (this.errorUnknownEnvironment) return List("ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ").").asJava
+    if (agentInterface.isEmpty) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
+    if (agents.isEmpty) return List("ERROR: No agent is marked as main.").asJava
+    //if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
+
+    val outInventoriesStrs = new Array[String](this.numAgents)
+    for (agentIdx <- 0 until this.numAgents) {
+      outInventoriesStrs(agentIdx) = agentInterface.get.freeActionInventory(agentIdx)
+    }
+    return outInventoriesStrs.toList.asJava
+
+  }
+
   def freeActionTaskDesc(agentIdx:Int):String = {
     // Error checking
     if (this.errorStr != "") return this.errorStr
@@ -449,6 +480,21 @@ class PythonInterface() {
     //if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
 
     return agentInterface.get.freeActionTaskDesc(agentIdx)
+  }
+
+  def freeActionTaskDescs(agentIdx:Int):java.util.List[String] = {
+    // Error checking
+    if (this.errorStr != "") return List(this.errorStr).asJava
+    if (this.errorUnknownEnvironment) return List("ERROR: Unknown task (" + this.taskStr + ") or task variation index (" + this.taskVariationIdx + ").").asJava
+    if (agentInterface.isEmpty) return List(ERROR_MESSAGE_UNINITIALIZED).asJava
+    if (agents.isEmpty) return List("ERROR: No agent is marked as main.").asJava
+    //if (agent.get.getContainer().isEmpty) return "ERROR: Agent is not in a container."
+
+    val outTaskDescsStrs = new Array[String](this.numAgents)
+    for (agentIdx <- 0 until this.numAgents) {
+      outTaskDescsStrs(agentIdx) = agentInterface.get.freeActionTaskDesc(agentIdx)
+    }
+    return outTaskDescsStrs.toList.asJava
   }
 
 
