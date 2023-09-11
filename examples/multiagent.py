@@ -35,7 +35,7 @@ def userConsole(args):
     #   Examples of how to access much of the environment information that the API exposes.
     #   (Many of these are similar to the Jericho API)
     #
-    print("Task Names: " + str(taskNames))
+    # print("Task Names: " + str(taskNames))
     # print("Possible actions: " + str(env.getPossibleActions()) )
     # print("Possible objects: " + str(env.getPossibleObjects()) )
     # templates, lut = env.getPossibleActionObjectCombinations()
@@ -99,11 +99,11 @@ def userConsole(args):
             for i in range(numAgents):
                 print("Agent " + str(i) + ": " + str(agentActions[i]))            
             print("")
-            
+
             # Send user input, get response
             observations, reward, isCompleted, info = env.stepMultiAgent(agentActions)
             score = info['score']
-            print("\nObservatins:\n")
+            print("\nObservations:\n")
             for i in range(numAgents):
                 print("----------------------------------------------------------------------------------")
                 print("Agent " + str(i) + ": \n" + str(observations[i]))
