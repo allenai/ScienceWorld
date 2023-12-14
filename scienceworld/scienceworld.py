@@ -11,7 +11,6 @@ from scienceworld.utils import infer_task, deprecated_api_warning
 logger = logging.getLogger(__name__)
 
 
-
 class ScienceWorldEnv:
 
     def __init__(self, taskName=None, serverPath=None, envStepLimit=100):
@@ -121,12 +120,12 @@ class ScienceWorldEnv:
 
     # Simplifications
     def getSimplificationsUsed(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return self.server.getSimplificationsUsed()
 
     def getPossibleSimplifications(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return self.server.getPossibleSimplifications().split(", ")
 
@@ -142,40 +141,39 @@ class ScienceWorldEnv:
 
     def getTaskNames(self):
         """ Get the name for the supported tasks in ScienceWorld. """
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return list(self.server.getTaskNames())
 
     # Get the maximum number of variations for this task
     def getMaxVariations(self, taskName):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return self.server.getTaskMaxVariations(infer_task(taskName))
 
     # Get possible actions
     def getPossibleActions(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return list(self.server.getPossibleActions())
 
     # Get possible actions (and also include the template IDs for those actions)
     def getPossibleActionsWithIDs(self):
+        deprecated_api_warning(logger, True, True)
 
-        deprecated_api_warning(True, True)
         jsonStr = self.server.getPossibleActionsWithIDs()
         data = json.loads(jsonStr)
         return data
 
     # Get possible objects
     def getPossibleObjects(self):
+        deprecated_api_warning(logger, True, True)
 
-        deprecated_api_warning(True, True)
         return list(self.server.getPossibleObjects())
 
     # Get a list of object_ids to unique referents
     def getPossibleObjectReferentLUT(self):
-
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         jsonStr = self.server.getPossibleObjectReferentLUTJSON()
         data = json.loads(jsonStr)
@@ -183,7 +181,7 @@ class ScienceWorldEnv:
 
     # As above, but dictionary is referenced by object type ID
     def getPossibleObjectReferentTypesLUT(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         jsonStr = self.server.getPossibleObjectReferentTypesLUTJSON()
         data = json.loads(jsonStr)
@@ -191,12 +189,12 @@ class ScienceWorldEnv:
 
     # Get a list of *valid* agent-object combinations
     def getValidActionObjectCombinations(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return list(self.server.getValidActionObjectCombinations())
 
     def getValidActionObjectCombinationsWithTemplates(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         jsonStr = self.server.getValidActionObjectCombinationsJSON()
         data = json.loads(jsonStr)
@@ -204,7 +202,7 @@ class ScienceWorldEnv:
 
     # Get a LUT of object_id to type_id
     def getAllObjectTypesLUTJSON(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         jsonStr = self.server.getAllObjectTypesLUTJSON()
         data = json.loads(jsonStr)
@@ -212,7 +210,7 @@ class ScienceWorldEnv:
 
     # Get a LUT of {object_id: {type_id, referent:[]} } tuples
     def getAllObjectIdsTypesReferentsLUTJSON(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         jsonStr = self.server.getAllObjectIdsTypesReferentsLUTJSON()
         data = json.loads(jsonStr)
@@ -220,7 +218,7 @@ class ScienceWorldEnv:
 
     # Get possible action/object combinations
     def getPossibleActionObjectCombinations(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         combinedJSON = self.server.getPossibleActionObjectCombinationsJSON()
         data = json.loads(combinedJSON)
@@ -231,7 +229,7 @@ class ScienceWorldEnv:
 
     # Get a list of object types and their IDs
     def getObjectTypes(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         jsonStr = self.server.getObjectTypesLUTJSON()
         data = json.loads(jsonStr)
@@ -239,7 +237,7 @@ class ScienceWorldEnv:
 
     # Get the vocabulary of the model (at the current state)
     def getVocabulary(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         vocab = set()
 
@@ -256,12 +254,12 @@ class ScienceWorldEnv:
 
 
     def getNumMoves(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return self.server.getNumMoves()
 
     def getTaskDescription(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return self.server.getTaskDescription()
 
@@ -269,7 +267,7 @@ class ScienceWorldEnv:
     # History
     #
     def getRunHistory(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         historyStr = self.server.getRunHistoryJSON()
         jsonOut = json.loads(historyStr)
@@ -278,7 +276,7 @@ class ScienceWorldEnv:
 
     # History saving (provides an API to do this, so it's consistent across agents)
     def storeRunHistory(self, episodeIdxKey, notes):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         packed = {
             'episodeIdx': episodeIdxKey,
@@ -289,7 +287,7 @@ class ScienceWorldEnv:
         self.runHistories[episodeIdxKey] = packed
 
     def saveRunHistories(self, filenameOutPrefix):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         # Save history
 
@@ -309,18 +307,18 @@ class ScienceWorldEnv:
             json.dump(self.runHistories, outfile, sort_keys=True, indent=4)
 
     def getRunHistorySize(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return len(self.runHistories)
 
     def clearRunHistories(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         self.runHistories = {}
 
     # A one-stop function to handle saving.
     def saveRunHistoriesBufferIfFull(self, filenameOutPrefix, maxPerFile=1000, forceSave=False):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         if ((self.getRunHistorySize() >= maxPerFile) or (forceSave == True)):
             self.saveRunHistories(filenameOutPrefix)
@@ -331,38 +329,38 @@ class ScienceWorldEnv:
     # Train/development/test sets
     #
     def getVariationsTrain(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return list(self.server.getVariationsTrain())
 
     def getVariationsDev(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return list(self.server.getVariationsDev())
 
     def getVariationsTest(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return list(self.server.getVariationsTest())
 
     def getRandomVariationTrain(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return self.server.getRandomVariationTrain()
 
     def getRandomVariationDev(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return self.server.getRandomVariationDev()
 
     def getRandomVariationTest(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         return self.server.getRandomVariationTest()
 
     # Gold action sequence
     def getGoldActionSequence(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         if (self.goldPathGenerated == True):
             return list(self.server.getGoldActionSequence())
@@ -421,7 +419,7 @@ class ScienceWorldEnv:
 
     # Goal progress
     def getGoalProgressStr(self):
-        deprecated_api_warning(True, True)
+        deprecated_api_warning(logger, True, True)
 
         goalStr = self.server.getGoalProgressStr()
         return goalStr
