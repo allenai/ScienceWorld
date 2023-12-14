@@ -26,7 +26,7 @@ def deprecated_api_warning(pending=True, camel_case=True):
     else:
         depstatus = "This feature is deprecated."
 
-    if snake_case:
+    if camel_case:
         message = f"You are using the camel case naming convention for the \
                 python API. {depstatus} Please use snake case instead."
     else:
