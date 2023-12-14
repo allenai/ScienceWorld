@@ -364,7 +364,8 @@ class ScienceWorldEnv:
 
     ########################## SNAKE CASE METHODS #############################
     # As of 23-12-14, all of the snake case methods are exact copies of their 
-    # camelCase counterparts
+    # camelCase counterparts (except that they use snake case in the method name
+    # and that they use the snake case variants of methods)
 
 
     # Simplifications
@@ -449,12 +450,12 @@ class ScienceWorldEnv:
         vocab = set()
 
         # Action vocabulary
-        for actionStr in self.getPossibleActions():
+        for actionStr in self.get_possible_actions():
             for word in actionStr.split(" "):
                 vocab.add(word)
 
         # Object vocabulary (keep as compound nouns?)
-        vocabObjects = self.getPossibleObjects()
+        vocabObjects = self.get_possible_objects()
         vocab = vocab.union( set(vocabObjects) )
 
         return vocab
@@ -480,7 +481,7 @@ class ScienceWorldEnv:
         packed = {
             'episodeIdx': episodeIdxKey,
             'notes': notes,
-            'history': self.getRunHistory()
+            'history': self.get_run_history()
         }
 
         self.runHistories[episodeIdxKey] = packed
@@ -511,9 +512,9 @@ class ScienceWorldEnv:
 
     # A one-stop function to handle saving.
     def save_run_histories_buffer_if_full(self, filenameOutPrefix, maxPerFile=1000, forceSave=False):
-        if ((self.getRunHistorySize() >= maxPerFile) or (forceSave == True)):
-            self.saveRunHistories(filenameOutPrefix)
-            self.clearRunHistories()
+        if ((self.get_run_history_size() >= maxPerFile) or (forceSave == True)):
+            self.save_run_histories(filenameOutPrefix)
+            self.clear_run_histories()
 
 
     #
@@ -548,7 +549,6 @@ class ScienceWorldEnv:
     def get_goal_progress_str(self):
         goalStr = self.server.getGoalProgressStr()
         return goalStr
-
 
 
 class BufferedHistorySaver:
