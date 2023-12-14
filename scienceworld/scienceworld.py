@@ -7,7 +7,7 @@ from collections import OrderedDict
 from py4j.java_gateway import JavaGateway, GatewayParameters, launch_gateway, CallbackServerParameters
 
 from scienceworld.constants import BASEPATH, DEBUG_MODE, ID2TASK, JAR_PATH, NAME2ID
-from scienceworld.utils import infer_task
+from scienceworld.utils import infer_task, deprecated_api_warning
 
 logger = logging.getLogger(__name__)
 
@@ -122,9 +122,11 @@ class ScienceWorldEnv:
 
     # Simplifications
     def getSimplificationsUsed(self):
+        deprecated_api_warning(True, True)
         return self.server.getSimplificationsUsed()
 
     def getPossibleSimplifications(self):
+        deprecated_api_warning(True, True)
         return self.server.getPossibleSimplifications().split(", ")
 
     @property
@@ -139,14 +141,17 @@ class ScienceWorldEnv:
 
     def getTaskNames(self):
         """ Get the name for the supported tasks in ScienceWorld. """
+        deprecated_api_warning(True, True)
         return list(self.server.getTaskNames())
 
     # Get the maximum number of variations for this task
     def getMaxVariations(self, taskName):
+        deprecated_api_warning(True, True)
         return self.server.getTaskMaxVariations(infer_task(taskName))
 
     # Get possible actions
     def getPossibleActions(self):
+        deprecated_api_warning(True, True)
         return list(self.server.getPossibleActions())
 
     # Get possible actions (and also include the template IDs for those actions)
