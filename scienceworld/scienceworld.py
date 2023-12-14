@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+import warning
 from collections import OrderedDict
 
 from py4j.java_gateway import JavaGateway, GatewayParameters, launch_gateway, CallbackServerParameters
@@ -360,6 +361,194 @@ class ScienceWorldEnv:
     def getGoalProgressStr(self):
         goalStr = self.server.getGoalProgressStr()
         return goalStr
+
+    ########################## SNAKE CASE METHODS #############################
+    # As of 23-12-14, all of the snake case methods are exact copies of their 
+    # camelCase counterparts
+
+
+    # Simplifications
+    def get_simplifications_used(self):
+        return self.server.getSimplificationsUsed()
+
+    def get_possible_simplifications(self):
+        return self.server.getPossibleSimplifications().split(", ")
+
+    def get_task_names(self):
+        """ Get the name for the supported tasks in ScienceWorld. """
+        return list(self.server.getTaskNames())
+
+    # Get the maximum number of variations for this task
+    def get_max_variations(self, taskName):
+        return self.server.getTaskMaxVariations(infer_task(taskName))
+
+    # Get possible actions
+    def get_possible_actions(self):
+        return list(self.server.getPossibleActions())
+
+    # Get possible actions (and also include the template IDs for those actions)
+    def get_possible_actions_with_IDs(self):
+        jsonStr = self.server.getPossibleActionsWithIDs()
+        data = json.loads(jsonStr)
+        return data
+
+    # Get possible objects
+    def get_possible_objects(self):
+        return list(self.server.getPossibleObjects())
+
+    # Get a list of object_ids to unique referents
+    def get_possible_object_referent_LUT(self):
+        jsonStr = self.server.getPossibleObjectReferentLUTJSON()
+        data = json.loads(jsonStr)
+        return data
+
+    # As above, but dictionary is referenced by object type ID
+    def getPossibleObjectReferentTypesLUT(self):
+        jsonStr = self.server.getPossibleObjectReferentTypesLUTJSON()
+        data = json.loads(jsonStr)
+        return data
+
+    # Get a list of *valid* agent-object combinations
+    def get_valid_action_object_combinations(self):
+        return list(self.server.getValidActionObjectCombinations())
+
+    def get_valid_action_object_combinations_with_templates(self):
+        jsonStr = self.server.getValidActionObjectCombinationsJSON()
+        data = json.loads(jsonStr)
+        return data['validActions']
+
+    # Get a LUT of object_id to type_id
+    def get_all_object_types_LUTJSON(self):
+        jsonStr = self.server.getAllObjectTypesLUTJSON()
+        data = json.loads(jsonStr)
+        return data
+
+    # Get a LUT of {object_id: {type_id, referent:[]} } tuples
+    def get_all_object_ids_types_referents_LUTJSON(self):
+        jsonStr = self.server.getAllObjectIdsTypesReferentsLUTJSON()
+        data = json.loads(jsonStr)
+        return data
+
+    # Get possible action/object combinations
+    def get_possible_action_object_combinations(self):
+        combinedJSON = self.server.getPossibleActionObjectCombinationsJSON()
+        data = json.loads(combinedJSON)
+        templates = data['templates']
+        lookUpTable = data['lookUpTable']
+
+        return (templates, lookUpTable)
+
+    # Get a list of object types and their IDs
+    def get_object_types(self):
+        jsonStr = self.server.getObjectTypesLUTJSON()
+        data = json.loads(jsonStr)
+        return data
+
+    # Get the vocabulary of the model (at the current state)
+    def get_vocabulary(self):
+        vocab = set()
+
+        # Action vocabulary
+        for actionStr in self.getPossibleActions():
+            for word in actionStr.split(" "):
+                vocab.add(word)
+
+        # Object vocabulary (keep as compound nouns?)
+        vocabObjects = self.getPossibleObjects()
+        vocab = vocab.union( set(vocabObjects) )
+
+        return vocab
+
+
+    def get_num_moves(self):
+        return self.server.getNumMoves()
+
+    def get_task_description(self):
+        return self.server.getTaskDescription()
+
+    #
+    # History
+    #
+    def get_run_history(self):
+        historyStr = self.server.getRunHistoryJSON()
+        jsonOut = json.loads(historyStr)
+        return jsonOut
+
+
+    # History saving (provides an API to do this, so it's consistent across agents)
+    def store_run_history(self, episodeIdxKey, notes):
+        packed = {
+            'episodeIdx': episodeIdxKey,
+            'notes': notes,
+            'history': self.getRunHistory()
+        }
+
+        self.runHistories[episodeIdxKey] = packed
+
+    def save_run_histories(self, filenameOutPrefix):
+        # Save history
+
+        # Create verbose filename
+        filenameOut = filenameOutPrefix
+        keys = sorted(self.runHistories.keys())
+        if (len(keys) > 0):
+            keyFirst = keys[0]
+            keyLast = keys[-1]
+            filenameOut += "-" + str(keyFirst) + "-" + str(keyLast)
+
+        filenameOut += ".json"
+
+        logger.info("* Saving run history (" + str(filenameOut) + ")...")
+
+        with open(filenameOut, 'w') as outfile:
+            json.dump(self.runHistories, outfile, sort_keys=True, indent=4)
+
+    def get_run_history_size(self):
+        return len(self.runHistories)
+
+    def clear_run_histories(self):
+        self.runHistories = {}
+
+    # A one-stop function to handle saving.
+    def save_run_histories_buffer_if_full(self, filenameOutPrefix, maxPerFile=1000, forceSave=False):
+        if ((self.getRunHistorySize() >= maxPerFile) or (forceSave == True)):
+            self.saveRunHistories(filenameOutPrefix)
+            self.clearRunHistories()
+
+
+    #
+    # Train/development/test sets
+    #
+    def get_variations_train(self):
+        return list(self.server.getVariationsTrain())
+
+    def get_variations_dev(self):
+        return list(self.server.getVariationsDev())
+
+    def get_variations_test(self):
+        return list(self.server.getVariationsTest())
+
+    def get_random_variation_train(self):
+        return self.server.getRandomVariationTrain()
+
+    def get_random_variation_dev(self):
+        return self.server.getRandomVariationDev()
+
+    def get_random_variation_test(self):
+        return self.server.getRandomVariationTest()
+
+    # Gold action sequence
+    def get_gold_action_sequence(self):
+        if (self.goldPathGenerated == True):
+            return list(self.server.getGoldActionSequence())
+        else:
+            return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]
+
+    # Goal progress
+    def get_goal_progress_str(self):
+        goalStr = self.server.getGoalProgressStr()
+        return goalStr
+
 
 
 class BufferedHistorySaver:
