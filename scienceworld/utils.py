@@ -23,4 +23,4 @@ def infer_task(name_or_id):
 def snake_case_deprecation_warning():
     message = "You are using the camel case api. This feature is deprecated. Please migrate to the snake_case api."
     formatted_message = f"\033[91m {message} \033[00m"
-    warnings.warn(formatted_message, UserError, stacklevel=2)
+    warnings.warn(formatted_message, UserWarning, stacklevel=2)
