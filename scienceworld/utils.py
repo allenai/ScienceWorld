@@ -1,6 +1,5 @@
 import re
-import logging
-import traceback
+import warnings
 
 from scienceworld.constants import NAME2ID, ID2TASK
 
@@ -21,24 +20,7 @@ def infer_task(name_or_id):
     return name_or_id
 
 
-def deprecated_api_warning(logger, pending=True, camel_case=True):
-
-    if pending:
-        depstatus = "This feature will be deprecated soon."
-    else:
-        depstatus = "This feature is deprecated."
-
-    if camel_case:
-        message = f"You are using the camel case naming convention for the"\
-                    f"python API. {depstatus} Please use snake case instead."
-    else:
-        message = f"{depstatus}. Please migrate away from this feature, as it may lead to"\
-                    "unexpected behavior."
-
-    formatted_message = f"\033[91m {message}\033[00m\nStack Trace:\n"
-    
-    s = traceback.format_stack()
-    for stack_el in s[:-2]:
-        formatted_message += stack_el
-
-    logger.warning(formatted_message)
+def snake_case_deprecation_warning():
+    message = "You are using the camel case api. This feature is deprecated. Please migrate to the snake_case api."
+    formatted_message = f"\033[91m {message} \033[00m"
+    warnings.warn(formatted_message, UserError, stacklevel=2)
