@@ -142,8 +142,8 @@ class ScienceWorldEnv:
         return list(self.server.getTaskNames())
 
     # Get the maximum number of variations for this task
-    def get_max_variations(self, taskName):
-        return self.server.getTaskMaxVariations(infer_task(taskName))
+    def get_max_variations(self, task_name):
+        return self.server.getTaskMaxVariations(infer_task(task_name))
 
     # Get possible actions
     def get_possible_actions(self):
@@ -239,20 +239,20 @@ class ScienceWorldEnv:
 
 
     # History saving (provides an API to do this, so it's consistent across agents)
-    def store_run_history(self, episodeIdxKey, notes):
+    def store_run_history(self, episode_idx_key, notes):
         packed = {
-            'episodeIdx': episodeIdxKey,
+            'episodeIdx': episode_idx_key,
             'notes': notes,
             'history': self.get_run_history()
         }
 
         self.runHistories[episodeIdxKey] = packed
 
-    def save_run_histories(self, filenameOutPrefix):
+    def save_run_histories(self, filename_out_prefix):
         # Save history
 
         # Create verbose filename
-        filenameOut = filenameOutPrefix
+        filenameOut = filename_out_prefix
         keys = sorted(self.runHistories.keys())
         if (len(keys) > 0):
             keyFirst = keys[0]
@@ -273,9 +273,9 @@ class ScienceWorldEnv:
         self.runHistories = {}
 
     # A one-stop function to handle saving.
-    def save_run_histories_buffer_if_full(self, filenameOutPrefix, maxPerFile=1000, forceSave=False):
-        if ((self.get_run_history_size() >= maxPerFile) or (forceSave == True)):
-            self.save_run_histories(filenameOutPrefix)
+    def save_run_histories_buffer_if_full(self, filename_out_prefix, max_per_file=1000, force_save=False):
+        if ((self.get_run_history_size() >= max_per_file) or (force_save == True)):
+            self.save_run_histories(filename_out_prefix)
             self.clear_run_histories()
 
 
@@ -309,11 +309,11 @@ class ScienceWorldEnv:
 
 
     # Step
-    def step(self, inputStr:str):
-        observation = self.server.step(inputStr)
+    def step(self, input_str:str):
+        observation = self.server.step(input_str)
         score = int(round(100 * self.server.getScore()))        # Convert from 0-1 to 0-100
         isCompleted = self.server.getCompleted()
-        numMoves = self.getNumMoves()
+        numMoves = self.get_num_moves()
 
         # Calculate reward
         reward = score - self.lastStepScore         # Calculate reward (delta score) for this step
@@ -336,7 +336,7 @@ class ScienceWorldEnv:
             'look': self.look(),
             'inv': self.inventory(),
             'taskDesc': self.taskdescription(),
-            'valid': self.getValidActionObjectCombinations(),
+            'valid': self.get_valid_action_object_combinations(),
             'variationIdx': self.variationIdx,
             'taskName': self.taskName,
             'simplificationStr': self.simplificationStr,
