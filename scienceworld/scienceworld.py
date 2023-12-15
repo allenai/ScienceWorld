@@ -122,12 +122,12 @@ class ScienceWorldEnv:
     def getSimplificationsUsed(self):
         snake_case_deprecation_warning()
 
-        return self.server.getSimplificationsUsed()
+        return self.get_simplifications_used()
 
     def getPossibleSimplifications(self):
         snake_case_deprecation_warning()
 
-        return self.server.getPossibleSimplifications().split(", ")
+        return self.get_possible_simplifications()
 
     @property
     def tasks(self):
@@ -143,125 +143,95 @@ class ScienceWorldEnv:
         """ Get the name for the supported tasks in ScienceWorld. """
         snake_case_deprecation_warning()
 
-        return list(self.server.getTaskNames())
+        return self.get_task_names()
 
     # Get the maximum number of variations for this task
     def getMaxVariations(self, taskName):
         snake_case_deprecation_warning()
 
-        return self.server.getTaskMaxVariations(infer_task(taskName))
+        return self.get_max_variations(taskName)
 
     # Get possible actions
     def getPossibleActions(self):
         snake_case_deprecation_warning()
 
-        return list(self.server.getPossibleActions())
+        return self.get_possible_actions()
 
     # Get possible actions (and also include the template IDs for those actions)
     def getPossibleActionsWithIDs(self):
         snake_case_deprecation_warning()
 
-        jsonStr = self.server.getPossibleActionsWithIDs()
-        data = json.loads(jsonStr)
-        return data
+        return self.get_possible_actions_with_IDs()
 
     # Get possible objects
     def getPossibleObjects(self):
         snake_case_deprecation_warning()
 
-        return list(self.server.getPossibleObjects())
+        return self.get_possible_objects()
 
     # Get a list of object_ids to unique referents
     def getPossibleObjectReferentLUT(self):
         snake_case_deprecation_warning()
 
-        jsonStr = self.server.getPossibleObjectReferentLUTJSON()
-        data = json.loads(jsonStr)
-        return data
+        return self.get_possible_object_referent_LUT()
 
     # As above, but dictionary is referenced by object type ID
     def getPossibleObjectReferentTypesLUT(self):
         snake_case_deprecation_warning()
 
-        jsonStr = self.server.getPossibleObjectReferentTypesLUTJSON()
-        data = json.loads(jsonStr)
-        return data
+        return self.get_possible_object_referent_types_LUT()
 
     # Get a list of *valid* agent-object combinations
     def getValidActionObjectCombinations(self):
         snake_case_deprecation_warning()
 
-        return list(self.server.getValidActionObjectCombinations())
+        return self.get_valid_action_object_combinations()
 
     def getValidActionObjectCombinationsWithTemplates(self):
         snake_case_deprecation_warning()
 
-        jsonStr = self.server.getValidActionObjectCombinationsJSON()
-        data = json.loads(jsonStr)
-        return data['validActions']
+        return self.get_valid_action_object_combinations_with_templates()
 
     # Get a LUT of object_id to type_id
     def getAllObjectTypesLUTJSON(self):
         snake_case_deprecation_warning()
 
-        jsonStr = self.server.getAllObjectTypesLUTJSON()
-        data = json.loads(jsonStr)
-        return data
+        return self.get_all_object_types_LUTJSON()
 
     # Get a LUT of {object_id: {type_id, referent:[]} } tuples
     def getAllObjectIdsTypesReferentsLUTJSON(self):
         snake_case_deprecation_warning()
 
-        jsonStr = self.server.getAllObjectIdsTypesReferentsLUTJSON()
-        data = json.loads(jsonStr)
-        return data
+        return self.get_all_object_ids_types_referents_LUTJSON()
 
     # Get possible action/object combinations
     def getPossibleActionObjectCombinations(self):
         snake_case_deprecation_warning()
 
-        combinedJSON = self.server.getPossibleActionObjectCombinationsJSON()
-        data = json.loads(combinedJSON)
-        templates = data['templates']
-        lookUpTable = data['lookUpTable']
-
-        return (templates, lookUpTable)
+        return self.get_possible_action_object_combinations()
 
     # Get a list of object types and their IDs
     def getObjectTypes(self):
         snake_case_deprecation_warning()
 
-        jsonStr = self.server.getObjectTypesLUTJSON()
-        data = json.loads(jsonStr)
-        return data
+        return self.get_object_types()
 
     # Get the vocabulary of the model (at the current state)
     def getVocabulary(self):
         snake_case_deprecation_warning()
 
-        vocab = set()
-
-        # Action vocabulary
-        for actionStr in self.getPossibleActions():
-            for word in actionStr.split(" "):
-                vocab.add(word)
-
-        # Object vocabulary (keep as compound nouns?)
-        vocabObjects = self.getPossibleObjects()
-        vocab = vocab.union( set(vocabObjects) )
-
-        return vocab
+        return self.get_vocabulary()
 
 
     def getNumMoves(self):
         snake_case_deprecation_warning()
 
-        return self.server.getNumMoves()
+        return self.get_num_moves()
 
     def getTaskDescription(self):
         snake_case_deprecation_warning()
 
-        return self.server.getTaskDescription()
+        return self.get_task_description()
 
     #
     # History
@@ -269,61 +239,35 @@ class ScienceWorldEnv:
     def getRunHistory(self):
         snake_case_deprecation_warning()
 
-        historyStr = self.server.getRunHistoryJSON()
-        jsonOut = json.loads(historyStr)
-        return jsonOut
+        return self.get_run_history()
 
 
     # History saving (provides an API to do this, so it's consistent across agents)
     def storeRunHistory(self, episodeIdxKey, notes):
         snake_case_deprecation_warning()
 
-        packed = {
-            'episodeIdx': episodeIdxKey,
-            'notes': notes,
-            'history': self.getRunHistory()
-        }
-
-        self.runHistories[episodeIdxKey] = packed
+        self.store_run_history(episodeIdxKey, notes)
 
     def saveRunHistories(self, filenameOutPrefix):
         snake_case_deprecation_warning()
 
-        # Save history
-
-        # Create verbose filename
-        filenameOut = filenameOutPrefix
-        keys = sorted(self.runHistories.keys())
-        if (len(keys) > 0):
-            keyFirst = keys[0]
-            keyLast = keys[-1]
-            filenameOut += "-" + str(keyFirst) + "-" + str(keyLast)
-
-        filenameOut += ".json"
-
-        logger.info("* Saving run history (" + str(filenameOut) + ")...")
-
-        with open(filenameOut, 'w') as outfile:
-            json.dump(self.runHistories, outfile, sort_keys=True, indent=4)
+        self.save_run_histories(filenameOutPrefix)
 
     def getRunHistorySize(self):
         snake_case_deprecation_warning()
 
-        return len(self.runHistories)
+        return self.get_run_historySize()
 
     def clearRunHistories(self):
         snake_case_deprecation_warning()
 
-        self.runHistories = {}
+        self.clear_run_histories()
 
     # A one-stop function to handle saving.
     def saveRunHistoriesBufferIfFull(self, filenameOutPrefix, maxPerFile=1000, forceSave=False):
         snake_case_deprecation_warning()
 
-        if ((self.getRunHistorySize() >= maxPerFile) or (forceSave == True)):
-            self.saveRunHistories(filenameOutPrefix)
-            self.clearRunHistories()
-
+        self.save_run_histories_buffer_if_full(filenameOutPrefix, maxPerFile, forceSave)
 
     #
     # Train/development/test sets
@@ -331,41 +275,38 @@ class ScienceWorldEnv:
     def getVariationsTrain(self):
         snake_case_deprecation_warning()
 
-        return list(self.server.getVariationsTrain())
+        return self.get_variations_train()
 
     def getVariationsDev(self):
         snake_case_deprecation_warning()
 
-        return list(self.server.getVariationsDev())
+        return self.get_variations_dev()
 
     def getVariationsTest(self):
         snake_case_deprecation_warning()
 
-        return list(self.server.getVariationsTest())
+        return self.get_variations_test()
 
     def getRandomVariationTrain(self):
         snake_case_deprecation_warning()
 
-        return self.server.getRandomVariationTrain()
+        return self.get_random_variation_train()
 
     def getRandomVariationDev(self):
         snake_case_deprecation_warning()
 
-        return self.server.getRandomVariationDev()
+        return self.get_random_variation_dev()
 
     def getRandomVariationTest(self):
         snake_case_deprecation_warning()
 
-        return self.server.getRandomVariationTest()
+        return self.get_random_variation_test()
 
     # Gold action sequence
     def getGoldActionSequence(self):
         snake_case_deprecation_warning()
 
-        if (self.goldPathGenerated == True):
-            return list(self.server.getGoldActionSequence())
-        else:
-            return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]
+        return self.get_gold_action_sequence()
 
     # Step
     def step(self, inputStr:str):
@@ -421,13 +362,11 @@ class ScienceWorldEnv:
     def getGoalProgressStr(self):
         snake_case_deprecation_warning()
 
-        goalStr = self.server.getGoalProgressStr()
-        return goalStr
+        return self.get_goal_progress_str()
 
     ########################## SNAKE CASE METHODS #############################
-    # As of 23-12-14, all of the snake case methods are exact copies of their 
-    # camelCase counterparts (except that they use snake case in the method name
-    # and that they use the snake case variants of methods)
+    # As of 23-12-15, snake case methods are the official methods. The camelCase
+    # methods are just wrapper functions.
 
 
     # Simplifications
