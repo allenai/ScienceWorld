@@ -1,7 +1,7 @@
 build
+flake8
 pre-commit
 py4j
 pytest
-twine
-flake8
 tox
+twine
