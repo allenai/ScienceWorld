@@ -37,5 +37,6 @@ setup(name='scienceworld',
     install_requires=open('requirements.txt').readlines(),
     extras_require={
         'webserver': open('requirements.txt').readlines() + ['pywebio'],
+        'testing': open(f'{BASEPATH}/requirements-dev.txt').readlines(),
     },
 )
