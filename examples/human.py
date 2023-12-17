@@ -12,7 +12,7 @@ def userConsole(args):
     simplificationStr = args['simplification_str']
 
     # Initialize environment
-    env = ScienceWorldEnv("", args['jar_path'], envStepLimit = args['env_step_limit'])
+    env = ScienceWorldEnv("", args['jar_path'], envStepLimit=args['env_step_limit'])
     taskNames = env.getTaskNames()
     print("Task Names: " + str(taskNames))
 
@@ -22,50 +22,49 @@ def userConsole(args):
     print("Starting Task " + str(taskIdx) + ": " + taskName)
     time.sleep(2)
 
-
     # Reset the environment
     initialObs, initialDict = env.reset()
-
-
 
     #
     #   Examples of how to access much of the environment information that the API exposes.
     #   (Many of these are similar to the Jericho API)
     #
     print("Task Names: " + str(taskNames))
-    print("Possible actions: " + str(env.getPossibleActions()) )
-    print("Possible objects: " + str(env.getPossibleObjects()) )
+    print("Possible actions: " + str(env.getPossibleActions()))
+    print("Possible objects: " + str(env.getPossibleObjects()))
     templates, lut = env.getPossibleActionObjectCombinations()
     print("Possible action/object combinations: " + str(templates))
-    #print("Object IDX to Object Referent LUT: " + str(lut))
-    print("Vocabulary: " + str(env.getVocabulary()) )
+    # print("Object IDX to Object Referent LUT: " + str(lut))
+    print("Vocabulary: " + str(env.getVocabulary()))
     print("Possible actions (with IDs): " + str(env.getPossibleActionsWithIDs()))
     print("Possible object types: " + str(env.getObjectTypes()))
     print("Object IDX to Object Referent LUT: " + str(lut))
     print("\n")
     print("Possible object referents LUT: " + str(env.getPossibleObjectReferentLUT()))
     print("\n")
-    print("Valid action-object combinations: " + str(env.getValidActionObjectCombinations()))
+    print("Valid action-object combinations: " +
+          str(env.getValidActionObjectCombinations()))
     print("\n")
     print("Object_ids to type_ids: " + str(env.getAllObjectTypesLUTJSON()))
     print("\n")
-    print("All objects, their ids, types, and referents: " + str(env.getAllObjectIdsTypesReferentsLUTJSON() ))
+    print("All objects, their ids, types, and referents: " +
+          str(env.getAllObjectIdsTypesReferentsLUTJSON()))
     print("\n")
-    print("Valid action-object combinations (with templates): " + str(env.getValidActionObjectCombinationsWithTemplates() ))
+    print("Valid action-object combinations (with templates): " +
+          str(env.getValidActionObjectCombinationsWithTemplates()))
     print("\n")
     print("Object Type LUT: " + str(env.getPossibleObjectReferentTypesLUT()))
-    print("Variations (train): " + str(env.getVariationsTrain() ))
+    print("Variations (train): " + str(env.getVariationsTrain()))
 
     print("")
     print("----------------------------------------------------------------------------------")
     print("")
 
-
     print("Gold Path:" + str(env.getGoldActionSequence()))
 
     print("Task Name: " + taskName)
     print("Variation: " + str(args['var_num']) + " / " + str(env.getMaxVariations(taskName)))
-    print("Task Description: " + str(env.getTaskDescription()) )
+    print("Task Description: " + str(env.getTaskDescription()))
 
     #
     #   Main user input loop
@@ -97,9 +96,10 @@ def userConsole(args):
             print("Reward: " + str(reward))
             print("Score: " + str(score))
             print("isCompleted: " + str(isCompleted))
-            #print("info: " + str(info))
+            # print("info: " + str(info))
 
-        print("'help' lists valid action templates, 'objects' lists valid objects, 'valid' lists valid action-object combinations (long!). ")
+        print("'help' lists valid action templates, 'objects' lists valid" +
+              " objects, 'valid' lists valid action-object combinations (long!). ")
         print("'goals' lists progress on subgoals.")
         print("type 'exit' to quit.")
 
@@ -107,7 +107,6 @@ def userConsole(args):
         userInputStr = input('> ')
         # Sanitize input
         userInputStr = userInputStr.lower().strip()
-
 
     # Display run history
     runHistory = env.getRunHistory()
@@ -143,9 +142,9 @@ def build_simplification_str(args):
 
     return args["simplifications_preset"] or ",".join(simplifications)
 
-#
 #   Parse command line arguments
-#
+
+
 def parse_args():
     desc = "Play through a game using the console."
     parser = argparse.ArgumentParser(desc)

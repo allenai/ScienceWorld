@@ -1,4 +1,5 @@
-import os.path, sys
+import os.path
+import sys
 import re
 import zipfile
 
@@ -23,20 +24,20 @@ with open(os.path.join('scienceworld', 'version.py'), 'w') as f:
     f.write(f'__version__ = {VERSION!r}\n')
 
 setup(name='scienceworld',
-    version=VERSION,
-    description='ScienceWorld: An interactive text environment to study AI agents on accomplishing tasks from the standardized elementary science curriculum.',
-    author='Peter Jansen',
-    packages=['scienceworld'],
-    include_package_data=True,
-    package_dir={'scienceworld': 'scienceworld'},
-    package_data={'scienceworld': [JAR_FILE, OBJECTS_LUT_FILE, TASKS_JSON_FILE]},
-    url="https://scienceworld.github.io",
-    long_description=open("README.md").read(),
-    long_description_content_type="text/markdown",
-    python_requires='>=3.7',
-    install_requires=open('requirements.txt').readlines(),
-    extras_require={
-        'webserver': open('requirements.txt').readlines() + ['pywebio'],
-        'testing': open(f'{BASEPATH}/requirements-dev.txt').readlines(),
-    },
-)
+      version=VERSION,
+      description='ScienceWorld: An interactive text environment to study AI' +
+                  'agents on accomplishing tasks from the standardized elementary science curriculum.',
+      author='Peter Jansen',
+      packages=['scienceworld'],
+      include_package_data=True,
+      package_dir={'scienceworld': 'scienceworld'},
+      package_data={'scienceworld': [JAR_FILE, OBJECTS_LUT_FILE, TASKS_JSON_FILE]},
+      url="https://scienceworld.github.io",
+      long_description=open("README.md").read(),
+      long_description_content_type="text/markdown",
+      python_requires='>=3.7',
+      install_requires=open('requirements.txt').readlines(),
+      extras_require={
+          'webserver': open('requirements.txt').readlines() + ['pywebio'],
+          'testing': open(f'{BASEPATH}/requirements-dev.txt').readlines(),
+      })

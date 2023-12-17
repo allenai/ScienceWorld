@@ -27,22 +27,22 @@ class OutputLog:
         self.out = ""
         self.title = ""
 
-    def setTitle(self, titleStr:str):
+    def setTitle(self, titleStr: str):
         self.title = titleStr
 
-    def addHeading(self, strIn:str):
+    def addHeading(self, strIn: str):
         self.out += "<h1>" + strIn + "</h1>\n"
 
-    def addSubheading(self, strIn:str):
+    def addSubheading(self, strIn: str):
         self.out += "<h2>" + strIn + "</h2>\n"
 
     def addHorizontalRule(self):
         self.out += "<hr>\n"
 
-    def addPreformattedText(self, strIn:str):
+    def addPreformattedText(self, strIn: str):
         self.out += "<pre>\n" + strIn + "\n</pre>\n"
 
-    def addStr(self, strIn:str):
+    def addStr(self, strIn: str):
         self.out += strIn + "\n"
 
     def getHTML(self):
@@ -55,10 +55,8 @@ class OutputLog:
 
         return out
 
-#
-#   Save JSON history
-#
-def saveJSONHistory(history:list):
+
+def saveJSONHistory(history: list):
     pathOut = "recordings/"
     if not os.path.isdir(pathOut):
         os.mkdir(pathOut)
@@ -74,9 +72,10 @@ def saveJSONHistory(history:list):
     dateTimeObj = datetime.now()
     timestampStr = dateTimeObj.strftime("timestamp%Y-%M-%d-%H-%M-%S")
 
-    filenameOut = pathOut + "recording-" + str(taskName) + "-var" + str(varIdx) + "-" + str(result) + "-" + str(timestampStr) + ".json"
+    filenameOut = (pathOut + "recording-" + str(taskName) + "-var" + str(varIdx) +
+                   "-" + str(result) + "-" + str(timestampStr) + ".json")
 
-    print ("Exporting " + filenameOut)
+    print("Exporting " + filenameOut)
 
     with open(filenameOut, "w") as jsonFile:
         json.dump(history, jsonFile, indent=4, sort_keys=True)
@@ -94,10 +93,10 @@ def app():
     pywebio.session.set_env(title='ScienceWorld Demo', auto_scroll_bottom=True)
 
     # Initialize environment
-    env = ScienceWorldEnv("", serverPath=None, envStepLimit = 10_000)
+    env = ScienceWorldEnv("", serverPath=None, envStepLimit=10_000)
 
     pywebio_out.put_markdown('## Science World (Text Simulation)')
-    #put_button("Click here to export transcript", onclick=lambda: , color='success', outline=True)
+    # put_button("Click here to export transcript", onclick=lambda: , color='success', outline=True)
 
     htmlLog.addHeading("Science World (Text Simulation)")
     htmlLog.addHorizontalRule()
@@ -105,18 +104,18 @@ def app():
     taskName = pywebio.input.select("Select a task:", env.getTaskNames())
     maxVariations = env.getMaxVariations(taskName)
 
-    #variationIdx = slider("Task Variation: ", min_value=0, max_value=(maxVariations-1))
+    # variationIdx = slider("Task Variation: ", min_value=0, max_value=(maxVariations-1))
     variationIdx = pywebio.input.input('Enter the task variation (min = 0, max = ' + str(maxVariations) + "):")
     variationIdx = int(variationIdx) if variationIdx.isdigit() else 0
 
     # Load environment
     env.load(taskName, variationIdx, simplificationStr)
     initialObs, initialDict = env.reset()
-    #time.sleep(1)
+    # time.sleep(1)
 
-    #print("Possible actions: " + str(env.getPossibleActions()) )
-    #print("Possible objects: " + str(env.getPossibleObjects()) )
-    #print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
+    # print("Possible actions: " + str(env.getPossibleActions()) )
+    # print("Possible objects: " + str(env.getPossibleObjects()) )
+    # print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
 
     pywebio_out.put_table([
         ["Task", env.getTaskDescription()],
@@ -132,9 +131,9 @@ def app():
     userInputStr = "look around"        # First action
     consoleMoveCount = 0
     while (userInputStr not in exitCommands):
-        #put_markdown("### Move " + str(env.getNumMoves()) )
-        #htmlLog.addSubheading("Move " + str(env.getNumMoves()))
-        pywebio_out.put_markdown("### Move " + str(consoleMoveCount) )
+        # put_markdown("### Move " + str(env.getNumMoves()) )
+        # htmlLog.addSubheading("Move " + str(env.getNumMoves()))
+        pywebio_out.put_markdown("### Move " + str(consoleMoveCount))
         htmlLog.addSubheading("Move " + str(consoleMoveCount))
 
         # Send user input, get response
@@ -152,16 +151,18 @@ def app():
         # Output (log)
         htmlLog.addPreformattedText(observation)
         if (score >= 1.0):
-            htmlLog.addStr("<font color=green>Task Score: " + str(score) + "  (isCompleted: " + str(isCompleted) + ") </font><br><br>")
+            htmlLog.addStr("<font color=green>Task Score: " + str(score) +
+                           "  (isCompleted: " + str(isCompleted) + ") </font><br><br>")
         else:
-            htmlLog.addStr("<font color=grey>Task Score: " + str(score) + "  (isCompleted: " + str(isCompleted) + ") </font><br><br>")
+            htmlLog.addStr("<font color=grey>Task Score: " + str(score) +
+                           "  (isCompleted: " + str(isCompleted) + ") </font><br><br>")
 
         logFilename = "log-" + taskName + ".html"
         pywebio_out.put_file(logFilename, htmlLog.getHTML().encode(), '(click here to export transcript)')
 
-        #print("\n" + observation)
-        #print("Score: " + str(score))
-        #print("isCompleted: " + str(isCompleted))
+        # print("\n" + observation)
+        # print("Score: " + str(score))
+        # print("isCompleted: " + str(isCompleted))
 
         # Record history
         packed = {
@@ -180,11 +181,12 @@ def app():
         historyRecording.append(packed)
 
         # If this session is completed, save the recording
-        if (isCompleted == True):
+        if isCompleted:
             saveJSONHistory(historyRecording)
 
         # Get user input
-        userInputStr = pywebio.input.input('Enter your action (`help` for list of actions, `objects` for list of object referents) ')
+        userInputStr = pywebio.input.input('Enter your action (`help` for list' +
+                                           'of actions, `objects` for list of object referents) ')
 
         # Sanitize input
         userInputStr = userInputStr.lower().strip()
@@ -196,7 +198,6 @@ def app():
         consoleMoveCount += 1
 
         time.sleep(1)
-
 
     print("Completed.")
 
