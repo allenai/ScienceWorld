@@ -25,7 +25,7 @@ repos:
         args: [--remove]
       - id: forbid-submodules
       - id: mixed-line-ending
-        args: ['--fix', 'lf']
+        args: ['--fix', 'auto']
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/shellcheck-py/shellcheck-py # Unofficial but maintained by asottile
