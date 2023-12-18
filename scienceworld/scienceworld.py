@@ -1,11 +1,10 @@
-import os
 import json
 import logging
 from collections import OrderedDict
 
 from py4j.java_gateway import JavaGateway, GatewayParameters, launch_gateway, CallbackServerParameters
 
-from scienceworld.constants import BASEPATH, DEBUG_MODE, ID2TASK, JAR_PATH, NAME2ID
+from scienceworld.constants import BASEPATH, DEBUG_MODE, ID2TASK, JAR_PATH
 from scienceworld.utils import infer_task, snake_case_deprecation_warning
 
 logger = logging.getLogger(__name__)
@@ -20,7 +19,8 @@ class ScienceWorldEnv:
         # Launch Java side with dynamic port and get back the port on which the
         # server was bound to.
         if DEBUG_MODE:
-            import sys, time
+            import sys
+            import time
             port = launch_gateway(
                 classpath=serverPath, die_on_exit=True, cwd=BASEPATH,
                 javaopts=['-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005,quiet=y'],
@@ -96,7 +96,8 @@ class ScienceWorldEnv:
         self.simplificationStr = simplificationStr
         self.variationIdx = variationIdx
 
-        logger.info(f"Loading: {self.taskName} (variation: {self.variationIdx}) (simplifications: {self.simplificationStr})")
+        logger.info(f"Loading: {self.taskName} (variation: {self.variationIdx})" +
+                    f" (simplifications: {self.simplificationStr})")
         self.server.load(self.taskName, self.variationIdx, self.simplificationStr, generateGoldPath)
 
         # Reset last step score (used to calculate reward from current-previous score)
@@ -124,8 +125,6 @@ class ScienceWorldEnv:
 
     def get_possible_simplifications(self):
         return self.server.getPossibleSimplifications().split(", ")
-
-
 
     @property
     def tasks(self):
@@ -218,10 +217,9 @@ class ScienceWorldEnv:
 
         # Object vocabulary (keep as compound nouns?)
         vocabObjects = self.get_possible_objects()
-        vocab = vocab.union( set(vocabObjects) )
+        vocab = vocab.union(set(vocabObjects))
 
         return vocab
-
 
     def get_num_moves(self):
         return self.server.getNumMoves()
@@ -229,14 +227,11 @@ class ScienceWorldEnv:
     def get_task_description(self):
         return self.server.getTaskDescription()
 
-    #
     # History
-    #
     def get_run_history(self):
         historyStr = self.server.getRunHistoryJSON()
         jsonOut = json.loads(historyStr)
         return jsonOut
-
 
     # History saving (provides an API to do this, so it's consistent across agents)
     def store_run_history(self, episode_idx_key, notes):
@@ -246,7 +241,7 @@ class ScienceWorldEnv:
             'history': self.get_run_history()
         }
 
-        self.runHistories[episodeIdxKey] = packed
+        self.runHistories[episode_idx_key] = packed
 
     def save_run_histories(self, filename_out_prefix):
         # Save history
@@ -274,14 +269,11 @@ class ScienceWorldEnv:
 
     # A one-stop function to handle saving.
     def save_run_histories_buffer_if_full(self, filename_out_prefix, max_per_file=1000, force_save=False):
-        if ((self.get_run_history_size() >= max_per_file) or (force_save == True)):
+        if ((self.get_run_history_size() >= max_per_file) or force_save):
             self.save_run_histories(filename_out_prefix)
             self.clear_run_histories()
 
-
-    #
     # Train/development/test sets
-    #
     def get_variations_train(self):
         return list(self.server.getVariationsTrain())
 
@@ -302,14 +294,13 @@ class ScienceWorldEnv:
 
     # Gold action sequence
     def get_gold_action_sequence(self):
-        if (self.goldPathGenerated == True):
+        if (self.goldPathGenerated):
             return list(self.server.getGoldActionSequence())
         else:
             return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]
 
-
     # Step
-    def step(self, input_str:str):
+    def step(self, input_str: str):
         observation = self.server.step(input_str)
         score = int(round(100 * self.server.getScore()))        # Convert from 0-1 to 0-100
         isCompleted = self.server.getCompleted()
@@ -319,12 +310,12 @@ class ScienceWorldEnv:
         reward = score - self.lastStepScore         # Calculate reward (delta score) for this step
         self.lastStepScore = score                  # Store current score for reward calculation on the next step
 
-
         # If the number of moves exceeds the environment step limit, then set isCompleted to be true
         if (numMoves > self.envStepLimit):
             isCompleted = True
 
-        # New: Handle this in the API rather than the agent -- if the score is less than zero, then set the isCompleted flag to true.
+        # New: Handle this in the API rather than the agent
+        # if the score is less than zero, then set the isCompleted flag to true.
         if (score < 0):
             isCompleted = True
 
@@ -344,7 +335,6 @@ class ScienceWorldEnv:
 
         return observation, reward, isCompleted, infos
 
-
     # Special actions that are "free" (consume zero time)
     def look(self):
         observation = self.server.freeActionLook()
@@ -363,8 +353,7 @@ class ScienceWorldEnv:
         goalStr = self.server.getGoalProgressStr()
         return goalStr
 
-
-    ####################### Camel Case Methods ################################
+    # ---------------- Camel Case Methods ---------------------
     # All of the wrapper methods for camel case, to avoid breaking projects.
 
     # Simplifications
@@ -461,7 +450,6 @@ class ScienceWorldEnv:
 
         return self.get_vocabulary()
 
-
     def getNumMoves(self):
         snake_case_deprecation_warning()
 
@@ -544,8 +532,6 @@ class ScienceWorldEnv:
         return self.get_goal_progress_str()
 
 
-
-
 class BufferedHistorySaver:
 
     #
@@ -597,6 +583,6 @@ class BufferedHistorySaver:
 
     # A one-stop function to handle saving.
     def saveRunHistoriesBufferIfFull(self, maxPerFile=1000, forceSave=False):
-        if ((self.getRunHistorySize() >= maxPerFile) or (forceSave == True)):
+        if ((self.getRunHistorySize() >= maxPerFile) or forceSave):
             self.saveRunHistories()
             self.clearRunHistories()

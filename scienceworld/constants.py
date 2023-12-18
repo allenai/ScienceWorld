@@ -1,12 +1,12 @@
 import json
 import os
-from collections import OrderedDict
 
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
 JAR_FILE = 'scienceworld.jar'
 JAR_PATH = os.path.join(BASEPATH, JAR_FILE)
 TASK_FILE = 'tasks.json'
 TASK_PATH = os.path.join(BASEPATH, TASK_FILE)
+
 
 def is_in_debug_mode() -> bool:
     """Determine whether debug mode should be enabled.
@@ -24,6 +24,7 @@ def is_in_debug_mode() -> bool:
         return False
     else:
         raise ValueError(f'{env_value!r} is not a valid value for "SCIENCEWORLD_DEBUG"')
+
 
 DEBUG_MODE = is_in_debug_mode()
 

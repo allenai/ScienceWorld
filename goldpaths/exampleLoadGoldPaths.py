@@ -46,7 +46,7 @@ for taskIdx in data.keys():
             print(obs)
             print("")
 
-            numMoves +=1
+            numMoves += 1
         numSequences += 1
 
 

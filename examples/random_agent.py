@@ -9,7 +9,6 @@ def randomModel(args):
     """ Example random agent -- randomly picks an action at each step. """
     exitCommands = ["quit", "exit"]
 
-
     taskIdx = args['task_num']
     simplificationStr = args['simplification_str']
     numEpisodes = args['num_episodes']
@@ -18,14 +17,15 @@ def randomModel(args):
     finalScores = []
 
     # Initialize environment
-    env = ScienceWorldEnv("", args['jar_path'], envStepLimit = args['env_step_limit'])
+    env = ScienceWorldEnv("", args['jar_path'], envStepLimit=args['env_step_limit'])
 
     taskNames = env.getTaskNames()
     print("Task Names: " + str(taskNames))
 
     # Choose task
     taskName = taskNames[taskIdx]        # Just get first task
-    env.load(taskName, 0, "")            # Load the task, so we have access to some extra accessors e.g. getRandomVariationTrain() )
+    # Load the task, we we have access to some extra accessors e.g. get_random_variation_train()
+    env.load(taskName, 0, "")
     maxVariations = env.getMaxVariations(taskName)
     print("Starting Task " + str(taskIdx) + ": " + taskName)
     time.sleep(2)
@@ -40,18 +40,17 @@ def randomModel(args):
         initialObs, initialDict = env.reset()
 
         # Example accessors
-        print("Possible actions: " + str(env.getPossibleActions()) )
-        print("Possible objects: " + str(env.getPossibleObjects()) )
+        print("Possible actions: " + str(env.getPossibleActions()))
+        print("Possible objects: " + str(env.getPossibleObjects()))
         templates, lut = env.getPossibleActionObjectCombinations()
         print("Possible action/object combinations: " + str(templates))
         print("Object IDX to Object Referent LUT: " + str(lut))
         print("Task Name: " + taskName)
         print("Task Variation: " + str(randVariationIdx) + " / " + str(maxVariations))
-        print("Task Description: " + str(env.getTaskDescription()) )
-        print("look: " + str(env.look()) )
-        print("inventory: " + str(env.inventory()) )
-        print("taskdescription: " + str(env.taskdescription()) )
-
+        print("Task Description: " + str(env.getTaskDescription()))
+        print("look: " + str(env.look()))
+        print("inventory: " + str(env.inventory()))
+        print("taskdescription: " + str(env.taskdescription()))
 
         score = 0.0
         isCompleted = False
@@ -59,9 +58,9 @@ def randomModel(args):
 
         # Run one episode until we reach a stopping condition (including exceeding the maximum steps)
         userInputStr = "look around"        # First action
-        while (userInputStr not in exitCommands) and (isCompleted == False):
+        while (userInputStr not in exitCommands) and (isCompleted is False):
             print("----------------------------------------------------------------")
-            print ("Step: " + str(curIter))
+            print("Step: " + str(curIter))
 
             # Send user input, get response
             observation, reward, isCompleted, info = env.step(userInputStr)
@@ -72,26 +71,26 @@ def randomModel(args):
             print("Score: " + str(score))
             print("isCompleted: " + str(isCompleted))
 
-            # The environment will make isCompleted `True` when a stop condition has happened, or the maximum number of steps is reached.
+            # The environment will make isCompleted `True` when a stop condition
+            # has happened, or the maximum number of steps is reached.
             if (isCompleted):
                 break
 
             # Randomly select action
 
-            ## Any action (valid or not)
-            #templates, lut = env.getPossibleActionObjectCombinations()
-            #print("Possible action/object combinations: " + str(templates))
-            #print("Object IDX to Object Referent LUT: " + str(lut))
-            #randomTemplate = random.choice( templates )
-            #print("Next random action: " + str(randomTemplate))
-            #userInputStr = randomTemplate["action"]
+            # Any action (valid or not)
+            # templates, lut = env.getPossibleActionObjectCombinations()
+            # print("Possible action/object combinations: " + str(templates))
+            # print("Object IDX to Object Referent LUT: " + str(lut))
+            # randomTemplate = random.choice( templates )
+            # print("Next random action: " + str(randomTemplate))
+            # userInputStr = randomTemplate["action"]
 
-            ## Only valid actions
+            # Only valid actions
             validActions = env.getValidActionObjectCombinationsWithTemplates()
-            randomAction = random.choice( validActions )
+            randomAction = random.choice(validActions)
             print("Next random action: " + str(randomAction))
             userInputStr = randomAction["action"]
-
 
             print(list(lut.keys())[-1])
 
@@ -110,19 +109,20 @@ def randomModel(args):
         finalScores.append(score)
 
         # Report progress of model
-        print ("Final score: " + str(score))
-        print ("isCompleted: " + str(isCompleted))
+        print("Final score: " + str(score))
+        print("isCompleted: " + str(isCompleted))
 
         # Save history -- and when we reach maxPerFile, export them to file
         filenameOutPrefix = args['output_path_prefix'] + str(taskIdx)
-        env.storeRunHistory(episodeIdx, notes = {'text':'my notes here'} )
+        env.storeRunHistory(episodeIdx, notes={'text': 'my notes here'})
         env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=args['max_episode_per_file'])
 
     # Episodes are finished -- manually save any last histories still in the buffer
     env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=args['max_episode_per_file'], forceSave=True)
 
-    # Show final episode scores to user:
-    avg = sum([x for x in finalScores if x >=0]) / len(finalScores)     # Clip negative scores to 0 for average calculation
+    # Show final episode scores to user
+    # Clip negative scores to 0 for average calculation
+    avg = sum([x for x in finalScores if x >= 0]) / len(finalScores)
     print("")
     print("---------------------------------------------------------------------")
     print(" Summary (Random Agent)")

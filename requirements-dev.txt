@@ -1,5 +1,7 @@
 build
+flake8
 pre-commit
 py4j
 pytest
+tox
 twine
