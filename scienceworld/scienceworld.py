@@ -61,7 +61,7 @@ class ScienceWorldEnv:
         self.envStepLimit = envStepLimit
 
         # Clear the run histories
-        self.clearRunHistories()
+        self.clear_run_histories()
 
         # By default, set that the gold path was not generated unless the user asked for it
         self.goldPathGenerated = False
@@ -73,15 +73,15 @@ class ScienceWorldEnv:
         # Check loading arguments.
         # Validate task name.
         taskName = infer_task(taskName)
-        if taskName not in self.getTaskNames():
+        if taskName not in self.get_task_names():
             msg = "Unknown taskName: '{}'. ".format(taskName)
-            msg += "Supported tasks are: {}".format(self.getTaskNames())
+            msg += "Supported tasks are: {}".format(self.get_task_names())
             raise ValueError(msg)
 
         self.taskName = taskName
 
         # Validate simplification string.
-        possible_simplifications = ["easy"] + self.getPossibleSimplifications()
+        possible_simplifications = ["easy"] + self.get_possible_simplifications()
         for simplification in simplificationStr.split(","):
             if simplification and simplification not in possible_simplifications:
                 msg = "Unknown simplification: '{}'. ".format(simplification)
