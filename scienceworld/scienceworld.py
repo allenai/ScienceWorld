@@ -349,7 +349,7 @@ class ScienceWorldEnv:
         return observation
 
     # Goal progress
-    def get_goal_progress_str(self):
+    def get_goal_progress(self):
         goalStr = self.server.getGoalProgressStr()
         return goalStr
 
