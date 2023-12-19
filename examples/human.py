@@ -86,7 +86,7 @@ def userConsole(args):
             print(env.get_valid_action_object_combinations_with_templates())
 
         elif (userInputStr == 'goals'):
-            print(env.get_goal_progress_srt())
+            print(env.get_goal_progress())
 
         else:
             # Send user input, get response
