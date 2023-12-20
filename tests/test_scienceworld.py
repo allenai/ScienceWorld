@@ -47,11 +47,11 @@ def test_multiple_instances():
 def test_variation_sets_are_disjoint():
     env = ScienceWorldEnv()
 
-    for task in env.getTaskNames():
+    for task in env.get_task_names():
         env.load(task)
-        train = set(env.getVariationsTrain())
-        dev = set(env.getVariationsDev())
-        test = set(env.getVariationsTest())
+        train = set(env.get_variations_train())
+        dev = set(env.get_variations_dev())
+        test = set(env.get_variations_test())
         assert set.isdisjoint(train, dev)
         assert set.isdisjoint(train, test)
         assert set.isdisjoint(dev, test)
@@ -119,4 +119,4 @@ def test_load():
 def test_consistent_task_names():
     """Verify that Scala and Python code use the same task names."""
     env = ScienceWorldEnv()
-    assert sorted(env.task_names) == sorted(env.getTaskNames())
+    assert sorted(env.task_names) == sorted(env.get_task_names())

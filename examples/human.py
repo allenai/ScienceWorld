@@ -13,7 +13,7 @@ def userConsole(args):
 
     # Initialize environment
     env = ScienceWorldEnv("", args['jar_path'], envStepLimit=args['env_step_limit'])
-    taskNames = env.getTaskNames()
+    taskNames = env.get_task_names()
     print("Task Names: " + str(taskNames))
 
     # Choose task
@@ -30,41 +30,41 @@ def userConsole(args):
     #   (Many of these are similar to the Jericho API)
     #
     print("Task Names: " + str(taskNames))
-    print("Possible actions: " + str(env.getPossibleActions()))
-    print("Possible objects: " + str(env.getPossibleObjects()))
-    templates, lut = env.getPossibleActionObjectCombinations()
+    print("Possible actions: " + str(env.get_possible_actions()))
+    print("Possible objects: " + str(env.get_possible_objects()))
+    templates, lut = env.get_possible_action_object_combinations()
     print("Possible action/object combinations: " + str(templates))
     # print("Object IDX to Object Referent LUT: " + str(lut))
-    print("Vocabulary: " + str(env.getVocabulary()))
-    print("Possible actions (with IDs): " + str(env.getPossibleActionsWithIDs()))
-    print("Possible object types: " + str(env.getObjectTypes()))
+    print("Vocabulary: " + str(env.get_vocabulary()))
+    print("Possible actions (with IDs): " + str(env.get_possible_actions_with_IDs()))
+    print("Possible object types: " + str(env.get_object_types()))
     print("Object IDX to Object Referent LUT: " + str(lut))
     print("\n")
-    print("Possible object referents LUT: " + str(env.getPossibleObjectReferentLUT()))
+    print("Possible object referents LUT: " + str(env.get_possible_object_referent_LUT()))
     print("\n")
     print("Valid action-object combinations: " +
-          str(env.getValidActionObjectCombinations()))
+          str(env.get_valid_action_object_combinations()))
     print("\n")
-    print("Object_ids to type_ids: " + str(env.getAllObjectTypesLUTJSON()))
+    print("Object_ids to type_ids: " + str(env.get_all_object_types_LUTJSON()))
     print("\n")
     print("All objects, their ids, types, and referents: " +
-          str(env.getAllObjectIdsTypesReferentsLUTJSON()))
+          str(env.get_all_object_ids_types_referents_LUTJSON()))
     print("\n")
     print("Valid action-object combinations (with templates): " +
-          str(env.getValidActionObjectCombinationsWithTemplates()))
+          str(env.get_valid_action_object_combinations_with_templates()))
     print("\n")
-    print("Object Type LUT: " + str(env.getPossibleObjectReferentTypesLUT()))
-    print("Variations (train): " + str(env.getVariationsTrain()))
+    print("Object Type LUT: " + str(env.get_possible_object_referent_types_LUT()))
+    print("Variations (train): " + str(env.get_variations_train()))
 
     print("")
     print("----------------------------------------------------------------------------------")
     print("")
 
-    print("Gold Path:" + str(env.getGoldActionSequence()))
+    print("Gold Path:" + str(env.get_gold_action_sequence()))
 
     print("Task Name: " + taskName)
-    print("Variation: " + str(args['var_num']) + " / " + str(env.getMaxVariations(taskName)))
-    print("Task Description: " + str(env.getTaskDescription()))
+    print("Variation: " + str(args['var_num']) + " / " + str(env.get_max_variations(taskName)))
+    print("Task Description: " + str(env.get_task_description()))
 
     #
     #   Main user input loop
@@ -73,20 +73,20 @@ def userConsole(args):
     while (userInputStr not in exitCommands):
         if (userInputStr == "help"):
             print("Possible actions: ")
-            for actionStr in env.getPossibleActions():
+            for actionStr in env.get_possible_actions():
                 print("\t" + str(actionStr))
 
         elif (userInputStr == "objects"):
             print("Possible objects (one referent listed per object): ")
-            for actionStr in env.getPossibleObjects():
+            for actionStr in env.get_possible_objects():
                 print("\t" + str(actionStr))
 
         elif (userInputStr == "valid"):
             print("Valid action-object combinations:")
-            print(env.getValidActionObjectCombinationsWithTemplates())
+            print(env.get_valid_action_object_combinations_with_templates())
 
         elif (userInputStr == 'goals'):
-            print(env.getGoalProgressStr())
+            print(env.get_goal_progress())
 
         else:
             # Send user input, get response
@@ -109,7 +109,7 @@ def userConsole(args):
         userInputStr = userInputStr.lower().strip()
 
     # Display run history
-    runHistory = env.getRunHistory()
+    runHistory = env.get_run_history()
     print("Run History:")
     print(runHistory)
     for item in runHistory:
@@ -117,7 +117,7 @@ def userConsole(args):
         print("")
 
     # Display subgoal progress
-    print(env.getGoalProgressStr())
+    print(env.get_goal_progress_str())
 
     print("Completed.")
 

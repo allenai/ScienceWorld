@@ -19,35 +19,35 @@ def randomModel(args):
     # Initialize environment
     env = ScienceWorldEnv("", args['jar_path'], envStepLimit=args['env_step_limit'])
 
-    taskNames = env.getTaskNames()
+    taskNames = env.get_task_names()
     print("Task Names: " + str(taskNames))
 
     # Choose task
     taskName = taskNames[taskIdx]        # Just get first task
     # Load the task, we we have access to some extra accessors e.g. get_random_variation_train()
     env.load(taskName, 0, "")
-    maxVariations = env.getMaxVariations(taskName)
+    maxVariations = env.get_max_variations(taskName)
     print("Starting Task " + str(taskIdx) + ": " + taskName)
     time.sleep(2)
 
     # Start running episodes
     for episodeIdx in range(0, numEpisodes):
         # Pick a random task variation
-        randVariationIdx = env.getRandomVariationTrain()
+        randVariationIdx = env.get_random_variation_train()
         env.load(taskName, randVariationIdx, simplificationStr)
 
         # Reset the environment
         initialObs, initialDict = env.reset()
 
         # Example accessors
-        print("Possible actions: " + str(env.getPossibleActions()))
-        print("Possible objects: " + str(env.getPossibleObjects()))
-        templates, lut = env.getPossibleActionObjectCombinations()
+        print("Possible actions: " + str(env.get_possible_actions()))
+        print("Possible objects: " + str(env.get_possible_objects()))
+        templates, lut = env.get_possible_action_object_combinations()
         print("Possible action/object combinations: " + str(templates))
         print("Object IDX to Object Referent LUT: " + str(lut))
         print("Task Name: " + taskName)
         print("Task Variation: " + str(randVariationIdx) + " / " + str(maxVariations))
-        print("Task Description: " + str(env.getTaskDescription()))
+        print("Task Description: " + str(env.get_task_description()))
         print("look: " + str(env.look()))
         print("inventory: " + str(env.inventory()))
         print("taskdescription: " + str(env.taskdescription()))
@@ -79,7 +79,7 @@ def randomModel(args):
             # Randomly select action
 
             # Any action (valid or not)
-            # templates, lut = env.getPossibleActionObjectCombinations()
+            # templates, lut = env.get_possible_action_object_combinations()
             # print("Possible action/object combinations: " + str(templates))
             # print("Object IDX to Object Referent LUT: " + str(lut))
             # randomTemplate = random.choice( templates )
@@ -87,7 +87,7 @@ def randomModel(args):
             # userInputStr = randomTemplate["action"]
 
             # Only valid actions
-            validActions = env.getValidActionObjectCombinationsWithTemplates()
+            validActions = env.get_valid_action_object_combinations_with_templates()
             randomAction = random.choice(validActions)
             print("Next random action: " + str(randomAction))
             userInputStr = randomAction["action"]
@@ -102,7 +102,7 @@ def randomModel(args):
             curIter += 1
 
         print("Goal Progress:")
-        print(env.getGoalProgressStr())
+        print(env.get_goal_progress_str())
         time.sleep(1)
 
         # Episode finished -- Record the final score
@@ -114,11 +114,11 @@ def randomModel(args):
 
         # Save history -- and when we reach maxPerFile, export them to file
         filenameOutPrefix = args['output_path_prefix'] + str(taskIdx)
-        env.storeRunHistory(episodeIdx, notes={'text': 'my notes here'})
-        env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=args['max_episode_per_file'])
+        env.store_run_history(episodeIdx, notes={'text': 'my notes here'})
+        env.save_run_histories_buffer_if_full(filenameOutPrefix, max_per_file=args['max_episode_per_file'])
 
     # Episodes are finished -- manually save any last histories still in the buffer
-    env.saveRunHistoriesBufferIfFull(filenameOutPrefix, maxPerFile=args['max_episode_per_file'], forceSave=True)
+    env.save_run_histories_buffer_if_full(filenameOutPrefix, max_per_file=args['max_episode_per_file'], force_save=True)
 
     # Show final episode scores to user
     # Clip negative scores to 0 for average calculation

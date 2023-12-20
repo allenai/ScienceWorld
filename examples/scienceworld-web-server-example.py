@@ -101,8 +101,8 @@ def app():
     htmlLog.addHeading("Science World (Text Simulation)")
     htmlLog.addHorizontalRule()
 
-    taskName = pywebio.input.select("Select a task:", env.getTaskNames())
-    maxVariations = env.getMaxVariations(taskName)
+    taskName = pywebio.input.select("Select a task:", env.get_task_names())
+    maxVariations = env.get_max_variations(taskName)
 
     # variationIdx = slider("Task Variation: ", min_value=0, max_value=(maxVariations-1))
     variationIdx = pywebio.input.input('Enter the task variation (min = 0, max = ' + str(maxVariations) + "):")
@@ -118,11 +118,11 @@ def app():
     # print("Possible action/object combinations: " + str(env.getPossibleActionObjectCombinations()))
 
     pywebio_out.put_table([
-        ["Task", env.getTaskDescription()],
+        ["Task", env.get_task_description()],
         ["Variation", str(variationIdx) + " / " + str(maxVariations)]
     ])
 
-    htmlLog.addStr("<b>Task:</b> " + env.getTaskDescription() + "<br>")
+    htmlLog.addStr("<b>Task:</b> " + env.get_task_description() + "<br>")
     htmlLog.addStr("<b>Variation:</b> " + str(variationIdx) + "<br>")
     htmlLog.addHorizontalRule()
 
@@ -172,7 +172,7 @@ def app():
             'isCompleted': isCompleted,
             'userInput': userInputStr,
             'taskName': taskName,
-            'taskDescription': env.getTaskDescription(),
+            'taskDescription': env.get_task_description(),
             'look': env.look(),
             'inventory': env.inventory(),
             'variationIdx': variationIdx,
