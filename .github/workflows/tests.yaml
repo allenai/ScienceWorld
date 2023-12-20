@@ -32,4 +32,4 @@ jobs:
       run: tox
     - uses: olafurpg/setup-scala@v10
     - name: Check scienceworld compilation
-      run: ./check_compile.sh
+      run: ./simulator/package.sh
