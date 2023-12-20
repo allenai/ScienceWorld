@@ -5,4 +5,3 @@ include requirements-dev.txt
 
 include scienceworld/scienceworld-*.jar
 include scienceworld/object_type_ids.tsv
-include check_compile.sh
