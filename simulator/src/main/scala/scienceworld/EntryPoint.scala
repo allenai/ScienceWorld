@@ -1,4 +1,4 @@
-asdlfkpackage scienceworld
+package scienceworld
 
 import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.environments.EnvironmentMaker
