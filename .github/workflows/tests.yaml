@@ -5,7 +5,24 @@ on:
   - pull_request
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: olafurpg/setup-scala@v10
+
+      - name: Compile ScienceWorld's JAR
+        run: ./simulator/package.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scienceworld.jar
+          path: scienceworld/scienceworld.jar
+          if-no-files-found: error
+
   test:
+    needs: build
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -20,13 +37,29 @@ jobs:
         git config --global core.eol lf
 
     - uses: actions/checkout@v4
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+
+    - name: Remove old scienceworld.jar
+      run: python -c "import os; os.remove(os.path.join('scienceworld', 'scienceworld.jar'))"
+
+    - name: Download scienceworld.jar
+      uses: actions/download-artifact@v4
+      with:
+        name: scienceworld.jar
+        path: scienceworld/
+
     - name: Install dependencies
       run:
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions
+
+    - name: Install ScienceWorld
+      run:
+        pip install -e .
+
     - name: Test with tox
       run: tox
