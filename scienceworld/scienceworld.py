@@ -19,7 +19,8 @@ class ScienceWorldEnv:
     def __init__(self, taskName=None, serverPath=None, envStepLimit=100):
         '''Start the simulator. Sets up the interface between python and the JVM.
         Also does basic init stuff.
-        :param taskName: The name of the task. Will be run through the infer_task method. Tasks can also be loaded by the load method.
+        :param taskName: The name of the task. Will be run through the infer_task method.
+            Tasks can also be loaded by the load method.
         :param serverPath: The filepath to the server. By default, it is just scienceworld.jar.
         :param envStepLimit: The maximum number of steps taken in the environment. Defaults to 100.
         '''
@@ -85,7 +86,8 @@ class ScienceWorldEnv:
 
         :param taskName: The name of the task. Will be modified by the infer_task function.
         :param variationIdx: The index for the specific variation to use. Default is 0.
-        :param simplificationStr: The string of simplifications to use. Should be comma separated with no spaces. Defaults to "". For more, see get_possible_simplifications
+        :param simplificationStr: The string of simplifications to use. Should be comma
+            separated with no spaces. Defaults to "". For more, see get_possible_simplifications
         :param generateGoldPath: Boolean var to generate gold path or not. Defaults to False.
         '''
         # Check loading arguments.
@@ -236,7 +238,9 @@ class ScienceWorldEnv:
         return (templates, lookUpTable)
 
     def get_object_types(self):
-        ''' Get a dict mapping object names to the object id. The object name is the name of the actual file, for example "scienceworld.objects.containers.furniture.Chair". '''
+        '''Get a dict mapping object names to the object id. The object name is the name
+        of the actual file, for example "scienceworld.objects.containers.furniture.Chair".
+        '''
         jsonStr = self.server.getObjectTypesLUTJSON()
         data = json.loads(jsonStr)
         return data
@@ -321,10 +325,11 @@ class ScienceWorldEnv:
         '''One stop function for saving.
 
         If the histories buffer is full, saves to file and clears the buffer.
-        
+
         :param filename_out_prefix: Name of the file to write to.
         :param max_per_file: The max number of histories per file. Defaults to 1000.
-        :param force_save: Force the function to save, regardless of whether or not the buffer is full. Defaults to False.
+        :param force_save: Force the function to save, regardless of whether or not the
+            buffer is full. Defaults to False.
         '''
         if ((self.get_run_history_size() >= max_per_file) or force_save):
             self.save_run_histories(filename_out_prefix)
@@ -369,12 +374,13 @@ class ScienceWorldEnv:
     # Step
     def step(self, input_str: str):
         '''Take a step.
-            
+
         This function takes one step in the typical state-action-reward cycle of RL.
         :param input_str: The input string supplied to the simulator from an agent.
 
         Returns the observation, reward, completion status, and infos dict consisting of:
-        'moves', 'score', 'reward', 'look', 'inv', 'taskDesc', 'valid', 'variationIdx', 'taskName', and 'simplificationStr'.
+        'moves', 'score', 'reward', 'look', 'inv', 'taskDesc', 'valid', 'variationIdx', 'taskName',
+        and 'simplificationStr'.
         '''
         observation = self.server.step(input_str)
         score = int(round(100 * self.server.getScore()))        # Convert from 0-1 to 0-100
