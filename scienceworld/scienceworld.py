@@ -16,7 +16,7 @@ class ScienceWorldEnv:
     Please look at that for more information on the internals of the system.
     """
 
-    def __init__(self, taskName=None, serverPath=None, envStepLimit=100):
+    def __init__(self, taskName: str=None, serverPath: str=None, envStepLimit: int=100):
         '''Start the simulator. Sets up the interface between python and the JVM.
         Also does basic init stuff.
         :param taskName: The name of the task. Will be run through the infer_task method.
@@ -78,7 +78,7 @@ class ScienceWorldEnv:
         self.goldPathGenerated = False
 
     # Ask the simulator to load an environment from a script
-    def load(self, taskName, variationIdx=0, simplificationStr="", generateGoldPath=False):
+    def load(self, taskName: str, variationIdx: int=0, simplificationStr: str="", generateGoldPath: bool=False) -> None:
         '''Load a valid task and its variations/simplifications, and set up the simulator
         and any task-specific properties (electrical, etc). Can optionally have the
         simulator generate a gold path. If it successfully does, it will set
@@ -126,7 +126,7 @@ class ScienceWorldEnv:
         # Keep track of whether the gold path was generated, to generate verbose error messages
         self.goldPathGenerated = generateGoldPath
 
-    def reset(self):
+    def reset(self) -> tuple[str, dict[str]]:
         ''' Resets the simulator back to the first move (the output of "look around" is returned) '''
 
         self.server.reset()
@@ -141,11 +141,11 @@ class ScienceWorldEnv:
         return observation, info
 
     # Simplifications
-    def get_simplifications_used(self):
+    def get_simplifications_used(self) -> str:
         ''' Gets the simplifications being used by the simulator. '''
         return self.server.getSimplificationsUsed()
 
-    def get_possible_simplifications(self):
+    def get_possible_simplifications(self) -> list[str]:
         '''Gets the 6 possible simplifications. There are 6 simplifictions:
             - teleportAction: Teleport action
             - selfWateringFlowerPots: Self-watering flower pots
@@ -157,78 +157,78 @@ class ScienceWorldEnv:
         return self.server.getPossibleSimplifications().split(", ")
 
     @property
-    def tasks(self):
+    def tasks(self) -> OrderedDict[str, str]:
         """ Get the supported tasks in ScienceWorld. """
         return OrderedDict(ID2TASK)
 
     @property
-    def task_names(self):
+    def task_names(self) -> list[str]:
         ''' Get the name for the supported tasks in ScienceWorld. '''
         return list(ID2TASK.values())
 
-    def get_task_names(self):
+    def get_task_names(self) -> list[str]:
         ''' Get the name for the supported tasks in ScienceWorld. '''
         return list(self.server.getTaskNames())
 
-    def get_max_variations(self, task_name):
+    def get_max_variations(self, task_name) -> int:
         ''' Get the maximum number of variations for the tasks. '''
         return self.server.getTaskMaxVariations(infer_task(task_name))
 
     # Get possible actions
-    def get_possible_actions(self):
+    def get_possible_actions(self) -> list[str]:
         ''' Get all possible actions in the current environment state. '''
         return list(self.server.getPossibleActions())
 
     # Get possible actions (and also include the template IDs for those actions)
-    def get_possible_actions_with_IDs(self):
+    def get_possible_actions_with_IDs(self) -> list[dict[str]]:
         ''' Get a list of dictionaries that map "action_example" to the action template and "template_id" to the id.'''
         jsonStr = self.server.getPossibleActionsWithIDs()
         data = json.loads(jsonStr)
         return data
 
-    def get_possible_objects(self):
+    def get_possible_objects(self) -> list[str]:
         ''' Get a list of all observable objects '''
         return list(self.server.getPossibleObjects())
 
     # Get a list of object_ids to unique referents
-    def get_possible_object_referent_LUT(self):
+    def get_possible_object_referent_LUT(self) -> dict[str, str]:
         ''' Returns lookup table (dict) mapping object IDs to their referents. '''
         jsonStr = self.server.getPossibleObjectReferentLUTJSON()
         data = json.loads(jsonStr)
         return data
 
     # As above, but dictionary is referenced by object type ID
-    def get_possible_object_referent_types_LUT(self):
+    def get_possible_object_referent_types_LUT(self) -> dict[str, dict[str, str]]:
         ''' Returns lookup table (dict) mapping object type IDs to a dict of all objects of that type. '''
         jsonStr = self.server.getPossibleObjectReferentTypesLUTJSON()
         data = json.loads(jsonStr)
         return data
 
-    def get_valid_action_object_combinations(self):
+    def get_valid_action_object_combinations(self) -> list[str]:
         ''' Get a list of all of the *valid* action-object combinations. '''
         return list(self.server.getValidActionObjectCombinations())
 
-    def get_valid_action_object_combinations_with_templates(self):
+    def get_valid_action_object_combinations_with_templates(self) -> list[dict[str]] :
         ''' Returns list of dicts with keys "action", "template_id", and "obj_ids" '''
         jsonStr = self.server.getValidActionObjectCombinationsJSON()
         data = json.loads(jsonStr)
         return data['validActions']
 
-    def get_all_object_types_LUTJSON(self):
+    def get_all_object_types_LUTJSON(self) -> dict[str, str]:
         ''' Returns look up table mapping object ids to type ids '''
         jsonStr = self.server.getAllObjectTypesLUTJSON()
         data = json.loads(jsonStr)
         return data
 
     # Get a LUT of {object_id: {type_id, referent:[]} } tuples
-    def get_all_object_ids_types_referents_LUTJSON(self):
+    def get_all_object_ids_types_referents_LUTJSON(self) -> dict[str, dict[str]]:
         ''' Returns look up table mapping object ids to objects with keys "type_id" and "referents" '''
         jsonStr = self.server.getAllObjectIdsTypesReferentsLUTJSON()
         data = json.loads(jsonStr)
         return data
 
     # Get possible action/object combinations
-    def get_possible_action_object_combinations(self):
+    def get_possible_action_object_combinations(self) -> tuple[list[dict[str]], dict[str, str]]:
         ''' Get all *possible* action-object combinations, including invalid ones. '''
         combinedJSON = self.server.getPossibleActionObjectCombinationsJSON()
         data = json.loads(combinedJSON)
@@ -237,7 +237,7 @@ class ScienceWorldEnv:
 
         return (templates, lookUpTable)
 
-    def get_object_types(self):
+    def get_object_types(self) -> dict[str, int]:
         '''Get a dict mapping object names to the object id. The object name is the name
         of the actual file, for example "scienceworld.objects.containers.furniture.Chair".
         '''
@@ -245,7 +245,7 @@ class ScienceWorldEnv:
         data = json.loads(jsonStr)
         return data
 
-    def get_vocabulary(self):
+    def get_vocabulary(self) -> set[str]:
         ''' Get all words that currently have some sort of meaning to the simulator. '''
         vocab = set()
 
@@ -260,23 +260,23 @@ class ScienceWorldEnv:
 
         return vocab
 
-    def get_num_moves(self):
+    def get_num_moves(self) -> int:
         ''' Get the current number of moves. '''
         return self.server.getNumMoves()
 
-    def get_task_description(self):
+    def get_task_description(self) -> str:
         ''' Get the description of the current task. '''
         return self.server.getTaskDescription()
 
     # History
-    def get_run_history(self):
+    def get_run_history(self) -> dict[str]:
         ''' Get the run history '''
         historyStr = self.server.getRunHistoryJSON()
         jsonOut = json.loads(historyStr)
         return jsonOut
 
     # History saving (provides an API to do this, so it's consistent across agents)
-    def store_run_history(self, episode_idx_key, notes):
+    def store_run_history(self, episode_idx_key, notes) -> None:
         '''Store the run history, with notes.
 
         :param episode_idx_key: Episode index. Will be used as key.
@@ -290,7 +290,7 @@ class ScienceWorldEnv:
 
         self.runHistories[episode_idx_key] = packed
 
-    def save_run_histories(self, filename_out_prefix):
+    def save_run_histories(self, filename_out_prefix) -> None:
         '''Save the run histories to a file.
 
         :param filename_out_prefix: The name of the file to write to.
@@ -312,16 +312,16 @@ class ScienceWorldEnv:
         with open(filenameOut, 'w') as outfile:
             json.dump(self.runHistories, outfile, sort_keys=True, indent=4)
 
-    def get_run_history_size(self):
+    def get_run_history_size(self) -> int:
         ''' Get the size of the run history '''
         return len(self.runHistories)
 
-    def clear_run_histories(self):
+    def clear_run_histories(self) -> None:
         ''' Clear the run histories. '''
         self.runHistories = {}
 
     # A one-stop function to handle saving.
-    def save_run_histories_buffer_if_full(self, filename_out_prefix, max_per_file=1000, force_save=False):
+    def save_run_histories_buffer_if_full(self, filename_out_prefix, max_per_file=1000, force_save=False) -> None:
         '''One stop function for saving.
 
         If the histories buffer is full, saves to file and clears the buffer.
@@ -336,32 +336,32 @@ class ScienceWorldEnv:
             self.clear_run_histories()
 
     # Train/development/test sets
-    def get_variations_train(self):
+    def get_variations_train(self) -> list[int]:
         ''' Get the list of variations available for the training set. '''
         return list(self.server.getVariationsTrain())
 
-    def get_variations_dev(self):
+    def get_variations_dev(self) -> list[int]:
         ''' Get the list of variations available for the development set. '''
         return list(self.server.getVariationsDev())
 
-    def get_variations_test(self):
+    def get_variations_test(self) -> list[int]:
         ''' Get the list of variations available for the testing set. '''
         return list(self.server.getVariationsTest())
 
-    def get_random_variation_train(self):
+    def get_random_variation_train(self) -> int:
         ''' Get a single random variation from those available for the training set. '''
         return self.server.getRandomVariationTrain()
 
-    def get_random_variation_dev(self):
+    def get_random_variation_dev(self) -> int:
         ''' Get a single random variation from those available for the development set. '''
         return self.server.getRandomVariationDev()
 
-    def get_random_variation_test(self):
+    def get_random_variation_test(self) -> int:
         ''' Get a single random variation from those available for the testing set. '''
         return self.server.getRandomVariationTest()
 
     # Gold action sequence
-    def get_gold_action_sequence(self):
+    def get_gold_action_sequence(self) -> list[str]:
         '''Get the gold action sequence.
         The gold action sequence is the optimal sequence of actions. This function returns that if it is generated.
         If it is not generated, it generates an error.
@@ -372,7 +372,7 @@ class ScienceWorldEnv:
             return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]
 
     # Step
-    def step(self, input_str: str):
+    def step(self, input_str: str) -> tuple[str, int, bool, dict[str]]:
         '''Take a step.
 
         This function takes one step in the typical state-action-reward cycle of RL.
@@ -417,23 +417,23 @@ class ScienceWorldEnv:
         return observation, reward, isCompleted, infos
 
     # Special actions that are "free" (consume zero time)
-    def look(self):
+    def look(self) -> str:
         ''' Look around. This is a "free" action in that it consumes no time. '''
         observation = self.server.freeActionLook()
         return observation
 
-    def inventory(self):
+    def inventory(self) -> str:
         ''' Check your inventory. This is a "free" action that consumes no time. '''
         observation = self.server.freeActionInventory()
         return observation
 
-    def taskdescription(self):
+    def taskdescription(self) -> str:
         ''' Get the task description. This is a "free" action that consumes no time. '''
         observation = self.server.freeActionTaskDesc()
         return observation
 
     # Goal progress
-    def get_goal_progress(self):
+    def get_goal_progress(self) -> str:
         ''' Get the progress to the goal. '''
         goalStr = self.server.getGoalProgressStr()
         return goalStr
