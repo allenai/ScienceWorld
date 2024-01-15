@@ -276,7 +276,7 @@ class ScienceWorldEnv:
         return jsonOut
 
     # History saving (provides an API to do this, so it's consistent across agents)
-    def store_run_history(self, episode_idx_key, notes) -> None:
+    def store_run_history(self, episode_idx_key: int, notes: str) -> None:
         '''Store the run history, with notes.
 
         :param episode_idx_key: Episode index. Will be used as key.
@@ -290,7 +290,7 @@ class ScienceWorldEnv:
 
         self.runHistories[episode_idx_key] = packed
 
-    def save_run_histories(self, filename_out_prefix) -> None:
+    def save_run_histories(self, filename_out_prefix: str) -> None:
         '''Save the run histories to a file.
 
         :param filename_out_prefix: The name of the file to write to.
@@ -321,7 +321,7 @@ class ScienceWorldEnv:
         self.runHistories = {}
 
     # A one-stop function to handle saving.
-    def save_run_histories_buffer_if_full(self, filename_out_prefix, max_per_file=1000, force_save=False) -> None:
+    def save_run_histories_buffer_if_full(self, filename_out_prefix: str, max_per_file: int=1000, force_save: bool=False) -> None:
         '''One stop function for saving.
 
         If the histories buffer is full, saves to file and clears the buffer.
