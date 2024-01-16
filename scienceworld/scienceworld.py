@@ -16,7 +16,7 @@ class ScienceWorldEnv:
     Please look at that for more information on the internals of the system.
     """
 
-    def __init__(self, taskName: str=None, serverPath: str=None, envStepLimit: int=100):
+    def __init__(self, taskName: str = None, serverPath: str = None, envStepLimit: int = 100):
         '''Start the simulator. Sets up the interface between python and the JVM.
         Also does basic init stuff.
         :param taskName: The name of the task. Will be run through the infer_task method.
@@ -78,7 +78,8 @@ class ScienceWorldEnv:
         self.goldPathGenerated = False
 
     # Ask the simulator to load an environment from a script
-    def load(self, taskName: str, variationIdx: int=0, simplificationStr: str="", generateGoldPath: bool=False) -> None:
+    def load(self, taskName: str, variationIdx: int = 0, simplificationStr: str = "",
+             generateGoldPath: bool = False) -> None:
         '''Load a valid task and its variations/simplifications, and set up the simulator
         and any task-specific properties (electrical, etc). Can optionally have the
         simulator generate a gold path. If it successfully does, it will set
@@ -208,7 +209,7 @@ class ScienceWorldEnv:
         ''' Get a list of all of the *valid* action-object combinations. '''
         return list(self.server.getValidActionObjectCombinations())
 
-    def get_valid_action_object_combinations_with_templates(self) -> list[dict[str]] :
+    def get_valid_action_object_combinations_with_templates(self) -> list[dict[str]]:
         ''' Returns list of dicts with keys "action", "template_id", and "obj_ids" '''
         jsonStr = self.server.getValidActionObjectCombinationsJSON()
         data = json.loads(jsonStr)
@@ -321,7 +322,8 @@ class ScienceWorldEnv:
         self.runHistories = {}
 
     # A one-stop function to handle saving.
-    def save_run_histories_buffer_if_full(self, filename_out_prefix: str, max_per_file: int=1000, force_save: bool=False) -> None:
+    def save_run_histories_buffer_if_full(self, filename_out_prefix: str,
+                                          max_per_file: int = 1000, force_save: bool = False) -> None:
         '''One stop function for saving.
 
         If the histories buffer is full, saves to file and clears the buffer.
