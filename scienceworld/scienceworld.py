@@ -1,4 +1,5 @@
-from typing import List, Dict, Tuple, Set, Any, OrderedDict
+from typing import List, Dict, Tuple, Set, Any
+from typing import OrderedDict as OrderedDictType
 import json
 import logging
 from collections import OrderedDict
@@ -159,7 +160,7 @@ class ScienceWorldEnv:
         return self.server.getPossibleSimplifications().split(", ")
 
     @property
-    def tasks(self) -> OrderedDict[str, str]:
+    def tasks(self) -> OrderedDictType[str, str]:
         """ Get the supported tasks in ScienceWorld. """
         return OrderedDict(ID2TASK)
 
