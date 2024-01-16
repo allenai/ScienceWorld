@@ -1,3 +1,4 @@
+from typing import List, Dict, Tuple, Set, Any
 import json
 import logging
 from collections import OrderedDict
@@ -127,7 +128,7 @@ class ScienceWorldEnv:
         # Keep track of whether the gold path was generated, to generate verbose error messages
         self.goldPathGenerated = generateGoldPath
 
-    def reset(self) -> tuple[str, dict[str]]:
+    def reset(self) -> Tuple[str, Dict[str, Any]]:
         ''' Resets the simulator back to the first move (the output of "look around" is returned) '''
 
         self.server.reset()
@@ -146,7 +147,7 @@ class ScienceWorldEnv:
         ''' Gets the simplifications being used by the simulator. '''
         return self.server.getSimplificationsUsed()
 
-    def get_possible_simplifications(self) -> list[str]:
+    def get_possible_simplifications(self) -> List[str]:
         '''Gets the 6 possible simplifications. There are 6 simplifictions:
             - teleportAction: Teleport action
             - selfWateringFlowerPots: Self-watering flower pots
@@ -163,11 +164,11 @@ class ScienceWorldEnv:
         return OrderedDict(ID2TASK)
 
     @property
-    def task_names(self) -> list[str]:
+    def task_names(self) -> List[str]:
         ''' Get the name for the supported tasks in ScienceWorld. '''
         return list(ID2TASK.values())
 
-    def get_task_names(self) -> list[str]:
+    def get_task_names(self) -> List[str]:
         ''' Get the name for the supported tasks in ScienceWorld. '''
         return list(self.server.getTaskNames())
 
@@ -176,60 +177,60 @@ class ScienceWorldEnv:
         return self.server.getTaskMaxVariations(infer_task(task_name))
 
     # Get possible actions
-    def get_possible_actions(self) -> list[str]:
+    def get_possible_actions(self) -> List[str]:
         ''' Get all possible actions in the current environment state. '''
         return list(self.server.getPossibleActions())
 
     # Get possible actions (and also include the template IDs for those actions)
-    def get_possible_actions_with_IDs(self) -> list[dict[str]]:
+    def get_possible_actions_with_IDs(self) -> List[Dict[str, Any]]:
         ''' Get a list of dictionaries that map "action_example" to the action template and "template_id" to the id.'''
         jsonStr = self.server.getPossibleActionsWithIDs()
         data = json.loads(jsonStr)
         return data
 
-    def get_possible_objects(self) -> list[str]:
+    def get_possible_objects(self) -> List[str]:
         ''' Get a list of all observable objects '''
         return list(self.server.getPossibleObjects())
 
     # Get a list of object_ids to unique referents
-    def get_possible_object_referent_LUT(self) -> dict[str, str]:
+    def get_possible_object_referent_LUT(self) -> Dict[str, str]:
         ''' Returns lookup table (dict) mapping object IDs to their referents. '''
         jsonStr = self.server.getPossibleObjectReferentLUTJSON()
         data = json.loads(jsonStr)
         return data
 
     # As above, but dictionary is referenced by object type ID
-    def get_possible_object_referent_types_LUT(self) -> dict[str, dict[str, str]]:
+    def get_possible_object_referent_types_LUT(self) -> Dict[str, Dict[str, str]]:
         ''' Returns lookup table (dict) mapping object type IDs to a dict of all objects of that type. '''
         jsonStr = self.server.getPossibleObjectReferentTypesLUTJSON()
         data = json.loads(jsonStr)
         return data
 
-    def get_valid_action_object_combinations(self) -> list[str]:
+    def get_valid_action_object_combinations(self) -> List[str]:
         ''' Get a list of all of the *valid* action-object combinations. '''
         return list(self.server.getValidActionObjectCombinations())
 
-    def get_valid_action_object_combinations_with_templates(self) -> list[dict[str]]:
+    def get_valid_action_object_combinations_with_templates(self) -> List[Dict[str, Any]]:
         ''' Returns list of dicts with keys "action", "template_id", and "obj_ids" '''
         jsonStr = self.server.getValidActionObjectCombinationsJSON()
         data = json.loads(jsonStr)
         return data['validActions']
 
-    def get_all_object_types_LUTJSON(self) -> dict[str, str]:
+    def get_all_object_types_LUTJSON(self) -> Dict[str, str]:
         ''' Returns look up table mapping object ids to type ids '''
         jsonStr = self.server.getAllObjectTypesLUTJSON()
         data = json.loads(jsonStr)
         return data
 
     # Get a LUT of {object_id: {type_id, referent:[]} } tuples
-    def get_all_object_ids_types_referents_LUTJSON(self) -> dict[str, dict[str]]:
+    def get_all_object_ids_types_referents_LUTJSON(self) -> Dict[str, Dict[str, Any]]:
         ''' Returns look up table mapping object ids to objects with keys "type_id" and "referents" '''
         jsonStr = self.server.getAllObjectIdsTypesReferentsLUTJSON()
         data = json.loads(jsonStr)
         return data
 
     # Get possible action/object combinations
-    def get_possible_action_object_combinations(self) -> tuple[list[dict[str]], dict[str, str]]:
+    def get_possible_action_object_combinations(self) -> Tuple[List[Dict[str, Any]], Dict[str, str]]:
         ''' Get all *possible* action-object combinations, including invalid ones. '''
         combinedJSON = self.server.getPossibleActionObjectCombinationsJSON()
         data = json.loads(combinedJSON)
@@ -238,7 +239,7 @@ class ScienceWorldEnv:
 
         return (templates, lookUpTable)
 
-    def get_object_types(self) -> dict[str, int]:
+    def get_object_types(self) -> Dict[str, int]:
         '''Get a dict mapping object names to the object id. The object name is the name
         of the actual file, for example "scienceworld.objects.containers.furniture.Chair".
         '''
@@ -246,7 +247,7 @@ class ScienceWorldEnv:
         data = json.loads(jsonStr)
         return data
 
-    def get_vocabulary(self) -> set[str]:
+    def get_vocabulary(self) -> Set[str]:
         ''' Get all words that currently have some sort of meaning to the simulator. '''
         vocab = set()
 
@@ -270,7 +271,7 @@ class ScienceWorldEnv:
         return self.server.getTaskDescription()
 
     # History
-    def get_run_history(self) -> dict[str]:
+    def get_run_history(self) -> Dict[str, Any]:
         ''' Get the run history '''
         historyStr = self.server.getRunHistoryJSON()
         jsonOut = json.loads(historyStr)
@@ -338,15 +339,15 @@ class ScienceWorldEnv:
             self.clear_run_histories()
 
     # Train/development/test sets
-    def get_variations_train(self) -> list[int]:
+    def get_variations_train(self) -> List[int]:
         ''' Get the list of variations available for the training set. '''
         return list(self.server.getVariationsTrain())
 
-    def get_variations_dev(self) -> list[int]:
+    def get_variations_dev(self) -> List[int]:
         ''' Get the list of variations available for the development set. '''
         return list(self.server.getVariationsDev())
 
-    def get_variations_test(self) -> list[int]:
+    def get_variations_test(self) -> List[int]:
         ''' Get the list of variations available for the testing set. '''
         return list(self.server.getVariationsTest())
 
@@ -363,7 +364,7 @@ class ScienceWorldEnv:
         return self.server.getRandomVariationTest()
 
     # Gold action sequence
-    def get_gold_action_sequence(self) -> list[str]:
+    def get_gold_action_sequence(self) -> List[str]:
         '''Get the gold action sequence.
         The gold action sequence is the optimal sequence of actions. This function returns that if it is generated.
         If it is not generated, it generates an error.
@@ -374,7 +375,7 @@ class ScienceWorldEnv:
             return ["ERROR: Gold path was not generated.  Set `generateGoldPath` flag to true when calling load()."]
 
     # Step
-    def step(self, input_str: str) -> tuple[str, int, bool, dict[str]]:
+    def step(self, input_str: str) -> Tuple[str, int, bool, Dict[str, Any]]:
         '''Take a step.
 
         This function takes one step in the typical state-action-reward cycle of RL.
