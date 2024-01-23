@@ -152,7 +152,7 @@ class ScienceWorldEnv:
         '''Gets the 6 possible simplifications. Those are:
             - teleportAction: Adds actions to teleport directly to any possible location
             - selfWateringFlowerPots: Flower pots will water themselves such that the plants won't die
-            - openContainers: Containers open by default
+            - openContainers: Containers are open by default
             - openDoors: Doors open by default
             - noElectricalAction: Remove the electrical actions
             - easy: use all 5 simplifications
