@@ -155,7 +155,7 @@ class ScienceWorldEnv:
             - openContainers: Containers are open by default
             - openDoors: Doors open are by default
             - noElectricalAction: Remove all `connect X to Y` actions to reduce the action space
-            - easy: use all 5 simplifications
+            - easy: use all above simplifications
         '''
         return self.server.getPossibleSimplifications().split(", ")
 
