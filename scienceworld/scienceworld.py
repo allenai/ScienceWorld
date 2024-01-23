@@ -153,7 +153,7 @@ class ScienceWorldEnv:
             - teleportAction: Adds actions to teleport directly to any possible location
             - selfWateringFlowerPots: Flower pots will water themselves such that the plants won't die
             - openContainers: Containers are open by default
-            - openDoors: Doors open by default
+            - openDoors: Doors open are by default
             - noElectricalAction: Remove the electrical actions
             - easy: use all 5 simplifications
         '''
