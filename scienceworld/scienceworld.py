@@ -154,7 +154,7 @@ class ScienceWorldEnv:
             - selfWateringFlowerPots: Flower pots will water themselves such that the plants won't die
             - openContainers: Containers are open by default
             - openDoors: Doors open are by default
-            - noElectricalAction: Remove the electrical actions
+            - noElectricalAction: Remove all `connect X to Y` actions to reduce the action space
             - easy: use all 5 simplifications
         '''
         return self.server.getPossibleSimplifications().split(", ")
