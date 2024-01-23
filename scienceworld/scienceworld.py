@@ -150,7 +150,7 @@ class ScienceWorldEnv:
 
     def get_possible_simplifications(self) -> List[str]:
         '''Gets the 6 possible simplifications. Those are:
-            - teleportAction: Teleport action
+            - teleportAction: Adds actions to teleport directly to any possible location
             - selfWateringFlowerPots: Self-watering flower pots
             - openContainers: Containers open by default
             - openDoors: Doors open by default
