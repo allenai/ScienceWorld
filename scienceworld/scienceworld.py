@@ -367,7 +367,8 @@ class ScienceWorldEnv:
     # Gold action sequence
     def get_gold_action_sequence(self) -> List[str]:
         '''Get the gold action sequence.
-        The gold action sequence is a sequence of actions that leads to a winning state (there is no guarantee it is the optimal). This function returns that if it is generated.
+        The gold action sequence is a sequence of actions that leads to a winning state
+        (there is no guarantee it is the optimal). This function returns that if it is generated.
         If it is not generated, it generates an error.
         '''
         if (self.goldPathGenerated):
