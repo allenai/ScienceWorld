@@ -149,7 +149,7 @@ class ScienceWorldEnv:
         return self.server.getSimplificationsUsed()
 
     def get_possible_simplifications(self) -> List[str]:
-        '''Gets the 6 possible simplifications. There are 6 simplifictions:
+        '''Gets the 6 possible simplifications. Those are:
             - teleportAction: Teleport action
             - selfWateringFlowerPots: Self-watering flower pots
             - openContainers: Containers open by default
