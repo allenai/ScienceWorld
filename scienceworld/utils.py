@@ -5,6 +5,8 @@ from scienceworld.constants import NAME2ID, ID2TASK
 
 
 def infer_task(name_or_id):
+    ''' Takes a task name or task ID and processes it to produce a uniform task format. '''
+
     if name_or_id in NAME2ID:
         name_or_id = NAME2ID[name_or_id]
 

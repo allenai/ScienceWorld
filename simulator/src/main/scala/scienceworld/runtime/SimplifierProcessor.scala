@@ -46,7 +46,7 @@ class SimplificationOpenDoors extends Simplification(label = SIMPLIFICATION_OPEN
 }
 
 
-// Simplification: Open all doors in the environment
+// Simplification: Open all containers in the environment
 class SimplificationOpenContainers extends Simplification(label = SIMPLIFICATION_OPEN_CONTAINERS, description = "All containers are open by default.") {
   runAtInitialization = true
 
