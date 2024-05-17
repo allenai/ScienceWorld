@@ -13,7 +13,6 @@ from scienceworld.utils import infer_task, snake_case_deprecation_warning
 logger = logging.getLogger(__name__)
 
 
-
 class ScienceWorldEnv:
     """Python wrapper for the simulator written in Scala. The methods that are
     being wrapped can be found in simulator/src/main/scala/scienceworld/runtime/AgentInterface.scala.
