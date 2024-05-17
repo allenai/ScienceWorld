@@ -1,6 +1,6 @@
 package scienceworld.runtime.pythonapi
 
-import java.io.PrintWriter
+import java.io.{File, FileOutputStream,PrintWriter}
 
 import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.environments.EnvironmentMaker
@@ -325,13 +325,13 @@ class PythonInterface() {
     agentInterface.get.getTaskDescription()
   }
 
-  def getObjectTree(path:String = ""):String = {
+  def getObjectTree(folderPath:String = ""):String = {
     if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
 
     val objTree = agentInterface.get.universe.toJSON()
-    if (path == "") return objTree
+    if (folderPath == "") return objTree
 
-    val pw = new PrintWriter(path)
+    var pw = new PrintWriter(folderPath + "/objectTree.json");
     pw.print(objTree)
     pw.close()
     return ""
