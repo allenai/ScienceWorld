@@ -1,5 +1,7 @@
 package scienceworld.runtime.pythonapi
 
+import java.io.{File, FileOutputStream,PrintWriter}
+
 import main.scala.scienceworld.runtime.SimplifierProcessor
 import scienceworld.environments.EnvironmentMaker
 import scienceworld.goldagent.RunHistory
@@ -321,6 +323,18 @@ class PythonInterface() {
   def getTaskDescription():String = {
     if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
     agentInterface.get.getTaskDescription()
+  }
+
+  def getObjectTree(folderPath:String = ""):String = {
+    if (agentInterface.isEmpty) return ERROR_MESSAGE_UNINITIALIZED
+
+    val objTree = agentInterface.get.universe.toJSON()
+    if (folderPath == "") return objTree
+
+    var pw = new PrintWriter(folderPath + "/objectTree.json");
+    pw.print(objTree)
+    pw.close()
+    return ""
   }
 
   /*
