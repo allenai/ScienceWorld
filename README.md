@@ -39,20 +39,31 @@ You can try ScienceWorld yourself via our [HuggingFace Space](https://huggingfac
 ```
 
 # Quickstart
-**Before running:** You will have to have `Java 1.8+` installed on your system (shipped with most linux distributions).
+**Before running:** You will have to have `Java 1.8+` installed on your system (shipped with most linux distributions) and `Python 3.8+`. We recommend creating a conda environment like this:
 
-Install with pip:
 ```bash
 conda create --name scienceworld python=3.8
 conda activate scienceworld
-pip install scienceworld
 ```
 
+Then, install ScienceWorld either from PyPi:
+
+    pip install scienceworld
+
+or from source in development mode:
+
+    git clone https://github.com/allenai/ScienceWorld.git
+    cd ScienceWorld
+    pip install .
+
+
 Run an example random agent, on task 13 (classification: place a non-living thing in a box), for 5 episodes:
-> python examples/random_agent.py --task-num=13 --num-episodes=5 --simplifications-preset easy
+
+    python examples/random_agent.py --task-num=13 --num-episodes=5 --simplifications-preset easy
 
 Run a user console where you can interact with the environment, on task 3 (change of state: melting):
-> python examples/human.py --task-num=3 --num-episodes=5
+
+    python examples/human.py --task-num=3 --num-episodes=5
 
 
 # Web Server Demo
@@ -69,14 +80,21 @@ pip install scienceworld[webserver]
 ```
 
 Run the web server:
-> python examples/scienceworld-web-server-example.py
+
+    python examples/scienceworld-web-server-example.py
 
 Point your web browser to:
 `localhost:8080`
 
 
 # ScienceWorld Design
-ScienceWorld is written in Scala (2.12.9), and compiles using `sbt` into a JAR file that is run with Java.  For convenience, a Python API is provided (Python >= 3.7), which interfaces using the `py4j` package.
+ScienceWorld is written in Scala (2.12.9), and compiles using `sbt` into a JAR file that is run with Java.  For convenience, a Python API is provided (Python >= 3.8), which interfaces using the `py4j` package.
+
+If you modified the Scala code, you can recompile the JAR file by running:
+```bash
+./simulator/package.sh
+pip install -e .
+```
 
 # Tasks
 The tasks are listed in the table below along with their number of variations. Either the task ID or its name can be used to a task with `env.load()`.
