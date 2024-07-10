@@ -4,6 +4,7 @@ import language.model.{ActionExpr, ActionExprIdentifier, ActionExprOR, ActionExp
 import scienceworld.input.ActionDefinitions.mkActionRequest
 import scienceworld.input.{ActionDefinitions, ActionHandler}
 import scienceworld.objects.agent.Agent
+import scienceworld.objects.portal.Portal
 import scienceworld.struct.EnvObject
 import scienceworld.struct.EnvObject._
 import util.StringHelpers
@@ -84,7 +85,23 @@ class ActionLookAt(action:ActionRequestDef, assignments:Map[String, EnvObject]) 
     val (invalidStr, isValid) = ActionLookAt.isValidAction(assignments)
     if (!isValid) return (invalidStr, false)
 
-    val objDescription = obj.getDescriptionSafe(mode = MODE_DETAILED).getOrElse("<ERROR: attempting to view hidden object>")    //## TODO: Arguable whether the error case here should be caught by checks above
+    // Modified version, with special handling for Portal objects
+    val mode = MODE_DETAILED
+    var objDescription = "<ERROR: Could not retrieve object description>"   // This error should never happen
+    // Get the perspective container
+    if (agent.getContainer().isDefined) {       // This should always be the case unless something terrible has happened
+      val perspectiveContainer = agent.getContainer().get
+      obj match {
+        case x: Portal => {
+          val desc = x.getDescriptionSafe(mode, perspectiveContainer)
+          if (desc.isDefined) objDescription = desc.get
+        }
+        case x: EnvObject => {
+          val desc = x.getDescriptionSafe(mode)
+          if (desc.isDefined) objDescription = desc.get
+        }
+      }
+    }
     return (objDescription, true)
 
   }
