@@ -36,20 +36,21 @@ class ScienceWorldEnv:
         if DEBUG_MODE:
             import sys
             import time
-            port = launch_gateway(
+            port, proc = launch_gateway(
                 classpath=serverPath, die_on_exit=True, cwd=BASEPATH,
                 javaopts=['-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005,quiet=y'],
-                redirect_stdout=sys.stdout, redirect_stderr=sys.stderr)
+                redirect_stdout=sys.stdout, redirect_stderr=sys.stderr, return_proc=True)
             logger.debug("Attach debugger within the next 10 seconds")
             time.sleep(10)  # Give time for user to attach debugger
         else:
-            port = launch_gateway(classpath=serverPath, die_on_exit=True, cwd=BASEPATH)
+            port, proc = launch_gateway(classpath=serverPath, die_on_exit=True, cwd=BASEPATH, return_proc=True)
 
         # Connect python side to Java side with Java dynamic port and start python
         # callback server with a dynamic port
         self._gateway = JavaGateway(
             gateway_parameters=GatewayParameters(auto_field=True, port=port),
-            callback_server_parameters=CallbackServerParameters(port=0, daemonize=True))
+            callback_server_parameters=CallbackServerParameters(port=0, daemonize=True),
+            java_process=proc)
 
         # Retrieve the port on which the python callback server was bound to.
         python_port = self._gateway.get_callback_server().get_listening_port()
@@ -146,6 +147,18 @@ class ScienceWorldEnv:
 
         # Return a tuple that looks like the Jericho signature for reset
         return observation, info
+
+    def close(self) -> None:
+        self._gateway.shutdown()
+
+        # According to https://github.com/py4j/py4j/issues/320#issuecomment-553599210
+        # we need to send a newline to the process to make it exit.
+        if self._gateway.java_process.poll() is None:
+            self._gateway.java_process.stdin.write("\n".encode("utf-8"))
+            self._gateway.java_process.stdin.flush()
+
+    def __del__(self):
+        self.close()
 
     # Simplifications
     def get_simplifications_used(self) -> str:
