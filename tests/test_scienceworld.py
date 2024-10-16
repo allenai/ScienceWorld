@@ -44,6 +44,15 @@ def test_multiple_instances():
     assert obs1_2 == obs2_2
 
 
+def test_closing_env():
+    env = ScienceWorldEnv()
+    env.task_names  # Load task names.
+    assert env._gateway.java_process.poll() is None
+    env.close()
+    env._gateway.java_process.wait(5)
+    assert env._gateway.java_process.poll() is not None
+
+
 def test_variation_sets_are_disjoint():
     env = ScienceWorldEnv()
 
