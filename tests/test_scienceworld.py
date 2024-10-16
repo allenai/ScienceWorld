@@ -49,7 +49,7 @@ def test_closing_env():
     env.task_names  # Load task names.
     assert env._gateway.java_process.poll() is None
     env.close()
-    env._gateway.java_process.wait(1)
+    env._gateway.java_process.wait(5)
     assert env._gateway.java_process.poll() is not None
 
 

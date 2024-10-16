@@ -53,9 +53,9 @@ jobs:
         path: scienceworld/
 
     - name: Install dependencies
-      run:
+      run: |
         python -m pip install --upgrade pip
-        pip install tox tox-gh-actions
+        python -m pip install tox tox-gh-actions
 
     - name: Install ScienceWorld
       run:
