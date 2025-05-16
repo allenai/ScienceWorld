@@ -102,7 +102,7 @@ def randomModel(args):
             curIter += 1
 
         print("Goal Progress:")
-        print(env.get_goal_progress_str())
+        print(env.get_goal_progress())
         time.sleep(1)
 
         # Episode finished -- Record the final score

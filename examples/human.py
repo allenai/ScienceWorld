@@ -148,7 +148,7 @@ def userConsole(args):
         print("")
 
     # Display subgoal progress
-    print(env.get_goal_progress_str())
+    print(env.get_goal_progress())
 
     print("Completed.")
 

@@ -649,7 +649,7 @@ class ScienceWorldEnv:
     def getGoalProgressStr(self):
         snake_case_deprecation_warning()
 
-        return self.get_goal_progress_str()
+        return self.get_goal_progress()
 
 
 class BufferedHistorySaver:
