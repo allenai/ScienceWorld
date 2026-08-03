@@ -13,6 +13,32 @@ def test_observation_is_deterministic():
         assert obs == obs_orig
 
 
+def test_action_trace_is_deterministic():
+    """Reset must reproduce stateful physics, not only the initial description."""
+    env = ScienceWorldEnv()
+    env.load("task-1-boil", 0, "teleportAction")
+    actions = [
+        "teleport to kitchen",
+        "pour counter into sink",
+        "activate sink",
+        "use lighter on drawer",
+        "look around",
+    ]
+
+    traces = []
+    try:
+        for _ in range(8):
+            observation, info = env.reset()
+            trace = [(observation, info)]
+            for action in actions:
+                trace.append(env.step(action))
+            traces.append(trace)
+    finally:
+        env.close()
+
+    assert all(trace == traces[0] for trace in traces[1:])
+
+
 def test_multiple_instances():
     env1 = ScienceWorldEnv("1-1")
     env2 = ScienceWorldEnv("1-1")

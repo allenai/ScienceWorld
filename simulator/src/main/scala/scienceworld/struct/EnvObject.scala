@@ -613,6 +613,8 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     }
   }
 
+  override def hashCode():Int = java.lang.Long.hashCode(this.uuid)
+
 
   /*
    * String methods

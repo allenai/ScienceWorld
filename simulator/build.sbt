@@ -2,7 +2,7 @@ name := "scienceworld-scala"
 
 version := "1.2.3"
 
-scalaVersion := "2.12.9"
+scalaVersion := "2.12.21"
 
 resolvers += "jetbrains-intellij-dependencies" at "https://packages.jetbrains.team/maven/p/ij/intellij-dependencies"
 
