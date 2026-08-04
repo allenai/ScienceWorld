@@ -6,9 +6,11 @@ from scienceworld import ScienceWorldEnv
 def _ordered_api_snapshot(env):
     possible_referents = env.server.getPossibleObjectReferentLUTJSON()
     possible_referent_types = env.server.getPossibleObjectReferentTypesLUTJSON()
+    object_type_ids = env.server.getObjectTypesLUTJSON()
     object_types = env.server.getAllObjectTypesLUTJSON()
     object_referents = env.server.getAllObjectIdsTypesReferentsLUTJSON()
 
+    assert list(json.loads(object_type_ids)) == sorted(json.loads(object_type_ids))
     for payload in (possible_referents, object_types, object_referents):
         keys = list(json.loads(payload))
         assert keys == sorted(keys, key=int)
@@ -22,7 +24,7 @@ def _ordered_api_snapshot(env):
     for obj in json.loads(object_referents).values():
         assert obj["referents"] == sorted(obj["referents"])
 
-    return possible_referents, possible_referent_types, object_types, object_referents
+    return possible_referents, possible_referent_types, object_type_ids, object_types, object_referents
 
 
 def test_observation_is_deterministic():
