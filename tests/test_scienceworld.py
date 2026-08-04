@@ -13,6 +13,27 @@ def test_observation_is_deterministic():
         assert obs == obs_orig
 
 
+def test_boiling_is_deterministic():
+    env = ScienceWorldEnv()
+    actions = [
+        "teleport to kitchen",
+        "pour counter into sink",
+        "activate sink",
+        "use lighter on drawer",
+        "look around",
+    ]
+
+    try:
+        for _ in range(8):
+            env.load("task-1-boil", variationIdx=0, simplificationStr="teleportAction")
+            env.reset()
+            for action in actions:
+                observation, _, _, _ = env.step(action)
+            assert "a substance called steam" in observation
+    finally:
+        env.close()
+
+
 def test_multiple_instances():
     env1 = ScienceWorldEnv("1-1")
     env2 = ScienceWorldEnv("1-1")

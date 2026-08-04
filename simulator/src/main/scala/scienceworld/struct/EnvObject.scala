@@ -516,13 +516,14 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     // Combustion: Handle object combustion
     Combustion.combustionTick(this)
 
+    val containedObjs = this.getContainedObjects().toArray.sortBy(_.uuid)
+
     // Heat transfer: Conductive heat transfer between this container and all objects in the container (container to obj)
-    for (containedObj <- this.getContainedObjects()) {
+    for (containedObj <- containedObjs) {
       HeatTransfer.heatTransferTouchingObjects(this, containedObj)
     }
 
     // Heat transfer: Conductive heat transfer between all objects in this container (obj to obj)
-    val containedObjs = this.getContainedObjects().toArray
     for (i <- 0 until containedObjs.length) {
       for (j <- 0 until i) {
         if (i != j) {
@@ -539,10 +540,10 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
 
 
     // Run tick for all objects further down in the object tree
-    for (containedObj <- this.getContainedObjects()) {
+    for (containedObj <- containedObjs) {
       containedObj.tick()
     }
-    for (portalObj <- this.getPortals()) {      //## TODO: Verify that the portal tick was run only once?
+    for (portalObj <- this.getPortals().toArray.sortBy(_.uuid)) {      //## TODO: Verify that the portal tick was run only once?
       portalObj.tick()
     }
 

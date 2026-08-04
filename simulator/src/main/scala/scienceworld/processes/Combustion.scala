@@ -88,7 +88,7 @@ object Combustion {
       if (container.isDefined) objectsThatMightBeWater ++= container.get.getContainedObjects()
 
       breakable {
-        for (cObj <- objectsThatMightBeWater) {
+        for (cObj <- objectsThatMightBeWater.toArray.sortBy(_.uuid)) {
           if (cObj.propMaterial.isDefined) {
             if ((cObj.propMaterial.get.substanceName == "water") && (cObj.propMaterial.get.stateOfMatter == "liquid")) {
               println("### COMBUSTION: PUTTING FIRE OUT WITH (" + cObj.name + ").")
