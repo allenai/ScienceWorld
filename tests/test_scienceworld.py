@@ -13,6 +13,22 @@ def test_observation_is_deterministic():
         assert obs == obs_orig
 
 
+def test_object_tree_is_uuid_ordered():
+    def assert_contents_ordered(obj):
+        contents = list(obj.get("contents", {}).values())
+        uuids = [int(child["uuid"]) for child in contents]
+        assert uuids == sorted(uuids)
+        for child in contents:
+            assert_contents_ordered(child)
+
+    env = ScienceWorldEnv("1-1")
+    try:
+        env.reset()
+        assert_contents_ordered(env.getObjectTree())
+    finally:
+        env.close()
+
+
 def test_boiling_is_deterministic():
     env = ScienceWorldEnv()
     actions = [
@@ -24,12 +40,18 @@ def test_boiling_is_deterministic():
     ]
 
     try:
+        traces = []
         for _ in range(8):
             env.load("task-1-boil", variationIdx=0, simplificationStr="teleportAction")
             env.reset()
+            trace = []
             for action in actions:
-                observation, _, _, _ = env.step(action)
+                result = env.step(action)
+                trace.append(result)
+            observation = trace[-1][0]
             assert "a substance called steam" in observation
+            traces.append(trace)
+        assert all(trace == traces[0] for trace in traces[1:])
     finally:
         env.close()
 

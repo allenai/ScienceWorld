@@ -144,8 +144,8 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
   def parse(inputStr:String, objTreeRoot:EnvObject, universe:EnvObject, agent:Agent, objMonitor:ObjMonitor, goalSequence:GoalSequence, perspectiveContainer:EnvObject): (Boolean, String, String, Option[Action]) = {      // (Success, errorMessage, userString)
     // TODO: Only include observable objects in the list of all objects
     val tokens = InputParser.tokenize(inputStr.toLowerCase)
-    val allVisibleObjs = (InputParser.collectAccessibleObjects(objTreeRoot, includeHidden = true) ++ InputParser.collectAccessibleObjects(agent, includeHidden = true)).toArray
-    val allObjs = InputParser.collectAccessibleObjects(universe, includeHidden = true).toArray   // Assumes agent (and its inventory) is in Universe
+    val allVisibleObjs = (InputParser.collectAccessibleObjects(objTreeRoot, includeHidden = true) ++ InputParser.collectAccessibleObjects(agent, includeHidden = true)).toArray.sortBy(_.uuid)
+    val allObjs = InputParser.collectAccessibleObjects(universe, includeHidden = true).toArray.sortBy(_.uuid)   // Assumes agent (and its inventory) is in Universe
 
     //println ("inputStr: " + inputStr)
 
@@ -238,10 +238,11 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
 
   def mkAmbiguousMessage(matches: mutable.Map[String, Array[InputMatch]], agent:Agent): (String, Array[InputMatch]) = {
     val os = new StringBuilder
+    val orderedMatches = matches.toArray.sortBy(_._1)
     if (matches.keySet.size > 1) {
       // CASE: Multiple different actions are matched.
       os.append("Ambiguous request: Multiple different possible actions were matched to this input (")
-      os.append(matches.map(_._1).mkString(", ") + "). ")
+      os.append(orderedMatches.map(_._1).mkString(", ") + "). ")
       os.append("It's possible the action space needs to be refined to remove possible duplicate/ambiguous patterns.")
     }
 
@@ -249,7 +250,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
 
     // Collect all possible ambiguous actions
     val allAmbiguousActions = new ArrayBuffer[InputMatch]
-    for (matchSet <- matches) {
+    for (matchSet <- orderedMatches) {
       allAmbiguousActions.insertAll(allAmbiguousActions.length, matchSet._2)
     }
 
@@ -703,8 +704,8 @@ object InputParser {
 
   // Collect all objects in the object tree into a flat set.
   // NOTE: This function does not respect container boundaries (e.g. whether a container is open/closed), and simply gets every object that's contained regardless of accessibility.
-  def collectObjects(objectTreeRoot:EnvObject, includeHidden:Boolean = false):mutable.Set[EnvObject] = {
-    val out = mutable.Set[EnvObject]()
+  def collectObjects(objectTreeRoot:EnvObject, includeHidden:Boolean = false):mutable.LinkedHashSet[EnvObject] = {
+    val out = mutable.LinkedHashSet[EnvObject]()
 
     // Step 1: Add this object
     if (!out.contains(objectTreeRoot)) {
@@ -733,8 +734,8 @@ object InputParser {
     out
   }
 
-  def collectAccessibleObjects(objectTreeRoot:EnvObject, includeHidden:Boolean = false):mutable.Set[EnvObject] = {
-    val out = mutable.Set[EnvObject]()
+  def collectAccessibleObjects(objectTreeRoot:EnvObject, includeHidden:Boolean = false):mutable.LinkedHashSet[EnvObject] = {
+    val out = mutable.LinkedHashSet[EnvObject]()
 
     // Step 1: Add this object
     if (!out.contains(objectTreeRoot)) {

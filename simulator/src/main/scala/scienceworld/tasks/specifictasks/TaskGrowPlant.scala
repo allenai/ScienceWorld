@@ -577,7 +577,7 @@ class TaskGrowPlant(val mode:String = MODE_LIVING) extends TaskParametric {
     runAction("look around", runner)
 
     // Get references to flower pots (and sort them by those with and without soil)
-    val flowerpots = Random.shuffle(getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[FlowerPot]() ++ getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[SelfWateringFlowerPot]()).toList
+    val flowerpots = Random.shuffle((getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[FlowerPot]() ++ getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[SelfWateringFlowerPot]()).toList.sortBy(_.uuid))
     val flowerPotsWithSoil = new ArrayBuffer[EnvObject]
     val flowerPotsWithoutSoil = new ArrayBuffer[EnvObject]
 

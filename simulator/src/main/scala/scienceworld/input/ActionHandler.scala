@@ -16,7 +16,7 @@ class ActionHandler {
   /*
    * Accessors
    */
-  def getActions():Array[ActionRequestDef] = this.actions.map(_._2).toArray
+  def getActions():Array[ActionRequestDef] = this.actions.values.toArray.sortBy(action => (action.uniqueActionID, action.name))
 
   def addAction(actionName:String, triggerPhrase:List[ActionTrigger], uniqueActionID:Int): Unit = {
     actions(actionName) = new ActionRequestDef(actionName, new ParamSigList(List.empty[ParamSig]), triggerPhrase, uniqueActionID)
