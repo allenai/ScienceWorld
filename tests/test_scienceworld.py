@@ -1,4 +1,28 @@
+import json
+
 from scienceworld import ScienceWorldEnv
+
+
+def _ordered_api_snapshot(env):
+    possible_referents = env.server.getPossibleObjectReferentLUTJSON()
+    possible_referent_types = env.server.getPossibleObjectReferentTypesLUTJSON()
+    object_types = env.server.getAllObjectTypesLUTJSON()
+    object_referents = env.server.getAllObjectIdsTypesReferentsLUTJSON()
+
+    for payload in (possible_referents, object_types, object_referents):
+        keys = list(json.loads(payload))
+        assert keys == sorted(keys, key=int)
+
+    referent_types = json.loads(possible_referent_types)
+    assert list(referent_types) == sorted(referent_types, key=int)
+    for objects in referent_types.values():
+        keys = [key for key in objects if key != "desc"]
+        assert keys == sorted(keys, key=int)
+
+    for obj in json.loads(object_referents).values():
+        assert obj["referents"] == sorted(obj["referents"])
+
+    return possible_referents, possible_referent_types, object_types, object_referents
 
 
 def test_observation_is_deterministic():
@@ -24,7 +48,13 @@ def test_object_tree_is_uuid_ordered():
     env = ScienceWorldEnv("1-1")
     try:
         env.reset()
-        assert_contents_ordered(env.getObjectTree())
+        object_tree = json.dumps(env.getObjectTree())
+        api_snapshot = _ordered_api_snapshot(env)
+        for _ in range(8):
+            env.reset()
+            assert_contents_ordered(env.getObjectTree())
+            assert json.dumps(env.getObjectTree()) == object_tree
+            assert _ordered_api_snapshot(env) == api_snapshot
     finally:
         env.close()
 
@@ -67,6 +97,8 @@ def test_multiple_instances():
 
     # Check if the two observations are the same when ignoring the order in which objects are described.
     assert obs1 == obs2
+    assert json.dumps(env1.getObjectTree()) == json.dumps(env2.getObjectTree())
+    assert _ordered_api_snapshot(env1) == _ordered_api_snapshot(env2)
 
     # Interact with one of the envs.
     env1.step("open door to art studio")

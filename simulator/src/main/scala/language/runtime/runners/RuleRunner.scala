@@ -85,7 +85,7 @@ class RuleRunner(val rules:Array[RuleDef], val predicateRunner:PredicateRunner, 
     }
 
     // Step 2: Create a set of parallel arrays that map assignments to specific predicates
-    val flat = varTypesMap.toArray
+    val flat = varTypesMap.toArray.sortBy(_._1)
     val varNames = flat.map(_._1)
     val varTypes = flat.map(_._2)
     // Also repack as a ParamSigList, so that we can use the iterator

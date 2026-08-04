@@ -63,7 +63,7 @@ object Chemistry {
   def mixContainer(container:EnvObject):(Boolean, String) = {
     val contents = container.getContainedObjectsNotHidden()
 
-    print("MIX: Contents: " + contents.map(_.toString()).mkString("\n"))
+    print("MIX: Contents: " + contents.toArray.sortBy(_.uuid).map(_.toString()).mkString("\n"))
 
     // Case: Zero substances
     if (contents.size == 0) {

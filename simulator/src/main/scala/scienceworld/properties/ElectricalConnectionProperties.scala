@@ -14,7 +14,7 @@ class ElectricalConnectionProperties {
   /*
    * Accessors
    */
-  def getConnections():Set[EnvObject] = this.connectedTo.toSet
+  def getConnections():Set[EnvObject] = EnvObject.uuidOrderedSet(this.connectedTo)
 
   def addConnection(obj:EnvObject): Boolean = {
     if (this.isAtMaxConnections()) return false     // Fail if we've already connected the maximum number of components to this connection point
@@ -54,7 +54,7 @@ class ElectricalConnectionProperties {
     // Case: not connected
     if (this.connectedTo.size == 0) return "nothing"
     // Case: connected to one or more objects
-    this.connectedTo.map(_.getDescription(MODE_CURSORY_DETAIL)).mkString(", ")
+    this.getConnections().toArray.map(_.getDescription(MODE_CURSORY_DETAIL)).mkString(", ")
   }
 
 

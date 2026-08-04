@@ -24,7 +24,7 @@ class EnvObject {
    * Properties
    */
   def getProperty(name:String):Option[DynamicValue] = {
-    if (name == PROPNAME_CONTAINED_OBJECTS) return Some(DynamicValue.mkArray(this.containedObjects.toArray))
+    if (name == PROPNAME_CONTAINED_OBJECTS) return Some(DynamicValue.mkArray(this.getContainedObjects().toArray))
     if (name == PROPNAME_CONTAINER) {
       if (this.getContainer().isEmpty) throw new RuntimeException("ERROR: Accessing object.container property, for an object without a container.\n" + this.toString())
       return Some(new DynamicValue(this.getContainer().get))
@@ -69,7 +69,7 @@ class EnvObject {
 
   def getContainer():Option[EnvObject] = this.inContainer
 
-  def getContainedObjects():Set[EnvObject] = this.containedObjects.toSet
+  def getContainedObjects():Set[EnvObject] = EnvObject.uuidOrderedSet(this.containedObjects)
 
   // Add an object to this container
   def addObject(objIn:EnvObject): Unit = {
@@ -207,7 +207,7 @@ class EnvObject {
     // Object Contents
     os.append("), Contents (")
     val contentNames = new ArrayBuffer[String]()
-    for (obj <- this.containedObjects) {
+    for (obj <- this.getContainedObjects()) {
       contentNames.append(obj.getName() + "/" + obj.getType())
     }
     os.append( contentNames.mkString(", ") )
@@ -225,4 +225,8 @@ object EnvObject {
   val OBJECT_NAME       = "name"
   val OBJECT_TYPE       = "type"
 
+  private[language] def uuidOrderedSet(objects:Iterable[EnvObject]):Set[EnvObject] = {
+    implicit val ordering:Ordering[EnvObject] = Ordering.by[EnvObject, Long](_.uuid)
+    scala.collection.immutable.TreeSet.empty[EnvObject] ++ objects
+  }
 }

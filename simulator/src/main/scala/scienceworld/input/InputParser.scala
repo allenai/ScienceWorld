@@ -74,11 +74,11 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
 
 
     val elems = new ArrayBuffer[String]
-    for (typeid <- lut.keySet) {
+    for (typeid <- lut.keySet.toArray.sorted) {
       val os = new StringBuilder()
       os.append("\"" + typeid + "\": {")
 
-      val values = lut(typeid)
+      val values = lut(typeid).sortBy(_._1)
       val innerElems = new ArrayBuffer[String]
       for (value <- values) {
         val uuid = value._1
@@ -119,7 +119,7 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     }
 
     // Return
-    out.toArray.sortBy(_._1)
+    out.toArray.sortBy(tuple => (tuple._1, tuple._2.uuid))
   }
 
   def getAllUniqueReferentsLUTObjList(allObjs:Array[EnvObject], perspectiveContainer:EnvObject, includeHidden:Boolean, recursive:Boolean = false):Map[Long, String] = {
@@ -463,7 +463,8 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     for (i <- 0 until this.lastAmbiguousMatches.get.size) {
       val objUUIDs = new ArrayBuffer[Int]
       val ambMatch = this.lastAmbiguousMatches.get(i)
-      for (varName <- ambMatch.varLUT.keys) {
+      val varNames = ambMatch.actionTrigger.pattern.collect { case ActionExprIdentifier(name) => name }
+      for (varName <- varNames) {
         if (varName.toLowerCase != "agent") {
           val obj = ambMatch.varLUT(varName)
           objUUIDs.append( obj.uuid.toInt )
@@ -563,7 +564,7 @@ object InputParser {
     if (errors) sys.exit(1)
 
     // Return
-    out.toArray.sortBy(_._1)
+    out.toArray.sortBy(tuple => (tuple._1, tuple._2.uuid))
   }
 
   private def filterDuplicateReferents(objReferents:Array[Array[String]]):Array[Array[String]] = {
@@ -682,7 +683,7 @@ object InputParser {
       out.append(filtered)
     }
 
-    out.toArray
+    out.toArray.sorted
   }
 
   def tokenize(inputStr:String):Array[String] = {

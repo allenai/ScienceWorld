@@ -36,7 +36,7 @@ object EnvironmentMaker {
     val agent = new Agent()
 
     // Place in a random location
-    val locations = universe.getContainedObjectsOfType[Location]().toArray.sortBy(_.name)
+    val locations = universe.getContainedObjectsOfType[Location]().toArray.sortBy(obj => (obj.name, obj.uuid))
     val randomLocation = locations( Random.nextInt(locations.length) )
 
     // Normal: Random location
