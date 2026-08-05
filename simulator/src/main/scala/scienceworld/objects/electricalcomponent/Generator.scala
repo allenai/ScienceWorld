@@ -21,8 +21,8 @@ class Generator(val displayOnOff:Boolean = true) extends PolarizedElectricalComp
   override def tick(): Boolean = {
     // If this generator is activated, then generate a voltage potential at the terminals.
     if (this.propDevice.get.isActivated) {
-      this.anode.voltage = Some(VOLTAGE_GENERATOR)
-      this.cathode.voltage = Some(VOLTAGE_GROUND)
+      this.anode.voltage = Some(VOLTAGE_GROUND)
+      this.cathode.voltage = Some(VOLTAGE_GENERATOR)
     } else {
       this.anode.voltage = None
       this.cathode.voltage = None
