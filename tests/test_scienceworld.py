@@ -136,3 +136,27 @@ def test_obj_tree():
     env.reset()
     obj_tree = env.getObjectTree()
     print(obj_tree)
+
+
+def test_step_after_completion_is_ignored():
+    env = ScienceWorldEnv("1-1", envStepLimit=1)
+    env.reset()
+
+    # Keep stepping until the step limit ends the episode.
+    done = False
+    for _ in range(10):
+        obs_done, _, done, infos_done = env.step("open door to kitchen")
+        if done:
+            break
+    assert done is True
+
+    # Further steps are ignored: the action isn't applied, and the terminal state is repeated.
+    obs_after, reward_after, done_after, infos_after = env.step("open door to kitchen")
+    assert done_after is True
+    assert reward_after == 0
+    assert obs_after == obs_done
+    assert infos_after == infos_done
+
+    # Starting a new episode clears the completed flag so step() works again.
+    env.reset()
+    assert env.isCompleted is False
