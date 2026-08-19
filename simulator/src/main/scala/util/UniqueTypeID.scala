@@ -47,7 +47,7 @@ object UniqueTypeID {
   def save(filename:String): Unit = {
     val pw = new PrintWriter(filename)
 
-    for (key <- this.lut.keySet) {
+    for (key <- this.lut.keySet.toArray.sorted) {
       pw.println(key + "\t" + this.lut(key))
     }
 
@@ -80,7 +80,7 @@ object UniqueTypeID {
   // Dump the look-up-table to a JSON dictionary
   def toJSON():String = {
     val elements = new ArrayBuffer[String]
-    for (key <- this.lut.keySet) {
+    for (key <- this.lut.keySet.toArray.sorted) {
       val str = "\"" + key + "\":" + this.lut(key)
       elements.append(str)
     }

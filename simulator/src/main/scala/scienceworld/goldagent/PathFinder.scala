@@ -60,7 +60,7 @@ object PathFinder {
           // This is the portal that connects to the next location.
 
           // Get portal referent
-          val portalReferents = portal.getReferents(location.get).toList.sortBy(- _.length)
+          val portalReferents = portal.getReferents(location.get).toList.sortBy(ref => (-ref.length, ref))
           val portalReferent = portalReferents(0)   // Take the longest referent (least likely to be ambiguous)
 
           // Do we need to open it?
@@ -125,7 +125,7 @@ object PathFinder {
           // This is the portal that connects to the next location.
 
           // Get portal referent
-          val portalReferents = portal.getReferents(location.get).toList.sortBy(- _.length)
+          val portalReferents = portal.getReferents(location.get).toList.sortBy(ref => (-ref.length, ref))
           val portalReferent = portalReferents(0)   // Take the longest referent (least likely to be ambiguous)
 
           // Do we need to open it?
@@ -344,7 +344,7 @@ object PathFinder {
 
   // Get a likely OK referent name for an object
   def getObjReferent(obj:EnvObject): String = {
-    val referents = obj.getReferents().toList.sortBy(- _.length)
+    val referents = obj.getReferents().toList.sortBy(ref => (-ref.length, ref))
     val referent = referents(0)   // Take the longest referent (least likely to be ambiguous)
     return referent
   }

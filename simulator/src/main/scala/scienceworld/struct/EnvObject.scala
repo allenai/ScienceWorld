@@ -89,22 +89,22 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
 
   def getPortals(includeHidden:Boolean = true):Set[Portal] = {
     if (includeHidden) {
-      return this.portals.toSet
+      return uuidOrderedSet(this.portals)
     } else {
       val out = mutable.Set[Portal]()
       for (p <- this.portals) {
         if (!p.isHidden()) out.add(p)
       }
-      return out.toSet
+      return uuidOrderedSet(out)
     }
   }
 
   // Get both portals and objects
   def getContainedObjectsAndPortals(includeHidden:Boolean = true):Set[EnvObject] = {
     if (includeHidden) {
-      return (this.containedObjects ++ this.portals).toSet
+      return uuidOrderedSet(this.containedObjects ++ this.portals)
     } else {
-      this.getContainedObjectsNotHidden() ++ this.getPortals()
+      uuidOrderedSet(this.getContainedObjectsNotHidden() ++ this.getPortals())
     }
 
   }
@@ -141,7 +141,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     out = out ++ portalConnections
 
     // Return
-    out.toSet
+    uuidOrderedSet(out)
   }
 
   /*
@@ -151,8 +151,8 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
   def getContainer():Option[EnvObject] = this.inContainer
 
   def getContainedObjects(includeHidden:Boolean = true):Set[EnvObject] = {
-    if (includeHidden) return this.containedObjects.toSet
-    return this.containedObjects.filter(!_.isHidden()).toSet
+    if (includeHidden) return uuidOrderedSet(this.containedObjects)
+    return uuidOrderedSet(this.containedObjects.filter(!_.isHidden()))
   }
 
   def getContainedObjectsRecursive():Set[EnvObject] = {
@@ -165,7 +165,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     }
 
     // Return
-    out.toSet
+    uuidOrderedSet(out)
   }
 
   // Get a list of objects easily accessible from this level (i.e. contained in this object, OR in an open container contained in this object)
@@ -182,11 +182,11 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     }
 
     // Return
-    out.toSet
+    uuidOrderedSet(out)
   }
 
   def getContainedObjectsNotHidden():Set[EnvObject] = {
-    this.containedObjects.filter(_.isHidden() == false).toSet
+    uuidOrderedSet(this.containedObjects.filter(_.isHidden() == false))
   }
 
   def getContainedAccessibleObjects(includeHidden:Boolean = false, includePortals:Boolean = true):Set[EnvObject] = {
@@ -229,7 +229,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     }
 
     // Return
-    out.toSet
+    uuidOrderedSet(out)
   }
 
   def getContainedObjectsOfType[T:ClassTag]():Set[EnvObject] = {
@@ -240,7 +240,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
         case _ => {}
       }
     }
-    return out.toSet
+    return uuidOrderedSet(out)
   }
 
   def getContainedAccessibleObjectsOfType[T:ClassTag](includeHidden:Boolean = false, includePortals:Boolean = true):Set[EnvObject] = {
@@ -251,7 +251,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
         case _ => {}
       }
     }
-    return out.toSet
+    return uuidOrderedSet(out)
   }
 
 
@@ -516,13 +516,14 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     // Combustion: Handle object combustion
     Combustion.combustionTick(this)
 
+    val containedObjs = this.getContainedObjects().toArray.sortBy(_.uuid)
+
     // Heat transfer: Conductive heat transfer between this container and all objects in the container (container to obj)
-    for (containedObj <- this.getContainedObjects()) {
+    for (containedObj <- containedObjs) {
       HeatTransfer.heatTransferTouchingObjects(this, containedObj)
     }
 
     // Heat transfer: Conductive heat transfer between all objects in this container (obj to obj)
-    val containedObjs = this.getContainedObjects().toArray
     for (i <- 0 until containedObjs.length) {
       for (j <- 0 until i) {
         if (i != j) {
@@ -539,10 +540,10 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
 
 
     // Run tick for all objects further down in the object tree
-    for (containedObj <- this.getContainedObjects()) {
+    for (containedObj <- containedObjs) {
       containedObj.tick()
     }
-    for (portalObj <- this.getPortals()) {      //## TODO: Verify that the portal tick was run only once?
+    for (portalObj <- this.getPortals().toArray.sortBy(_.uuid)) {      //## TODO: Verify that the portal tick was run only once?
       portalObj.tick()
     }
 
@@ -647,7 +648,7 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
     // Object Contents
     os.append("), Contents (")
     val contentNames = new ArrayBuffer[String]()
-    for (obj <- this.containedObjects) {
+    for (obj <- this.getContainedObjects()) {
       contentNames.append(obj.getName() + "/" + obj.getType())
     }
     os.append( contentNames.mkString(", ") )
@@ -698,4 +699,9 @@ class EnvObject(var name:String, var objType:String, includeElectricalTerminals:
 object EnvObject {
   val MODE_CURSORY_DETAIL  =   0
   val MODE_DETAILED        =   1
+
+  private[scienceworld] def uuidOrderedSet[T <: EnvObject](objects:Iterable[T]):Set[T] = {
+    implicit val ordering:Ordering[T] = Ordering.by[T, Long](_.uuid)
+    scala.collection.immutable.TreeSet.empty[T] ++ objects
+  }
 }

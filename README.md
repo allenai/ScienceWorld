@@ -19,6 +19,9 @@ ScienceWorld
 
 ScienceWorld is a text-based virtual environment centered around accomplishing tasks from the standardized elementary science curriculum.  This code accompanies the paper [ScienceWorld: Is your Textual Agent Smarter than a 5th grader?](https://arxiv.org/abs/2203.07540).
 
+> [!WARNING]
+> **Potentially breaking change in 1.3.0:** Environment objects are now enumerated in deterministic UUID order across resets and Scala/JVM versions. This fixes stochastic simulation outcomes, but can change physics trajectories, ambiguous action resolution, gold paths, and observation/JSON ordering compared with 1.2.x. Task generation for a given variation is otherwise unchanged.
+
 <h3 align="center"><img src="https://github.com/allenai/ScienceWorld/blob/main/media/scienceworld_environment.png" width="75%"/></h3>
 
 ### Demo and examples

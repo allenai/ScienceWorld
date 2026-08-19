@@ -180,7 +180,7 @@ class ParamIterator(paramSigList:ParamSigList, objsByType:Map[String, Set[EnvObj
       val paramName = parameter.name
       val paramType = parameter.objType
       if (objsByType.contains(paramType)) {
-        out(i) = objsByType(paramType).toArray
+        out(i) = objsByType(paramType).toArray.sortBy(_.uuid)
       } else {
         out(i) = Array.empty[EnvObject]
       }

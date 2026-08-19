@@ -95,7 +95,7 @@ class InputParser(actionRequestDefs:List[ActionRequestDef], actionRunner:ActionR
     if (matches.keySet.size > 1) {
       // CASE: Multiple different actions are matched.
       os.append("Ambiguous request: Multiple different possible actions were matched to this input (")
-      os.append( matches.map(_._1).mkString(", ") + "). ")
+      os.append( matches.keys.toArray.sorted.mkString(", ") + "). ")
       os.append("It's possible the action space needs to be refined to remove possible duplicate/ambiguous patterns.")
     } else {
       // CASE: One action, but multiple ways of filling it in

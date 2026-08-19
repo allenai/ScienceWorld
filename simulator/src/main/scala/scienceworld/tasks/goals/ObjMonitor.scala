@@ -1,6 +1,7 @@
 package scienceworld.tasks.goals
 
 import scienceworld.struct.EnvObject
+import scienceworld.struct.EnvObject._
 
 import scala.collection.mutable
 
@@ -13,7 +14,7 @@ class ObjMonitor(val maxSize:Int = 1) {
    */
   def clearMonitoredObjects() = { this.monitoredObjects.clear() }
 
-  def getMonitoredObjects():Set[EnvObject] = this.monitoredObjects.toSet
+  def getMonitoredObjects():Set[EnvObject] = EnvObject.uuidOrderedSet(this.monitoredObjects)
 
   def addMonitor(obj:EnvObject): Boolean = {
     if (this.monitoredObjects.size >= maxSize) return false
@@ -32,7 +33,7 @@ class ObjMonitor(val maxSize:Int = 1) {
   override def toString():String = {
     val os = new StringBuilder
 
-    val objs = monitoredObjects.toArray
+    val objs = getMonitoredObjects().toArray
     os.append("Monitored Objects:\n")
     for (i <- 0 until objs.length) {
       os.append("\t" + i + ":\t" + objs(i).toStringMinimal())

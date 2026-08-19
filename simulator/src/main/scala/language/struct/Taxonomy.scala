@@ -20,9 +20,9 @@ class Taxonomy(val rootNodeName:String = "") {
 
   def getNode(nodeName:String):Option[TreeNode] = lut.get(nodeName)
 
-  def keySet():Set[String] = lut.keySet.toSet
+  def keySet():Set[String] = scala.collection.immutable.TreeSet.empty[String] ++ lut.keySet
 
-  def getRootNames():Set[String] = rootNodeNames.toSet
+  def getRootNames():Set[String] = scala.collection.immutable.TreeSet.empty[String] ++ rootNodeNames
 
   def addRoot(nodeName:String): Unit = {
     val newNode = new TreeNode(nodeName, None)
@@ -85,7 +85,7 @@ class Taxonomy(val rootNodeName:String = "") {
     }
 
     // Return
-    (true, "", out.toSet)
+    (true, "", scala.collection.immutable.TreeSet.empty[String] ++ out)
   }
 
 
@@ -107,7 +107,7 @@ class Taxonomy(val rootNodeName:String = "") {
   def combine(that:Taxonomy):(Boolean, Array[String]) = {           // (Success, errorStrings)
     val errorStrs = new ArrayBuffer[String]()
 
-    for (rootName <- that.rootNodeNames) {
+    for (rootName <- that.getRootNames()) {
       // If a new root doesn't exist in the current tree, add it
       if (!this.contains(rootName)) this.addRoot(rootName)
 
@@ -127,7 +127,7 @@ class Taxonomy(val rootNodeName:String = "") {
     val errorStrs = new ArrayBuffer[String]()
 
     val children = that.getNode(nodeName).get.children
-    for (child <- children) {
+    for (child <- children.toArray.sortBy(_.name)) {
       val (successLink, errorsLink) = this.addLink(child.name, nodeName)        // Add link
       if (errorsLink.length > 0) errorStrs.append(errorsLink)
       val (successBranch, errorsBranch) = this.addBranch(child.name, that)      // Recurse
@@ -157,7 +157,7 @@ class Taxonomy(val rootNodeName:String = "") {
   override def toString():String = {
     val os = new mutable.StringBuilder()
 
-    for (rootName <- rootNodeNames) {
+    for (rootName <- this.getRootNames()) {
       val rootNode = lut.get(rootName).get
       os.append( rootNode.toTreeString(indentLevel = 0) )
     }

@@ -11,7 +11,7 @@ object StringHelpers {
   def objectListToStringDescription(objs:Set[EnvObject], perspectiveContainer:EnvObject, mode:Int = MODE_CURSORY_DETAIL, multiline:Boolean = false):String = {
     // Collect object descriptions
     val filteredObjDescs = new ArrayBuffer[String]
-    for (obj <- objs.toList.sortBy(_.name)) {
+    for (obj <- objs.toList.sortBy(obj => (obj.name, obj.uuid))) {
       obj match {
         case x:Portal => {
           val desc = x.getDescriptionSafe(mode, perspectiveContainer)
