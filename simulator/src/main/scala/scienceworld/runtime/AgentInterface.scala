@@ -131,7 +131,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     val uuid2referentLUT = this.getPossibleObjectReferentLUT()
 
     val elems = new ArrayBuffer[String]
-    for (key <- uuid2referentLUT.keySet) {
+    for (key <- uuid2referentLUT.keySet.toArray.sorted) {
       elems.append( "\"" + key + "\": \"" + uuid2referentLUT(key) + "\"")
     }
 
@@ -153,7 +153,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
     val uuid2typeLUT = this.getAllObjectTypesLUT()
 
     val elems = new ArrayBuffer[String]
-    for (key <- uuid2typeLUT.keySet) {
+    for (key <- uuid2typeLUT.keySet.toArray.sorted) {
       elems.append( "\"" + key + "\": \"" + uuid2typeLUT(key) + "\"")
     }
 
@@ -163,7 +163,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
 
   // Get a LUT of {object_id: {type_id, referent:[]} values for the entire universe.
   def getAllObjectIdsTypesReferentsLUTJSON(): String = {
-    val allObjs = InputParser.collectObjects(universe, includeHidden=true).toArray
+    val allObjs = InputParser.collectObjects(universe, includeHidden=true).toArray.sortBy(_.uuid)
 
     val elems = new ArrayBuffer[String]
     for (obj <- allObjs) {
@@ -184,7 +184,7 @@ class AgentInterface(val universe:EnvObject, val agent:Agent, val task:Task, var
         val typeId = obj.typeID
         val referents = obj.getReferents()
         val referentsProcessed = new ArrayBuffer[String]
-        for (referent <- referents) {
+        for (referent <- referents.toArray.sorted) {
           referentsProcessed.append("\"" + referent + "\"")
         }
 

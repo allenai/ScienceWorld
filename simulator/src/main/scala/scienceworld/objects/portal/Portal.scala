@@ -71,9 +71,9 @@ class Portal (val _isOpen:Boolean, val connectsFrom:EnvObject, val connectsTo:En
     return None
   }
 
-  // Get both of the points the portal connects (unordered)
+  // Get both of the points the portal connects
   def getConnectionPoints():Set[EnvObject] = {
-    return Set(connectsFrom, connectsTo)
+    return EnvObject.uuidOrderedSet(Array(connectsFrom, connectsTo))
   }
 
   // Check if it connects to a given location with a given name

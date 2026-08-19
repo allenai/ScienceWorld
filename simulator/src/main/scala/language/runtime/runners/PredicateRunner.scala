@@ -16,7 +16,7 @@ class PredicateRunner(val predicates:Array[PredicateDef], val objectTreeRoot:Env
 
 
   println ("PredicateRunner (" + getterResultLUT.size + " values stored...)")
-  val keys = this.getterResultLUT.keySet.toArray
+  val keys = this.getterResultLUT.keySet.toArray.sorted
   if (debugOutput) {
     for (i <- 0 until math.min(10, getterResultLUT.size)) {
       println("\t" + i + " " + keys(i) + "\t" + this.getterResultLUT(keys(i)))
@@ -252,8 +252,8 @@ object PredicateRunner {
    */
 
   // Collect all objects in the object tree into a flat set
-  def collectObjects(objectTreeRoot:EnvObject):mutable.Set[EnvObject] = {
-    val out = mutable.Set[EnvObject]()
+  def collectObjects(objectTreeRoot:EnvObject):mutable.LinkedHashSet[EnvObject] = {
+    val out = mutable.LinkedHashSet[EnvObject]()
 
     // Step 1: Add this object
     if (!out.contains(objectTreeRoot)) out.add(objectTreeRoot)
@@ -284,7 +284,7 @@ object PredicateRunner {
 
       // For each inherited type, add it to the LUT
       for (typeKey <- typeKeys) {
-        if (!out.contains(typeKey)) out(typeKey) = Set[EnvObject]()
+        if (!out.contains(typeKey)) out(typeKey) = EnvObject.uuidOrderedSet(Array.empty[EnvObject])
         out(typeKey) += obj
       }
     }

@@ -23,7 +23,7 @@ class WanderingAnimal extends Animal {
     if (this.getContainer().isEmpty) return false
     val currentLocation = this.getContainer().get
 
-    val passablePortals = currentLocation.getPortals().filter(_.isCurrentlyPassable()).toArray
+    val passablePortals = currentLocation.getPortals().filter(_.isCurrentlyPassable()).toArray.sortBy(_.uuid)
     // println ("### Passable Portals: " + passablePortals.map(_.name).mkString(", "))
 
     if (passablePortals.size == 0) {
@@ -110,7 +110,7 @@ class Bee extends WanderingAnimal {
     val currentLocation = this.getContainer().get
 
     // Check if there are any flowers
-    val flowers = currentLocation.getContainedAccessibleObjectsOfType[Flower]().toArray
+    val flowers = currentLocation.getContainedAccessibleObjectsOfType[Flower]().toArray.sortBy(_.uuid)
     // println ("flowers: " + flowers.mkString(", "))
     // println ("accessible objects: " + currentLocation.getContainedAccessibleObjects().map(_.name).mkString(", ") )
 
@@ -139,7 +139,7 @@ class Bee extends WanderingAnimal {
     if (this.getContainedAccessibleObjectsOfType[Pollen]().size > this.maxPollen) return false
 
     // Check if there is any pollen
-    val pollens = currentLocation.getContainedObjectsOfType[Pollen]().toArray
+    val pollens = currentLocation.getContainedObjectsOfType[Pollen]().toArray.sortBy(_.uuid)
     if (pollens.size == 0) return false
 
     // Pick random pollen

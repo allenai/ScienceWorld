@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple, Set, Any
+from typing import List, Dict, Tuple, Set, Any, Optional
 from typing import OrderedDict as OrderedDictType
 import json
 import logging
@@ -20,7 +20,7 @@ class ScienceWorldEnv:
     Please look at that for more information on the internals of the system.
     """
 
-    def __init__(self, taskName: str = None, serverPath: str = None, envStepLimit: int = 100):
+    def __init__(self, taskName: Optional[str] = None, serverPath: Optional[str] = None, envStepLimit: int = 100):
         '''Start the simulator. Sets up the interface between python and the JVM.
         Also does basic init stuff.
         :param taskName: The name of the task. Will be run through the infer_task method.
@@ -70,7 +70,7 @@ class ScienceWorldEnv:
 
         # Load the script
         self.taskName = taskName
-        if self.taskName:
+        if taskName:
             self.load(taskName, 0, "")
 
         # Set the environment step limit
@@ -157,7 +157,7 @@ class ScienceWorldEnv:
             self._gateway.java_process.stdin.write("\n".encode("utf-8"))
             self._gateway.java_process.stdin.flush()
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.close()
 
     # Simplifications
@@ -190,7 +190,7 @@ class ScienceWorldEnv:
         ''' Get the name for the supported tasks in ScienceWorld. '''
         return list(self.server.getTaskNames())
 
-    def get_max_variations(self, task_name) -> int:
+    def get_max_variations(self, task_name: str) -> int:
         ''' Get the maximum number of variations for the tasks. '''
         return self.server.getTaskMaxVariations(infer_task(task_name))
 
@@ -289,7 +289,7 @@ class ScienceWorldEnv:
         return self.server.getTaskDescription()
 
     # Get the current game's task description
-    def getObjectTree(self):
+    def getObjectTree(self) -> Dict[str, Any]:
         msg = self.server.getObjectTree(self._obj_tree_tempdir.name)
         if msg:
             # Game is not initialized.
@@ -351,7 +351,7 @@ class ScienceWorldEnv:
 
     def clear_run_histories(self) -> None:
         ''' Clear the run histories. '''
-        self.runHistories = {}
+        self.runHistories: Dict[int, Dict[str, Any]] = {}
 
     # A one-stop function to handle saving.
     def save_run_histories_buffer_if_full(self, filename_out_prefix: str,
@@ -477,176 +477,177 @@ class ScienceWorldEnv:
     # All of the wrapper methods for camel case, to avoid breaking projects.
 
     # Simplifications
-    def getSimplificationsUsed(self):
+    def getSimplificationsUsed(self) -> str:
         snake_case_deprecation_warning()
 
         return self.get_simplifications_used()
 
-    def getPossibleSimplifications(self):
+    def getPossibleSimplifications(self) -> List[str]:
         snake_case_deprecation_warning()
 
         return self.get_possible_simplifications()
 
-    def getTaskNames(self):
+    def getTaskNames(self) -> List[str]:
         """ Get the name for the supported tasks in ScienceWorld. """
         snake_case_deprecation_warning()
 
         return self.get_task_names()
 
     # Get the maximum number of variations for this task
-    def getMaxVariations(self, taskName):
+    def getMaxVariations(self, taskName: str) -> int:
         snake_case_deprecation_warning()
 
         return self.get_max_variations(taskName)
 
     # Get possible actions
-    def getPossibleActions(self):
+    def getPossibleActions(self) -> List[str]:
         snake_case_deprecation_warning()
 
         return self.get_possible_actions()
 
     # Get possible actions (and also include the template IDs for those actions)
-    def getPossibleActionsWithIDs(self):
+    def getPossibleActionsWithIDs(self) -> List[Dict[str, Any]]:
         snake_case_deprecation_warning()
 
         return self.get_possible_actions_with_IDs()
 
     # Get possible objects
-    def getPossibleObjects(self):
+    def getPossibleObjects(self) -> List[str]:
         snake_case_deprecation_warning()
 
         return self.get_possible_objects()
 
     # Get a list of object_ids to unique referents
-    def getPossibleObjectReferentLUT(self):
+    def getPossibleObjectReferentLUT(self) -> Dict[str, str]:
         snake_case_deprecation_warning()
 
         return self.get_possible_object_referent_LUT()
 
     # As above, but dictionary is referenced by object type ID
-    def getPossibleObjectReferentTypesLUT(self):
+    def getPossibleObjectReferentTypesLUT(self) -> Dict[str, Dict[str, str]]:
         snake_case_deprecation_warning()
 
         return self.get_possible_object_referent_types_LUT()
 
     # Get a list of *valid* agent-object combinations
-    def getValidActionObjectCombinations(self):
+    def getValidActionObjectCombinations(self) -> List[str]:
         snake_case_deprecation_warning()
 
         return self.get_valid_action_object_combinations()
 
-    def getValidActionObjectCombinationsWithTemplates(self):
+    def getValidActionObjectCombinationsWithTemplates(self) -> List[Dict[str, Any]]:
         snake_case_deprecation_warning()
 
         return self.get_valid_action_object_combinations_with_templates()
 
     # Get a LUT of object_id to type_id
-    def getAllObjectTypesLUTJSON(self):
+    def getAllObjectTypesLUTJSON(self) -> Dict[str, str]:
         snake_case_deprecation_warning()
 
         return self.get_all_object_types_LUTJSON()
 
     # Get a LUT of {object_id: {type_id, referent:[]} } tuples
-    def getAllObjectIdsTypesReferentsLUTJSON(self):
+    def getAllObjectIdsTypesReferentsLUTJSON(self) -> Dict[str, Dict[str, Any]]:
         snake_case_deprecation_warning()
 
         return self.get_all_object_ids_types_referents_LUTJSON()
 
     # Get possible action/object combinations
-    def getPossibleActionObjectCombinations(self):
+    def getPossibleActionObjectCombinations(self) -> Tuple[List[Dict[str, Any]], Dict[str, str]]:
         snake_case_deprecation_warning()
 
         return self.get_possible_action_object_combinations()
 
     # Get a list of object types and their IDs
-    def getObjectTypes(self):
+    def getObjectTypes(self) -> Dict[str, int]:
         snake_case_deprecation_warning()
 
         return self.get_object_types()
 
     # Get the vocabulary of the model (at the current state)
-    def getVocabulary(self):
+    def getVocabulary(self) -> Set[str]:
         snake_case_deprecation_warning()
 
         return self.get_vocabulary()
 
-    def getNumMoves(self):
+    def getNumMoves(self) -> int:
         snake_case_deprecation_warning()
 
         return self.get_num_moves()
 
-    def getTaskDescription(self):
+    def getTaskDescription(self) -> str:
         snake_case_deprecation_warning()
 
         return self.get_task_description()
 
-    def getRunHistory(self):
+    def getRunHistory(self) -> Dict[str, Any]:
         snake_case_deprecation_warning()
 
         return self.get_run_history()
 
-    def storeRunHistory(self, episodeIdxKey, notes):
+    def storeRunHistory(self, episodeIdxKey: int, notes: str) -> None:
         snake_case_deprecation_warning()
 
         self.store_run_history(episodeIdxKey, notes)
 
-    def saveRunHistories(self, filenameOutPrefix):
+    def saveRunHistories(self, filenameOutPrefix: str) -> None:
         snake_case_deprecation_warning()
 
         self.save_run_histories(filenameOutPrefix)
 
-    def getRunHistorySize(self):
+    def getRunHistorySize(self) -> int:
         snake_case_deprecation_warning()
 
-        return self.get_run_historySize()
+        return self.get_run_history_size()
 
-    def clearRunHistories(self):
+    def clearRunHistories(self) -> None:
         snake_case_deprecation_warning()
 
         self.clear_run_histories()
 
     # A one-stop function to handle saving.
-    def saveRunHistoriesBufferIfFull(self, filenameOutPrefix, maxPerFile=1000, forceSave=False):
+    def saveRunHistoriesBufferIfFull(self, filenameOutPrefix: str, maxPerFile: int = 1000,
+                                     forceSave: bool = False) -> None:
         snake_case_deprecation_warning()
 
         self.save_run_histories_buffer_if_full(filenameOutPrefix, maxPerFile, forceSave)
 
-    def getVariationsTrain(self):
+    def getVariationsTrain(self) -> List[int]:
         snake_case_deprecation_warning()
 
         return self.get_variations_train()
 
-    def getVariationsDev(self):
+    def getVariationsDev(self) -> List[int]:
         snake_case_deprecation_warning()
 
         return self.get_variations_dev()
 
-    def getVariationsTest(self):
+    def getVariationsTest(self) -> List[int]:
         snake_case_deprecation_warning()
 
         return self.get_variations_test()
 
-    def getRandomVariationTrain(self):
+    def getRandomVariationTrain(self) -> int:
         snake_case_deprecation_warning()
 
         return self.get_random_variation_train()
 
-    def getRandomVariationDev(self):
+    def getRandomVariationDev(self) -> int:
         snake_case_deprecation_warning()
 
         return self.get_random_variation_dev()
 
-    def getRandomVariationTest(self):
+    def getRandomVariationTest(self) -> int:
         snake_case_deprecation_warning()
 
         return self.get_random_variation_test()
 
-    def getGoldActionSequence(self):
+    def getGoldActionSequence(self) -> List[str]:
         snake_case_deprecation_warning()
 
         return self.get_gold_action_sequence()
 
-    def getGoalProgressStr(self):
+    def getGoalProgressStr(self) -> str:
         snake_case_deprecation_warning()
 
         return self.get_goal_progress()
@@ -657,7 +658,7 @@ class BufferedHistorySaver:
     #
     # Constructor
     #
-    def __init__(self, filenameOutPrefix):
+    def __init__(self, filenameOutPrefix: str):
         self.filenameOutPrefix = filenameOutPrefix
 
         # Clear the run histories
@@ -668,7 +669,7 @@ class BufferedHistorySaver:
     #
 
     # History saving (provides an API to do this, so it's consistent across agents)
-    def storeRunHistory(self, runHistory, episodeIdxKey, notes):
+    def storeRunHistory(self, runHistory: Dict[str, Any], episodeIdxKey: int, notes: str) -> None:
         packed = {
             'episodeIdx': episodeIdxKey,
             'notes': notes,
@@ -677,7 +678,7 @@ class BufferedHistorySaver:
 
         self.runHistories[episodeIdxKey] = packed
 
-    def saveRunHistories(self):
+    def saveRunHistories(self) -> None:
         # Save history
 
         # Create verbose filename
@@ -695,14 +696,14 @@ class BufferedHistorySaver:
         with open(filenameOut, 'w') as outfile:
             json.dump(self.runHistories, outfile, sort_keys=True, indent=4)
 
-    def getRunHistorySize(self):
+    def getRunHistorySize(self) -> int:
         return len(self.runHistories)
 
-    def clearRunHistories(self):
-        self.runHistories = {}
+    def clearRunHistories(self) -> None:
+        self.runHistories: Dict[int, Dict[str, Any]] = {}
 
     # A one-stop function to handle saving.
-    def saveRunHistoriesBufferIfFull(self, maxPerFile=1000, forceSave=False):
+    def saveRunHistoriesBufferIfFull(self, maxPerFile: int = 1000, forceSave: bool = False) -> None:
         if ((self.getRunHistorySize() >= maxPerFile) or forceSave):
             self.saveRunHistories()
             self.clearRunHistories()

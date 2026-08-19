@@ -181,7 +181,7 @@ class Program (val importList:Option[List[ImportFile]], val defines:Option[List[
 
         // Assemble a list of base and inherited default properties.
         // NOTE: Overriding a default property from a superclass is not required -- it just does it automatically (since this is just like an assignment in a constructor)
-        val newDefaultProps = mutable.Map[String, PropertyDefault]()
+        val newDefaultProps = mutable.LinkedHashMap[String, PropertyDefault]()
         for (inheritedDefaultProp <- inheritedDefaultProperties) newDefaultProps(inheritedDefaultProp.propName) = inheritedDefaultProp
         for (baseDefaultProp <- baseDefaultProps) newDefaultProps(baseDefaultProp.propName) = baseDefaultProp
 
@@ -215,7 +215,7 @@ class Program (val importList:Option[List[ImportFile]], val defines:Option[List[
 
         // Add any inherited property functions to these property functions
         // First, take the ones specified by this class
-        val newPropFuncts = mutable.Map[String, PropertyFunction]()
+        val newPropFuncts = mutable.LinkedHashMap[String, PropertyFunction]()
         for (basePropFunct <- basePropFuncts) newPropFuncts(basePropFunct.propName) = basePropFunct
 
         // Then, add the inherited ones
@@ -280,7 +280,7 @@ class Program (val importList:Option[List[ImportFile]], val defines:Option[List[
     }
 
     // Return
-    (out.toList, errors.toSet)
+    (out.toList, scala.collection.immutable.TreeSet.empty[String] ++ errors)
   }
 
   /*

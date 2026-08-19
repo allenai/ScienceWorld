@@ -243,7 +243,7 @@ class TaskInclinedPlane1(val mode:String = MODE_FRICTION_NAMED) extends TaskPara
     val block = blocks(0)
 
     // Get reference to inclined planes
-    val inclinedPlanes = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[InclinedPlane]().toArray.sortBy(_.name)
+    val inclinedPlanes = getCurrentAgentLocation(runner).getContainedAccessibleObjectsOfType[InclinedPlane]().toArray.sortBy(obj => (obj.name, obj.uuid))
     val inclinedPlane1 = inclinedPlanes(0)
     val inclinedPlane2 = inclinedPlanes(1)
 
