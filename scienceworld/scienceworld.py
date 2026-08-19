@@ -68,6 +68,12 @@ class ScienceWorldEnv:
         # Keep track of the last step score, to calculate reward from score
         self.lastStepScore = 0
 
+        # Keep track of whether the current episode has finished (success, failure, or
+        # step limit reached), so further step() calls don't let an agent keep scoring.
+        self.isCompleted = False
+        self._lastObservation = None
+        self._lastInfos = None
+
         # Load the script
         self.taskName = taskName
         if self.taskName:
@@ -131,6 +137,9 @@ class ScienceWorldEnv:
         # Reset last step score (used to calculate reward from current-previous score)
         self.lastStepScore = 0
 
+        # A newly loaded episode hasn't completed yet.
+        self.isCompleted = False
+
         # Keep track of whether the gold path was generated, to generate verbose error messages
         self.goldPathGenerated = generateGoldPath
 
@@ -141,6 +150,9 @@ class ScienceWorldEnv:
 
         # Reset last step score (used to calculate reward from current-previous score)
         self.lastStepScore = 0
+
+        # A freshly reset episode hasn't completed yet, so the upcoming step() isn't blocked.
+        self.isCompleted = False
 
         # Make first move
         observation, score, isCompleted, info = self.step("look around")
@@ -417,6 +429,17 @@ class ScienceWorldEnv:
         'moves', 'score', 'reward', 'look', 'inv', 'taskDesc', 'valid', 'variationIdx', 'taskName',
         and 'simplificationStr'.
         '''
+        # If the episode already completed (success, failure, or step limit), don't forward
+        # the action to the simulator -- this prevents an agent from continuing to act (and
+        # potentially inflating its score) after the task is over. Call reset() or load() to
+        # start a new episode.
+        if self.isCompleted:
+            logger.warning(
+                "step() was called after the episode had already completed (isCompleted=True). "
+                "Action '%s' was ignored. Call reset() or load() to start a new episode.",
+                input_str)
+            return self._lastObservation, 0, self.isCompleted, self._lastInfos
+
         observation = self.server.step(input_str)
         score = int(round(100 * self.server.getScore()))        # Convert from 0-1 to 0-100
         isCompleted = self.server.getCompleted()
@@ -448,6 +471,10 @@ class ScienceWorldEnv:
             'taskName': self.taskName,
             'simplificationStr': self.simplificationStr,
         }
+
+        self.isCompleted = isCompleted
+        self._lastObservation = observation
+        self._lastInfos = infos
 
         return observation, reward, isCompleted, infos
 
