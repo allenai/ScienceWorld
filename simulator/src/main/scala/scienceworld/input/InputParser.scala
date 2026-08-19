@@ -5,6 +5,7 @@ import language.runtime.runners.{ActionRunner, PredicateRunner}
 import language.struct.{DynamicValue, ScopedVariableLUT}
 import scienceworld.actions.Action
 import scienceworld.objects.agent.Agent
+import scienceworld.objects.portal.Portal
 import scienceworld.struct.EnvObject
 import scienceworld.tasks.goals.{GoalSequence, ObjMonitor}
 import util.UniqueTypeID
@@ -114,7 +115,10 @@ class InputParser(actionRequestDefs:Array[ActionRequestDef]) {
     // Step 2A: Populate an array of the unique referents (as strings)
     val out = new ArrayBuffer[(String, EnvObject)]()
     for (i <- 0 until allObjs.length) {
-      val referent = uniqueReferents(i)
+      val referent = allObjs(i) match {
+        case portal:Portal => portal.getCanonicalReferent(perspectiveContainer)
+        case _ => uniqueReferents(i)
+      }
       out.append( (referent.toLowerCase(), allObjs(i)) )
     }
 

@@ -103,6 +103,15 @@ class Portal (val _isOpen:Boolean, val connectsFrom:EnvObject, val connectsTo:En
     return Set(this.name, this.name + " from " + connectsFrom.name + " to " + connectsTo.name, this.name + " from " + connectsTo.name + " to " + connectsFrom.name)
   }
 
+  def getCanonicalReferent(perspectiveContainer:EnvObject):String = {
+    val connectsToContainer = this.getConnectsTo(perspectiveContainer)
+    if (connectsToContainer.isDefined) {
+      return this.name + " to " + connectsToContainer.get.name
+    }
+
+    return this.name + " from " + connectsFrom.name + " to " + connectsTo.name
+  }
+
   override def getDescriptName(overrideName: String): String = {
     return "door between " + this.connectsFrom.name + " and " + this.connectsTo.name
   }
