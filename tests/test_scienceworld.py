@@ -121,6 +121,31 @@ def test_multiple_instances():
     assert obs1_2 == obs2_2
 
 
+def test_door_actions_use_canonical_referents():
+    env = ScienceWorldEnv("1-1")
+    try:
+        _, info = env.reset()
+        door_actions = {
+            action for action in info["valid"]
+            if action.startswith("open ") and "door" in action
+        }
+        assert door_actions == {
+            "open door to art studio",
+            "open door to bedroom",
+            "open door to greenhouse",
+            "open door to kitchen",
+            "open door to living room",
+            "open door to workshop",
+        }
+
+        for action in ("open bedroom door", "open door to bedroom"):
+            env.reset()
+            observation, _, _, _ = env.step(action)
+            assert observation == "The door is now open."
+    finally:
+        env.close()
+
+
 def test_closing_env():
     env = ScienceWorldEnv()
     env.task_names  # Load task names.
