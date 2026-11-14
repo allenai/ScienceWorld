@@ -587,9 +587,9 @@ object ActionDunkObject {
           // Pack and store
           val pa = new PossibleAction(Array[ActionExpr](
             new ActionExprText("dunk"),
-            new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid)),
+            new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid)),
             new ActionExprText("into"),
-            new ActionExprObject(obj2, referent = uuid2referentLUT(obj2.uuid))
+            new ActionExprObject(obj1, referent = uuid2referentLUT(obj1.uuid))
           ), this.ACTION_ID)
           out.append(pa)
         }

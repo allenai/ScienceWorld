@@ -146,6 +146,22 @@ def test_door_actions_use_canonical_referents():
         env.close()
 
 
+def test_dunk_actions_are_executable_in_advertised_order():
+    env = ScienceWorldEnv("change-the-state-of-matter-of")
+    try:
+        env.reset()
+        for action in ("open door to kitchen", "move to kitchen", "open fridge",
+                       "look in fridge", "open cupboard", "look in cupboard"):
+            env.step(action)
+
+        advertised = "dunk cup containing orange juice into ceramic cup"
+        assert advertised in env.get_valid_action_object_combinations()
+        observation, _, _, _ = env.step(advertised)
+        assert "moving the liquids" in observation
+    finally:
+        env.close()
+
+
 def test_closing_env():
     env = ScienceWorldEnv()
     env.task_names  # Load task names.
